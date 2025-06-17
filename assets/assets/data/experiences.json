@@ -1,0 +1,398 @@
+[
+  {
+    "entreprise": "Armatis Bordeaux",
+    "image": "assets/images/armatis-logo.png",
+    "contexte": "Centre de relation client externalisée pour le suivi et l’assistance des clients de divers secteurs (télécommunications, e-commerce, finance…).",
+    "objectifs": "Assurer une prise en charge efficace des demandes clients, optimiser la satisfaction et la fidélisation des utilisateurs finaux.",
+    "missions": "Accueil et qualification des appels entrants, résolution des réclamations, conseil sur les offres et services, remontée des besoins clients aux équipes produit, respect des objectifs de qualité et de temps de traitement.",
+    "code": "",
+    "tags": ["Relation Client", "Support", "Qualité", "KPI"],
+    "stack": {
+      "CRM": ["Zendesk", "Salesforce Service Cloud"],
+      "Téléphonie": ["Cisco Finesse", "Genesys Cloud"],
+      "Outils de chat & e-mail": ["Intercom", "Outlook"],
+      "Reporting & KPI": ["Excel avancé", "Power BI"],
+      "Collaboration": ["Teams", "Confluence"]
+    },
+    "periode": "Juin 2024 - decembre 2024",
+    "lienProjet": "",
+    "resultats": [
+      "Taux de satisfaction client de 95 %",
+      "Respect de 98 % des SLA de traitement",
+      "Réduction du temps moyen de gestion des appels de 20 %"
+    ]
+  },
+  {
+    "entreprise": "UTS31",
+    "image": "assets/images/uts31-logo.png",
+    "contexte": "Service de livraison de produits Amazon, garantissant la réception rapide et sécurisée des commandes.",
+    "objectifs": "Assurer la distribution efficace et ponctuelle des produits Amazon auprès des utilisateurs.",
+    "missions": "Réception et tri des colis, livraison quotidienne des produits Amazon aux différents services, gestion des plannings de tournée et respect des délais.",
+    "code": "",
+    "tags": ["Logistique", "Livraison", "Amazon"],
+    "stack": {
+      "Mobilité": ["Application Amazon livraison (Android/iOS)"],
+      "Communication": ["Appels intégrés via l’app", "Notifications push"],
+      "Logistique": ["Actions sur lockers Amazon (scan QR, bluetooth)", "Tracking GPS intégré"],
+      "Navigation": ["Cartographie intégrée (Google Maps SDK)"],
+      "Support": ["Chat/Helpdesk in-app"]
+    },
+    "periode": "Septembre 2023 - Avril 2024",
+    "lienProjet": "",
+    "resultats": [
+      "Taux de livraison à temps de 99%"
+    ]
+  },
+  {
+    "entreprise": "Groupe Keym",
+    "image": "assets/images/keym.png",
+    "contexte": "Application mobile événementielle destinée à promouvoir les artistes musicaux et faciliter l’organisation de leurs événements.",
+    "objectifs": "Optimiser l’architecture du code en intégrant Riverpod, afin d’améliorer la maintenabilité, la scalabilité et la testabilité de l’application.",
+    "missions": "Refactorisation complète du code Flutter pour en améliorer les performances, intégration de Riverpod comme gestionnaire d’état, et mise en place de bonnes pratiques de développement pour une meilleure clarté et modularité du code.",
+    "code": "// Exemple transformer: abstract class AppPermissions {\n  static Future<bool> checkStoragePermission() async {\n    var status = await Permission.storage.status;\n    if (status.isDenied) {\n      if (await Permission.storage.request().isGranted) {\n        return true;\n      }\n      return false;\n    }\n    if (status.isRestricted) {\n      AppUtils.showError(\"Storage Permission Error\");\n      return false;\n    }\n    if (status.isPermanentlyDenied) {\n      await openAppSettings();\n      return false;\n    }\n\n    return true;\n  }\n\n  static Future<bool> checkCameraPermission() async {\n    var status = await Permission.camera.status;\n    if (status.isDenied) {\n      if (await Permission.camera.request().isGranted) {\n        return true;\n      }\n      return false;\n    }\n    if (status.isRestricted) {\n      AppUtils.showError('Camera Permission Error');\n      return false;\n    }\n    if (status.isPermanentlyDenied) {\n      await openAppSettings();\n      return false;\n    }\n    return true;\n  }\n\n  static Future<bool> checkLocationPermission() async {\n    var status = await Permission.location.status;\n    if (status.isDenied) {\n      if (await Permission.location.request().isGranted) {\n        return true;\n      }\n      return false;\n    }\n    if (status.isRestricted) {\n      AppUtils.showError('Location Permission Error');\n      return false;\n    }\n    if (status.isPermanentlyDenied) {\n      await openAppSettings();\n      return false;\n    }\n    return true;\n  }\n\n// static Future<bool> checkPipPermission() async {\n//   var status = await Permission.;\n//   if (status.isDenied) {\n//     if (await Permission.location.request().isGranted) {\n//       return true;\n//     }\n//     return false;\n//   }\n//   if (status.isRestricted) {\n//     AppUtils.showError('Location Permission Error');\n//     return false;\n//   }\n//   if (status.isPermanentlyDenied) {\n//     await openAppSettings();\n//     return false;\n//   }\n//   return true;\n// }\n}\npar une stratégie riverpod exemple :\n class PermissionNotifier\n    extends StateNotifier<Map<Permission, PermissionStatus>> {\n  PermissionNotifier() : super({});\n\n  Future<void> requestPermission(Permission permission) async {\n    final status = await permission.request();\n    state = {...state, permission: status};\n  }\n\n  // Demander toutes les permissions nécessaires.\n  Future<void> requestAllPermissions() async {\n    final statuses = await Future.wait([\n      Permission.camera.request(),\n      Permission.microphone.request(),\n      Permission.storage.request(),\n      Permission.bluetooth.request(),\n      Permission.audio.request(),\n      Permission.phone.request(),\n      Permission.location.request(),\n      Permission.mediaLibrary.request(),\n      Permission.notification.request(),\n    ]);\n\n    // Mettre à jour l'état avec toutes les permissions demandées et leur statut.\n    state = {\n      Permission.camera: statuses[0],\n      Permission.microphone: statuses[1],\n      Permission.storage: statuses[2],\n      Permission.bluetooth: statuses[3],\n      Permission.audio: statuses[4],\n      Permission.phone: statuses[5],\n      Permission.location: statuses[6],\n      Permission.mediaLibrary: statuses[7],\n      Permission.notification: statuses[8],\n    };\n  }\n\n  // Révoquer une permission spécifique (notamment pour les notifications).\n  Future<void> revokeNotificationPermission() async {\n    // La révocation d'une permission nécessite souvent des actions manuelles dans les paramètres.\n    // Cependant, nous pouvons mettre à jour l'état comme s'il n'y avait plus de permission.\n    state = {...state, Permission.notification: PermissionStatus.denied};\n  }\n}\n\nfinal permissionNotifierProvider = StateNotifierProvider<PermissionNotifier,\n    Map<Permission, PermissionStatus>>((ref) => PermissionNotifier());\n",
+    "tags": ["Flutter", "Riverpod", "Performance", "Événementiel"],
+    "stack": {
+      "frontend": ["Flutter"],
+      "backend": ["Hive", "Firebase"],
+      "devops": ["CI/CD"]
+    },
+    "periode": "Janvier 2023 - Juillet 2023",
+    "lienProjet": "https://keym-music.com/",
+    "resultats": [
+      "Optimisation de l'expérience utilisateur (UX)",
+      "Réduction du temps de latence de 30%"
+    ]
+  },
+  {
+    "entreprise": "Apside",
+    "image": "assets/images/apside-logo.png",
+    "contexte": "Consultant AMOA pour la création d’une application mobile B2B en Angular.",
+    "objectifs": "Proposer une solution technique, estimer les besoins et structurer le projet jusqu’à sa mise en œuvre.",
+    "missions": "Analyse des besoins métier, définition d’une stratégie technique adaptée, chiffrage précis du projet, conception fonctionnelle et technique, rédaction des cahiers des charges, création de l’interface utilisateur validée avec le client, planification du projet et répartition des tâches au sein de l’équipe de développement.",
+    "code": "// Exemple : \n@Component({\n  selector: 'app-home',\n  templateUrl: './home.page.html',\n})\nexport class HomePage implements OnInit {\n  clients: any[] = [];\n\n  constructor(private clientsService: ClientsService) {}\n\n  ngOnInit() {\n    this.clients = this.clientsService.getClients();\n  }\n}",
+    "tags": ["Angular", "UI/UX", "Gestion de projet", "Architecture", "Chiffrage"],
+    "stack": {
+      "framework": ["Angular"],
+      "backend": ["Node.js", "Express.js"],
+      "devops": ["Git", "CI/CD"]
+    },
+    "periode": "Avril 2022 - Septembre 2022",
+    "lienProjet": "https://play.google.com/store/apps/details?id=com.mipih.medimail&hl=fr",
+    "resultats": [
+      "Intégration réussie dans une mission stratégique",
+      "Livraison d’une UI validée dès les premiers sprints",
+      "Mise en place d’une organisation de travail efficace pour l’équipe"
+    ]
+  },
+  {
+    "entreprise": "EGOTE+RMC Rénovation et Services",
+    "image": "assets/images/egote-foto.png",
+    "contexte": "Transformation digitale d'une TPE spécialisée dans le BTP, l'électricité et la rénovation. L'entreprise manquait d'outils numériques pour la gestion commerciale, technique et documentaire.",
+    "objectifs": "Concevoir et déployer une application Flutter tout-en-un pour digitaliser les processus de l'entreprise.",
+    "missions": "Direction de projet, conception technique, développement Flutter, intégration de modules IoT et VR, et génération de documents professionnels.",
+    "code": "// Exemple :\nimport 'package:egote_services_v2/features/common/presentation/extensions/extensions.dart';\nimport 'package:egote_services_v2/features/devis/domain/providers/edit_devis_view_model_provider.dart';\nimport 'package:flutter/material.dart';\nimport 'package:flutter_riverpod/flutter_riverpod.dart';\nimport 'package:go_router/go_router.dart';\n\nclass DevisEditScreen extends ConsumerWidget {\n  final String devisId;\n\n  const DevisEditScreen({super.key, required this.devisId});\n\n  @override\n  Widget build(BuildContext context, WidgetRef ref) {\n    final theme = Theme.of(context);\n    final scheme = theme.colorScheme;\n    final style = theme.textTheme;\n\n    final viewModel = ref.watch(editDeviViewModelProvider);\n\n    return Scaffold(\n      appBar: AppBar(\n        title: Text(context.tr!.addDevis),\n      ),\n      bottomNavigationBar: Padding(\n        padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),\n        child: MaterialButton(\n          padding: const EdgeInsets.all(16),\n          color: scheme.primary,\n          onPressed: () {\n            if (viewModel.isSuccess) {\n              viewModel.data;\n              context.pop();\n            }\n          },\n          child: Text(context.tr!.done.toUpperCase()),\n        ),\n      ),\n      body: Padding(\n        padding: const EdgeInsets.all(24),\n        child: CustomDevisForm(scheme: scheme, theme: theme, style: style),\n      ),\n    );\n  }\n}\n\nclass CustomDevisForm extends ConsumerWidget {\n  const CustomDevisForm({\n    super.key,\n    required this.scheme,\n    required this.theme,\n    required this.style,\n  });\n\n  final ColorScheme scheme;\n  final ThemeData theme;\n  final TextTheme style;\n\n  @override\n  Widget build(BuildContext context, WidgetRef ref) {\n    final produits = ref.watch(selectedProduitsProvider); // list of Produit\n    final total = produits.fold<double>(\n      0,\n      (prev, produit) =>\n          prev + (produit.price.value ?? 0) * (produit.quantity.quantity ?? 1),\n    );\n\n    return SingleChildScrollView(\n      child: Column(\n        crossAxisAlignment: CrossAxisAlignment.start,\n        children: [\n          _ImagePickerCard(scheme: scheme, style: style, theme: theme),\n          const SizedBox(height: 24),\n\n          TextFormField(\n            decoration: InputDecoration(labelText: context.tr!.title),\n          ),\n          const SizedBox(height: 24),\n\n          TextFormField(\n            minLines: 5,\n            maxLines: 10,\n            decoration: InputDecoration(labelText: context.tr!.description),\n          ),\n          const SizedBox(height: 24),\n\n          // Dynamic product list preview\n          ...produits.map(\n            (p) => ListTile(\n              title: Text(p.name),\n              subtitle: Text(\"${p.quantity} × ${p.formattedPrice}\"),\n              trailing: Text(p.formattedTotalPrice),\n            ),\n          ),\n          const Divider(),\n\n          // Total\n          Align(\n            alignment: Alignment.centerRight,\n            child: Text(\n              \"${context.tr!.total}: \\$${total.toStringAsFixed(2)}\",\n              style: style.titleMedium?.copyWith(fontWeight: FontWeight.bold),\n            ),\n          ),\n        ],\n      ),\n    );\n  }\n}\n\nclass _ImagePickerCard extends ConsumerWidget {\n  const _ImagePickerCard({\n    required this.scheme,\n    required this.style,\n    required this.theme,\n  });\n\n  final ColorScheme scheme;\n  final TextTheme style;\n  final ThemeData theme;\n\n  @override\n  Widget build(BuildContext context, WidgetRef ref) {\n    return Container(\n      height: 200,\n      width: double.infinity,\n      decoration: BoxDecoration(\n        color: scheme.primaryContainer,\n        borderRadius: BorderRadius.circular(20),\n      ),\n      child: InkWell(\n        onTap: () {\n          // Implement image picker logic here\n        },\n        child: Column(\n          mainAxisAlignment: MainAxisAlignment.center,\n          children: [\n            Icon(Icons.photo, color: scheme.onPrimaryContainer),\n            const SizedBox(height: 8),\n            Text(\n              context.tr!.pickImage.toUpperCase(),\n              style: style.bodySmall,\n            ),\n          ],\n        ),\n      ),\n    );\n  }\n}\n",
+    "tags": ["Flutter", "Full-Stack", "Gestion de projet", "Riverpod", "GetX", "CRM", "IoT", "VR", "PDF", "BTP"],
+    "stack": {
+      "framework": ["Flutter"],
+      "backend": ["MongoDB", "Firebase"],
+      "devops": ["CI/CD", "Firebase Hosting"]
+    },
+    "periode": "Mars 2021 - Aujourd'hui",
+    "lienProjet": "egote_services_v2",
+    "resultats": [
+      "Digitalisation complète du cycle de vente",
+      "Gain de temps de 40% sur les devis/factures",
+      "Adoption immédiate par les équipes terrain"
+    ]
+  },
+  {
+    "entreprise": "Urbalyon",
+    "image": "assets/images/urbalyon-logo.png",
+    "contexte": "Développement d'une application mobile à destination des promoteurs immobiliers, s'appuyant sur la cartothèque du service de l'urbanisme de Lyon.",
+    "objectifs": "Projet SIG : migration d'une application d'analyse géospatiale vers Flutter.",
+    "missions": "Développement de la nouvelle solution avec Flutter et Angular, et maintenance de la solution existante.",
+    "code": "// Exemple : sendLocationToServer(double lat, double lng) async {\n  final response = await http.post(\n    Uri.parse('https://urbalyonservername.com/api/location'),\n    headers: {'Content-Type': 'application/json'},\n    body: jsonEncode({\n      'deviceId': 'user-1234',\n      'lat': lat,\n      'lng': lng,\n      'source': 'mobile',\n    }),\n  );\n\n  if (response.statusCode == 201) {\n    print('Donnée envoyée avec succès');\n  } else {\n    print('Erreur lors de l’envoi');\n  }\n}",
+    "tags": ["Flutter", "Full-Stack", "Angular", "IoT", "PHP"],
+    "stack": {
+      "framework": ["Flutter", "Angular", "Laravel"],
+      "backend": ["Node.js", "PostgreSQL", "API", "PHP"],
+      "devops": ["CI/CD"]
+    },
+    "periode": "Novembre 2020 - Janvier 2021",
+    "lienProjet": "https://www.urbalyon.org/fr",
+    "resultats": [
+      "Amélioration de l'expérience utilisateur (UX)",
+      "Réduction de 30% du temps de latence"
+    ]
+  },
+  {
+    "entreprise": "Jean Claude Aubry",
+    "image": "assets/images/aubry-logo.png",
+    "contexte": "À partir d’une maquette présentée au salon du numérique, développement de la version finale de l’application mobile destinée aux usages en entreprise.",
+    "objectifs": "Concevoir et livrer une application complète et fonctionnelle, incluant la migration des données critiques et la maintenance du site existant.",
+    "missions": "Développement full-stack de l’application, intégration complète frontend/backend, migration de MongoDB vers Elasticsearch, mise en place de pipelines CI/CD, et optimisation des performances globales de la solution.",
+    "code": "// Angular service injection\nconstructor(private searchService: SearchService) {}",
+    "tags": ["Full-Stack", "Angular", "Ionic", "CI/CD", "Elasticsearch"],
+    "stack": {
+      "frontend": ["Angular", "Ionic"],
+      "backend": ["Node.js", "Express.js"],
+      "devops": ["CI/CD"]
+    },
+    "periode": "Avril 2019 - Décembre 2019",
+    "lienProjet": "https://www.jean-claude-aubry.fr/",
+    "resultats": [
+      "Amélioration significative des performances UI/UX",
+      "Livraison de l’application finale en production",
+      "Déploiement automatisé via un pipeline CI/CD robuste"
+    ]
+  },
+  {
+    "entreprise": "Wayma Group - StartUp Nursery",
+    "image": "assets/images/wayma-logo.png",
+    "contexte": "Stage de fin de formation dans une entreprise incubatrice pilotant plusieurs projets innovants.",
+    "objectifs": "Observer, analyser et appliquer les méthodes de travail de l’équipe en conditions réelles.",
+    "missions": "Développement full-stack, détection et correction d’anomalies, support technique via un système de tickets, optimisation de l'UI/UX. Créer un module réutilisable pour la gestion des données, avec une stratégie de persistance multi-niveau.",
+    "code": "// Injection d'un service dans Angular\nconstructor(private searchService: SearchService) {}",
+    "tags": ["Full-Stack", "Angular", "Ionic", "CI/CD", "Node.js"],
+    "stack": {
+      "frontend": ["Angular", "Ionic"],
+      "backend": ["Node.js"],
+      "devops": ["CI/CD"]
+    },
+    "periode": "Janvier 2019 - Mars 2019",
+    "lienProjet": "https://specialist-wanted.com/",
+    "resultats": [
+      "Optimisation de l'UX sur 3 projets",
+      "Réduction du temps de réponse des requêtes de 30%",
+      "Mise en place d’une architecture Edge-to-Cloud"
+    ]
+  },
+  {
+    "entreprise": "TME",
+    "image": "assets/images/tme-logo.png",
+    "contexte": "Chauffeur-Livreur-Monteur pour TME (Transport Meubles et Electroménager).",
+    "objectifs": "Garantir la livraison, l'installation et le Montage des meubles chez le clients.",
+    "missions": "Planification des tournées, suivi en temps réel des livraisons avec tablette connectées, relation client avant et lors de la livraison.",
+    "code": "",
+    "tags": ["Livraison", "Logistique", "Relation client"],
+    "stack": {
+      "Mobilité": ["Application TME (Android/iOS)"],
+      "Photo": ["Appareil photo intégré (prise de vue)"],
+      "Signatures": ["Signature digitale in-app"],
+      "Communication": ["Appels intégrés via l’application"],
+      "Navigation": ["Suivi GPS en temps réel"]
+    },
+    "periode": "Septembre 2017 - Octobre 2018",
+    "lienProjet": "",
+    "resultats": [
+      "Livraison express en moyenne en 3h",
+      "Taux de colis non endommagés de 100%"
+    ]
+  },
+  {
+    "entreprise": "SunPower",
+    "image": "assets/images/sunpower.png",
+    "contexte": "Ligne de production de panneaux photovoltaïques",
+    "objectifs": "Assurer les tests, la validation, et améliorer l'ergonomie des postes",
+    "missions": "Opérations en fin de chaîne : cadrage, connectiques, tests, conditionnement. Utilisation de logiciels de validation, référent sur l’aménagement des postes",
+    "code": "",
+    "tags": ["Production", "Tests", "Ergonomie", "Énergie"],
+    "stack": {
+      "postes": ["Cadrage", "Connectiques", "Testes", "Conditionnement"],
+      "système de rotation": ["2/8"]
+    },
+    "periode": "Juin 2014 - Mai 2015",
+    "lienProjet": "",
+    "resultats": [
+      "Optimisation des postes de production",
+      "Réduction du temps de montage de 30%",
+      "Mise en place d'automate"
+    ]
+  },
+  {
+    "entreprise": "Zodiac Pool Care",
+    "image": "assets/images/zodiac-logo.png",
+    "contexte": "Opérations sur la chaîne de fabrication des robots de piscine, axée sur l’assemblage du boîtier de commande et la préparation des unités pour l’expédition.",
+    "objectifs": "Assurer la qualité et la fiabilité des boîtiers de commande en respectant les standards de production et les délais impartis.",
+    "missions": "Assemblage des composants électroniques et mécaniques du boîtier de commande, réalisation de tests fonctionnels, contrôle qualité et conditionnement pour expédition.",
+    "code": "",
+    "tags": ["Production", "Assemblage", "Tests", "Conditionnement"],
+    "stack": {
+      "Outils de test": ["Logiciel de test sur ordinateur (parcours valide / eCheck)"],
+      "Production manuelle": ["Assemblage manuel de composants"],
+      "Conditionnement": ["Emballage et préparation à l’expédition"]
+    },
+    "periode": "Janvier 2014 - juin 2014",
+    "lienProjet": "",
+    "resultats": [
+      "100% de conformité aux tests fonctionnels",
+      "Optimisation du processus de conditionnement réduisant les rejets de 15%"
+    ]
+  },
+  {
+    "entreprise": "Dédienne Aérospace",
+    "image": "assets/images/dedienne-logo.png",
+    "contexte": "Programmation et calibration des machines de fabrication de pièces aéronautiques, suivi du cheminement en atelier jusqu’au conditionnement.",
+    "objectifs": "Assurer la qualité de chaque pièce en respectant les tolérances aéronautiques et préparer des compartiments de transport sur-mesure.",
+    "missions": "Programmation et calibration des machines, alimentation en matière première, diriger le flux des pièces en atelier pour les opérations d’ajustage, ébavurage, gravure et numérisation, annotation et contrôle qualité, conception et fabrication des emballages sur-mesure, réalisation des tests fonctionnels, puis conditionnement final.",
+    "code": "",
+    "tags": ["Aéronautique", "Qualité", "Saisonnier"],
+    "stack": {
+      "Machines": ["CNC multi-axes", "Imprimante 3D de prototypage"],
+      "Métrologie": ["Calibreurs digitaux", "Testeurs 3D"],
+      "Post-traitement": ["Ébavureuse manuelle", "Station de gravure laser"],
+      "Conditionnement": ["Fabrication de coffrets sur-mesure"]
+    },
+    "periode": "Juin 2013 - Decembre 2013",
+    "lienProjet": "",
+    "resultats": [
+      "Conformité 100% aux spécifications AS9100",
+      "Amélioration du processus de traçabilité"
+    ]
+  },
+  {
+    "entreprise": "Thalès",
+    "image": "assets/images/thales-logo.jpg",
+    "contexte": "Saisonnier en maintenance et montage de sous-systèmes électroniques de défense.",
+    "objectifs": "Garantir la fiabilité et la robustesse des systèmes selon les cahiers des charges militaires.",
+    "missions": "Montage de cartes électroniques, tests fonctionnels, calibration, documentation technique.",
+    "code": "",
+    "tags": ["Électronique", "Défense", "Saisonnier"],
+    "stack": {
+      "Outils de test": ["Application de test sur tablette (résultats pass/fail)", "Oscilloscope numérique"],
+      "Montage": ["Soudure manuelle", "Réglage de composants"],
+      "Documentation": ["Scan de signature digitale", "Feuille de route papier"],
+      "Conditionnement": ["Emballage antistatique", "Étiquetage sécurisé"]
+    },
+    "periode": "Octobre 2012 - Mars 2013",
+    "lienProjet": "",
+    "resultats": [
+      "Zéro non-conformité détectée en production",
+      "Optimisation des temps de test de 10%"
+    ]
+  },
+  {
+    "entreprise": "Zodiac Pool Care",
+    "image": "assets/images/zodiac-logo.png",
+    "contexte": "Opérations sur la chaîne de fabrication des robots de piscine, axée sur l’assemblage du boîtier de commande et la préparation des unités pour l’expédition.",
+    "objectifs": "Assurer la qualité et la fiabilité des boîtiers de commande en respectant les standards de production et les délais impartis.",
+    "missions": "Assemblage des composants électroniques et mécaniques du boîtier de commande, réalisation de tests fonctionnels, contrôle qualité et conditionnement pour expédition.",
+    "code": "",
+    "tags": ["Production", "Assemblage", "Tests", "Conditionnement"],
+    "stack": {
+      "Outils de test": ["Logiciel de test sur ordinateur (parcours valide / eCheck)"],
+      "Production manuelle": ["Assemblage manuel de composants"],
+      "Conditionnement": ["Emballage et préparation à l’expédition"]
+    },
+    "periode": "Avril 2012 - Septembre 2012",
+    "lienProjet": "",
+    "resultats": [
+      "100% de conformité aux tests fonctionnels",
+      "Optimisation du processus de conditionnement réduisant les rejets de 15%"
+    ]
+  },
+  {
+    "entreprise": "Continental S.A.",
+    "image": "assets/images/continental-logo.png",
+    "contexte": "Saisonnier sur chaîne de montage de composants automobiles.",
+    "objectifs": "Assurer la cadence de production et la qualité des pièces sur chaîne automatisée.",
+    "missions": "Contrôle visuel, ajustement de modules, approvisionnement des postes, respect des plans de fabrication.",
+    "code": "",
+    "tags": ["Automobile", "Production", "Saisonnier"],
+    "stack": {
+      "Machines": ["Fours à refusion", "Postes de test électrique", "Stations de pose manuelle"],
+      "Outils": ["Binoculaires", "Multimètre", "Feuilles de contrôle qualité"],
+      "Suivi": ["Traçabilité papier", "Badges de contrôle"]
+    },
+    "periode": "Février 2011 - Septembre 2011",
+    "lienProjet": "",
+    "resultats": [
+      "Maintien d’une cadence supérieure aux objectifs",
+      "Participation à plus de 3 000 unités produites sans incident majeur par session",
+      "Zéro retour client signalé sur les lots traités",
+      "Polyvalence acquise entre assemblage et contrôle qualité"
+    ]
+  },
+  {
+    "entreprise": "CoyCoyCoy Ridders inside",
+    "image": "assets/images/coy.jpg",
+    "contexte": "Création d’une boutique en ligne pour un fabricant d'accessoires de ridder",
+    "objectifs": "Améliorer la visibilité et automatiser la gestion du stock et des commandes.",
+    "missions": "Installation et configuration de PrestaShop, gestion de base MySQL, configurer ftp-Server, hébergement OVH.",
+    "code": "// Extrait de config PrestaShop\n$db = new PDO('mysql:host=localhost;dbname=boutique', 'user', 'pass');",
+    "tags": ["E-commerce", "PrestaShop", "PHP", "Base de données"],
+    "stack": {
+      "frontend": ["Smarty", "HTML", "CSS", "JavaScript", "jQuery"],
+      "backend": ["PHP", "Prestashop Core", "MySQL"],
+      "devops": ["FTP/SSH"]
+    },
+    "periode": "descembre 2010 - Fevrier 2011",
+    "lienProjet": "https://www.coycoycoy-ridders-inside.fr",
+    "resultats": [
+      "Créer une boutique en ligne, installer PrestaShop",
+      "Deployer sur OVH",
+      "Back-office opérationnel pour la gestion de stock et de commandes"
+    ]
+  },
+  {
+    "entreprise": "Asics",
+    "image": "assets/images/asics-logo.png",
+    "contexte": "Missions de préparation de commande dans deux environnements logistiques : entrepôt textile (Asics) et plateforme multi-produits proche de l'aéroport.",
+    "objectifs": "Assurer un traitement efficace des commandes clients dans un environnement rythmé par des délais courts et une forte rotation de stock.",
+    "missions": "Réception des palettes, scan des articles, tri par références et tailles, préparation des commandes à l’unité ou en lot, filmage, étiquetage, mise en zone d’expédition. Utilisation de PDA pour le picking et la traçabilité des flux.",
+    "code": "",
+    "tags": ["Logistique", "Préparation de commandes", "Entrepôt"],
+    "stack": {
+      "Équipement": ["PDA de scan", "Transpalette manuel", "Imprimante étiquettes"],
+      "Système": ["WMS propriétaire", "Codes-barres", "Pick-to-light (Asics)"],
+      "Sécurité": ["Port de gilet/fluo", "Zones délimitées", "Procédures de sécurité aéroport"]
+    },
+    "periode": "Juillet 2010 - Décembre 2010",
+    "lienProjet": "",
+    "resultats": [
+      "Zéro erreur de picking sur plusieurs centaines de commandes",
+      "Respect des cadences horaires imposées",
+      "Complémentarité entre environnement textile et hub logistique aéroportuaire"
+    ]
+  },
+  {
+    "entreprise": "2RouesVertes",
+    "image": "assets/images/2rouesvertes-logo.png",
+    "contexte": "Création d’une boutique en ligne pour la vente de vélos électriques",
+    "objectifs": "Améliorer la visibilité et automatiser la gestion du stock et des commandes.",
+    "missions": "Installation et configuration de PrestaShop, gestion de base MySQL, intégration vidéos, hébergement OVH.",
+    "code": "// Extrait de config PrestaShop\n$db = new PDO('mysql:host=localhost;dbname=boutique', 'user', 'pass');",
+    "tags": ["E-commerce", "PrestaShop", "PHP", "Base de données"],
+    "stack": {
+      "frontend": ["Smarty", "HTML", "CSS", "JavaScript", "jQuery"],
+      "backend": ["PHP", "Prestashop Core", "MySQL"],
+      "devops": ["FTP/SSH"]
+    },
+    "periode": "Mars 2010 - Juin 2012",
+    "lienProjet": "https://www.2rouesvertes.fr",
+    "resultats": [
+      "Créer une boutique en ligne, installer PrestaShop",
+      "Deployer sur OVH",
+      "Back-office opérationnel pour la gestion de stock et de commandes"
+    ]
+  },
+  {
+    "entreprise": "Darty",
+    "image": "assets/images/Darty-Logo.png",
+    "contexte": "Livreur de gros électroménager et produits high-tech pour le réseau Darty.",
+    "objectifs": "Assurer la livraison et l’installation des produits chez les clients dans le respect des délais et de la qualité de service.",
+    "missions": "Chargement des véhicules, parcours de livraison, installation et démonstration des appareils, collecte de la signature client, gestion des retours et SAV de 1er niveau.",
+    "code": "",
+    "tags": ["Livraison", "Service client", "Électroménager"],
+    "stack": {
+      "Mobilité": ["Smartphone"],
+      "Outils papier": ["Feuille de livraison"]
+    },
+    "periode": "Decembre 2007 - Août 2009",
+    "lienProjet": "",
+    "resultats": [
+      "Taux de satisfaction client de 98%",
+      "Respect de 100% des créneaux de livraison"
+    ]
+  }
+]

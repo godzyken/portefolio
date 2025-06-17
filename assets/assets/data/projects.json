@@ -1,0 +1,49 @@
+[
+  {
+    "id": "projet_1",
+    "title": "Création de boutique e-commerce ",
+    "points": [
+      "📦 Déploiement de PrestaShop 1.2.5 et Magento 1.3.2.4",
+      "🔧 Stack LAMP : Apache 2.2, PHP 5.2.10, MySQL 5.0",
+      "🌐 Hébergement mutualisé OVH avec gestion SSL manuelle",
+      "🎨 Intégration HTML 4.01 et CSS 2.1 sans frameworks",
+      "🔌 Modules maison développés en PHP procédural",
+      "🛡️ Sécurité .htaccess et droits serveur (chmod, FTP)",
+      "🗃️ Gestion via phpMyAdmin et interface admin PrestaShop",
+      "🧾 Catalogue, panier, suivi client et interface multilingue"
+    ],
+    "image": ["assets/images/vitrine.png"]
+  },
+  {
+    "id": "projet_2",
+    "title": "Développement Flutter",
+    "points": [
+      "🧭 Directeur du service de transformation digitale",
+      "📱 Déploiement d'applications multiplateformes : Android, iOS et Desktop",
+      "🏗️ Intégration dans le cadre de projets Construction 4.0",
+      "🧊 Conception d'interfaces immersives en 3D et AR (Unity, SketchUp)",
+      "🧾 Développement de modules RH et gestion de l'approvisionnement",
+      "📊 Implémentation d’un CRM avec prospection commerciale intégrée",
+      "🎨 Respect des principes Material Design & amélioration de l'expérience utilisateur (UX)",
+      "🧰 Développement avec le SDK Flutter, Dart, et interopérabilité Android (Java/Kotlin)",
+      "🚀 Tests, packaging et déploiement sur le Play Store",
+      "🔐 Conformité avec les normes RGPD (protection des données utilisateurs)"
+    ],
+    "image": ["assets/images/flutter-image.png"]
+  },
+  {
+    "id": "projet_3",
+    "title": "Développement Angular & Ionic",
+    "points": [
+      "👨‍💻 Architecte & Lead Developer sur des applications mobiles et web hybrides",
+      "📐 Élaboration des budgets prévisionnels et plannings d’exécution",
+      "🧾 Recueil et analyse des besoins métier, rédaction des User Stories",
+      "📝 Rédaction des spécifications fonctionnelles et techniques détaillées",
+      "📅 Ordonnancement et suivi des tâches dans un environnement agile",
+      "🧪 Conception, tests unitaires et mise en place des solutions techniques",
+      "🔁 Mise en œuvre des pipelines CI/CD et pratiques TDD (Test-Driven Development)",
+      "💬 Analyse UX, optimisation des parcours utilisateurs (User Flow) et ergonomie"
+    ],
+    "image": ["assets/images/medimail-app.png"]
+  }
+]

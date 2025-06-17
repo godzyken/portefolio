@@ -1,0 +1,20 @@
+[
+  {
+    "title": "Applications Flutter",
+    "description": "Des apps performantes pour iOS et Android.",
+    "icon": "phone_android",
+    "imageUrl": "assets/images/flutter-image.png"
+  },
+  {
+    "title": "Design UI/UX",
+    "description": "Interfaces modernes et ergonomiques.",
+    "icon": "design_services",
+    "imageUrl": "assets/images/ui-ux-design-service.png"
+  },
+  {
+    "title": "API & Backend",
+    "description": "Intégration Firebase, Supabase ou Node.",
+    "icon": "cloud",
+    "imageUrl": "assets/images/api-img.png"
+  }
+]
