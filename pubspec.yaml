@@ -92,11 +92,11 @@ flutter:
   fonts:
     - family: Noto
       fonts:
-        - asset: fonts/Noto_Sans/static/NotoSans-Regular.ttf
-        - asset: fonts/Noto_Sans/static/NotoSans-Italic.ttf
+        - asset: assets/fonts/Noto_Sans/static/NotoSans-Regular.ttf
+        - asset: assets/fonts/Noto_Sans/static/NotoSans-Italic.ttf
           style: italic
     - family: Noto Variable
       fonts:
-        - asset: fonts/Noto_Sans/NotoSans-VariableFont_wdth,wght.ttf
-        - asset: fonts/Noto_Sans/NotoSans-Italic-VariableFont_wdth,wght.ttf
+        - asset: assets/fonts/Noto_Sans/NotoSans-VariableFont_wdth,wght.ttf
+        - asset: assets/fonts/Noto_Sans/NotoSans-Italic-VariableFont_wdth,wght.ttf
           weight: 700
