@@ -1,33 +1,49 @@
 name: Deploy Flutter Web to GitHub Pages
 
+# Déclenchement : à chaque push sur la branche principale
 on:
   push:
     branches:
-      - main # OU 'master' si ta branche principale s'appelle comme ça
+      - main        # change en 'master' si besoin
+
+# ---- AUTORISATIONS ----
+# Donne au token intégré les droits nécessaires pour pousser sur gh-pages
+permissions:
+  contents: write     # push/commit sur le dépôt
+  pages: write        # optionnel si tu passes un jour à la filière « native » Pages
+  id-token: write     # idem
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
+      # 1) Récupérer le dépôt
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # 2) Installer Flutter stable 3.29.3
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.29.3' # adapte à ta version
+          flutter-version: '3.29.3'  # adapte si tu montes plus haut
           channel: stable
           cache: true
 
+      # 3) Dépendances
       - name: Install dependencies
         run: flutter pub get
 
+      # 4) Build Web (base href = /portefolio/)
       - name: Build Flutter Web
         run: flutter build web --base-href="/portefolio/"
 
+      # 5) Déploiement sur la branche gh-pages
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: build/web
+          publish_dir: build/web           # dossier à publier
+          publish_branch: gh-pages         # (défaut, mais je le mets pour clarté)
+          user_name: github-actions[bot]   # signature du commit
+          user_email: github-actions[bot]@users.noreply.github.com
