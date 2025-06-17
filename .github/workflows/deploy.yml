@@ -3,25 +3,26 @@ name: Deploy Flutter Web to GitHub Pages
 on:
   push:
     branches:
-      - main
+      - main # OU 'master' si ta branche principale s'appelle comme ça
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.22.1'
+          flutter-version: '3.22.1' # adapte à ta version
 
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Build Web
-        run: flutter build web
+      - name: Build Flutter Web
+        run: flutter build web --base-href="/portefolio/"
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3

@@ -69,9 +69,12 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
+  web:
+    # Important pour que les liens relatifs fonctionnent sur GitHub Pages
+    base-url: "/portefolio/
+
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/.env
     - assets/data/experiences.json
     - assets/data/projects.json
     - assets/data/services.json
@@ -124,7 +127,6 @@ flutter:
     - assets/images/logos/ftp-ssh-logo.png
     - assets/images/logos/ci-cd-logo.png
     - assets/images/logos/smarty.png
-    - assets/fonts/noto-emoji/NotoColorEmoji.ttf
     - assets/fonts/Noto_Sans/static/NotoSans-Regular.ttf
     - assets/fonts/Noto_Sans/NotoSans-VariableFont_wdth,wght.ttf
 
