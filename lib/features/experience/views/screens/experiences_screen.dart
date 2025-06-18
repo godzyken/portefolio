@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/provider/providers.dart';
-import 'package:portefolio/features/home/views/screens/experience_slide_screen.dart';
-import 'package:portefolio/features/home/views/widgets/experience_filter_chips.dart';
 
-import '../widgets/experience_timeline.dart';
+import '../widgets/experience_widgets_extentions.dart';
+import 'experience_slide_screen.dart';
 
 class ExperiencesScreen extends ConsumerWidget {
   const ExperiencesScreen({super.key});
@@ -106,23 +105,21 @@ class ExperiencesScreen extends ConsumerWidget {
           return Column(
             children: [
               Expanded(
-                child:
-                    filteredExperiences.isEmpty
-                        ? const Center(
-                          child: Text('Aucune expérience pour ce filtre.'),
-                        )
-                        : isPageView
+                child: filteredExperiences.isEmpty
+                    ? const Center(
+                        child: Text('Aucune expérience pour ce filtre.'),
+                      )
+                    : isPageView
                         ? ExperienceSlideScreen(
-                          experiences: filteredExperiences,
-                        )
+                            experiences: filteredExperiences,
+                          )
                         : ExperienceTimeline(experiences: filteredExperiences),
               ),
             ],
           );
         },
-        error:
-            (e, _) =>
-                Center(child: Text('Une erreur est survenue: ${e.toString()}')),
+        error: (e, _) =>
+            Center(child: Text('Une erreur est survenue: ${e.toString()}')),
         loading: () => const Center(child: CircularProgressIndicator()),
       ),
     );

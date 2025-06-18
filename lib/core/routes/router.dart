@@ -1,7 +1,10 @@
 import 'package:go_router/go_router.dart';
 
 import '../../features/contact/views/screens/contact_screen.dart';
-import '../../features/home/views/screens/extentions_screens.dart';
+import '../../features/experience/views/screens/experiences_screen.dart';
+import '../../features/generator/views/screens/generator_extentions_screens.dart';
+import '../../features/home/views/screens/home_screen.dart';
+import '../../features/projets/views/screens/projects_screen.dart';
 
 final GoRouter router = GoRouter(
   routes: [

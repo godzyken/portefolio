@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/affichage/screen_size_detector.dart';
 import '../../../../core/provider/providers.dart';
 import '../../data/project_data.dart';
 import '../widgets/project_card.dart';
@@ -28,6 +29,7 @@ class _ProjectsScreenState extends ConsumerState<ProjectsScreen> {
   Widget build(BuildContext context) {
     final projectsAsync = ref.watch(projectsFutureProvider);
     final selectedProjects = ref.watch(selectedProjectsProvider);
+    final columns = ref.watch(columnsProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -45,8 +47,7 @@ class _ProjectsScreenState extends ConsumerState<ProjectsScreen> {
             tooltip: 'Tout sélectionner',
             onPressed: () {
               final projects = ref.read(projectsFutureProvider).value;
-              final isAllSelected =
-                  projects != null &&
+              final isAllSelected = projects != null &&
                   ref.read(selectedProjectsProvider).length == projects.length;
 
               ref.read(selectedProjectsProvider.notifier).state =
@@ -72,33 +73,52 @@ class _ProjectsScreenState extends ConsumerState<ProjectsScreen> {
         ],
       ),
       body: projectsAsync.when(
-        data:
-            (projects) => ListView.builder(
-              itemCount: projects.length,
-              itemBuilder: (context, index) {
-                final project = projects[index];
-                final isSelected = selectedProjects.any(
-                  (p) => p.id == project.id,
-                );
-                return GestureDetector(
-                  onLongPress: () => _toggleSelection(project),
-                  child: Stack(
-                    children: [
-                      ProjectCard(project: project),
-                      if (isSelected)
-                        Positioned(
-                          top: 8,
-                          right: 8,
-                          child: Icon(Icons.check_circle, color: Colors.green),
-                        ),
-                    ],
-                  ),
-                );
-              },
-            ),
+        //data: (projects) => buildListProjects(projects, selectedProjects),
+        data: (projects) => buildGridViewProjects(columns, projects),
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('Erreur : $e')),
       ),
+    );
+  }
+
+  GridView buildGridViewProjects(int columns, List<ProjectInfo> projects) {
+    return GridView.builder(
+      padding: const EdgeInsets.all(16),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: columns,
+        mainAxisSpacing: 16,
+        crossAxisSpacing: 16,
+        childAspectRatio: 1.1,
+      ),
+      itemCount: projects.length,
+      itemBuilder: (_, i) => ProjectCard(project: projects[i]),
+    );
+  }
+
+  ListView buildListProjects(
+      List<ProjectInfo> projects, List<ProjectInfo> selectedProjects) {
+    return ListView.builder(
+      itemCount: projects.length,
+      itemBuilder: (context, index) {
+        final project = projects[index];
+        final isSelected = selectedProjects.any(
+          (p) => p.id == project.id,
+        );
+        return GestureDetector(
+          onLongPress: () => _toggleSelection(project),
+          child: Stack(
+            children: [
+              ProjectCard(project: project),
+              if (isSelected)
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: Icon(Icons.check_circle, color: Colors.green),
+                ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

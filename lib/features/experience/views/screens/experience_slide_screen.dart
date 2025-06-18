@@ -2,9 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:portefolio/features/home/views/widgets/extentions_widgets.dart';
 
-import '../../data/extentions_models.dart';
+import '../../../generator/views/widgets/fade_slide_animation.dart';
+import '../../data/experiences_data.dart';
+import '../widgets/experience_widgets_extentions.dart';
 
 class ExperienceSlideScreen extends ConsumerStatefulWidget {
   const ExperienceSlideScreen({super.key, required this.experiences});
@@ -112,7 +113,7 @@ class _ExperienceSlideScreenState extends ConsumerState<ExperienceSlideScreen> {
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         child: FadeSlideAnimation(
                           delay: Duration(milliseconds: index * 100),
-                          child: ModernExperienceCard(
+                          child: ExperienceCard(
                             experience: widget.experiences[index],
                           ),
                         ),

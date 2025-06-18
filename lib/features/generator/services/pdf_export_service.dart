@@ -4,7 +4,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
-import '../home/data/project_data.dart';
+import '../../projets/data/project_data.dart';
 
 class PdfExportService {
   Future<pw.Font> loadCustomFont() async {
@@ -22,16 +22,14 @@ class PdfExportService {
 
     doc.addPage(
       pw.Page(
-        build:
-            (context) => pw.Column(
-              children:
-                  selected.map((p) {
-                    return pw.Text(
-                      "${p.title} 🚀", // ou n'importe quel champ contenant des emojis
-                      style: pw.TextStyle(font: font),
-                    );
-                  }).toList(),
-            ),
+        build: (context) => pw.Column(
+          children: selected.map((p) {
+            return pw.Text(
+              "${p.title} 🚀", // ou n'importe quel champ contenant des emojis
+              style: pw.TextStyle(font: font),
+            );
+          }).toList(),
+        ),
       ),
     );
 

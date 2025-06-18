@@ -2,9 +2,9 @@
   {
     "entreprise": "Armatis Bordeaux",
     "image": "assets/images/armatis-logo.png",
-    "contexte": "Centre de relation client externalisée pour le suivi et l’assistance des clients de divers secteurs (télécommunications, e-commerce, finance…).",
-    "objectifs": "Assurer une prise en charge efficace des demandes clients, optimiser la satisfaction et la fidélisation des utilisateurs finaux.",
-    "missions": "Accueil et qualification des appels entrants, résolution des réclamations, conseil sur les offres et services, remontée des besoins clients aux équipes produit, respect des objectifs de qualité et de temps de traitement.",
+    "contexte": "Armatis est un centre de relation client externalisée opérant pour le compte de grandes entreprises dans les secteurs des télécommunications, de la finance, du e-commerce ou de l’énergie. L’objectif est d’assurer un lien de qualité entre les clients finaux et les services internes des marques.",
+    "objectifs": "Offrir une prise en charge fluide, empathique et rapide des demandes clients tout en respectant des indicateurs stricts de performance (SLA, satisfaction, taux de résolution).",
+    "missions": "Réception et traitement des appels entrants selon des scripts adaptables et le service, diagnostic des problèmes clients, conseils personnalisés sur les produits et services, remontées régulières aux équipes techniques et marketing pour améliorer l’offre, suivi et analyse des KPI pour ajuster les stratégies de communication.",
     "code": "",
     "tags": ["Relation Client", "Support", "Qualité", "KPI"],
     "stack": {
@@ -14,20 +14,20 @@
       "Reporting & KPI": ["Excel avancé", "Power BI"],
       "Collaboration": ["Teams", "Confluence"]
     },
-    "periode": "Juin 2024 - decembre 2024",
+    "periode": "Juin 2024 - Décembre 2024",
     "lienProjet": "",
     "resultats": [
-      "Taux de satisfaction client de 95 %",
-      "Respect de 98 % des SLA de traitement",
-      "Réduction du temps moyen de gestion des appels de 20 %"
+      "Taux de satisfaction client de 95 % sur l’ensemble des campagnes",
+      "Respect de 58 % des SLA de traitement (temps de réponse, résolution)",
+      "Expérrien bénéfique concernant la gestion de crise et de la sécurité mentale"
     ]
   },
   {
     "entreprise": "UTS31",
     "image": "assets/images/uts31-logo.png",
-    "contexte": "Service de livraison de produits Amazon, garantissant la réception rapide et sécurisée des commandes.",
-    "objectifs": "Assurer la distribution efficace et ponctuelle des produits Amazon auprès des utilisateurs.",
-    "missions": "Réception et tri des colis, livraison quotidienne des produits Amazon aux différents services, gestion des plannings de tournée et respect des délais.",
+    "contexte": "Entreprise partenaire de la chaîne logistique d’Amazon, spécialisée dans la livraison du dernier kilomètre. L’activité se concentre sur la distribution rapide, fiable et sécurisée des commandes en milieu urbain et péri-urbain.",
+    "objectifs": "Garantir une expérience de livraison irréprochable pour les utilisateurs Amazon en respectant scrupuleusement les créneaux de livraison, les protocoles de sécurité et les attentes de service client.",
+    "missions": "Réception des colis au dépôt Amazon, tri et organisation des tournées via application mobile, livraison directe aux clients ou en consignes (lockers) avec scan Bluetooth ou QR code, remontées terrain via l’app mobile intégrée.",
     "code": "",
     "tags": ["Logistique", "Livraison", "Amazon"],
     "stack": {
@@ -40,16 +40,18 @@
     "periode": "Septembre 2023 - Avril 2024",
     "lienProjet": "",
     "resultats": [
-      "Taux de livraison à temps de 99%"
+      "Taux de livraison à temps de 99 % sur plus de 2 000 colis livrés",
+      "Aucune perte ou incident signalé sur les livraisons durant la période",
+      "Adaptabilité reconnue face à des contraintes météo ou imprévus de planning"
     ]
   },
   {
     "entreprise": "Groupe Keym",
     "image": "assets/images/keym.png",
-    "contexte": "Application mobile événementielle destinée à promouvoir les artistes musicaux et faciliter l’organisation de leurs événements.",
-    "objectifs": "Optimiser l’architecture du code en intégrant Riverpod, afin d’améliorer la maintenabilité, la scalabilité et la testabilité de l’application.",
-    "missions": "Refactorisation complète du code Flutter pour en améliorer les performances, intégration de Riverpod comme gestionnaire d’état, et mise en place de bonnes pratiques de développement pour une meilleure clarté et modularité du code.",
-    "code": "// Exemple transformer: abstract class AppPermissions {\n  static Future<bool> checkStoragePermission() async {\n    var status = await Permission.storage.status;\n    if (status.isDenied) {\n      if (await Permission.storage.request().isGranted) {\n        return true;\n      }\n      return false;\n    }\n    if (status.isRestricted) {\n      AppUtils.showError(\"Storage Permission Error\");\n      return false;\n    }\n    if (status.isPermanentlyDenied) {\n      await openAppSettings();\n      return false;\n    }\n\n    return true;\n  }\n\n  static Future<bool> checkCameraPermission() async {\n    var status = await Permission.camera.status;\n    if (status.isDenied) {\n      if (await Permission.camera.request().isGranted) {\n        return true;\n      }\n      return false;\n    }\n    if (status.isRestricted) {\n      AppUtils.showError('Camera Permission Error');\n      return false;\n    }\n    if (status.isPermanentlyDenied) {\n      await openAppSettings();\n      return false;\n    }\n    return true;\n  }\n\n  static Future<bool> checkLocationPermission() async {\n    var status = await Permission.location.status;\n    if (status.isDenied) {\n      if (await Permission.location.request().isGranted) {\n        return true;\n      }\n      return false;\n    }\n    if (status.isRestricted) {\n      AppUtils.showError('Location Permission Error');\n      return false;\n    }\n    if (status.isPermanentlyDenied) {\n      await openAppSettings();\n      return false;\n    }\n    return true;\n  }\n\n// static Future<bool> checkPipPermission() async {\n//   var status = await Permission.;\n//   if (status.isDenied) {\n//     if (await Permission.location.request().isGranted) {\n//       return true;\n//     }\n//     return false;\n//   }\n//   if (status.isRestricted) {\n//     AppUtils.showError('Location Permission Error');\n//     return false;\n//   }\n//   if (status.isPermanentlyDenied) {\n//     await openAppSettings();\n//     return false;\n//   }\n//   return true;\n// }\n}\npar une stratégie riverpod exemple :\n class PermissionNotifier\n    extends StateNotifier<Map<Permission, PermissionStatus>> {\n  PermissionNotifier() : super({});\n\n  Future<void> requestPermission(Permission permission) async {\n    final status = await permission.request();\n    state = {...state, permission: status};\n  }\n\n  // Demander toutes les permissions nécessaires.\n  Future<void> requestAllPermissions() async {\n    final statuses = await Future.wait([\n      Permission.camera.request(),\n      Permission.microphone.request(),\n      Permission.storage.request(),\n      Permission.bluetooth.request(),\n      Permission.audio.request(),\n      Permission.phone.request(),\n      Permission.location.request(),\n      Permission.mediaLibrary.request(),\n      Permission.notification.request(),\n    ]);\n\n    // Mettre à jour l'état avec toutes les permissions demandées et leur statut.\n    state = {\n      Permission.camera: statuses[0],\n      Permission.microphone: statuses[1],\n      Permission.storage: statuses[2],\n      Permission.bluetooth: statuses[3],\n      Permission.audio: statuses[4],\n      Permission.phone: statuses[5],\n      Permission.location: statuses[6],\n      Permission.mediaLibrary: statuses[7],\n      Permission.notification: statuses[8],\n    };\n  }\n\n  // Révoquer une permission spécifique (notamment pour les notifications).\n  Future<void> revokeNotificationPermission() async {\n    // La révocation d'une permission nécessite souvent des actions manuelles dans les paramètres.\n    // Cependant, nous pouvons mettre à jour l'état comme s'il n'y avait plus de permission.\n    state = {...state, Permission.notification: PermissionStatus.denied};\n  }\n}\n\nfinal permissionNotifierProvider = StateNotifierProvider<PermissionNotifier,\n    Map<Permission, PermissionStatus>>((ref) => PermissionNotifier());\n",
+    "contexte": "Le groupe Keym développe une plateforme mobile pour promouvoir les artistes indépendants, gérer des événements musicaux et connecter les fans aux artistes via des contenus exclusifs et des outils interactifs.",
+    "objectifs": "Moderniser l’architecture de l’application mobile en y intégrant une gestion d’état performante et modulaire (Riverpod) pour permettre un développement pérenne, testable, et scalable, avec des performances accrues.",
+    "missions": "Refactorisation complète du code existant, implémentation de Riverpod pour la gestion des permissions et des états critiques, amélioration des temps de chargement, mise en place de tests unitaires et d’intégration, et documentation technique pour faciliter la reprise du code.",
+    "code": "// Exemple de stratégie Riverpod\nclass PermissionNotifier extends StateNotifier<Map<Permission, PermissionStatus>> {\n  ...\n}",
     "tags": ["Flutter", "Riverpod", "Performance", "Événementiel"],
     "stack": {
       "frontend": ["Flutter"],
@@ -59,222 +61,344 @@
     "periode": "Janvier 2023 - Juillet 2023",
     "lienProjet": "https://keym-music.com/",
     "resultats": [
-      "Optimisation de l'expérience utilisateur (UX)",
-      "Réduction du temps de latence de 30%"
+      "Expérience utilisateur fluide grâce à une gestion centralisée des permissions",
+      "Réduction du temps de latence de l’application de 30 %",
+      "Code désormais modulaire, testable et évolutif"
     ]
   },
   {
     "entreprise": "Apside",
     "image": "assets/images/apside-logo.png",
-    "contexte": "Consultant AMOA pour la création d’une application mobile B2B en Angular.",
-    "objectifs": "Proposer une solution technique, estimer les besoins et structurer le projet jusqu’à sa mise en œuvre.",
-    "missions": "Analyse des besoins métier, définition d’une stratégie technique adaptée, chiffrage précis du projet, conception fonctionnelle et technique, rédaction des cahiers des charges, création de l’interface utilisateur validée avec le client, planification du projet et répartition des tâches au sein de l’équipe de développement.",
-    "code": "// Exemple : \n@Component({\n  selector: 'app-home',\n  templateUrl: './home.page.html',\n})\nexport class HomePage implements OnInit {\n  clients: any[] = [];\n\n  constructor(private clientsService: ClientsService) {}\n\n  ngOnInit() {\n    this.clients = this.clientsService.getClients();\n  }\n}",
-    "tags": ["Angular", "UI/UX", "Gestion de projet", "Architecture", "Chiffrage"],
+    "contexte": "Mission de conseil AMOA au sein d’Apside pour la création d’une application mobile B2B (secteur santé) destinée à fluidifier la communication entre praticiens et établissements, avec un écosystème technique entièrement basé sur Angular et un back-end Node.js.",
+    "objectifs": [
+      "Établir une feuille de route technique et fonctionnelle claire dès la phase d’avant‑vente",
+      "Chiffrer précisément les lots de travail (capex/opex) pour sécuriser le budget client",
+      "Réaliser une maquette UI validée en ateliers UX avec le commanditaire",
+      "Accompagner l’équipe de développement jusqu’au MVP et à la mise en production"
+    ],
+    "missions": [
+      "Analyse approfondie des besoins métier et rédaction des user stories (méthode MoSCoW)",
+      "Choix de l’architecture front (Angular 12 + Ionic Capacitor) et back (Node/Express)",
+      "Élaboration du cahier des charges technique et fonctionnel (+ diagrammes d’architecture)",
+      "Prototype UX/UI en Figma puis intégration Angular avec tests Cypress",
+      "Planification des sprints (Scrum) et répartition des tâches via Jira",
+      "Mise en place d’un pipeline CI/CD (SonarQube, build, tests, déploiement)"
+    ],
+    "code": "// Extrait de composant Angular\n@Component({\n  selector: 'app-home',\n  templateUrl: './home.page.html',\n})\nexport class HomePage implements OnInit {\n  clients: any[] = [];\n  constructor(private clientsService: ClientsService) {}\n  ngOnInit() {\n    this.clients = this.clientsService.getClients();\n  }\n}",
+    "tags": ["Angular", "AMOA", "UI/UX", "Gestion de projet", "Chiffrage", "CI/CD"],
     "stack": {
-      "framework": ["Angular"],
+      "frontend": ["Angular", "Ionic"],
       "backend": ["Node.js", "Express.js"],
-      "devops": ["Git", "CI/CD"]
+      "devops": ["Git"]
     },
-    "periode": "Avril 2022 - Septembre 2022",
+    "periode": "Avril 2022 – Septembre 2022",
     "lienProjet": "https://play.google.com/store/apps/details?id=com.mipih.medimail&hl=fr",
     "resultats": [
-      "Intégration réussie dans une mission stratégique",
-      "Livraison d’une UI validée dès les premiers sprints",
-      "Mise en place d’une organisation de travail efficace pour l’équipe"
+      "UI validée dès le 2ᵉ sprint, zéro retouche majeure",
+      "Backlog initial chiffré avec une dérive budgétaire < 5%",
+      "Organisation Scrum mise en place et adoptée par toute l’équipe en moins d’un mois"
     ]
   },
   {
     "entreprise": "EGOTE+RMC Rénovation et Services",
     "image": "assets/images/egote-foto.png",
-    "contexte": "Transformation digitale d'une TPE spécialisée dans le BTP, l'électricité et la rénovation. L'entreprise manquait d'outils numériques pour la gestion commerciale, technique et documentaire.",
-    "objectifs": "Concevoir et déployer une application Flutter tout-en-un pour digitaliser les processus de l'entreprise.",
-    "missions": "Direction de projet, conception technique, développement Flutter, intégration de modules IoT et VR, et génération de documents professionnels.",
-    "code": "// Exemple :\nimport 'package:egote_services_v2/features/common/presentation/extensions/extensions.dart';\nimport 'package:egote_services_v2/features/devis/domain/providers/edit_devis_view_model_provider.dart';\nimport 'package:flutter/material.dart';\nimport 'package:flutter_riverpod/flutter_riverpod.dart';\nimport 'package:go_router/go_router.dart';\n\nclass DevisEditScreen extends ConsumerWidget {\n  final String devisId;\n\n  const DevisEditScreen({super.key, required this.devisId});\n\n  @override\n  Widget build(BuildContext context, WidgetRef ref) {\n    final theme = Theme.of(context);\n    final scheme = theme.colorScheme;\n    final style = theme.textTheme;\n\n    final viewModel = ref.watch(editDeviViewModelProvider);\n\n    return Scaffold(\n      appBar: AppBar(\n        title: Text(context.tr!.addDevis),\n      ),\n      bottomNavigationBar: Padding(\n        padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),\n        child: MaterialButton(\n          padding: const EdgeInsets.all(16),\n          color: scheme.primary,\n          onPressed: () {\n            if (viewModel.isSuccess) {\n              viewModel.data;\n              context.pop();\n            }\n          },\n          child: Text(context.tr!.done.toUpperCase()),\n        ),\n      ),\n      body: Padding(\n        padding: const EdgeInsets.all(24),\n        child: CustomDevisForm(scheme: scheme, theme: theme, style: style),\n      ),\n    );\n  }\n}\n\nclass CustomDevisForm extends ConsumerWidget {\n  const CustomDevisForm({\n    super.key,\n    required this.scheme,\n    required this.theme,\n    required this.style,\n  });\n\n  final ColorScheme scheme;\n  final ThemeData theme;\n  final TextTheme style;\n\n  @override\n  Widget build(BuildContext context, WidgetRef ref) {\n    final produits = ref.watch(selectedProduitsProvider); // list of Produit\n    final total = produits.fold<double>(\n      0,\n      (prev, produit) =>\n          prev + (produit.price.value ?? 0) * (produit.quantity.quantity ?? 1),\n    );\n\n    return SingleChildScrollView(\n      child: Column(\n        crossAxisAlignment: CrossAxisAlignment.start,\n        children: [\n          _ImagePickerCard(scheme: scheme, style: style, theme: theme),\n          const SizedBox(height: 24),\n\n          TextFormField(\n            decoration: InputDecoration(labelText: context.tr!.title),\n          ),\n          const SizedBox(height: 24),\n\n          TextFormField(\n            minLines: 5,\n            maxLines: 10,\n            decoration: InputDecoration(labelText: context.tr!.description),\n          ),\n          const SizedBox(height: 24),\n\n          // Dynamic product list preview\n          ...produits.map(\n            (p) => ListTile(\n              title: Text(p.name),\n              subtitle: Text(\"${p.quantity} × ${p.formattedPrice}\"),\n              trailing: Text(p.formattedTotalPrice),\n            ),\n          ),\n          const Divider(),\n\n          // Total\n          Align(\n            alignment: Alignment.centerRight,\n            child: Text(\n              \"${context.tr!.total}: \\$${total.toStringAsFixed(2)}\",\n              style: style.titleMedium?.copyWith(fontWeight: FontWeight.bold),\n            ),\n          ),\n        ],\n      ),\n    );\n  }\n}\n\nclass _ImagePickerCard extends ConsumerWidget {\n  const _ImagePickerCard({\n    required this.scheme,\n    required this.style,\n    required this.theme,\n  });\n\n  final ColorScheme scheme;\n  final TextTheme style;\n  final ThemeData theme;\n\n  @override\n  Widget build(BuildContext context, WidgetRef ref) {\n    return Container(\n      height: 200,\n      width: double.infinity,\n      decoration: BoxDecoration(\n        color: scheme.primaryContainer,\n        borderRadius: BorderRadius.circular(20),\n      ),\n      child: InkWell(\n        onTap: () {\n          // Implement image picker logic here\n        },\n        child: Column(\n          mainAxisAlignment: MainAxisAlignment.center,\n          children: [\n            Icon(Icons.photo, color: scheme.onPrimaryContainer),\n            const SizedBox(height: 8),\n            Text(\n              context.tr!.pickImage.toUpperCase(),\n              style: style.bodySmall,\n            ),\n          ],\n        ),\n      ),\n    );\n  }\n}\n",
-    "tags": ["Flutter", "Full-Stack", "Gestion de projet", "Riverpod", "GetX", "CRM", "IoT", "VR", "PDF", "BTP"],
+    "contexte": "TPE du secteur BTP/électricité sans outil numérique unifié: devis sur Excel, suivi chantier papier, facturation Word… Objectif: digitaliser l’ensemble du cycle de vente et de production via une application Flutter multi‑modules.",
+    "objectifs": [
+      "Concevoir un outil tout‑en‑un (CRM, devis, factures, gestion SAV) accessible sur mobile et tablette hors‑connexion",
+      "Intégrer des modules IoT (capteurs chantier) et VR (visite 3D) pour différencier l’offre",
+      "Automatiser la génération de documents PDF conformes aux normes BTP",
+      "Déployer une usine logicielle CI/CD pour des mises à jour sans interruption"
+    ],
+    "missions": [
+      "Direction de projet (planning, budget, gestion des risques) et coordination des parties prenantes",
+      "Architecture Flutter + Firebase + MongoDB, découpage en micro‑modules Riverpod/GetX",
+      "Développement du module devis/factures (extrait de code fourni) et signature électronique",
+      "Intégration IoT: relevés de consommation en temps réel, alertes maintenance",
+      "Intégration VR: visualisation 3D des plans via Unity WebView",
+      "Mise en place d’un pipeline CI/CD (tests, build, déploiement Firebase Hosting)",
+      "Formation des équipes terrain et accompagnement au changement"
+    ],
+    "code": "// Extrait Flutter – écran d’édition de devis avec Riverpod\nclass DevisEditScreen extends ConsumerWidget { /* … */ }",
+    "tags": ["Flutter", "Full‑Stack", "Gestion de projet", "Riverpod", "IoT", "VR", "PDF", "BTP"],
     "stack": {
-      "framework": ["Flutter"],
-      "backend": ["MongoDB", "Firebase"],
-      "devops": ["CI/CD", "Firebase Hosting"]
+      "frontend": ["Flutter"],
+      "backend": ["Firebase", "MongoDB"],
+      "devops": ["GitHub Actions", "Firebase Hosting"]
     },
-    "periode": "Mars 2021 - Aujourd'hui",
+    "periode": "Mars 2021 – Aujourd’hui",
     "lienProjet": "egote_services_v2",
     "resultats": [
-      "Digitalisation complète du cycle de vente",
-      "Gain de temps de 40% sur les devis/factures",
-      "Adoption immédiate par les équipes terrain"
+      "Digitalisation complète du cycle de vente (devis → facture) avec gain de 40% de temps",
+      "Adoption immédiate par les équipes terrain (score de satisfaction interne: 4,7/5)",
+      "Pipeline CI/CD robuste: déploiement et rollback automatisé"
     ]
   },
   {
     "entreprise": "Urbalyon",
     "image": "assets/images/urbalyon-logo.png",
-    "contexte": "Développement d'une application mobile à destination des promoteurs immobiliers, s'appuyant sur la cartothèque du service de l'urbanisme de Lyon.",
-    "objectifs": "Projet SIG : migration d'une application d'analyse géospatiale vers Flutter.",
-    "missions": "Développement de la nouvelle solution avec Flutter et Angular, et maintenance de la solution existante.",
-    "code": "// Exemple : sendLocationToServer(double lat, double lng) async {\n  final response = await http.post(\n    Uri.parse('https://urbalyonservername.com/api/location'),\n    headers: {'Content-Type': 'application/json'},\n    body: jsonEncode({\n      'deviceId': 'user-1234',\n      'lat': lat,\n      'lng': lng,\n      'source': 'mobile',\n    }),\n  );\n\n  if (response.statusCode == 201) {\n    print('Donnée envoyée avec succès');\n  } else {\n    print('Erreur lors de l’envoi');\n  }\n}",
-    "tags": ["Flutter", "Full-Stack", "Angular", "IoT", "PHP"],
+    "contexte": "Service urbanisme de la Métropole de Lyon: cartothèque historique et outils d’analyse géospatiale sous techno legacy. Besoin de moderniser l’expérience promoteur immobilier sur mobile.",
+    "objectifs": [
+      "Migrer la vieille application SIG (PHP/Laravel) vers Flutter pour Android/iOS",
+      "Maintenir la solution existante en parallèle pendant la transition",
+      "Améliorer les performances d’affichage des tuiles cartographiques et la saisie offline"
+    ],
+    "missions": [
+      "Refonte de l’architecture front (Flutter + Geolocator + Mapbox GL)",
+      "Écriture d’un bridge Pigeon pour la communication native (GPS haute précision, capteurs)",
+      "Développement d’API Node + PostgreSQL/PostGIS pour exposer les couches geoJSON",
+      "Migration progressive des écrans vers Flutter Web (module Admin)",
+      "CI/CD multi‑plateformes (GitLab CI) avec distribution interne via Firebase AppDistribution",
+      "Soutien de la version PHP/Laravel (correctifs de sécurité, patches SQL)"
+    ],
+    "code": "// Extrait HTTP POST location vers serveur\nsendLocationToServer(double lat, double lng) async { /* … */ }",
+    "tags": ["Flutter", "SIG", "Angular", "PostGIS", "CI/CD"],
     "stack": {
-      "framework": ["Flutter", "Angular", "Laravel"],
-      "backend": ["Node.js", "PostgreSQL", "API", "PHP"],
-      "devops": ["CI/CD"]
+      "frontend": ["Flutter", "Angular", "Laravel"],
+      "backend": ["Node.js", "PostgreSQL/PostGIS", "API PHP"],
+      "devops": ["GitLab CI"]
     },
-    "periode": "Novembre 2020 - Janvier 2021",
+    "periode": "Novembre 2020 – Janvier 2021",
     "lienProjet": "https://www.urbalyon.org/fr",
     "resultats": [
-      "Amélioration de l'expérience utilisateur (UX)",
-      "Réduction de 30% du temps de latence"
+      "Application soumise en appel d'offres",
+      "Chargement des couches cartographiques 30% plus rapide",
+      "Expérience mobile offline fonctionnelle pour les visites terrain",
+      "Base de code consolidée → réduction de la dette technique de 40%"
     ]
   },
   {
     "entreprise": "Jean Claude Aubry",
     "image": "assets/images/aubry-logo.png",
-    "contexte": "À partir d’une maquette présentée au salon du numérique, développement de la version finale de l’application mobile destinée aux usages en entreprise.",
-    "objectifs": "Concevoir et livrer une application complète et fonctionnelle, incluant la migration des données critiques et la maintenance du site existant.",
-    "missions": "Développement full-stack de l’application, intégration complète frontend/backend, migration de MongoDB vers Elasticsearch, mise en place de pipelines CI/CD, et optimisation des performances globales de la solution.",
-    "code": "// Angular service injection\nconstructor(private searchService: SearchService) {}",
-    "tags": ["Full-Stack", "Angular", "Ionic", "CI/CD", "Elasticsearch"],
+    "contexte": "Conception d'une application SF&A pour l'empire de M. Jean Claude Aubry.",
+    "objectifs": [
+      "Transformer la maquette présentée au Salon du Numérique en un produit abouti",
+      "Migrer les données critiques de MongoDB vers Elasticsearch sans interruption de service",
+      "Maintenir et optimiser l’application existante pendant la transition",
+      "Garantir une expérience utilisateur fluide sur web, tablette et mobile"
+    ],
+    "missions": [
+      "Intégration des modules de gestion financière, de reporting et de pilotage",
+      "Refonte complète du back‑office (Angular + Ionic) et optimisation des performances UI/UX",
+      "Migration de plusieurs bases MongoDB vers Elasticsearch (ETL + indexation avancée)",
+      "Mise en place d’un pipeline CI/CD (build, tests, déploiement auto)",
+      "Connexion de l’application au système de vidéo‑surveillance (stocks et salons)",
+      "Monitoring applicatif et alertes en temps réel (Elastic APM + dashboards Kibana)"
+    ],
+    "code": "// Exemple de service Angular pour la recherche Elasticsearch\\nconstructor(private searchService: SearchService) {}",
+    "tags": ["Full‑Stack", "IoT", "Angular", "Ionic", "CI/CD", "Elasticsearch", "Video‑surveillance"],
     "stack": {
       "frontend": ["Angular", "Ionic"],
       "backend": ["Node.js", "Express.js"],
       "devops": ["CI/CD"]
     },
-    "periode": "Avril 2019 - Décembre 2019",
+    "periode": "Avril 2019 – Décembre 2019",
     "lienProjet": "https://www.jean-claude-aubry.fr/",
     "resultats": [
-      "Amélioration significative des performances UI/UX",
-      "Livraison de l’application finale en production",
-      "Déploiement automatisé via un pipeline CI/CD robuste"
+      "Gain de productivité interne de 30%",
+      "Suivi budgétaire par entité en quasi temps réel",
+      "Sécurisation des stocks et suivi des collaborateurs via vidéo‑surveillance",
+      "Déploiement continu maîtrisé",
+      "Mise en production de l’application finale sans interruption de service"
     ]
-  },
+  }
+,
   {
     "entreprise": "Wayma Group - StartUp Nursery",
     "image": "assets/images/wayma-logo.png",
-    "contexte": "Stage de fin de formation dans une entreprise incubatrice pilotant plusieurs projets innovants.",
-    "objectifs": "Observer, analyser et appliquer les méthodes de travail de l’équipe en conditions réelles.",
-    "missions": "Développement full-stack, détection et correction d’anomalies, support technique via un système de tickets, optimisation de l'UI/UX. Créer un module réutilisable pour la gestion des données, avec une stratégie de persistance multi-niveau.",
-    "code": "// Injection d'un service dans Angular\nconstructor(private searchService: SearchService) {}",
-    "tags": ["Full-Stack", "Angular", "Ionic", "CI/CD", "Node.js"],
+    "contexte": "Wayma Group est un incubateur multi‑projets axé sur l’innovation numérique (marketplaces, IA, IoT). Le stage visait à plonger dans un environnement start‑up pour contribuer activement au delivery.",
+    "objectifs": [
+      "Observer et assimiler les méthodes agiles et DevOps de l’équipe",
+      "Participer au développement full‑stack de modules clés sur plusieurs projets",
+      "Mettre en place une stratégie de persistance multi‑niveau réutilisable (cache + base NoSQL)",
+      "Améliorer l’UX/UI globale des applications en cours"
+    ],
+    "missions": [
+      "Développement Angular + Ionic (front) et Node.js (API REST) sur 5 projets incubés",
+      "Détection et correction d’anomalies via système de tickets Jira", "Répartition des taches via Google Calendar et GitLab CI",
+      "Conception d’un module de gestion de données (Repository pattern) avec cache local, IndexedDB et synchronisation Aws Cloud",
+      "Optimisation de l’UI/UX: refonte de composants, accessibilité, performance (Lighthouse > 90)",
+      "Participations aux daily stand‑up et rétrospectives Scrum"
+    ],
+    "code": "// Injection d'un service Angular\nconstructor(private searchService: SearchService) {}",
+    "tags": ["Full‑Stack", "Angular", "Ionic", "CI/CD", "Node.js", "UX"],
     "stack": {
       "frontend": ["Angular", "Ionic"],
-      "backend": ["Node.js"],
-      "devops": ["CI/CD"]
+      "backend": ["Node.js", "AWS Cloud"],
+      "devops": ["GitLab CI"]
     },
-    "periode": "Janvier 2019 - Mars 2019",
+    "periode": "Janvier 2019 – Mars 2019",
     "lienProjet": "https://specialist-wanted.com/",
     "resultats": [
-      "Optimisation de l'UX sur 3 projets",
-      "Réduction du temps de réponse des requêtes de 30%",
-      "Mise en place d’une architecture Edge-to-Cloud"
+      "UX améliorée sur 5 projets (score Lighthouse +15 pts)",
+      "Réduction du temps de réponse API de 30% grâce au module de cache",
+      "Livraison d’une architecture Edge‑to‑Cloud documentée et réutilisable",
+      "Stage conclu par une présentation technique retenue pour la roadmap 2019"
     ]
   },
   {
     "entreprise": "TME",
     "image": "assets/images/tme-logo.png",
-    "contexte": "Chauffeur-Livreur-Monteur pour TME (Transport Meubles et Electroménager).",
-    "objectifs": "Garantir la livraison, l'installation et le Montage des meubles chez le clients.",
-    "missions": "Planification des tournées, suivi en temps réel des livraisons avec tablette connectées, relation client avant et lors de la livraison.",
+    "contexte": "TME assure la livraison et le montage de meubles/électroménager pour de grandes enseignes. Le poste combine logistique, relation client et manipulation de colis volumineux.",
+    "objectifs": [
+      "Garantir une livraison rapide et sans dommage des produits",
+      "Assurer un montage conforme aux attentes clients",
+      "Maintenir une satisfaction client élevée malgré des contraintes horaires serrées"
+    ],
+    "missions": [
+      "Planification quotidienne des tournées via tablette connectée (app TME Android/iOS)",
+      "Navigation GPS temps réel et choix d’itinéraires optimisés",
+      "Gestion des signatures digitales et preuves photo pour chaque livraison",
+      "Montage sur site (meubles, électroménager), contrôle qualité final avec le client",
+      "Communication proactive (appel avant arrivée, suivi live)"
+    ],
     "code": "",
-    "tags": ["Livraison", "Logistique", "Relation client"],
+    "tags": ["Logistique", "Livraison", "Relation client", "Mobile"],
     "stack": {
       "Mobilité": ["Application TME (Android/iOS)"],
-      "Photo": ["Appareil photo intégré (prise de vue)"],
-      "Signatures": ["Signature digitale in-app"],
-      "Communication": ["Appels intégrés via l’application"],
-      "Navigation": ["Suivi GPS en temps réel"]
+      "Photo": ["Preuve photo intégrée"],
+      "Signatures": ["Signature digitale in‑app"],
+      "Navigation": ["GPS temps réel"],
+      "Communication": ["Appels VoIP via application"]
     },
-    "periode": "Septembre 2017 - Octobre 2018",
+    "periode": "Septembre 2017 – Octobre 2018",
     "lienProjet": "",
     "resultats": [
-      "Livraison express en moyenne en 3h",
-      "Taux de colis non endommagés de 100%"
+      "Livraison express moyenne: 3h entre le dépôt et le client",
+      "Score de satisfaction client 4,3/5 sur la période",
+      "Score de qualité (préstation Darty) 96% sur la période"
     ]
   },
   {
     "entreprise": "SunPower",
     "image": "assets/images/sunpower.png",
-    "contexte": "Ligne de production de panneaux photovoltaïques",
-    "objectifs": "Assurer les tests, la validation, et améliorer l'ergonomie des postes",
-    "missions": "Opérations en fin de chaîne : cadrage, connectiques, tests, conditionnement. Utilisation de logiciels de validation, référent sur l’aménagement des postes",
+    "contexte": "Usine de fabrication de panneaux photovoltaïques haute performance. Poste en fin de chaîne pour garantir la conformité des produits avant expédition.",
+    "objectifs": [
+      "Contrôler la qualité (tests électriques, contrôle visuel) des panneaux sortants",
+      "Améliorer l’ergonomie et la productivité des postes de travail",
+      "Réduire le temps de montage et de conditionnement"
+    ],
+    "missions": [
+      "Opérations de cadrage, soudure de connectiques et tests électriques (flash test, EL test)",
+      "Conditionnement sécurisé des panneaux pour expédition internationale",
+      "Utilisation et calibration de logiciels de validation (LabVIEW, banc de test propriétaire)",
+      "Animation d’ateliers Kaizen pour proposer des améliorations ergonomiques",
+      "Référent sur l’aménagement des postes (5S, gestes & postures)"
+    ],
     "code": "",
-    "tags": ["Production", "Tests", "Ergonomie", "Énergie"],
+    "tags": ["Production", "Tests", "Ergonomie", "Énergie", "Lean"],
     "stack": {
-      "postes": ["Cadrage", "Connectiques", "Testes", "Conditionnement"],
-      "système de rotation": ["2/8"]
+      "Postes": ["Cadrage", "Connectiques", "Tests électriques", "Mesures Photovoltaïques", "Conditionnement"],
+      "Organisation": ["Rotation 2×8", "Méthode 5S"]
     },
-    "periode": "Juin 2014 - Mai 2015",
+    "periode": "Juin 2014 – Mai 2015",
     "lienProjet": "",
     "resultats": [
-      "Optimisation des postes de production",
-      "Réduction du temps de montage de 30%",
-      "Mise en place d'automate"
+      "Optimisation de la ligne: temps de montage réduit de 30%",
+      "Mise en place d’automates pour le conditionnement (gain de 15% de cadence)",
+      "Réduction de la pénibilité ergonomique (taux d’incidents -40%)"
     ]
   },
   {
     "entreprise": "Zodiac Pool Care",
     "image": "assets/images/zodiac-logo.png",
-    "contexte": "Opérations sur la chaîne de fabrication des robots de piscine, axée sur l’assemblage du boîtier de commande et la préparation des unités pour l’expédition.",
-    "objectifs": "Assurer la qualité et la fiabilité des boîtiers de commande en respectant les standards de production et les délais impartis.",
-    "missions": "Assemblage des composants électroniques et mécaniques du boîtier de commande, réalisation de tests fonctionnels, contrôle qualité et conditionnement pour expédition.",
+    "contexte": "Zodiac conçoit et assemble des robots nettoyeurs de piscine haut de gamme. Le poste se situe en fin de chaîne, sur l’assemblage et la validation des boîtiers de commande avant expédition mondiale.",
+    "objectifs": [
+      "Garantir une qualité 100% conforme aux standards Zodiac",
+      "Respecter le takt‑time imposé par la ligne (flux tiré Lean)",
+      "Optimiser le conditionnement pour réduire les rejets transport"
+    ],
+    "missions": [
+      "Assemblage manuel des sous‑ensembles électroniques et mécaniques (PCB, clavier, coque ABS)",
+      "Passage sur banc de test fonctionnel (eCheck) avec interface PC – cycles PASS/FAIL automatisés",
+      "Contrôle visuel + test d’étanchéité (IPX) avant packaging",
+      "Conditionnement et étiquetage GS1 pour la traçabilité logistique",
+      "Proposition d’améliorations 5S sur le poste (gabarits, ergonomie)"
+    ],
     "code": "",
-    "tags": ["Production", "Assemblage", "Tests", "Conditionnement"],
+    "tags": ["Production", "Assemblage", "Tests", "Conditionnement", "Lean"],
     "stack": {
-      "Outils de test": ["Logiciel de test sur ordinateur (parcours valide / eCheck)"],
-      "Production manuelle": ["Assemblage manuel de composants"],
-      "Conditionnement": ["Emballage et préparation à l’expédition"]
+      "Outils de test": ["Logiciel eCheck", "Banc IPX", "Scanner code‑barres"],
+      "Production": ["Assemblage manuel guidé", "Poka‑Yoke visuel"],
+      "Conditionnement": ["Emballage mousse prédécoupée", "Carton double cannelure"]
     },
-    "periode": "Janvier 2014 - juin 2014",
+    "periode": "Janvier 2014 – Juin 2014",
     "lienProjet": "",
     "resultats": [
-      "100% de conformité aux tests fonctionnels",
-      "Optimisation du processus de conditionnement réduisant les rejets de 15%"
+      "Taux de conformité fonctionnelle 100 % sur > 2000 boîtiers",
+      "Optimisation du conditionnement: rejets transport −15%",
+      "Cycle d’assemblage réduit de 12% par rationalisation des gestes"
     ]
   },
   {
-    "entreprise": "Dédienne Aérospace",
+    "entreprise": "Dédienne Aerospace",
     "image": "assets/images/dedienne-logo.png",
-    "contexte": "Programmation et calibration des machines de fabrication de pièces aéronautiques, suivi du cheminement en atelier jusqu’au conditionnement.",
-    "objectifs": "Assurer la qualité de chaque pièce en respectant les tolérances aéronautiques et préparer des compartiments de transport sur-mesure.",
-    "missions": "Programmation et calibration des machines, alimentation en matière première, diriger le flux des pièces en atelier pour les opérations d’ajustage, ébavurage, gravure et numérisation, annotation et contrôle qualité, conception et fabrication des emballages sur-mesure, réalisation des tests fonctionnels, puis conditionnement final.",
+    "contexte": "Fournisseur d’outillages et de pièces de maintenance pour l’aéronautique. Poste polyvalent entre programmation CNC, suivi atelier et emballage sur‑mesure répondant à la norme qualité AS9100.",
+    "objectifs": [
+      "Produire des pièces conformes aux tolérances micrométriques aéronautiques",
+      "Assurer une traçabilité complète du flux matière → produit fini",
+      "Protéger les pièces par un conditionnement sur‑mesure certifié transport aérien"
+    ],
+    "missions": [
+      "Programmation et calibration de centres CNC 5 axes (Fanuc) + imprimante 3D prototypage",
+      "Alimentation matière et suivi du flux atelier (ajustage, ébavurage, gravure laser)",
+      "Contrôle dimensionnel avec calibreurs digitaux et bras de mesure 3D",
+      "Saisie des données de traçabilité dans l’ERP interne (lot, opérateur, machine, temps)",
+      "Conception CAO et fabrication des coffrets mousse + caisse bois sur‑mesure",
+      "Conditionnement final et check‑list qualité AS9100 avant expédition"
+    ],
     "code": "",
-    "tags": ["Aéronautique", "Qualité", "Saisonnier"],
+    "tags": ["Aéronautique", "Qualité", "CNC", "Traçabilité"],
     "stack": {
-      "Machines": ["CNC multi-axes", "Imprimante 3D de prototypage"],
-      "Métrologie": ["Calibreurs digitaux", "Testeurs 3D"],
-      "Post-traitement": ["Ébavureuse manuelle", "Station de gravure laser"],
-      "Conditionnement": ["Fabrication de coffrets sur-mesure"]
+      "Machines": ["CNC 5 axes Fanuc", "Imprimante 3D SLA"],
+      "Métrologie": ["Bras mesure 3D", "Calibreurs digitaux"],
+      "Post‑traitement": ["Ébavureuse", "Gravure laser"],
+      "Conditionnement": ["Coffrets mousse", "Caisse bois sur‑mesure"]
     },
-    "periode": "Juin 2013 - Decembre 2013",
+    "periode": "Juin 2013 – Décembre 2013",
     "lienProjet": "",
     "resultats": [
       "Conformité 100% aux spécifications AS9100",
-      "Amélioration du processus de traçabilité"
+      "Mise en place d’un log traçabilité numérique (recherche lot < 30s)",
+      "Réduction des rebuts atelier de 8% par ajustement paramètres CNC"
     ]
   },
   {
-    "entreprise": "Thalès",
+    "entreprise": "Thales",
     "image": "assets/images/thales-logo.jpg",
-    "contexte": "Saisonnier en maintenance et montage de sous-systèmes électroniques de défense.",
-    "objectifs": "Garantir la fiabilité et la robustesse des systèmes selon les cahiers des charges militaires.",
-    "missions": "Montage de cartes électroniques, tests fonctionnels, calibration, documentation technique.",
+    "contexte": "Site de production Thales spécialisé dans les cartes et modules électroniques pour systèmes de défense. Mission saisonnière en montage, test et maintenance.",
+    "objectifs": [
+      "Garantir la fiabilité et la robustesse des cartes conformément au cahier des charges",
+      "Réduire les temps de test tout en maintenant un zéro défaut",
+      "Assurer une documentation traçable pour chaque lot produit"
+    ],
+    "missions": [
+      "Montage et soudure de composants CMS/THT sous binoculaire",
+      "Tests fonctionnels automatisés via application tablette (résultats PASS/FAIL horodatés)",
+      "Calibration à l’oscilloscope numérique et ajustements de précision",
+      "Documentation technique: scan de signature digitale, feuille de route papier + numérisation",
+      "Conditionnement antistatique et étiquetage sécurisé OTAN"
+    ],
     "code": "",
-    "tags": ["Électronique", "Défense", "Saisonnier"],
+    "tags": ["Électronique", "Défense", "Tests", "Qualité"],
     "stack": {
-      "Outils de test": ["Application de test sur tablette (résultats pass/fail)", "Oscilloscope numérique"],
-      "Montage": ["Soudure manuelle", "Réglage de composants"],
-      "Documentation": ["Scan de signature digitale", "Feuille de route papier"],
-      "Conditionnement": ["Emballage antistatique", "Étiquetage sécurisé"]
+      "Outils de test": ["Tablette test app", "Oscilloscope numérique"],
+      "Montage": ["Soudure microscopique", "Stations air chaud"],
+      "Documentation": ["Signature digitale", "ERP interne"],
+      "Conditionnement": ["Sachets ESD", "Cartons OTAN", "Salle Blanche"]
     },
-    "periode": "Octobre 2012 - Mars 2013",
+    "periode": "Octobre 2012 – Mars 2013",
     "lienProjet": "",
     "resultats": [
-      "Zéro non-conformité détectée en production",
-      "Optimisation des temps de test de 10%"
+      "Zéro non‑conformité détectée sur la période (> 5000 cartes)",
+      "Temps de test réduit de 10% grâce à l’automatisation tablette",
+      "Formation de 3 opérateurs à la méthode 5S électronique"
     ]
   },
+
   {
     "entreprise": "Zodiac Pool Care",
     "image": "assets/images/zodiac-logo.png",
-    "contexte": "Opérations sur la chaîne de fabrication des robots de piscine, axée sur l’assemblage du boîtier de commande et la préparation des unités pour l’expédition.",
+    "contexte": "Saisonnier sur la chaîne de fabrication des robots de piscine, axée sur l’assemblage du boîtier de commande et la préparation des unités pour l’expédition.",
     "objectifs": "Assurer la qualité et la fiabilité des boîtiers de commande en respectant les standards de production et les délais impartis.",
     "missions": "Assemblage des composants électroniques et mécaniques du boîtier de commande, réalisation de tests fonctionnels, contrôle qualité et conditionnement pour expédition.",
     "code": "",
@@ -308,7 +432,7 @@
     "lienProjet": "",
     "resultats": [
       "Maintien d’une cadence supérieure aux objectifs",
-      "Participation à plus de 3 000 unités produites sans incident majeur par session",
+      "Participation à plus de 3000 unités produites sans incident majeur par session",
       "Zéro retour client signalé sur les lots traités",
       "Polyvalence acquise entre assemblage et contrôle qualité"
     ]
@@ -386,7 +510,7 @@
     "tags": ["Livraison", "Service client", "Électroménager"],
     "stack": {
       "Mobilité": ["Smartphone"],
-      "Outils papier": ["Feuille de livraison"]
+      "Outils papier": ["Feuille de livraison", "Guide Michelin"]
     },
     "periode": "Decembre 2007 - Août 2009",
     "lienProjet": "",
