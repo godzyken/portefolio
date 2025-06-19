@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/affichage/screen_size_detector.dart';
 import '../../../../core/provider/providers.dart';
-import '../widgets/services_card.dart';
+import '../../../home/views/widgets/services_card.dart'; // servicesFutureProvider
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -10,9 +11,8 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final servicesAsync = ref.watch(servicesFutureProvider);
-    final orientation = MediaQuery.of(context).orientation;
-    final screenSize = MediaQuery.of(context).size;
-    final isPortrait = orientation == Orientation.portrait;
+    final isPortrait = ref.watch(isPortraitProvider);
+    final screenSize = ref.watch(screenSizeProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -28,8 +28,8 @@ class HomeScreen extends ConsumerWidget {
       body: SafeArea(
         child: servicesAsync.when(
           data: (services) {
+            // ------------------------ PORTRAIT ------------------------------
             if (isPortrait) {
-              // 📱 Portrait : Column verticale classique
               return Column(
                 children: [
                   const SizedBox(height: 20),
@@ -42,7 +42,7 @@ class HomeScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 10),
                   const Text(
-                    "Godzyken",
+                    'Godzyken',
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
@@ -60,19 +60,18 @@ class HomeScreen extends ConsumerWidget {
                       scrollDirection: Axis.horizontal,
                       controller: PageController(viewportFraction: 0.85),
                       itemCount: services.length,
-                      itemBuilder:
-                          (context, index) =>
-                              ServicesCard(service: services[index]),
+                      itemBuilder: (_, index) =>
+                          ServicesCard(service: services[index]),
                     ),
                   ),
                   const SizedBox(height: 10),
                 ],
               );
-            } else {
-              // 💻 Paysage : Row -> gauche (logo+textes) | droite (PageView)
+            }
+            // ------------------------ LANDSCAPE / DESKTOP -------------------
+            else {
               return Row(
                 children: [
-                  // Partie gauche : Logo + textes
                   Flexible(
                     flex: 3,
                     child: Padding(
@@ -87,7 +86,7 @@ class HomeScreen extends ConsumerWidget {
                           ),
                           const SizedBox(height: 12),
                           const Text(
-                            "Godzyken",
+                            'Godzyken',
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
@@ -104,17 +103,14 @@ class HomeScreen extends ConsumerWidget {
                       ),
                     ),
                   ),
-
-                  // Partie droite : PageView vertical
                   Flexible(
                     flex: 7,
                     child: PageView.builder(
                       scrollDirection: Axis.vertical,
                       controller: PageController(viewportFraction: 0.85),
                       itemCount: services.length,
-                      itemBuilder:
-                          (context, index) =>
-                              ServicesCard(service: services[index]),
+                      itemBuilder: (_, index) =>
+                          ServicesCard(service: services[index]),
                     ),
                   ),
                 ],

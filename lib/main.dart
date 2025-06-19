@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/routes/router.dart';
+import 'features/generator/views/widgets/generator_widgets_extentions.dart';
 
 void main() {
-  runApp(const ProviderScope(child: MyApp()));
+  runApp(ProviderScope(child: ResponsiveScope(child: MyApp())));
 }
 
 class MyApp extends StatelessWidget {

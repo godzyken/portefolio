@@ -4,8 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../constants/tech_logos.dart';
-import '../../features/generator/pdf_export_service.dart';
-import '../../features/home/data/extentions_models.dart';
+import '../../features/generator/data/extention_models.dart';
+import '../../features/generator/services/pdf_export_service.dart';
 
 // Exemple : état de chargement du PDF
 final isGeneratingProvider = StateProvider<bool>((ref) => false);
