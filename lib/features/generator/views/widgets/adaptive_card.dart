@@ -30,17 +30,20 @@ class AdaptiveCard extends ConsumerWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         elevation: 4,
         clipBehavior: Clip.hardEdge,
-        child: isDesktop ? _horizontal(context) : _vertical(context),
+        child: isDesktop
+            ? _horizontal(context, isDesktop)
+            : _vertical(context, isDesktop),
       ),
     );
   }
 
   // ---------------------- Vertical layout (mobile / tablet) ------------------
-  Widget _vertical(BuildContext ctx) {
+  Widget _vertical(BuildContext ctx, bool isDesktop) {
     return LayoutBuilder(
       builder: (_, constraints) => Stack(
+        fit: StackFit.loose,
         children: [
-          _backgroundImage(),
+          _backgroundImage(isDesktop),
           _gradientOverlay(),
           // Le texte devient scrollable si nécessaire
           Positioned.fill(
@@ -48,7 +51,7 @@ class AdaptiveCard extends ConsumerWidget {
               padding: const EdgeInsets.all(16),
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
-                child: _textContent(ctx),
+                child: _textContent(ctx, isDesktop),
               ),
             ),
           ),
@@ -58,7 +61,7 @@ class AdaptiveCard extends ConsumerWidget {
   }
 
 // --- Horizontal (desktop) ---
-  Widget _horizontal(BuildContext ctx) {
+  Widget _horizontal(BuildContext ctx, bool isDesktop) {
     return LayoutBuilder(
       builder: (_, constraints) {
         // Grille ⇒ maxHeight FINI (sinon on lui donne un ratio fixe)
@@ -77,7 +80,7 @@ class AdaptiveCard extends ConsumerWidget {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    _backgroundImage(),
+                    _backgroundImage(isDesktop),
                     _gradientOverlay(),
                   ],
                 ),
@@ -91,7 +94,7 @@ class AdaptiveCard extends ConsumerWidget {
                   padding: const EdgeInsets.all(24),
                   child: SingleChildScrollView(
                     physics: const BouncingScrollPhysics(),
-                    child: _textContent(ctx),
+                    child: _textContent(ctx, isDesktop),
                   ),
                 ),
               ),
@@ -103,7 +106,7 @@ class AdaptiveCard extends ConsumerWidget {
   }
 
   // ---------------------- Common text content --------------------------------
-  Widget _textContent(BuildContext ctx) {
+  Widget _textContent(BuildContext ctx, bool isDesktop) {
     final theme = Theme.of(ctx);
     final bulletsToShow = bulletPoints.take(3).toList();
 
@@ -115,7 +118,7 @@ class AdaptiveCard extends ConsumerWidget {
         Text(
           title,
           style: theme.textTheme.titleLarge?.copyWith(
-            color: Colors.cyanAccent,
+            color: isDesktop ? Colors.indigoAccent : Colors.cyanAccent,
             fontWeight: FontWeight.bold,
             fontStyle: FontStyle.italic,
           ),
@@ -126,11 +129,12 @@ class AdaptiveCard extends ConsumerWidget {
         ...bulletsToShow.map((p) => Padding(
               padding: const EdgeInsets.symmetric(vertical: 2),
               child: Text(
-                '$p',
+                p,
                 softWrap: true,
-                style: const TextStyle(
-                  color: Colors.lightBlue,
+                style: TextStyle(
+                  color: isDesktop ? Colors.black87 : Colors.white,
                   fontWeight: FontWeight.bold,
+                  fontSize: isDesktop ? 16 : 14,
                 ),
               ),
             )),
@@ -139,7 +143,8 @@ class AdaptiveCard extends ConsumerWidget {
             padding: const EdgeInsets.only(top: 4),
             child: Text(
               '+ ${bulletPoints.length - 3} autres…',
-              style: const TextStyle(color: Colors.white70),
+              style:
+                  TextStyle(color: isDesktop ? Colors.black87 : Colors.white70),
             ),
           ),
 
@@ -153,10 +158,14 @@ class AdaptiveCard extends ConsumerWidget {
               : Wrap(
                   crossAxisAlignment: WrapCrossAlignment.center,
                   spacing: 4,
-                  children: const [
-                    Icon(Icons.touch_app, color: Colors.white70, size: 16),
+                  children: [
+                    Icon(Icons.touch_app,
+                        color: isDesktop ? Colors.black87 : Colors.white70,
+                        size: 16),
                     Text('Cliquer pour voir plus',
-                        style: TextStyle(color: Colors.white70)),
+                        style: TextStyle(
+                            color:
+                                isDesktop ? Colors.black87 : Colors.white70)),
                   ],
                 ),
         ),
@@ -165,13 +174,18 @@ class AdaptiveCard extends ConsumerWidget {
   }
 
   // ---------------------- Helpers -------------------------------------------
-  Widget _backgroundImage() {
+  Widget _backgroundImage(bool isDesktop) {
     if (imagePath == null) return const SizedBox.expand();
     return ColorFiltered(
-      colorFilter: ColorFilter.mode(
-        Colors.indigoAccent.withAlpha((255 * 0.2).toInt()),
-        BlendMode.colorBurn,
-      ),
+      colorFilter: isDesktop
+          ? ColorFilter.mode(
+              Colors.black38.withAlpha((255 * 0.2).toInt()),
+              BlendMode.colorBurn,
+            )
+          : ColorFilter.mode(
+              Colors.black38.withAlpha((255 * 0.6).toInt()),
+              BlendMode.colorBurn,
+            ),
       child: Image.asset(imagePath!, fit: BoxFit.contain),
     );
   }

@@ -134,7 +134,7 @@ class _ExperienceDetails extends StatelessWidget {
         if (experience.resultats.isNotEmpty) ...[
           const SizedBox(height: 20),
           _SectionTitle('📈 Résultats'),
-          _BulletList(items: experience.resultats),
+          _ExperienceResults(resultats: experience.resultats),
         ],
         if (experience.lienProjet.isNotEmpty) ...[
           const SizedBox(height: 12),
@@ -321,9 +321,11 @@ class _ProjectLinkButton extends StatelessWidget {
           if (await canLaunchUrl(uri)) {
             await launchUrl(uri, mode: LaunchMode.inAppBrowserView);
           } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Impossible d’ouvrir le lien.')),
-            );
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Impossible d’ouvrir le lien.')),
+              );
+            }
           }
         },
       );

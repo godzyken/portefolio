@@ -115,8 +115,7 @@ class _ProjectsScreenState extends ConsumerState<ProjectsScreen> {
               );
             },
           )
-        : Flexible(
-            child: ListView.builder(
+        : ListView.builder(
             itemCount: projects.length,
             itemBuilder: (context, i) {
               final project = projects[i];
@@ -136,6 +135,6 @@ class _ProjectsScreenState extends ConsumerState<ProjectsScreen> {
                 ),
               );
             },
-          ));
+          );
   }
 }

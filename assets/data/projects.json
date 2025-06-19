@@ -1,7 +1,7 @@
 [
   {
     "id": "projet_1",
-    "title": "Création de boutique e-commerce ",
+    "title": "E-commerce ",
     "points": [
       "📦 Déploiement de PrestaShop 1.2.5 et Magento 1.3.2.4",
       "🔧 Stack LAMP : Apache 2.2, PHP 5.2.10, MySQL 5.0",
@@ -16,7 +16,7 @@
   },
   {
     "id": "projet_2",
-    "title": "Développement Flutter",
+    "title": "Flutter",
     "points": [
       "🧭 Directeur du service de transformation digitale",
       "📱 Déploiement d'applications multiplateformes : Android, iOS et Desktop",
@@ -33,7 +33,7 @@
   },
   {
     "id": "projet_3",
-    "title": "Développement Angular & Ionic",
+    "title": "Angular & Ionic",
     "points": [
       "👨‍💻 Architecte & Lead Developer sur des applications mobiles et web hybrides",
       "📐 Élaboration des budgets prévisionnels et plannings d’exécution",
