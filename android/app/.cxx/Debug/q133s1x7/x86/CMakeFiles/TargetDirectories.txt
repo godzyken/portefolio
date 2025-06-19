@@ -1,0 +1,2 @@
+D:/gitrepo/projects/portefolio/android/app/.cxx/Debug/q133s1x7/x86/CMakeFiles/edit_cache.dir
+D:/gitrepo/projects/portefolio/android/app/.cxx/Debug/q133s1x7/x86/CMakeFiles/rebuild_cache.dir
