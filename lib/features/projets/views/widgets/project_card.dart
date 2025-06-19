@@ -14,47 +14,43 @@ class ProjectCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final pdfService = ref.watch(pdfExportProvider);
 
-    return InkWell(
-        onTap: () {
-          showDialog(
-            context: context,
-            builder: (_) => AlertDialog(
-              title: Text(
-                project.title,
-                style: Theme.of(
-                  context,
-                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              content: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: project.points.map((point) => Text(point)).toList(),
-                ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    context.pop();
-                  },
-                  child: const Text('Fermer'),
-                ),
-                TextButton.icon(
-                  icon: const Icon(Icons.picture_as_pdf),
-                  label: const Text('Imprimer ce projet'),
-                  onPressed: () => pdfService.export([project]),
-                ),
-              ],
+    return AdaptiveCard(
+      title: project.title,
+      bulletPoints: project.points,
+      imagePath:
+          (project.image?.isNotEmpty ?? false) ? project.image!.first : null,
+      //onTap: () => context.push('/project/${project.id}'), // or showDialog
+      onTap: () => showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: Text(
+            project.title,
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.max,
+              children: project.points.map((point) => Text(point)).toList(),
             ),
-          );
-        },
-        child: AdaptiveCard(
-          title: project.title,
-          bulletPoints: project.points,
-          imagePath: (project.image?.isNotEmpty ?? false)
-              ? project.image!.first
-              : null,
-          onTap: () => context.push('/project/${project.id}'), // or showDialog
-        ));
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                context.pop();
+              },
+              child: const Text('Fermer'),
+            ),
+            TextButton.icon(
+              icon: const Icon(Icons.picture_as_pdf),
+              label: const Text('Imprimer ce projet'),
+              onPressed: () => pdfService.export([project]),
+            ),
+          ],
+        ),
+      ), // or showDialog
+    );
   }
 }

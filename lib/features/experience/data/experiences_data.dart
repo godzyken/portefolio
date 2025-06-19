@@ -2,8 +2,8 @@ class Experience {
   final String entreprise;
   final String image;
   final String contexte;
-  final String objectifs;
-  final String missions;
+  final List<String> objectifs;
+  final List<String> missions;
   final String code;
   final List<String> tags;
   final Map<String, List<String>> stack;
@@ -30,8 +30,8 @@ class Experience {
       entreprise: json['entreprise'],
       image: json['image'],
       contexte: json['contexte'],
-      objectifs: json['objectifs'],
-      missions: json['missions'],
+      objectifs: List<String>.from(json['objectifs']),
+      missions: List<String>.from(json['missions']),
       code: json['code'],
       tags: List<String>.from(json['tags']),
       stack: Map<String, List<String>>.from(
@@ -46,16 +46,16 @@ class Experience {
   }
 
   Map<String, dynamic> toJson() => {
-    'entreprise': entreprise,
-    'image': image,
-    'contexte': contexte,
-    'objectifs': objectifs,
-    'missions': missions,
-    'code': code,
-    'tags': tags,
-    'stack': stack,
-    'periode': periode,
-    'lienProjet': lienProjet,
-    'resultats': resultats,
-  };
+        'entreprise': entreprise,
+        'image': image,
+        'contexte': contexte,
+        'objectifs': objectifs,
+        'missions': missions,
+        'code': code,
+        'tags': tags,
+        'stack': stack,
+        'periode': periode,
+        'lienProjet': lienProjet,
+        'resultats': resultats,
+      };
 }

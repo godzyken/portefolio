@@ -73,52 +73,69 @@ class _ProjectsScreenState extends ConsumerState<ProjectsScreen> {
         ],
       ),
       body: projectsAsync.when(
-        //data: (projects) => buildListProjects(projects, selectedProjects),
-        data: (projects) => buildGridViewProjects(columns, projects),
+        data: (projects) =>
+            _buildProjectsView(projects, selectedProjects, columns),
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('Erreur : $e')),
       ),
     );
   }
 
-  GridView buildGridViewProjects(int columns, List<ProjectInfo> projects) {
-    return GridView.builder(
-      padding: const EdgeInsets.all(16),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: columns,
-        mainAxisSpacing: 16,
-        crossAxisSpacing: 16,
-        childAspectRatio: 1.1,
-      ),
-      itemCount: projects.length,
-      itemBuilder: (_, i) => ProjectCard(project: projects[i]),
-    );
-  }
+  /// Retourne soit une GridView soit une ListView selon [columns].
+  Widget _buildProjectsView(
+      List<ProjectInfo> projects, List<ProjectInfo> selected, int columns) {
+    final isGrid = columns > 1;
 
-  ListView buildListProjects(
-      List<ProjectInfo> projects, List<ProjectInfo> selectedProjects) {
-    return ListView.builder(
-      itemCount: projects.length,
-      itemBuilder: (context, index) {
-        final project = projects[index];
-        final isSelected = selectedProjects.any(
-          (p) => p.id == project.id,
-        );
-        return GestureDetector(
-          onLongPress: () => _toggleSelection(project),
-          child: Stack(
-            children: [
-              ProjectCard(project: project),
-              if (isSelected)
-                Positioned(
-                  top: 8,
-                  right: 8,
-                  child: Icon(Icons.check_circle, color: Colors.green),
+    return isGrid
+        ? GridView.builder(
+            padding: const EdgeInsets.all(16),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: columns,
+              mainAxisSpacing: 16,
+              crossAxisSpacing: 16,
+              childAspectRatio: 0.75,
+            ),
+            itemCount: projects.length,
+            itemBuilder: (_, i) {
+              final project = projects[i];
+              final isSelected = selected.any((p) => p.id == project.id);
+              return GestureDetector(
+                onLongPress: () => _toggleSelection(project),
+                child: Stack(
+                  children: [
+                    ProjectCard(project: project),
+                    if (isSelected)
+                      const Positioned(
+                        top: 8,
+                        right: 8,
+                        child: Icon(Icons.check_circle, color: Colors.green),
+                      ),
+                  ],
                 ),
-            ],
-          ),
-        );
-      },
-    );
+              );
+            },
+          )
+        : Flexible(
+            child: ListView.builder(
+            itemCount: projects.length,
+            itemBuilder: (context, i) {
+              final project = projects[i];
+              final isSelected = selected.any((p) => p.id == project.id);
+              return GestureDetector(
+                onLongPress: () => _toggleSelection(project),
+                child: Stack(
+                  children: [
+                    ProjectCard(project: project),
+                    if (isSelected)
+                      const Positioned(
+                        top: 8,
+                        right: 8,
+                        child: Icon(Icons.check_circle, color: Colors.green),
+                      ),
+                  ],
+                ),
+              );
+            },
+          ));
   }
 }

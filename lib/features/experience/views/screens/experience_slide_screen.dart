@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../generator/views/widgets/fade_slide_animation.dart';
 import '../../data/experiences_data.dart';
-import '../widgets/experience_widgets_extentions.dart';
+import '../widgets/experience_card.dart';
 
 class ExperienceSlideScreen extends ConsumerStatefulWidget {
   const ExperienceSlideScreen({super.key, required this.experiences});

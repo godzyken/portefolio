@@ -37,37 +37,68 @@ class AdaptiveCard extends ConsumerWidget {
 
   // ---------------------- Vertical layout (mobile / tablet) ------------------
   Widget _vertical(BuildContext ctx) {
-    return Stack(
-      children: [
-        _backgroundImage(),
-        _gradientOverlay(),
-        Padding(
-          padding: const EdgeInsets.all(16),
-          child: _textContent(ctx),
-        ),
-      ],
+    return LayoutBuilder(
+      builder: (_, constraints) => Stack(
+        children: [
+          _backgroundImage(),
+          _gradientOverlay(),
+          // Le texte devient scrollable si nécessaire
+          Positioned.fill(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: _textContent(ctx),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  // ---------------------- Horizontal layout (desktop) ------------------------
+// --- Horizontal (desktop) ---
   Widget _horizontal(BuildContext ctx) {
-    return Row(
-      children: [
-        Expanded(
-          flex: 2,
-          child: Stack(children: [
-            _backgroundImage(),
-            _gradientOverlay(),
-          ]),
-        ),
-        Expanded(
-          flex: 3,
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: _textContent(ctx),
+    return LayoutBuilder(
+      builder: (_, constraints) {
+        // Grille ⇒ maxHeight FINI (sinon on lui donne un ratio fixe)
+        final maxH = constraints.hasBoundedHeight
+            ? constraints.maxHeight
+            : constraints.maxWidth * 1.1; // fallback raisonnable
+
+        return SizedBox(
+          height: maxH,
+          child: Row(
+            children: [
+              // -------------------------------------------------------------------
+              Flexible(
+                // ou Expanded(flex:2)
+                flex: 2,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    _backgroundImage(),
+                    _gradientOverlay(),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8), // petite marge optionnelle
+              // -------------------------------------------------------------------
+              Flexible(
+                // ou Expanded(flex:3)
+                flex: 3,
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    child: _textContent(ctx),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ),
-      ],
+        );
+      },
     );
   }
 
@@ -95,10 +126,10 @@ class AdaptiveCard extends ConsumerWidget {
         ...bulletsToShow.map((p) => Padding(
               padding: const EdgeInsets.symmetric(vertical: 2),
               child: Text(
-                '• $p',
+                '$p',
                 softWrap: true,
                 style: const TextStyle(
-                  color: Colors.white,
+                  color: Colors.lightBlue,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -136,27 +167,23 @@ class AdaptiveCard extends ConsumerWidget {
   // ---------------------- Helpers -------------------------------------------
   Widget _backgroundImage() {
     if (imagePath == null) return const SizedBox.expand();
-    return Positioned.fill(
-      child: ColorFiltered(
-        colorFilter: ColorFilter.mode(
-          Colors.indigoAccent.withAlpha((255 * 0.2).toInt()),
-          BlendMode.colorBurn,
-        ),
-        child: Image.asset(imagePath!, fit: BoxFit.cover),
+    return ColorFiltered(
+      colorFilter: ColorFilter.mode(
+        Colors.indigoAccent.withAlpha((255 * 0.2).toInt()),
+        BlendMode.colorBurn,
       ),
+      child: Image.asset(imagePath!, fit: BoxFit.contain),
     );
   }
 
   Widget _gradientOverlay() {
-    return Positioned.fill(
-      child: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.brown, Colors.black12, Colors.black87],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            stops: [0, 0.5, 1],
-          ),
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Colors.brown, Colors.black12, Colors.black87],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          stops: [0, 0.5, 1],
         ),
       ),
     );
