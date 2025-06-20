@@ -186,7 +186,12 @@ class AdaptiveCard extends ConsumerWidget {
               Colors.black38.withAlpha((255 * 0.6).toInt()),
               BlendMode.colorBurn,
             ),
-      child: Image.asset(imagePath!, fit: BoxFit.contain),
+      child: Image.asset(
+        imagePath!,
+        fit: BoxFit.contain,
+        filterQuality: FilterQuality.high,
+        cacheWidth: 1024,
+      ),
     );
   }
 

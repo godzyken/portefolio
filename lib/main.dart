@@ -15,6 +15,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp.router(
       title: 'Portfolio PDF',
       theme: ThemeData(
+        fontFamily: 'NotoSans',
         brightness: Brightness.light,
         primarySwatch: Colors.blue,
         useMaterial3: true,
@@ -26,6 +27,7 @@ class MyApp extends StatelessWidget {
             borderRadius: BorderRadius.all(Radius.circular(16)),
           ),
         ),
+        textTheme: Theme.of(context).textTheme.apply(fontFamily: 'NotoSans'),
       ),
       darkTheme: ThemeData(
         brightness: Brightness.dark,
