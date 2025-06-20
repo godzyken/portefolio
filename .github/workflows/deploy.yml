@@ -22,6 +22,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Setup Python 3.x
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install Pillow tqdm
+
+      - name: Generate image asset variants
+        run: |
+          python generate_asset_variants.py --src assets/images --scales 2,3
+
       # 2) Installer Flutter stable 3.29.3
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
