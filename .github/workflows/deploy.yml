@@ -45,5 +45,6 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: build/web           # dossier à publier
           publish_branch: gh-pages         # (défaut, mais je le mets pour clarté)
+          enable_jekyll: false
           user_name: github-actions[bot]   # signature du commit
           user_email: github-actions[bot]@users.noreply.github.com
