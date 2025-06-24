@@ -49,3 +49,10 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 /generate_asset_variants.py
+
+# secrets
+.env
+.local.properties
+.packages
+pubspec.lock
+**/Secrets.xcconfig

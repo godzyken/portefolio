@@ -5,6 +5,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../core/service/native_config.dart';
+
+initializeService() async {
+  return await NativeConfig.getSendGridKey();
+}
+
 class EmailService {
   EmailService({required this.endpoint});
   final String endpoint;
@@ -16,7 +22,7 @@ class EmailService {
 
     if ([apiKey, destMail, srcMail].any((v) => v == null || v.isEmpty)) {
       throw Exception(
-        'Variables .env manquantes (API_KEY, SRC_MAIL, DEST_MAIL)',
+        'Variables .env manquantes (API_KEY, SRC_MAIL, DEST_MAIL)',
       );
     }
 
@@ -51,7 +57,10 @@ class EmailService {
 
 class WhatsAppService {
   final String phone;
-  const WhatsAppService(this.phone);
+
+  WhatsAppService(this.phone)
+      : assert(RegExp(r'^[1-9]\d{6,14}$').hasMatch(phone),
+            'Numéro international invalide');
 
   Future<void> send(String name, String email, String msg) async {
     final url = Uri.parse(

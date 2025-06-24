@@ -4,7 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/routes/router.dart';
 import 'features/generator/views/widgets/generator_widgets_extentions.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(ProviderScope(child: ResponsiveScope(child: MyApp())));
 }
 
