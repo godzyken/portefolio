@@ -53,7 +53,7 @@ class ProjectAppBar extends ConsumerWidget implements PreferredSizeWidget {
   }
 
   Widget _buildCompactMenu(
-      BuildContext _, WidgetRef ref, List<ProjectInfo> selected) {
+      BuildContext c, WidgetRef ref, List<ProjectInfo> selected) {
     return PopupMenuButton<_MenuAction>(
       icon: const Icon(Icons.more_vert),
       onSelected: (action) {
@@ -62,7 +62,7 @@ class ProjectAppBar extends ConsumerWidget implements PreferredSizeWidget {
             _toggleAll(ref);
             break;
           case _MenuAction.exportPdf:
-            _exportPdf(_, ref, selected);
+            _exportPdf(c, ref, selected);
             break;
         }
       },

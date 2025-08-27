@@ -51,7 +51,7 @@ app.*.map.json
 /generate_asset_variants.py
 
 # secrets
-.env
+assets/.env
 .local.properties
 .packages
 pubspec.lock

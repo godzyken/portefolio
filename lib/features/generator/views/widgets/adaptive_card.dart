@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:portefolio/features/parametres/themes/provider/theme_repository_provider.dart';
 
 import '../../../../core/affichage/screen_size_detector.dart';
 
@@ -22,12 +23,16 @@ class AdaptiveCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isDesktop = ref.watch(isDesktopProvider);
-
+    final theme = ref.watch(themeLoaderProvider);
     return InkWell(
       onTap: onTap,
       child: Card(
         margin: const EdgeInsets.all(12),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        color:
+            theme.value?.tertiaryColor ??
+            theme.value?.neutralColor ??
+            theme.value?.primaryColor,
         elevation: 4,
         clipBehavior: Clip.hardEdge,
         child: isDesktop
@@ -60,7 +65,7 @@ class AdaptiveCard extends ConsumerWidget {
     );
   }
 
-// --- Horizontal (desktop) ---
+  // --- Horizontal (desktop) ---
   Widget _horizontal(BuildContext ctx, bool isDesktop) {
     return LayoutBuilder(
       builder: (_, constraints) {
@@ -79,10 +84,7 @@ class AdaptiveCard extends ConsumerWidget {
                 flex: 2,
                 child: Stack(
                   fit: StackFit.expand,
-                  children: [
-                    _backgroundImage(isDesktop),
-                    _gradientOverlay(),
-                  ],
+                  children: [_backgroundImage(isDesktop), _gradientOverlay()],
                 ),
               ),
               const SizedBox(width: 8), // petite marge optionnelle
@@ -106,51 +108,66 @@ class AdaptiveCard extends ConsumerWidget {
   }
 
   // ---------------------- Common text content --------------------------------
+  // --- Text content ---
   Widget _textContent(BuildContext ctx, bool isDesktop) {
     final theme = Theme.of(ctx);
-    final bulletsToShow = bulletPoints.take(3).toList();
+    final bulletsToShow = bulletPoints.take(2).toList();
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // --- Title ----------------------------------------------------------
+        // --- Title ---
         Text(
           title,
-          style: theme.textTheme.titleLarge?.copyWith(
-            color: isDesktop ? Colors.indigoAccent : Colors.cyanAccent,
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontSize: isDesktop ? 18 : 16,
             fontWeight: FontWeight.bold,
-            fontStyle: FontStyle.italic,
+            color: isDesktop ? Colors.indigoAccent : Colors.cyanAccent,
           ),
         ),
         const SizedBox(height: 8),
 
-        // --- Bullets --------------------------------------------------------
-        ...bulletsToShow.map((p) => Padding(
-              padding: const EdgeInsets.symmetric(vertical: 2),
-              child: Text(
-                p,
-                softWrap: true,
-                style: TextStyle(
-                  color: isDesktop ? Colors.black87 : Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: isDesktop ? 16 : 14,
+        // --- Bullets ---
+        ...bulletsToShow.map(
+          (p) => Padding(
+            padding: const EdgeInsets.only(bottom: 4),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  "• ",
+                  style: TextStyle(fontSize: 13, color: Colors.white70),
                 ),
-              ),
-            )),
+                Expanded(
+                  child: Text(
+                    p,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      fontSize: isDesktop ? 14 : 13,
+                      color: isDesktop ? Colors.black87 : Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
         if (bulletPoints.length > 3)
           Padding(
             padding: const EdgeInsets.only(top: 4),
             child: Text(
               '+ ${bulletPoints.length - 3} autres…',
-              style:
-                  TextStyle(color: isDesktop ? Colors.black87 : Colors.white70),
+              style: TextStyle(
+                fontSize: 12,
+                fontStyle: FontStyle.italic,
+                color: isDesktop ? Colors.black54 : Colors.white70,
+              ),
             ),
           ),
 
         const SizedBox(height: 12),
 
-        // --- Footer actions -------------------------------------------------
+        // --- Footer ---
         Align(
           alignment: Alignment.centerRight,
           child: trailingActions != null
@@ -159,13 +176,18 @@ class AdaptiveCard extends ConsumerWidget {
                   crossAxisAlignment: WrapCrossAlignment.center,
                   spacing: 4,
                   children: [
-                    Icon(Icons.touch_app,
+                    const Icon(
+                      Icons.touch_app,
+                      size: 14,
+                      color: Colors.white70,
+                    ),
+                    Text(
+                      'Voir plus',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        fontSize: 12,
                         color: isDesktop ? Colors.black87 : Colors.white70,
-                        size: 16),
-                    Text('Cliquer pour voir plus',
-                        style: TextStyle(
-                            color:
-                                isDesktop ? Colors.black87 : Colors.white70)),
+                      ),
+                    ),
                   ],
                 ),
         ),
@@ -177,15 +199,12 @@ class AdaptiveCard extends ConsumerWidget {
   Widget _backgroundImage(bool isDesktop) {
     if (imagePath == null) return const SizedBox.expand();
     return ColorFiltered(
-      colorFilter: isDesktop
-          ? ColorFilter.mode(
-              Colors.black38.withAlpha((255 * 0.2).toInt()),
-              BlendMode.colorBurn,
-            )
-          : ColorFilter.mode(
-              Colors.black38.withAlpha((255 * 0.6).toInt()),
-              BlendMode.colorBurn,
-            ),
+      colorFilter: ColorFilter.mode(
+        Colors.greenAccent.withAlpha(
+          isDesktop ? (255 * 0.25).toInt() : (255 * 0.55).toInt(),
+        ),
+        isDesktop ? BlendMode.colorBurn : BlendMode.dstIn,
+      ),
       child: Image.asset(
         imagePath!,
         fit: BoxFit.contain,
@@ -197,9 +216,13 @@ class AdaptiveCard extends ConsumerWidget {
 
   Widget _gradientOverlay() {
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Colors.brown, Colors.black12, Colors.black87],
+          colors: [
+            Colors.black.withAlpha((255 * 0.2).toInt()),
+            Colors.blue.withAlpha((255 * 0.4).toInt()),
+            Colors.redAccent.withAlpha((255 * 0.6).toInt()),
+          ],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           stops: [0, 0.5, 1],
