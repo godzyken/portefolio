@@ -1,103 +1,55 @@
 name: portefolio
 description: "Ce portfolio a été conçu pour illustrer mes compétences en Flutter et offrir un aperçu clair et esthétique de mon parcours à toute personne intéressée."
-
 publish_to: 'none'
-
 version: 1.0.0+1
 
 environment:
   sdk: ">=3.9.0 <4.0.0"
+  flutter: ">=3.24.0"
 
 dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
-  pdf: ^3.11.3
-  printing: ^5.14.2
   go_router: ^16.2.0
   flutter_riverpod: ^2.6.1
-  flutter_highlight: ^0.7.0
-  timelines_plus: ^1.0.6
-  flutter_animate: ^4.5.2
   url_launcher: ^6.3.2
   http: ^1.5.0
   flutter_svg: ^2.2.0
   font_awesome_flutter: ^10.10.0
-  flutter_dotenv: ^6.0.0
+  google_fonts: ^6.3.0
   shared_preferences: ^2.5.3
   hive: ^2.2.3
-  flutter_colorpicker: ^1.1.0
   hive_flutter: ^1.1.0
-  google_fonts: ^6.3.0
-  emailjs: ^4.0.0
+  flutter_colorpicker: ^1.1.0
+
+  # Animation & UI
+  flutter_animate: ^4.5.2
+  timelines_plus: ^1.0.6
+  flutter_highlight: ^0.7.0
+
+  # PDF & fichiers
+  pdf: ^3.11.3
+  printing: ^5.14.2
+
+  # Config & backend
+  flutter_dotenv: ^6.0.0
+  emailjs: ^4.0.0 # ⚠️ à garder seulement si vraiment nécessaire
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
-  build_runner: ^2.5.4
+  # build_runner retiré si inutile
 
 flutter:
   uses-material-design: true
 
   assets:
     - assets/.env
-    - assets/data/experiences.json
-    - assets/data/projects.json
-    - assets/data/services.json
-    - assets/images/2rouesvertes-logo.png
-    - assets/images/apside-logo.png
-    - assets/images/aubry-logo.png
-    - assets/images/coy.jpg
-    - assets/images/egote-foto.png
-    - assets/images/keym.png
-    - assets/images/keym-frame.png
-    - assets/images/logo_godzyken.png
-    - assets/images/medimail-app.png
-    - assets/images/sig-lyon.png
-    - assets/images/sunpower.png
-    - assets/images/wayma-logo.png
-    - assets/images/urbalyon-logo.png
-    - assets/images/flutter-image.png
-    - assets/images/vitrine.png
-    - assets/images/api-img.png
-    - assets/images/ui-ux-design-service.png
-    - assets/images/uts31-logo.png
-    - assets/images/armatis-logo.png
-    - assets/images/asics-logo.png
-    - assets/images/Darty-Logo.png
-    - assets/images/dedienne-logo.png
-    - assets/images/continental-logo.png
-    - assets/images/thales-logo.jpg
-    - assets/images/tme-logo.png
-    - assets/images/zodiac-logo.png
-    - assets/images/getty-images.jpg
-    - assets/images/logos/angular-logo.png
-    - assets/images/logos/css3.png
-    - assets/images/logos/flutter-logo.png
-    - assets/images/logos/dart-logo.png
-    - assets/images/logos/express-js.png
-    - assets/images/logos/firebase-logo.png
-    - assets/images/logos/firebase-hosting-logo.png
-    - assets/images/logos/hive-logo.png
-    - assets/images/logos/html-logo.png
-    - assets/images/logos/ionic-logo.png
-    - assets/images/logos/laravel-logo.png
-    - assets/images/logos/javascript-logo.png
-    - assets/images/logos/jquery-logo.png
-    - assets/images/logos/mongoDb-logo.png
-    - assets/images/logos/mysql-logo.png
-    - assets/images/logos/node-js-logo.png
-    - assets/images/logos/php-logo.png
-    - assets/images/logos/git-logo.png
-    - assets/images/logos/postgresql-logo.png
-    - assets/images/logos/prestashop-logo.png
-    - assets/images/logos/ftp-ssh-logo.png
-    - assets/images/logos/ci-cd-logo.png
-    - assets/images/logos/smarty.png
-    - assets/images/logos/wiz-logo.png
-    - assets/fonts/Noto_Sans/static/NotoSans-Regular.ttf
-    - "assets/fonts/Noto_Sans/NotoSans-VariableFont_wdth,wght.ttf"
+    - assets/data/
+    - assets/images/
+    - assets/fonts/Noto_Sans/
 
   fonts:
     - family: Noto
@@ -107,6 +59,6 @@ flutter:
           style: italic
     - family: Noto Variable
       fonts:
-        - asset: "assets/fonts/Noto_Sans/NotoSans-VariableFont_wdth,wght.ttf"
-        - asset: "assets/fonts/Noto_Sans/NotoSans-Italic-VariableFont_wdth,wght.ttf"
+        - asset: assets/fonts/Noto_Sans/NotoSans-VariableFont_wdth-wght.ttf
+        - asset: assets/fonts/Noto_Sans/NotoSans-Italic-VariableFont_wdth-wght.ttf
           weight: 700

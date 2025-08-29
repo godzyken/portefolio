@@ -1,3 +1,5 @@
+import 'dart:developer' as developer;
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/features/contact/providers/emailjs_provider.dart';
 
@@ -28,10 +30,17 @@ class ContactFormNotifier extends StateNotifier<ContactFormState> {
         case Channel.email:
           final emailJs = ref.read(emailJsProvider);
 
+          developer.log(">>> SUBMIT EMAILJS");
+          developer.log("name: ${state.name}");
+          developer.log("email: ${state.email}");
+          developer.log("message: ${state.message}");
+
           await emailJs.sendEmail(
-            name: state.name,
-            email: state.email,
-            message: state.message,
+            name: state.name.isNotEmpty ? state.name : "Anonyme",
+            email: state.email.isNotEmpty
+                ? state.email
+                : "no-reply@example.com",
+            message: state.message.isNotEmpty ? state.message : "-",
           );
           state = state.copyWith(status: SubmitStatus.success);
           break;

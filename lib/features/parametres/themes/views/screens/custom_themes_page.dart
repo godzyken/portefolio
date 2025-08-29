@@ -20,13 +20,15 @@ class CustomThemesPage extends ConsumerWidget {
           ? const Center(child: Text("Aucun thème personnalisé."))
           : ListView.separated(
               padding: const EdgeInsets.all(16),
-              separatorBuilder: (_, __) => const Divider(),
+              separatorBuilder: (_, _) => const Divider(),
               itemCount: customThemes.length,
               itemBuilder: (_, i) {
                 final theme = customThemes[i];
                 return ListTile(
-                  leading: Text(theme.emoji ?? "🎨",
-                      style: const TextStyle(fontSize: 28)),
+                  leading: Text(
+                    theme.emoji ?? "🎨",
+                    style: const TextStyle(fontSize: 28),
+                  ),
                   title: Text(theme.name),
                   subtitle: Row(
                     children: [
@@ -50,7 +52,10 @@ class CustomThemesPage extends ConsumerWidget {
                           onPressed: () => showDialog(
                             context: context,
                             builder: (_) => ThemeEditorDialog(
-                                theme, theme.name, theme.emoji),
+                              theme,
+                              theme.name,
+                              theme.emoji,
+                            ),
                           ),
                         ),
                         IconButton(
@@ -78,10 +83,7 @@ class CustomThemesPage extends ConsumerWidget {
   Widget _buildColorCircle(Color color) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4),
-      child: CircleAvatar(
-        radius: 10,
-        backgroundColor: color,
-      ),
+      child: CircleAvatar(radius: 10, backgroundColor: color),
     );
   }
 }

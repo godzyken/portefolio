@@ -10,6 +10,7 @@ class AdaptiveCard extends ConsumerWidget {
   final String? imagePath;
   final VoidCallback? onTap;
   final List<Widget>? trailingActions;
+  final Widget Function(BuildContext context, Size size)? imageBuilder;
 
   const AdaptiveCard({
     super.key,
@@ -18,6 +19,7 @@ class AdaptiveCard extends ConsumerWidget {
     this.imagePath,
     this.onTap,
     this.trailingActions,
+    this.imageBuilder,
   });
 
   @override
@@ -48,7 +50,7 @@ class AdaptiveCard extends ConsumerWidget {
       builder: (_, constraints) => Stack(
         fit: StackFit.loose,
         children: [
-          _backgroundImage(isDesktop),
+          _backgroundImage(ctx, constraints.biggest, isDesktop),
           _gradientOverlay(),
           // Le texte devient scrollable si nécessaire
           Positioned.fill(
@@ -84,7 +86,14 @@ class AdaptiveCard extends ConsumerWidget {
                 flex: 2,
                 child: Stack(
                   fit: StackFit.expand,
-                  children: [_backgroundImage(isDesktop), _gradientOverlay()],
+                  children: [
+                    _backgroundImage(
+                      ctx,
+                      Size(constraints.maxWidth, maxH),
+                      isDesktop,
+                    ),
+                    _gradientOverlay(),
+                  ],
                 ),
               ),
               const SizedBox(width: 8), // petite marge optionnelle
@@ -196,7 +205,9 @@ class AdaptiveCard extends ConsumerWidget {
   }
 
   // ---------------------- Helpers -------------------------------------------
-  Widget _backgroundImage(bool isDesktop) {
+  Widget _backgroundImage(BuildContext ctx, Size size, bool isDesktop) {
+    if (imageBuilder != null) return imageBuilder!(ctx, size);
+
     if (imagePath == null) return const SizedBox.expand();
     return ColorFiltered(
       colorFilter: ColorFilter.mode(

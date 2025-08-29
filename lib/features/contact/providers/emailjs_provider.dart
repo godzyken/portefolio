@@ -1,3 +1,5 @@
+import 'dart:developer' as developer;
+
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -11,6 +13,11 @@ final emailJsProvider = Provider<EmailJsService>((ref) {
   if ([serviceId, templateId, publicKey].any((v) => v.isEmpty)) {
     throw Exception('Variables EmailJS manquantes dans .env');
   }
+  developer.log("EmailJS config:");
+  developer.log("serviceId: $serviceId");
+  developer.log("templateId: $templateId");
+  developer.log("publicKey: $publicKey");
+
   return EmailJsService(
     serviceId: serviceId,
     templateId: templateId,

@@ -22,6 +22,7 @@ final Map<String, String> techLogos = {
   'ftp/ssh': 'assets/images/logos/ftp-ssh-logo.png',
   'ci/cd': 'assets/images/logos/ci-cd-logo.png',
   'git': 'assets/images/logos/git-logo.png',
+  'wiz': 'assets/images/logos/wiz-logo.png',
   'api': 'assets/images/api-img.png',
 };
 

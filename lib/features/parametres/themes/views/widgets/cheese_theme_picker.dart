@@ -56,7 +56,7 @@ class _CheeseThemePickerState extends ConsumerState<CheeseThemePicker>
           for (int i = 0; i < availableThemes.length; i++)
             AnimatedBuilder(
               animation: controller,
-              builder: (_, __) {
+              builder: (_, _) {
                 final angle = (2 * pi / availableThemes.length) * i;
                 final dx = cos(angle) * radius * scaleAnim.value;
                 final dy = sin(angle) * radius * scaleAnim.value;
@@ -79,8 +79,9 @@ class _CheeseThemePickerState extends ConsumerState<CheeseThemePicker>
                             child: Material(
                               elevation: 4,
                               shape: const CircleBorder(),
-                              color:
-                                  Color(availableThemes[i].primaryColorValue),
+                              color: Color(
+                                availableThemes[i].primaryColorValue,
+                              ),
                               child: const SizedBox(width: 40, height: 40),
                             ),
                           ),
@@ -93,9 +94,7 @@ class _CheeseThemePickerState extends ConsumerState<CheeseThemePicker>
                             "T${i + 1}",
                             style: TextStyle(
                               fontSize: 10,
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onSurface
+                              color: Theme.of(context).colorScheme.onSurface
                                   .withAlpha((255 * 0.7).toInt()),
                             ),
                           ),

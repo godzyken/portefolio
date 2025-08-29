@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -15,52 +13,59 @@ class ExperienceSlideScreen extends ConsumerStatefulWidget {
   ConsumerState createState() => _ExperienceSlideScreenState();
 }
 
-class _ExperienceSlideScreenState extends ConsumerState<ExperienceSlideScreen> {
+class _ExperienceSlideScreenState extends ConsumerState<ExperienceSlideScreen>
+    with SingleTickerProviderStateMixin {
   late PageController _controller;
+  late AnimationController _autoSlideController;
   bool _isControllerInitialized = false;
-  Timer? _autoSlideTimer;
-  Timer? _resumeTimer;
 
   @override
   void initState() {
     super.initState();
     _controller = PageController(viewportFraction: 0.85);
-    _startAutoSlide();
+
+    _autoSlideController =
+        AnimationController(vsync: this, duration: const Duration(seconds: 5))
+          ..addStatusListener((status) {
+            if (status == AnimationStatus.completed) {
+              _nextPage();
+              _autoSlideController.forward(from: 0);
+            }
+          });
+
+    _autoSlideController.forward();
   }
 
-  void _startAutoSlide() {
-    _autoSlideTimer?.cancel();
-    _autoSlideTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
-      if (!_controller.hasClients) return;
+  void _nextPage() {
+    if (!_controller.hasClients) return;
 
-      final nextPage = (_controller.page?.round() ?? 0) + 1;
-      if (nextPage < widget.experiences.length) {
-        _controller.animateToPage(
-          nextPage,
-          duration: const Duration(milliseconds: 500),
-          curve: Curves.easeInOut,
-        );
-      } else {
-        _controller.animateToPage(
-          0,
-          duration: const Duration(milliseconds: 500),
-          curve: Curves.easeInOut,
-        );
-      }
-    });
+    final nextPage = (_controller.page?.round() ?? 0) + 1;
+    if (nextPage < widget.experiences.length) {
+      _controller.animateToPage(
+        nextPage,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+      );
+    } else {
+      _controller.animateToPage(
+        0,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+      );
+    }
   }
 
   void _pauseAutoSlide() {
-    _autoSlideTimer?.cancel();
-    _resumeTimer?.cancel();
-    _resumeTimer = Timer(const Duration(seconds: 6), _startAutoSlide);
+    _autoSlideController.stop();
+    Future.delayed(const Duration(seconds: 6), () {
+      if (mounted) _autoSlideController.forward(from: 0);
+    });
   }
 
   @override
   void dispose() {
-    _autoSlideTimer?.cancel();
-    _resumeTimer?.cancel();
     _controller.dispose();
+    _autoSlideController.dispose();
     super.dispose();
   }
 
@@ -68,8 +73,8 @@ class _ExperienceSlideScreenState extends ConsumerState<ExperienceSlideScreen> {
   Widget build(BuildContext context) {
     final isPortrait =
         MediaQuery.of(context).orientation == Orientation.portrait;
-
     final size = MediaQuery.of(context).size;
+
     if (!_isControllerInitialized) {
       _controller = PageController(viewportFraction: isPortrait ? 0.95 : 0.85);
       _isControllerInitialized = true;
@@ -95,9 +100,11 @@ class _ExperienceSlideScreenState extends ConsumerState<ExperienceSlideScreen> {
             builder: (context, child) {
               double value = 0.0;
               if (_controller.position.haveDimensions) {
-                value = _controller.page! - index;
+                value = ((_controller.page ?? _controller.initialPage) - index)
+                    .toDouble();
               }
 
+              // Parallax et scale
               final scale = (1 - value.abs() * 0.2).clamp(0.85, 1.0);
               final translateX = value * -40.0;
               final parallax = value * 20;
@@ -115,6 +122,7 @@ class _ExperienceSlideScreenState extends ConsumerState<ExperienceSlideScreen> {
                           delay: Duration(milliseconds: index * 100),
                           child: ExperienceCard(
                             experience: widget.experiences[index],
+                            pageOffset: value,
                           ),
                         ),
                       ),

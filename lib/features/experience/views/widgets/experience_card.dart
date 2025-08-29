@@ -10,7 +10,13 @@ import '../../../generator/views/widgets/adaptive_card.dart';
 
 class ExperienceCard extends ConsumerWidget {
   final Experience experience;
-  const ExperienceCard({super.key, required this.experience});
+  final double pageOffset;
+
+  const ExperienceCard({
+    super.key,
+    required this.experience,
+    this.pageOffset = 0.0,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -23,6 +29,9 @@ class ExperienceCard extends ConsumerWidget {
       ],
       imagePath: experience.image.isNotEmpty ? experience.image : null,
       onTap: () => _showDetails(context),
+      imageBuilder: experience.image.isNotEmpty
+          ? (context, size) => _buildImage(context, size)
+          : null,
     );
   }
 
@@ -36,6 +45,28 @@ class ExperienceCard extends ConsumerWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (_) => _ExperienceDetails(experience: experience),
+    );
+  }
+
+  // -------------------------------------------------------------------------
+  Widget _buildImage(BuildContext context, Size size) {
+    final parallax = pageOffset * 20; // ajuster l'effet parallax
+    final scale = (1 - pageOffset.abs() * 0.2).clamp(0.85, 1.0);
+
+    return Transform.translate(
+      offset: Offset(parallax, 0),
+      child: Transform.scale(
+        scale: scale,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: Image.asset(
+            experience.image,
+            width: size.width,
+            height: 180,
+            fit: BoxFit.cover,
+          ),
+        ),
+      ),
     );
   }
 }
@@ -87,7 +118,7 @@ class _ExperienceDetails extends StatelessWidget {
                 _SectionTitle('🧰 Stack'),
                 const SizedBox(height: 8),
                 _ExperienceStack(stack: experience.stack),
-              ]
+              ],
             ],
           ),
         ),
@@ -173,14 +204,16 @@ class _Header extends StatelessWidget {
             children: [
               Text(
                 experience.entreprise,
-                style: theme.textTheme.headlineSmall
-                    ?.copyWith(fontWeight: FontWeight.bold),
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               if (experience.periode.isNotEmpty)
                 Text(
                   experience.periode,
-                  style: theme.textTheme.bodyMedium
-                      ?.copyWith(color: Colors.grey[600]),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: Colors.grey[600],
+                  ),
                 ),
             ],
           ),
@@ -195,13 +228,14 @@ class _SectionTitle extends StatelessWidget {
   const _SectionTitle(this.title);
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(bottom: 4),
-        child: Text(title,
-            style: Theme.of(context)
-                .textTheme
-                .titleMedium
-                ?.copyWith(fontWeight: FontWeight.bold)),
-      );
+    padding: const EdgeInsets.only(bottom: 4),
+    child: Text(
+      title,
+      style: Theme.of(
+        context,
+      ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+    ),
+  );
 }
 
 class _BulletList extends StatelessWidget {
@@ -210,20 +244,22 @@ class _BulletList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: items
-            .map((e) => Padding(
-                  padding: const EdgeInsets.only(bottom: 6),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('• '),
-                      Expanded(child: Text(e)),
-                    ],
-                  ),
-                ))
-            .toList(),
-      );
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: items
+        .map(
+          (e) => Padding(
+            padding: const EdgeInsets.only(bottom: 6),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('• '),
+                Expanded(child: Text(e)),
+              ],
+            ),
+          ),
+        )
+        .toList(),
+  );
 }
 
 class _ExperienceStack extends StatelessWidget {
@@ -233,11 +269,15 @@ class _ExperienceStack extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final allTechnos = stack.entries
-        .expand((entry) => entry.value.map((tech) => {
+        .expand(
+          (entry) => entry.value.map(
+            (tech) => {
               'type': entry.key,
               'name': tech,
               'logo': techLogos[tech.toLowerCase()],
-            }))
+            },
+          ),
+        )
         .toList();
 
     return SizedBox(
@@ -245,7 +285,7 @@ class _ExperienceStack extends StatelessWidget {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: allTechnos.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 8),
+        separatorBuilder: (_, _) => const SizedBox(width: 8),
         itemBuilder: (_, i) {
           final t = allTechnos[i];
           return Column(
@@ -259,8 +299,10 @@ class _ExperienceStack extends StatelessWidget {
               if (t['logo'] != null)
                 Padding(
                   padding: const EdgeInsets.only(top: 4),
-                  child: Text(t['name']!,
-                      style: Theme.of(context).textTheme.bodySmall),
+                  child: Text(
+                    t['name']!,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
                 ),
             ],
           );
@@ -314,19 +356,19 @@ class _ProjectLinkButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => TextButton.icon(
-        icon: const Icon(Icons.link),
-        label: const Text('Voir le projet'),
-        onPressed: () async {
-          final uri = Uri.parse(url);
-          if (await canLaunchUrl(uri)) {
-            await launchUrl(uri, mode: LaunchMode.inAppBrowserView);
-          } else {
-            if (context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Impossible d’ouvrir le lien.')),
-              );
-            }
-          }
-        },
-      );
+    icon: const Icon(Icons.link),
+    label: const Text('Voir le projet'),
+    onPressed: () async {
+      final uri = Uri.parse(url);
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.inAppBrowserView);
+      } else {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Impossible d’ouvrir le lien.')),
+          );
+        }
+      }
+    },
+  );
 }
