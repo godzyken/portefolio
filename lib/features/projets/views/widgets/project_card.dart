@@ -32,14 +32,16 @@ class ProjectCard extends ConsumerWidget {
           onTap: () => showDialog(
             context: context,
             builder: (_) => _buildAlertDialog(context, pdfService),
-          ), // or showDialog
+          ),
         ),
       ),
     );
   }
 
   AlertDialog _buildAlertDialog(
-      BuildContext context, PdfExportService pdfService) {
+    BuildContext context,
+    PdfExportService pdfService,
+  ) {
     return AlertDialog(
       title: Text(
         project.title,
@@ -49,35 +51,36 @@ class ProjectCard extends ConsumerWidget {
       ),
       content: SingleChildScrollView(
         child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              if (project.image != null && project.image!.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 16.0),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Image.asset(project.image!.first),
-                  ),
-                ),
-              ...project.points.map(
-                (point) => Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4.0),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('• ', style: TextStyle(fontSize: 16)),
-                      Expanded(
-                        child: Text(
-                          point,
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                      ),
-                    ],
-                  ),
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            if (project.image != null && project.image!.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16.0),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.asset(project.image!.first),
                 ),
               ),
-            ]),
+            ...project.points.map(
+              (point) => Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('• ', style: TextStyle(fontSize: 16)),
+                    Expanded(
+                      child: Text(
+                        point,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
       actions: [
         TextButton(

@@ -102,15 +102,15 @@ class _ExperienceTimelineState extends State<ExperienceTimeline>
                             maxChildSize: 0.95,
                             builder: (context, scrollController) =>
                                 SingleChildScrollView(
-                              controller: scrollController,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 16,
-                              ),
-                              child: ExperienceCard(
-                                experience: widget.experiences[index],
-                              ),
-                            ),
+                                  controller: scrollController,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 16,
+                                  ),
+                                  child: ExperienceCard(
+                                    experience: widget.experiences[index],
+                                  ),
+                                ),
                           );
                         },
                       ),
@@ -118,7 +118,7 @@ class _ExperienceTimelineState extends State<ExperienceTimeline>
                   },
                   child: ClipOval(
                     child: Image.asset(
-                      widget.experiences[index].image,
+                      widget.experiences[index].logo,
                       width: 48,
                       height: 48,
                       fit: BoxFit.contain,

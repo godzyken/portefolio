@@ -32,6 +32,17 @@ class ExperienceCard extends ConsumerWidget {
       imageBuilder: experience.image.isNotEmpty
           ? (context, size) => _buildImage(context, size)
           : null,
+      trailingActions: [
+        if (experience.logo.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Image.asset(
+              experience.logo,
+              height: 52,
+              fit: BoxFit.contain,
+            ),
+          ),
+      ],
     );
   }
 

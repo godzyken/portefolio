@@ -1,4 +1,3 @@
-// lib/features/projets/views/screens/projects_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -17,10 +16,8 @@ class ProjectsScreen extends ConsumerWidget {
     return Scaffold(
       appBar: const ProjectAppBar(),
       body: projectsAsync.when(
-        data: (projects) => ProjectGridView(
-          projects: projects,
-          selected: selected,
-        ),
+        data: (projects) =>
+            ProjectGridView(projects: projects, selected: selected),
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('Erreur : $e')),
       ),

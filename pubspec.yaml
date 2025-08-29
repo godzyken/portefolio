@@ -17,7 +17,7 @@ dependencies:
   http: ^1.5.0
   flutter_svg: ^2.2.0
   font_awesome_flutter: ^10.10.0
-  google_fonts: ^6.3.0
+  google_fonts: ^6.3.1
   shared_preferences: ^2.5.3
   hive: ^2.2.3
   hive_flutter: ^1.1.0
@@ -34,7 +34,7 @@ dependencies:
 
   # Config & backend
   flutter_dotenv: ^6.0.0
-  emailjs: ^4.0.0 # ⚠️ à garder seulement si vraiment nécessaire
+  emailjs: ^4.0.0
 
 dev_dependencies:
   flutter_test:
@@ -49,6 +49,7 @@ flutter:
     - assets/.env
     - assets/data/
     - assets/images/
+    - assets/images/logos/
     - assets/fonts/Noto_Sans/
 
   fonts:
