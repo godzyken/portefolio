@@ -90,7 +90,7 @@ const RESOURCES = {"canvaskit/skwasm.js": "f2ad9363618c5f62e813740099a80e63",
 "assets/packages/font_awesome_flutter/lib/fonts/fa-regular-400.ttf": "3ca5dc7621921b901d513cc1ce23788c",
 "assets/packages/font_awesome_flutter/lib/fonts/fa-solid-900.ttf": "a2eb084b706ab40c90610942d98886ec",
 "assets/packages/font_awesome_flutter/lib/fonts/fa-brands-400.ttf": "4769f3245a24c1fa9965f113ea85ec2a",
-"flutter_bootstrap.js": "995d95620c056e973b621dc9870a0610",
+"flutter_bootstrap.js": "1cb95bf5bfad0008a656c13c350143d3",
 "favicon.png": "5dcef449791fa27946b3d35ad8803796",
 "index.html": "eda1daa967bb91b982bf99f2763227c6",
 "/": "eda1daa967bb91b982bf99f2763227c6"};
