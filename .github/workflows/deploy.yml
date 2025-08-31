@@ -19,7 +19,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Python 3.x
         uses: actions/setup-python@v4
@@ -55,12 +55,15 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.32.5'
+          flutter-version: '3.35.2'
           channel: stable
           cache: true
 
       - name: Install Flutter dependencies
         run: flutter pub get
+
+      - name: Clean build
+        run: flutter clean
 
       - name: Build Flutter Web
         run: flutter build web --release --base-href="/portefolio/"
@@ -69,6 +72,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
+          name: github-pages
           path: build/web
 
   deploy:
