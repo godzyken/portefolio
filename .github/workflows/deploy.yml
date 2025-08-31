@@ -3,10 +3,10 @@ name: Deploy Flutter Web to GitHub Pages
 on:
   push:
     branches:
-      - main  # ou master selon ta branche principale
+      - main
 
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
 
@@ -60,14 +60,24 @@ jobs:
         run: flutter pub get
 
       - name: Build Flutter Web
-        run: flutter build web --base-href="/portefolio/"
+        run: flutter build web --release --base-href="/portefolio/"
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+      # ✅ Publier build/web comme artifact Pages
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: build/web
-          publish_branch: gh-pages
-          enable_jekyll: false
-          user_name: github-actions[bot]
-          user_email: github-actions[bot]@users.noreply.github.com
+          path: build/web
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
