@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/features/generator/data/extention_models.dart';
+import 'package:vector_math/vector_math_64.dart' hide Colors;
 
 class ServicesCard extends ConsumerStatefulWidget {
   final Service service;
@@ -30,8 +31,8 @@ class _ServicesCardState extends ConsumerState<ServicesCard> {
         margin: const EdgeInsets.all(16),
         transform: _isHovering
             ? (Matrix4.identity()
-              ..translate(0.0, -6.0)
-              ..scale(1.02))
+              ..translateByVector3(Vector3(0.0, -6.0, 0.0))
+              ..scaleByVector3(Vector3.all(1.02)))
             : Matrix4.identity(),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(24),

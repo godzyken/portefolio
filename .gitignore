@@ -26,6 +26,11 @@ migrate_working_dir/
 # Flutter/Dart/Pub related
 **/doc/api/
 **/ios/Flutter/.last_build_id
+**/build/
+**/ephemeral/
+**/.plugin_symlinks/
+*.dll
+*.pdb
 .dart_tool/
 .flutter-plugins
 .flutter-plugins-dependencies
@@ -43,3 +48,11 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+/generate_asset_variants.py
+
+# secrets
+assets/.env
+.local.properties
+.packages
+pubspec.lock
+**/Secrets.xcconfig

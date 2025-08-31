@@ -27,3 +27,10 @@ final isPortraitProvider = Provider<bool>((ref) {
   final size = ref.watch(screenSizeProvider);
   return size.height >= size.width;
 });
+
+/// Retourne `true` si la largeur logique de l'écran est < 400 px
+final isCompactWidthProvider = Provider<bool>((ref) {
+  // On récupère la taille via MediaQuery
+  final width = ref.watch(screenSizeProvider).width;
+  return width < 400; // tu peux ajuster ce breakpoint
+});

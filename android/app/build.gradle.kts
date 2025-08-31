@@ -28,6 +28,27 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+
+        // ─────── Charger local.properties ───────
+        val props = Properties().apply {
+            load(rootProject.file("local.properties").inputStream())
+        }
+
+        buildConfigField(
+            "String",
+            "SENDGRID_KEY",
+            "\"${props["SENDGRID_KEY"] ?: ""}\""
+        )
+        buildConfigField(
+            "String",
+            "SRC_MAIL",
+            "\"${props["SRC_MAIL"] ?: ""}\""
+        )
+        buildConfigField(
+            "String",
+            "DEST_MAIL",
+            "\"${props["DEST_MAIL"] ?: ""}\""
+        )
     }
 
     buildTypes {
@@ -35,8 +56,18 @@ android {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
+            isMinifyEnabled = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
+}
+
+dependencies {
+    implementation("androidx.core:core-ktx:1.13.1")
+    // autres deps…
 }
 
 flutter {

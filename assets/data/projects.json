@@ -45,5 +45,19 @@
       "💬 Analyse UX, optimisation des parcours utilisateurs (User Flow) et ergonomie"
     ],
     "image": ["assets/images/medimail-app.png"]
+  },
+  {
+    "id": "projet_4",
+    "title": "Chef de Projet Digital",
+    "subtitle": "Transformation numérique & pilotage d’innovations",
+    "points": [
+      "👨‍💻 Garant du cycle complet des projets numériques : cadrage, conception, pilotage et livraison, en veillant au respect des coûts, délais et qualité.",
+      "📐 Accompagnement à la transformation digitale, en alignant les enjeux métiers avec des solutions techniques pertinentes et durables.",
+      "🧾 Conception et pilotage de services digitaux centrés utilisateur, en mobilisant une expertise technique solide (Flutter, Firebase, Hive, API REST).",
+      "📝 Spécialisation en développement Flutter, design d’interfaces modernes et intégration de services innovants (IoT, VR, génération automatique de documents).",
+      "🧪 Mise en œuvre de solutions numériques complètes : sites web, applications mobiles et stratégies de communication digitale."
+    ],
+    "image": ["assets/images/getty-images.jpg"],
+    "tags": ["Flutter", "Firebase", "IoT", "VR", "Management", "UX/UI", "Digitalisation"]
   }
 ]

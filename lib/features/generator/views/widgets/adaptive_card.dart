@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:portefolio/features/parametres/themes/provider/theme_repository_provider.dart';
 
 import '../../../../core/affichage/screen_size_detector.dart';
 
-class AdaptiveCard extends ConsumerWidget {
+class AdaptiveCard extends ConsumerStatefulWidget {
   final String title;
   final List<String> bulletPoints;
   final String? imagePath;
   final VoidCallback? onTap;
   final List<Widget>? trailingActions;
+  final Widget Function(BuildContext context, Size size)? imageBuilder;
 
   const AdaptiveCard({
     super.key,
@@ -17,36 +19,75 @@ class AdaptiveCard extends ConsumerWidget {
     this.imagePath,
     this.onTap,
     this.trailingActions,
+    this.imageBuilder,
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final isDesktop = ref.watch(isDesktopProvider);
+  ConsumerState<AdaptiveCard> createState() => _AdaptiveCardState();
+}
 
-    return InkWell(
-      onTap: onTap,
-      child: Card(
-        margin: const EdgeInsets.all(12),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        elevation: 4,
-        clipBehavior: Clip.hardEdge,
-        child: isDesktop
-            ? _horizontal(context, isDesktop)
-            : _vertical(context, isDesktop),
+class _AdaptiveCardState extends ConsumerState<AdaptiveCard> {
+  bool _hovering = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDesktop = ref.watch(isDesktopProvider);
+    final theme = ref.watch(themeLoaderProvider);
+
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hovering = true),
+      onExit: (_) => setState(() => _hovering = false),
+      child: InkWell(
+        onTap: widget.onTap,
+        child: Card(
+          margin: const EdgeInsets.all(12),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          color:
+              theme.value?.tertiaryColor ??
+              theme.value?.neutralColor ??
+              theme.value?.primaryColor,
+          elevation: 4,
+          clipBehavior: Clip.hardEdge,
+          child: LayoutBuilder(
+            builder: (_, constraints) =>
+                _responsiveLayout(context, constraints, isDesktop),
+          ),
+        ),
       ),
     );
   }
 
-  // ---------------------- Vertical layout (mobile / tablet) ------------------
-  Widget _vertical(BuildContext ctx, bool isDesktop) {
-    return LayoutBuilder(
-      builder: (_, constraints) => Stack(
-        fit: StackFit.loose,
+  Widget _responsiveLayout(
+    BuildContext ctx,
+    BoxConstraints constraints,
+    bool isDesktop,
+  ) {
+    final hasImage = widget.imagePath != null || widget.imageBuilder != null;
+    final maxWidth = constraints.maxWidth;
+
+    if (!isDesktop || maxWidth < 600) {
+      // ----- Mobile / vertical -----
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _backgroundImage(isDesktop),
-          _gradientOverlay(),
-          // Le texte devient scrollable si nécessaire
-          Positioned.fill(
+          if (hasImage)
+            AspectRatio(
+              aspectRatio: 1.2,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  _animatedImage(
+                    ctx,
+                    Size(maxWidth, maxWidth / 1.2),
+                    isDesktop,
+                  ),
+                  _gradientOverlay(),
+                ],
+              ),
+            ),
+          Expanded(
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: SingleChildScrollView(
@@ -56,150 +97,153 @@ class AdaptiveCard extends ConsumerWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-// --- Horizontal (desktop) ---
-  Widget _horizontal(BuildContext ctx, bool isDesktop) {
-    return LayoutBuilder(
-      builder: (_, constraints) {
-        // Grille ⇒ maxHeight FINI (sinon on lui donne un ratio fixe)
-        final maxH = constraints.hasBoundedHeight
-            ? constraints.maxHeight
-            : constraints.maxWidth * 1.1; // fallback raisonnable
-
-        return SizedBox(
-          height: maxH,
-          child: Row(
-            children: [
-              // -------------------------------------------------------------------
-              Flexible(
-                // ou Expanded(flex:2)
-                flex: 2,
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    _backgroundImage(isDesktop),
-                    _gradientOverlay(),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 8), // petite marge optionnelle
-              // -------------------------------------------------------------------
-              Flexible(
-                // ou Expanded(flex:3)
-                flex: 3,
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: SingleChildScrollView(
-                    physics: const BouncingScrollPhysics(),
-                    child: _textContent(ctx, isDesktop),
+      );
+    } else {
+      // ----- Desktop / horizontal -----
+      final imageWidth = maxWidth * 0.35;
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (hasImage)
+            SizedBox(
+              width: imageWidth,
+              height: imageWidth / 1.2,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  _animatedImage(
+                    ctx,
+                    Size(imageWidth, imageWidth / 1.2),
+                    isDesktop,
                   ),
-                ),
+                  _gradientOverlay(),
+                ],
               ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  // ---------------------- Common text content --------------------------------
-  Widget _textContent(BuildContext ctx, bool isDesktop) {
-    final theme = Theme.of(ctx);
-    final bulletsToShow = bulletPoints.take(3).toList();
-
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // --- Title ----------------------------------------------------------
-        Text(
-          title,
-          style: theme.textTheme.titleLarge?.copyWith(
-            color: isDesktop ? Colors.indigoAccent : Colors.cyanAccent,
-            fontWeight: FontWeight.bold,
-            fontStyle: FontStyle.italic,
-          ),
-        ),
-        const SizedBox(height: 8),
-
-        // --- Bullets --------------------------------------------------------
-        ...bulletsToShow.map((p) => Padding(
-              padding: const EdgeInsets.symmetric(vertical: 2),
-              child: Text(
-                p,
-                softWrap: true,
-                style: TextStyle(
-                  color: isDesktop ? Colors.black87 : Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: isDesktop ? 16 : 14,
-                ),
+            ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: _textContent(ctx, isDesktop),
               ),
-            )),
-        if (bulletPoints.length > 3)
-          Padding(
-            padding: const EdgeInsets.only(top: 4),
-            child: Text(
-              '+ ${bulletPoints.length - 3} autres…',
-              style:
-                  TextStyle(color: isDesktop ? Colors.black87 : Colors.white70),
             ),
           ),
-
-        const SizedBox(height: 12),
-
-        // --- Footer actions -------------------------------------------------
-        Align(
-          alignment: Alignment.centerRight,
-          child: trailingActions != null
-              ? Wrap(spacing: 4, children: trailingActions!)
-              : Wrap(
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  spacing: 4,
-                  children: [
-                    Icon(Icons.touch_app,
-                        color: isDesktop ? Colors.black87 : Colors.white70,
-                        size: 16),
-                    Text('Cliquer pour voir plus',
-                        style: TextStyle(
-                            color:
-                                isDesktop ? Colors.black87 : Colors.white70)),
-                  ],
-                ),
-        ),
-      ],
-    );
+        ],
+      );
+    }
   }
 
-  // ---------------------- Helpers -------------------------------------------
-  Widget _backgroundImage(bool isDesktop) {
-    if (imagePath == null) return const SizedBox.expand();
-    return ColorFiltered(
-      colorFilter: isDesktop
-          ? ColorFilter.mode(
-              Colors.black38.withAlpha((255 * 0.2).toInt()),
-              BlendMode.colorBurn,
+  Widget _animatedImage(BuildContext ctx, Size size, bool isDesktop) {
+    final scale = _hovering && isDesktop ? 1.05 : 1.0;
+    return AnimatedScale(
+      scale: scale,
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeInOut,
+      child: widget.imageBuilder != null
+          ? widget.imageBuilder!(ctx, size)
+          : widget.imagePath != null
+          ? Image.asset(
+              widget.imagePath!,
+              fit: BoxFit.cover,
+              filterQuality: FilterQuality.high,
             )
-          : ColorFilter.mode(
-              Colors.black38.withAlpha((255 * 0.6).toInt()),
-              BlendMode.colorBurn,
-            ),
-      child: Image.asset(imagePath!, fit: BoxFit.contain),
+          : const SizedBox.expand(),
     );
   }
 
   Widget _gradientOverlay() {
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Colors.brown, Colors.black12, Colors.black87],
+          colors: [
+            Colors.black.withAlpha((255 * 0.1).toInt()),
+            Colors.transparent,
+          ],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          stops: [0, 0.5, 1],
         ),
       ),
+    );
+  }
+
+  Widget _textContent(BuildContext ctx, bool isDesktop) {
+    final theme = Theme.of(ctx);
+    final bulletsToShow = widget.bulletPoints.take(2).toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          widget.title,
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontSize: isDesktop ? 18 : 16,
+            fontWeight: FontWeight.bold,
+            color: isDesktop ? Colors.indigoAccent : Colors.cyanAccent,
+          ),
+        ),
+        const SizedBox(height: 8),
+        ...bulletsToShow.map(
+          (p) => Padding(
+            padding: const EdgeInsets.only(bottom: 4),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  "• ",
+                  style: TextStyle(fontSize: 13, color: Colors.white70),
+                ),
+                Expanded(
+                  child: Text(
+                    p,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      fontSize: isDesktop ? 14 : 13,
+                      color: isDesktop ? Colors.black87 : Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        if (widget.bulletPoints.length > 3)
+          Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: Text(
+              '+ ${widget.bulletPoints.length - 3} autres…',
+              style: TextStyle(
+                fontSize: 12,
+                fontStyle: FontStyle.italic,
+                color: isDesktop ? Colors.black54 : Colors.white70,
+              ),
+            ),
+          ),
+        const SizedBox(height: 12),
+        Align(
+          alignment: Alignment.centerRight,
+          child: widget.trailingActions != null
+              ? Wrap(spacing: 4, children: widget.trailingActions!)
+              : Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 4,
+                  children: [
+                    const Icon(
+                      Icons.touch_app,
+                      size: 14,
+                      color: Colors.white70,
+                    ),
+                    Text(
+                      'Voir plus',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        fontSize: 12,
+                        color: isDesktop ? Colors.black87 : Colors.white70,
+                      ),
+                    ),
+                  ],
+                ),
+        ),
+      ],
     );
   }
 }

@@ -9,7 +9,7 @@ import '../../projets/data/project_data.dart';
 class PdfExportService {
   Future<pw.Font> loadCustomFont() async {
     final fontData = await rootBundle.load(
-      'assets/fonts/Noto_Sans/NotoSans-VariableFont_wdth,wght.ttf',
+      'assets/fonts/Noto_Sans/NotoSans-VariableFont_wdth-wght.ttf',
       //'assets/fonts/Noto_Sans/static/NotoSans-Regular.ttf',
     );
     return pw.Font.ttf(fontData);

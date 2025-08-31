@@ -1,53 +1,86 @@
 name: Deploy Flutter Web to GitHub Pages
 
-# Déclenchement : à chaque push sur la branche principale
 on:
   push:
     branches:
-      - main        # change en 'master' si besoin
+      - main
     tags:
       - '*'
-    workflow_dispatch:
+  workflow_dispatch:
 
-# ---- AUTORISATIONS ----
-# Donne au token intégré les droits nécessaires pour pousser sur gh-pages
 permissions:
-  contents: write     # push/commit sur le dépôt
-  pages: write        # optionnel si tu passes un jour à la filière « native » Pages
-  id-token: write     # idem
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      # 1) Récupérer le dépôt
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2) Installer Flutter stable 3.29.3
+      - name: Setup Python 3.x
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Cache pip packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install Pillow tqdm
+
+      - name: Verify assets/images folder exists
+        run: |
+          if [ ! -d "assets/images" ]; then
+            echo "Erreur : le dossier assets/images est introuvable."
+            exit 1
+          else
+            echo "Dossier assets/images trouvé."
+          fi
+
+      - name: Generate image asset variants
+        run: |
+          python generate_asset_variants.py --src assets/images --scales 2,3
+
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.32.5'  # adapte si tu montes plus haut
+          flutter-version: '3.32.5'
           channel: stable
           cache: true
 
-      # 3) Dépendances
-      - name: Install dependencies
+      - name: Install Flutter dependencies
         run: flutter pub get
 
-      # 4) Build Web (base href = /portefolio/)
       - name: Build Flutter Web
-        run: flutter build web --base-href="/portefolio/"
+        run: flutter build web --release --base-href="/portefolio/"
 
-      # 5) Déploiement sur la branche gh-pages
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+      # ✅ Publier build/web comme artifact Pages
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: build/web           # dossier à publier
-          publish_branch: gh-pages         # (défaut, mais je le mets pour clarté)
-          enable_jekyll: false
-          user_name: github-actions[bot]   # signature du commit
-          user_email: github-actions[bot]@users.noreply.github.com
+          path: build/web
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

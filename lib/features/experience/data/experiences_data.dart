@@ -1,5 +1,6 @@
 class Experience {
   final String entreprise;
+  final String logo;
   final String image;
   final String contexte;
   final List<String> objectifs;
@@ -13,6 +14,7 @@ class Experience {
 
   Experience({
     required this.entreprise,
+    required this.logo,
     required this.image,
     required this.contexte,
     required this.objectifs,
@@ -28,6 +30,7 @@ class Experience {
   factory Experience.fromJson(Map<String, dynamic> json) {
     return Experience(
       entreprise: json['entreprise'],
+      logo: json['logo'] ?? '',
       image: json['image'],
       contexte: json['contexte'],
       objectifs: List<String>.from(json['objectifs']),
@@ -46,16 +49,17 @@ class Experience {
   }
 
   Map<String, dynamic> toJson() => {
-        'entreprise': entreprise,
-        'image': image,
-        'contexte': contexte,
-        'objectifs': objectifs,
-        'missions': missions,
-        'code': code,
-        'tags': tags,
-        'stack': stack,
-        'periode': periode,
-        'lienProjet': lienProjet,
-        'resultats': resultats,
-      };
+    'entreprise': entreprise,
+    'logo': logo,
+    'image': image,
+    'contexte': contexte,
+    'objectifs': objectifs,
+    'missions': missions,
+    'code': code,
+    'tags': tags,
+    'stack': stack,
+    'periode': periode,
+    'lienProjet': lienProjet,
+    'resultats': resultats,
+  };
 }

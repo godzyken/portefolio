@@ -1,4 +1,4 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/affichage/screen_size_detector.dart';
@@ -17,6 +17,8 @@ class _ResponsiveScopeState extends ConsumerState<ResponsiveScope>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    // On attend la fin de la première frame pour mettre à jour
+    WidgetsBinding.instance.addPostFrameCallback((_) => _safeUpdateSize());
   }
 
   @override
@@ -25,21 +27,21 @@ class _ResponsiveScopeState extends ConsumerState<ResponsiveScope>
     super.dispose();
   }
 
-  // À chaque changement de dimension
   @override
   void didChangeMetrics() {
-    _updateSize();
+    _safeUpdateSize();
   }
 
   @override
   Widget build(BuildContext context) {
-    // première mise à jour juste après le build
-    WidgetsBinding.instance.addPostFrameCallback((_) => _updateSize());
     return widget.child;
   }
 
-  void _updateSize() {
-    final mq = MediaQuery.of(context);
-    ref.read(screenSizeProvider.notifier).state = mq.size;
+  void _safeUpdateSize() {
+    if (!mounted) return;
+    final mq = MediaQuery.maybeOf(context);
+    if (mq != null && mq.size != Size.zero) {
+      ref.watch(screenSizeProvider.notifier).state = mq.size;
+    }
   }
 }

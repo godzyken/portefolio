@@ -3,7 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/affichage/screen_size_detector.dart';
 import '../../../../core/provider/providers.dart';
-import '../../../home/views/widgets/services_card.dart'; // servicesFutureProvider
+import '../../../home/views/widgets/services_card.dart';
+import '../../../parametres/themes/views/widgets/theme_selector.dart'; // servicesFutureProvider
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -23,6 +24,15 @@ class HomeScreen extends ConsumerWidget {
             fontWeight: FontWeight.bold,
             fontStyle: FontStyle.italic,
           ),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.color_lens),
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const ThemeSelector()),
+            );
+          },
+          tooltip: 'Personnaliser le thème',
         ),
       ),
       body: SafeArea(
