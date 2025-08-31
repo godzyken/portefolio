@@ -5,6 +5,9 @@ on:
   push:
     branches:
       - main        # change en 'master' si besoin
+    tags:
+      - '*'
+    workflow_dispatch:
 
 # ---- AUTORISATIONS ----
 # Donne au token intégré les droits nécessaires pour pousser sur gh-pages
