@@ -105,7 +105,7 @@
   },
   {
     "entreprise": "EGOTE+RMC Rénovation et Services",
-    "logo": "",
+    "logo": "assets/images/egote-foto.png",
     "image": "assets/images/egote-foto.png",
     "contexte": "TPE du secteur BTP/électricité sans outil numérique unifié: devis sur Excel, suivi chantier papier, facturation Word… Objectif: digitaliser l’ensemble du cycle de vente et de production via une application Flutter multi‑modules.",
     "objectifs": [
@@ -452,7 +452,7 @@
   },
   {
     "entreprise": "CoyCoyCoy Ridders inside",
-    "logo": "",
+    "logo": "assets/images/coy.jpg",
     "image": "assets/images/coy.jpg",
     "contexte": "Création d’une boutique en ligne pour un fabricant d'accessoires de ridder",
     "objectifs": ["Améliorer la visibilité et automatiser la gestion du stock et des commandes."],

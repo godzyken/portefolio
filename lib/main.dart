@@ -11,7 +11,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final repo = ThemeRepository();
   final initial = await repo.loadTheme();
-  await dotenv.load(fileName: '.env');
+  await dotenv.load(fileName: "assets/.env");
 
   runApp(
     ProviderScope(

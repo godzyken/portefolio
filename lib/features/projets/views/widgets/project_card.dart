@@ -33,6 +33,24 @@ class ProjectCard extends ConsumerWidget {
             context: context,
             builder: (_) => _buildAlertDialog(context, pdfService),
           ),
+          imageBuilder: project.image!.isNotEmpty
+              ? (ctx, size) => _buildImage(size)
+              : null,
+        ),
+      ),
+    );
+  }
+
+  AspectRatio _buildImage(Size size) {
+    return AspectRatio(
+      aspectRatio: size.aspectRatio * 1.2,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: Image.asset(
+          project.image!.first,
+          fit: BoxFit.cover,
+          height: size.height,
+          width: size.width,
         ),
       ),
     );
@@ -59,7 +77,16 @@ class ProjectCard extends ConsumerWidget {
                 padding: const EdgeInsets.only(bottom: 16.0),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(12),
-                  child: Image.asset(project.image!.first),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxWidth: MediaQuery.of(context).size.width * 0.8,
+                      maxHeight: MediaQuery.of(context).size.height * 0.4,
+                    ),
+                    child: Image.asset(
+                      project.image!.first,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
                 ),
               ),
             ...project.points.map(

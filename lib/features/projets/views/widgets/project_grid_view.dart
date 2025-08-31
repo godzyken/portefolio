@@ -33,6 +33,7 @@ class ProjectGridView extends ConsumerWidget {
               crossAxisCount: columns,
               mainAxisSpacing: 16,
               crossAxisSpacing: 16,
+              mainAxisExtent: cardAspectRatio * 300,
               childAspectRatio: cardAspectRatio,
             ),
             itemCount: projects.length,
@@ -56,6 +57,7 @@ class ProjectGridView extends ConsumerWidget {
             : [...current, project];
       },
       child: Stack(
+        fit: StackFit.expand,
         children: [
           ProjectCard(project: project),
           if (isSelected)

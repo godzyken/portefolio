@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:portefolio/core/affichage/screen_size_detector.dart';
 
 import '../../../generator/views/widgets/fade_slide_animation.dart';
 import '../../data/experiences_data.dart';
@@ -71,9 +72,8 @@ class _ExperienceSlideScreenState extends ConsumerState<ExperienceSlideScreen>
 
   @override
   Widget build(BuildContext context) {
-    final isPortrait =
-        MediaQuery.of(context).orientation == Orientation.portrait;
-    final size = MediaQuery.of(context).size;
+    final isPortrait = ref.watch(isPortraitProvider);
+    final size = ref.watch(screenSizeProvider);
 
     if (!_isControllerInitialized) {
       _controller = PageController(viewportFraction: isPortrait ? 0.95 : 0.85);
