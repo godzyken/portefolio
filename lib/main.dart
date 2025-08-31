@@ -33,6 +33,7 @@ class MyApp extends ConsumerWidget {
 
     return MaterialApp.router(
       title: 'Portfolio PDF',
+
       theme: theme.toThemeData(),
       darkTheme: theme.toThemeData(),
       themeMode: ThemeMode.system,
