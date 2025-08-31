@@ -62,6 +62,9 @@ jobs:
       - name: Install Flutter dependencies
         run: flutter pub get
 
+      - name: Clean build
+        run: flutter clean
+
       - name: Build Flutter Web
         run: flutter build web --release --base-href="/portefolio/"
 
