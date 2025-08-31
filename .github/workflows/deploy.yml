@@ -71,6 +71,11 @@ jobs:
       - name: Build Flutter web
         run: flutter build web --release --base-href="/portefolio/" --dart-define=EMAILJS_SERVICE_ID=${{ secrets.EMAILJS_SERVICE_ID }} --dart-define=EMAILJS_TEMPLATE_ID=${{ secrets.EMAILJS_TEMPLATE_ID }} --dart-define=EMAILJS_PUBLIC_KEY=${{ secrets.EMAILJS_PUBLIC_KEY }} --dart-define=WHATSAPP_PHONE=${{ secrets.WHATSAPP_PHONE }}
 
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build/web
 
       # ✅ Publier build/web comme artifact Pages
       - name: Upload artifact
