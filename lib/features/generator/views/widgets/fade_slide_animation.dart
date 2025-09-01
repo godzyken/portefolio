@@ -52,9 +52,21 @@ class _FadeSlideAnimationState extends ConsumerState<FadeSlideAnimation>
 
   @override
   Widget build(BuildContext context) {
-    return FadeTransition(
-      opacity: _fadeAnimation,
-      child: SlideTransition(position: _slideAnimation, child: widget.child),
+    return MouseRegion(
+      onEnter: (_) {
+        if (_controller.isAnimating) {
+          _controller.stop();
+        }
+      },
+      onExit: (_) {
+        if (!_controller.isAnimating && !_controller.isCompleted) {
+          _controller.forward();
+        }
+      },
+      child: FadeTransition(
+        opacity: _fadeAnimation,
+        child: SlideTransition(position: _slideAnimation, child: widget.child),
+      ),
     );
   }
 }

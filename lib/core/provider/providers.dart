@@ -13,6 +13,16 @@ final isGeneratingProvider = StateProvider<bool>((ref) => false);
 // Etat de la page courante
 final isPageViewProvider = StateProvider<bool>((ref) => true);
 
+final hoverMapProvider = StateProvider<Map<String, bool>>((ref) => {});
+
+final playingVideoProvider = StateProvider<String?>((ref) => null);
+
+void setHover(WidgetRef ref, String id, bool value) {
+  ref.read(hoverMapProvider.notifier).update((state) {
+    return {...state, id: value};
+  });
+}
+
 // Liste des projets sélectionnés
 final selectedProjectsProvider = StateProvider<List<ProjectInfo>>((ref) => []);
 

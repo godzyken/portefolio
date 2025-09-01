@@ -3,10 +3,12 @@ import 'package:flutter_highlight/flutter_highlight.dart';
 import 'package:flutter_highlight/themes/github.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/features/generator/data/extention_models.dart';
+import 'package:portefolio/features/generator/views/widgets/hover_card.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../constants/tech_logos.dart';
 import '../../../generator/views/widgets/adaptive_card.dart';
+import '../../../generator/views/widgets/youtube_video_player.dart';
 
 class ExperienceCard extends ConsumerWidget {
   final Experience experience;
@@ -20,29 +22,42 @@ class ExperienceCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return AdaptiveCard(
-      title: experience.entreprise,
-      bulletPoints: [
-        ...experience.objectifs.take(2), // aperçu : 2 objectifs
-        ...experience.missions.take(1), // + 1 mission
-        if (experience.periode.isNotEmpty) 'Période : ${experience.periode}',
-      ],
-      imagePath: experience.image.isNotEmpty ? experience.image : null,
-      onTap: () => _showDetails(context),
-      imageBuilder: experience.image.isNotEmpty
-          ? (context, size) => _buildImage(context, size)
-          : null,
-      trailingActions: [
-        if (experience.logo.isNotEmpty)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: Image.asset(
-              experience.logo,
-              height: 52,
-              fit: BoxFit.contain,
-            ),
-          ),
-      ],
+    return HoverCard(
+      id: experience.entreprise,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        child: AdaptiveCard(
+          title: experience.entreprise,
+          bulletPoints: [
+            ...experience.objectifs.take(2), // aperçu : 2 objectifs
+            ...experience.missions.take(1), // + 1 mission
+            if (experience.periode.isNotEmpty)
+              'Période : ${experience.periode}',
+          ],
+          imagePath: experience.image.isNotEmpty ? experience.image : null,
+          onTap: () => _showDetails(context),
+          imageBuilder: experience.image.isNotEmpty
+              ? (context, size) => _buildImage(context, size)
+              : null,
+          trailingActions: [
+            if (experience.logo.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Image.asset(
+                  experience.logo,
+                  height: 52,
+                  fit: BoxFit.contain,
+                ),
+              ),
+          ],
+          videoBuilder: (context, size) {
+            return YoutubeVideoPlayerIframe(
+              videoUrl: experience.lienProjet,
+              cardId: experience.entreprise,
+            );
+          },
+        ),
+      ),
     );
   }
 

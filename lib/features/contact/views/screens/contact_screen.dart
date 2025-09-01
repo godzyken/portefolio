@@ -6,7 +6,7 @@ import '../../providers/contact_form_provider.dart';
 
 /// ➜ Ajoute `url_launcher` si tu souhaites déclencher WhatsApp ou ouvrir un mail
 class ContactScreen extends ConsumerStatefulWidget {
-  const ContactScreen({Key? key}) : super(key: key);
+  const ContactScreen({super.key});
 
   @override
   ConsumerState<ContactScreen> createState() => _ContactScreenState();
@@ -19,13 +19,15 @@ class _ContactScreenState extends ConsumerState<ContactScreen> {
   // Affiche un SnackBar selon le nouveau status.
   void _listenAndSnack(ContactFormState next) {
     if (next.status == SubmitStatus.success) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Message envoyé !')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Message envoyé !')));
       ref.read(contactFormProvider.notifier).reset();
       _formKey.currentState?.reset();
     } else if (next.status == SubmitStatus.error) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Erreur : ${next.error}')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Erreur : ${next.error}')));
     }
   }
 
@@ -192,8 +194,9 @@ class _SubmitRow extends StatelessWidget {
                   onPressed: onEmail,
                 ),
                 ElevatedButton.icon(
-                  style:
-                      ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                  ),
                   icon: const Icon(Icons.phone),
                   label: const Text('WhatsApp'),
                   onPressed: onWhatsApp,

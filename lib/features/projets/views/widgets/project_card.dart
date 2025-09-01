@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/features/generator/services/pdf_export_service.dart';
+import 'package:portefolio/features/generator/views/widgets/hover_card.dart';
+import 'package:portefolio/features/generator/views/widgets/youtube_video_player.dart';
+import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 import '../../../../core/provider/providers.dart';
 import '../../../generator/views/widgets/adaptive_card.dart';
@@ -15,12 +19,13 @@ class ProjectCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final pdfService = ref.watch(pdfExportProvider);
 
-    return MouseRegion(
+    return HoverCard(
+      id: project.title,
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
         onTap: () => showDialog(
           context: context,
-          builder: (_) => _buildAlertDialog(context, pdfService),
+          builder: (_) => _buildAlertDialog(context, ref, pdfService),
         ),
         child: AdaptiveCard(
           title: project.title,
@@ -28,14 +33,20 @@ class ProjectCard extends ConsumerWidget {
           imagePath: (project.image?.isNotEmpty ?? false)
               ? project.image!.first
               : null,
-          //onTap: () => context.push('/project/${project.id}'), // or showDialog
           onTap: () => showDialog(
             context: context,
-            builder: (_) => _buildAlertDialog(context, pdfService),
+            builder: (_) => _buildAlertDialog(context, ref, pdfService),
           ),
           imageBuilder: project.image!.isNotEmpty
               ? (ctx, size) => _buildImage(size)
               : null,
+          videoBuilder: (context, size) {
+            if (project.lienProjet == null) return const SizedBox.shrink();
+            return YoutubeVideoPlayerIframe(
+              videoUrl: project.lienProjet!,
+              cardId: project.title,
+            );
+          },
         ),
       ),
     );
@@ -58,8 +69,11 @@ class ProjectCard extends ConsumerWidget {
 
   AlertDialog _buildAlertDialog(
     BuildContext context,
+    WidgetRef ref,
     PdfExportService pdfService,
   ) {
+    final youtubeId = extractYoutubeId(project.lienProjet ?? '');
+
     return AlertDialog(
       title: Text(
         project.title,
@@ -72,15 +86,47 @@ class ProjectCard extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.max,
           children: [
-            if (project.image != null && project.image!.isNotEmpty)
+            if (youtubeId != null && youtubeId.isNotEmpty) // 🎬 YouTube
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16.0),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Builder(
+                    builder: (context) {
+                      final controller = YoutubePlayerController.fromVideoId(
+                        videoId: youtubeId,
+                        autoPlay: false,
+                        params: const YoutubePlayerParams(
+                          showControls: true,
+                          showFullscreenButton: true,
+                          mute: false,
+                          playsInline: true,
+                        ),
+                      );
+
+                      return YoutubePlayerControllerProvider(
+                        controller: controller,
+                        child: YoutubePlayer(
+                          controller: controller,
+                          aspectRatio: 16 / 9,
+                          enableFullScreenOnVerticalDrag: true,
+                          key: ValueKey(youtubeId),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              )
+            else if (project.image != null &&
+                project.image!.isNotEmpty) // 🖼 Image
               Padding(
                 padding: const EdgeInsets.only(bottom: 16.0),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: ConstrainedBox(
                     constraints: BoxConstraints(
-                      maxWidth: MediaQuery.of(context).size.width * 0.8,
-                      maxHeight: MediaQuery.of(context).size.height * 0.4,
+                      maxWidth: ref.watch(screenSizeProvider).width * 0.8,
+                      maxHeight: ref.watch(screenSizeProvider).height * 0.4,
                     ),
                     child: Image.asset(
                       project.image!.first,
@@ -88,7 +134,9 @@ class ProjectCard extends ConsumerWidget {
                     ),
                   ),
                 ),
-              ),
+              )
+            else
+              const SizedBox.shrink(),
             ...project.points.map(
               (point) => Padding(
                 padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -123,5 +171,23 @@ class ProjectCard extends ConsumerWidget {
         ),
       ],
     );
+  }
+
+  /// 🔎 Récupère l'ID de la vidéo YouTube depuis son URL
+  String? extractYoutubeId(String url) {
+    final uri = Uri.tryParse(url);
+    if (uri == null) return null;
+
+    // cas classiques : youtube.com/watch?v=ID
+    if (uri.host.contains('youtube.com')) {
+      return uri.queryParameters['v'];
+    }
+
+    // cas courts : youtu.be/ID
+    if (uri.host.contains('youtu.be')) {
+      return uri.pathSegments.isNotEmpty ? uri.pathSegments[0] : null;
+    }
+
+    return null;
   }
 }

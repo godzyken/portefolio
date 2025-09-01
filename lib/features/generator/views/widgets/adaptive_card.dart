@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:portefolio/features/generator/views/widgets/hover_card.dart';
 import 'package:portefolio/features/parametres/themes/provider/theme_repository_provider.dart';
 
 import '../../../../core/affichage/screen_size_detector.dart';
+import '../../../../core/provider/providers.dart';
 
-class AdaptiveCard extends ConsumerStatefulWidget {
+class AdaptiveCard extends ConsumerWidget {
   final String title;
   final List<String> bulletPoints;
   final String? imagePath;
   final VoidCallback? onTap;
   final List<Widget>? trailingActions;
   final Widget Function(BuildContext context, Size size)? imageBuilder;
+  final Widget Function(BuildContext, Size)? videoBuilder;
 
   const AdaptiveCard({
     super.key,
@@ -20,25 +23,39 @@ class AdaptiveCard extends ConsumerStatefulWidget {
     this.onTap,
     this.trailingActions,
     this.imageBuilder,
+    this.videoBuilder,
   });
 
   @override
-  ConsumerState<AdaptiveCard> createState() => _AdaptiveCardState();
-}
-
-class _AdaptiveCardState extends ConsumerState<AdaptiveCard> {
-  bool _hovering = false;
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final isDesktop = ref.watch(isDesktopProvider);
     final theme = ref.watch(themeLoaderProvider);
+    final hoverMap = ref.watch(hoverMapProvider);
+    final isHovered = hoverMap[title] ?? false;
 
-    return MouseRegion(
-      onEnter: (_) => setState(() => _hovering = true),
-      onExit: (_) => setState(() => _hovering = false),
+    // écoute du hover → démarre ou arrête la vidéo
+    ref.listen(hoverMapProvider, (previous, next) {
+      final wasHovered = previous?[title] ?? false;
+      final nowHovered = next[title] ?? false;
+
+      if (wasHovered != nowHovered && isDesktop) {
+        ref.read(playingVideoProvider.notifier).state = nowHovered
+            ? title
+            : null;
+      }
+    });
+
+    return HoverCard(
+      id: title,
       child: InkWell(
-        onTap: widget.onTap,
+        onTap: !isDesktop
+            ? () {
+                final current = ref.read(playingVideoProvider);
+                ref.read(playingVideoProvider.notifier).state = current == title
+                    ? null
+                    : title;
+              }
+            : onTap,
         child: Card(
           margin: const EdgeInsets.all(12),
           shape: RoundedRectangleBorder(
@@ -51,8 +68,13 @@ class _AdaptiveCardState extends ConsumerState<AdaptiveCard> {
           elevation: 4,
           clipBehavior: Clip.hardEdge,
           child: LayoutBuilder(
-            builder: (_, constraints) =>
-                _responsiveLayout(context, constraints, isDesktop),
+            builder: (_, constraints) => _responsiveLayout(
+              context,
+              ref,
+              constraints,
+              isDesktop,
+              isHovered,
+            ),
           ),
         ),
       ),
@@ -61,10 +83,12 @@ class _AdaptiveCardState extends ConsumerState<AdaptiveCard> {
 
   Widget _responsiveLayout(
     BuildContext ctx,
+    WidgetRef ref,
     BoxConstraints constraints,
     bool isDesktop,
+    bool isHovered,
   ) {
-    final hasImage = widget.imagePath != null || widget.imageBuilder != null;
+    final hasImage = imagePath != null || imageBuilder != null;
     final maxWidth = constraints.maxWidth;
 
     if (!isDesktop || maxWidth < 600) {
@@ -78,11 +102,7 @@ class _AdaptiveCardState extends ConsumerState<AdaptiveCard> {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  _animatedImage(
-                    ctx,
-                    Size(maxWidth, maxWidth / 1.2),
-                    isDesktop,
-                  ),
+                  _animatedImage(ctx, ref, Size(maxWidth, maxWidth / 1.2)),
                   _gradientOverlay(),
                 ],
               ),
@@ -111,11 +131,7 @@ class _AdaptiveCardState extends ConsumerState<AdaptiveCard> {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  _animatedImage(
-                    ctx,
-                    Size(imageWidth, imageWidth / 1.2),
-                    isDesktop,
-                  ),
+                  _animatedImage(ctx, ref, Size(imageWidth, imageWidth / 1.2)),
                   _gradientOverlay(),
                 ],
               ),
@@ -135,21 +151,47 @@ class _AdaptiveCardState extends ConsumerState<AdaptiveCard> {
     }
   }
 
-  Widget _animatedImage(BuildContext ctx, Size size, bool isDesktop) {
-    final scale = _hovering && isDesktop ? 1.05 : 1.0;
+  Widget _animatedImage(BuildContext ctx, WidgetRef ref, Size size) {
+    final playingId = ref.watch(playingVideoProvider);
+    final isActiveVideo = (playingId == title && videoBuilder != null);
+
     return AnimatedScale(
-      scale: scale,
+      scale: (ref.watch(hoverMapProvider)[title] ?? false) ? 1.05 : 1.0,
       duration: const Duration(milliseconds: 250),
       curve: Curves.easeInOut,
-      child: widget.imageBuilder != null
-          ? widget.imageBuilder!(ctx, size)
-          : widget.imagePath != null
-          ? Image.asset(
-              widget.imagePath!,
-              fit: BoxFit.cover,
-              filterQuality: FilterQuality.high,
-            )
-          : const SizedBox.expand(),
+      child: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 300),
+        switchInCurve: Curves.easeIn,
+        switchOutCurve: Curves.easeOut,
+        child: isActiveVideo
+            ? SizedBox(
+                key: ValueKey('video_$title'),
+                width: size.width,
+                height: size.height,
+                child: videoBuilder!(ctx, size),
+              )
+            : imageBuilder != null
+            ? SizedBox(
+                key: ValueKey('image_$title'),
+                width: size.width,
+                height: size.height,
+                child: imageBuilder!(ctx, size),
+              )
+            : imagePath != null
+            ? Image.asset(
+                imagePath!,
+                key: ValueKey('imageAsset_$title'),
+                fit: BoxFit.cover,
+                width: size.width,
+                height: size.height,
+                filterQuality: FilterQuality.high,
+              )
+            : SizedBox(
+                key: ValueKey('empty_$title'),
+                width: size.width,
+                height: size.height,
+              ),
+      ),
     );
   }
 
@@ -170,13 +212,13 @@ class _AdaptiveCardState extends ConsumerState<AdaptiveCard> {
 
   Widget _textContent(BuildContext ctx, bool isDesktop) {
     final theme = Theme.of(ctx);
-    final bulletsToShow = widget.bulletPoints.take(2).toList();
+    final bulletsToShow = bulletPoints.take(2).toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          widget.title,
+          title,
           style: theme.textTheme.titleMedium?.copyWith(
             fontSize: isDesktop ? 18 : 16,
             fontWeight: FontWeight.bold,
@@ -207,11 +249,11 @@ class _AdaptiveCardState extends ConsumerState<AdaptiveCard> {
             ),
           ),
         ),
-        if (widget.bulletPoints.length > 3)
+        if (bulletPoints.length > 3)
           Padding(
             padding: const EdgeInsets.only(top: 4),
             child: Text(
-              '+ ${widget.bulletPoints.length - 3} autres…',
+              '+ ${bulletPoints.length - 3} autres…',
               style: TextStyle(
                 fontSize: 12,
                 fontStyle: FontStyle.italic,
@@ -222,8 +264,8 @@ class _AdaptiveCardState extends ConsumerState<AdaptiveCard> {
         const SizedBox(height: 12),
         Align(
           alignment: Alignment.centerRight,
-          child: widget.trailingActions != null
-              ? Wrap(spacing: 4, children: widget.trailingActions!)
+          child: trailingActions != null
+              ? Wrap(spacing: 4, children: trailingActions!)
               : Wrap(
                   crossAxisAlignment: WrapCrossAlignment.center,
                   spacing: 4,
