@@ -224,11 +224,13 @@ class _TextContent extends StatelessWidget {
                 "• ",
                 style: TextStyle(fontSize: 13, color: Colors.white70),
               ),
-              Expanded(
+              Flexible(
+                flex: 45,
                 child: Text(
                   p,
                   maxLines: isDesktop ? 3 : 2,
                   overflow: TextOverflow.ellipsis,
+                  softWrap: true,
                   style: theme.textTheme.bodySmall?.copyWith(
                     fontSize: isDesktop ? 14 : 13,
                     color: isDesktop ? Colors.black87 : Colors.white,

@@ -83,7 +83,7 @@ class AdaptiveCard extends ConsumerWidget {
       barrierDismissible: true,
       barrierLabel: "Fermer",
       barrierColor: Colors.black54,
-      pageBuilder: (context, _, __) {
+      pageBuilder: (context, _, _) {
         return SafeArea(
           child: Material(
             color: Colors.transparent,

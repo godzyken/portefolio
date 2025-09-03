@@ -24,10 +24,6 @@ class ProjectCard extends ConsumerWidget {
       id: project.title,
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
-        onTap: () => showDialog(
-          context: context,
-          builder: (_) => _buildAlertDialog(context, ref, pdfService),
-        ),
         child: AdaptiveCard(
           title: project.title,
           bulletPoints: project.points,

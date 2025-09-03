@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,17 +13,28 @@ import '../../constants/tech_logos.dart';
 import '../../features/generator/data/extention_models.dart';
 import '../../features/generator/services/pdf_export_service.dart';
 
+/// Titre dynamique de l’AppBar
+final appBarTitleProvider = StateProvider<String>((_) => "Portfolio");
+
+/// Actions dynamiques de l’AppBar
+final appBarActionsProvider = StateProvider<List<Widget>>((_) => []);
+
+/// Drawer dynamique
+final appBarDrawerProvider = StateProvider<Widget?>((_) => null);
+
 // Exemple : état de chargement du PDF
 final isGeneratingProvider = StateProvider<bool>((ref) => false);
 
 // Etat de la page courante
 final isPageViewProvider = StateProvider<bool>((ref) => true);
 
+// Etat de detection du survol d'un élément
 final hoverMapProvider =
     StateNotifierProvider<HoverMapNotifier, Map<String, bool>>(
       (ref) => HoverMapNotifier(),
     );
 
+// Etat du lecteur YoutubeVideoIframe
 final playingVideoProvider = StateProvider<String?>((ref) => null);
 
 // Liste des projets sélectionnés
@@ -76,6 +88,7 @@ final wakatimeBadgeProvider = Provider.family<String?, String>((
   return wakatimeBadges[projectName];
 });
 
+// Etat de la geolocalisation
 final positionProvider = StreamProvider<List<LatLng>>((ref) {
   final positionAsync = ref.watch(userLocationProvider);
 

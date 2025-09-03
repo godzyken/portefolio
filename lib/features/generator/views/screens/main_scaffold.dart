@@ -1,20 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:portefolio/core/provider/providers.dart';
 
 class MainScaffold extends ConsumerWidget {
   final Widget child;
-  final PreferredSizeWidget? appBar;
-  final List<Widget>? actions;
-  final Widget? endDrawer;
 
-  const MainScaffold({
-    super.key,
-    required this.child,
-    this.appBar,
-    this.actions,
-    this.endDrawer,
-  });
+  const MainScaffold({super.key, required this.child});
 
   int _getIndex(String location) {
     if (location.startsWith('/experiences')) return 1;
@@ -27,12 +19,15 @@ class MainScaffold extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final location = GoRouterState.of(context).uri.toString();
     final currentIndex = _getIndex(location);
+    final title = ref.watch(appBarTitleProvider);
+    final actions = ref.watch(appBarActionsProvider);
+    final drawer = ref.watch(appBarDrawerProvider);
     return Scaffold(
       appBar: AppBar(
-        title: appBar ?? const Text("Portefolio"),
+        title: Text(title, overflow: TextOverflow.ellipsis),
         actions: actions,
       ),
-      endDrawer: endDrawer,
+      endDrawer: drawer,
       body: child,
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentIndex,
