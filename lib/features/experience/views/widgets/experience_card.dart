@@ -3,7 +3,9 @@ import 'package:flutter_highlight/flutter_highlight.dart';
 import 'package:flutter_highlight/themes/github.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/features/generator/data/extention_models.dart';
+import 'package:portefolio/features/generator/views/widgets/fade_slide_animation.dart';
 import 'package:portefolio/features/generator/views/widgets/hover_card.dart';
+import 'package:portefolio/features/generator/views/widgets/sig_discovery_map.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../constants/tech_logos.dart';
@@ -51,9 +53,14 @@ class ExperienceCard extends ConsumerWidget {
               ),
           ],
           videoBuilder: (context, size) {
-            return YoutubeVideoPlayerIframe(
-              videoUrl: experience.lienProjet,
-              cardId: experience.entreprise,
+            if (experience.lienProjet.isEmpty) return const SizedBox.shrink();
+            return FadeSlideAnimation(
+              duration: const Duration(milliseconds: 600),
+              offset: const Offset(0, 0.1),
+              child: YoutubeVideoPlayerIframe(
+                videoUrl: experience.lienProjet,
+                cardId: experience.entreprise,
+              ),
             );
           },
         ),
@@ -109,16 +116,30 @@ class _ExperienceDetails extends StatelessWidget {
     final theme = Theme.of(context);
     final isWide = MediaQuery.of(context).size.width > 900;
 
-    return Padding(
-      padding: EdgeInsets.only(
-        left: 24,
-        right: 24,
-        top: 32,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
-      ),
-      child: SingleChildScrollView(
-        child: isWide ? _buildWide(theme) : _buildNarrow(theme),
-      ),
+    return Stack(
+      children: [
+        ?experience.tags.contains('SIG')
+            ? Align(
+                alignment: Alignment.bottomCenter,
+                child: Opacity(
+                  opacity: 0.3,
+                  child: AspectRatio(
+                    aspectRatio: 16 / 9,
+                    child: SigDiscoveryMap(),
+                  ),
+                ),
+              )
+            : null,
+        SingleChildScrollView(
+          padding: EdgeInsets.only(
+            left: 24,
+            right: 24,
+            top: 32,
+            bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+          ),
+          child: isWide ? _buildWide(theme) : _buildNarrow(theme),
+        ),
+      ],
     );
   }
 

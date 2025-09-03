@@ -119,6 +119,7 @@ class _ExperienceSlideScreenState extends ConsumerState<ExperienceSlideScreen>
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         child: FadeSlideAnimation(
+                          offset: const Offset(0, 0.1),
                           delay: Duration(milliseconds: index * 100),
                           child: ExperienceCard(
                             experience: widget.experiences[index],

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/features/generator/services/pdf_export_service.dart';
+import 'package:portefolio/features/generator/views/widgets/fade_slide_animation.dart';
 import 'package:portefolio/features/generator/views/widgets/hover_card.dart';
 import 'package:portefolio/features/generator/views/widgets/youtube_video_player.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
@@ -42,9 +43,13 @@ class ProjectCard extends ConsumerWidget {
               : null,
           videoBuilder: (context, size) {
             if (project.lienProjet == null) return const SizedBox.shrink();
-            return YoutubeVideoPlayerIframe(
-              videoUrl: project.lienProjet!,
-              cardId: project.title,
+            return FadeSlideAnimation(
+              duration: const Duration(milliseconds: 600),
+              offset: const Offset(0, 0.1),
+              child: YoutubeVideoPlayerIframe(
+                videoUrl: project.lienProjet!,
+                cardId: project.title,
+              ),
             );
           },
         ),

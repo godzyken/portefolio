@@ -4,7 +4,17 @@ import 'package:go_router/go_router.dart';
 
 class MainScaffold extends ConsumerWidget {
   final Widget child;
-  const MainScaffold({super.key, required this.child});
+  final PreferredSizeWidget? appBar;
+  final List<Widget>? actions;
+  final Widget? endDrawer;
+
+  const MainScaffold({
+    super.key,
+    required this.child,
+    this.appBar,
+    this.actions,
+    this.endDrawer,
+  });
 
   int _getIndex(String location) {
     if (location.startsWith('/experiences')) return 1;
@@ -18,6 +28,11 @@ class MainScaffold extends ConsumerWidget {
     final location = GoRouterState.of(context).uri.toString();
     final currentIndex = _getIndex(location);
     return Scaffold(
+      appBar: AppBar(
+        title: appBar ?? const Text("Portefolio"),
+        actions: actions,
+      ),
+      endDrawer: endDrawer,
       body: child,
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentIndex,

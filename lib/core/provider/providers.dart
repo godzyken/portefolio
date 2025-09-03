@@ -1,7 +1,12 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/services.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:portefolio/features/generator/notifiers/hover_map_notifier.dart';
 
 import '../../constants/tech_logos.dart';
 import '../../features/generator/data/extention_models.dart';
@@ -13,15 +18,12 @@ final isGeneratingProvider = StateProvider<bool>((ref) => false);
 // Etat de la page courante
 final isPageViewProvider = StateProvider<bool>((ref) => true);
 
-final hoverMapProvider = StateProvider<Map<String, bool>>((ref) => {});
+final hoverMapProvider =
+    StateNotifierProvider<HoverMapNotifier, Map<String, bool>>(
+      (ref) => HoverMapNotifier(),
+    );
 
 final playingVideoProvider = StateProvider<String?>((ref) => null);
-
-void setHover(WidgetRef ref, String id, bool value) {
-  ref.read(hoverMapProvider.notifier).update((state) {
-    return {...state, id: value};
-  });
-}
 
 // Liste des projets sélectionnés
 final selectedProjectsProvider = StateProvider<List<ProjectInfo>>((ref) => []);
@@ -73,3 +75,52 @@ final wakatimeBadgeProvider = Provider.family<String?, String>((
 ) {
   return wakatimeBadges[projectName];
 });
+
+final positionProvider = StreamProvider<List<LatLng>>((ref) {
+  final positionAsync = ref.watch(userLocationProvider);
+
+  return positionAsync.when(
+    data: (pos) async* {
+      // Simule la recherche de données SIG autour de l’utilisateur
+      final nearbyPoints = [
+        LatLng(pos.latitude + 0.001, pos.longitude),
+        LatLng(pos.latitude - 0.001, pos.longitude + 0.001),
+        LatLng(pos.latitude, pos.longitude - 0.001),
+      ];
+      yield nearbyPoints;
+    },
+    error: (_, _) async* {},
+    loading: () async* {},
+  );
+});
+
+final userLocationProvider = StreamProvider<Position>((ref) async* {
+  // Demande la permission
+  LocationPermission permission = await Geolocator.checkPermission();
+  if (permission == LocationPermission.denied ||
+      permission == LocationPermission.deniedForever) {
+    permission = await Geolocator.requestPermission();
+  }
+
+  // Retourne le flux de positions
+  yield* Geolocator.getPositionStream(
+    locationSettings: const LocationSettings(
+      accuracy: LocationAccuracy.high,
+      distanceFilter: 5, // update every 5 meters
+    ),
+  );
+});
+
+final sigPointsProvider = Provider.family<List<LatLng>, LatLng>((ref, userPos) {
+  final rng = Random();
+  // 5 points aléatoires autour de l'utilisateur
+  return List.generate(5, (index) {
+    final dx = (rng.nextDouble() - 0.5) / 500;
+    final dy = (rng.nextDouble() - 0.5) / 500;
+    return LatLng(userPos.latitude + dx, userPos.longitude + dy);
+  });
+});
+
+final followUserProvider = StateProvider<bool>((ref) => true);
+
+final mapControllerProvider = Provider<MapController>((ref) => MapController());

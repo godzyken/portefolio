@@ -50,19 +50,26 @@ class _FadeSlideAnimationState extends ConsumerState<FadeSlideAnimation>
     super.dispose();
   }
 
+  void _pauseAnimation() {
+    if (_controller.isAnimating) {
+      _controller.stop();
+    }
+  }
+
+  void _resumeAnimation() {
+    if (!_controller.isAnimating) {
+      if (_controller.isCompleted) {
+        _controller.reset();
+      }
+      _controller.forward();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MouseRegion(
-      onEnter: (_) {
-        if (_controller.isAnimating) {
-          _controller.stop();
-        }
-      },
-      onExit: (_) {
-        if (!_controller.isAnimating && !_controller.isCompleted) {
-          _controller.forward();
-        }
-      },
+      onEnter: (_) => _pauseAnimation(),
+      onExit: (_) => _resumeAnimation(),
       child: FadeTransition(
         opacity: _fadeAnimation,
         child: SlideTransition(position: _slideAnimation, child: widget.child),

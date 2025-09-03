@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/provider/providers.dart';
+import 'main_scaffold.dart';
 
 class PdfScreen extends ConsumerWidget {
   const PdfScreen({super.key});
@@ -10,9 +11,9 @@ class PdfScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isGenerating = ref.watch(isGeneratingProvider);
 
-    return Scaffold(
+    return MainScaffold(
       appBar: AppBar(title: const Text('Exporter Fiche Portfolio')),
-      body: Padding(
+      child: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -35,20 +36,19 @@ class PdfScreen extends ConsumerWidget {
                 ),
                 textStyle: const TextStyle(fontSize: 16),
               ),
-              onPressed:
-                  isGenerating
-                      ? null
-                      : () async {
-                        ref.read(isGeneratingProvider.notifier).state = true;
+              onPressed: isGenerating
+                  ? null
+                  : () async {
+                      ref.read(isGeneratingProvider.notifier).state = true;
 
-                        final pdfService = ref.read(pdfExportProvider);
-                        final selectedProjects = ref.read(
-                          selectedProjectsProvider,
-                        );
-                        await pdfService.export(selectedProjects);
+                      final pdfService = ref.read(pdfExportProvider);
+                      final selectedProjects = ref.read(
+                        selectedProjectsProvider,
+                      );
+                      await pdfService.export(selectedProjects);
 
-                        ref.read(isGeneratingProvider.notifier).state = false;
-                      },
+                      ref.read(isGeneratingProvider.notifier).state = false;
+                    },
             ),
           ],
         ),

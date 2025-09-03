@@ -40,64 +40,61 @@ class _ContactScreenState extends ConsumerState<ContactScreen> {
 
     final formState = ref.watch(contactFormProvider);
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Contact')),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          final isWide = constraints.maxWidth > 600;
-          final horizontalPadding = isWide ? constraints.maxWidth * .2 : 24.0;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isWide = constraints.maxWidth > 600;
+        final horizontalPadding = isWide ? constraints.maxWidth * .2 : 24.0;
 
-          return Scrollbar(
+        return Scrollbar(
+          controller: _scrollCtrl,
+          child: SingleChildScrollView(
             controller: _scrollCtrl,
-            child: SingleChildScrollView(
-              controller: _scrollCtrl,
-              padding: EdgeInsets.symmetric(
-                horizontal: horizontalPadding,
-                vertical: 24,
-              ),
-              child: Form(
-                key: _formKey,
-                child: AutofillGroup(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        'Envoyez‑moi un message',
-                        style: Theme.of(context).textTheme.headlineSmall,
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 20),
-                      _NameField(initial: formState.name),
-                      const SizedBox(height: 12),
-                      _EmailField(initial: formState.email),
-                      const SizedBox(height: 12),
-                      _MessageField(initial: formState.message),
-                      const SizedBox(height: 20),
-                      _SubmitRow(
-                        isSubmitting: formState.status == SubmitStatus.loading,
-                        onEmail: () async {
-                          if (_formKey.currentState!.validate()) {
-                            await ref
-                                .read(contactFormProvider.notifier)
-                                .submit(Channel.email);
-                          }
-                        },
-                        onWhatsApp: () async {
-                          if (_formKey.currentState!.validate()) {
-                            await ref
-                                .read(contactFormProvider.notifier)
-                                .submit(Channel.whatsapp);
-                          }
-                        },
-                      ),
-                    ],
-                  ),
+            padding: EdgeInsets.symmetric(
+              horizontal: horizontalPadding,
+              vertical: 24,
+            ),
+            child: Form(
+              key: _formKey,
+              child: AutofillGroup(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      'Envoyez‑moi un message',
+                      style: Theme.of(context).textTheme.headlineSmall,
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 20),
+                    _NameField(initial: formState.name),
+                    const SizedBox(height: 12),
+                    _EmailField(initial: formState.email),
+                    const SizedBox(height: 12),
+                    _MessageField(initial: formState.message),
+                    const SizedBox(height: 20),
+                    _SubmitRow(
+                      isSubmitting: formState.status == SubmitStatus.loading,
+                      onEmail: () async {
+                        if (_formKey.currentState!.validate()) {
+                          await ref
+                              .read(contactFormProvider.notifier)
+                              .submit(Channel.email);
+                        }
+                      },
+                      onWhatsApp: () async {
+                        if (_formKey.currentState!.validate()) {
+                          await ref
+                              .read(contactFormProvider.notifier)
+                              .submit(Channel.whatsapp);
+                        }
+                      },
+                    ),
+                  ],
                 ),
               ),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }

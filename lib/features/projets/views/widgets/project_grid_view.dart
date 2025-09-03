@@ -29,6 +29,8 @@ class ProjectGridView extends ConsumerWidget {
     return isGrid
         ? GridView.builder(
             padding: const EdgeInsets.all(16),
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: columns,
               mainAxisSpacing: 16,
@@ -57,7 +59,7 @@ class ProjectGridView extends ConsumerWidget {
             : [...current, project];
       },
       child: Stack(
-        fit: StackFit.expand,
+        fit: StackFit.loose,
         children: [
           ProjectCard(project: project),
           if (isSelected)
