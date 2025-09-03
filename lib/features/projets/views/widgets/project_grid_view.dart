@@ -1,11 +1,11 @@
-// lib/features/projets/views/widgets/project_grid_view.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:portefolio/core/affichage/grid_config_provider.dart';
+import 'package:portefolio/features/projets/views/widgets/project_card.dart';
 
 import '../../../../core/affichage/screen_size_detector.dart';
 import '../../../../core/provider/providers.dart';
 import '../../data/project_data.dart';
-import 'project_card.dart';
 
 class ProjectGridView extends ConsumerWidget {
   final List<ProjectInfo> projects;
@@ -19,33 +19,43 @@ class ProjectGridView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isPortrait = ref.watch(isPortraitProvider);
-    final width = ref.watch(screenSizeProvider).width;
-    final columns = width ~/ 300; // approx 300px/card
+    final config = ref.watch(gridConfigProvider);
+    final cardWidth = ref.watch(cardWidthProvider);
 
-    final isGrid = columns > 1;
-    final cardAspectRatio = isPortrait ? 0.85 : 1.4;
-
-    return isGrid
-        ? GridView.builder(
+    return LayoutBuilder(
+      builder: (_, constraints) {
+        if (config.columns <= 1) {
+          // Mode liste mobile
+          return ListView.builder(
             padding: const EdgeInsets.all(16),
+            itemCount: projects.length,
+            itemBuilder: (_, i) => Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: SizedBox(
+                width: cardWidth,
+                child: _buildCard(ref, projects[i]),
+              ),
+            ),
+          );
+        } else {
+          // Mode grille desktop/tablette
+          return GridView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: projects.length,
             shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
+            physics: const BouncingScrollPhysics(),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: columns,
+              crossAxisCount: config.columns,
               mainAxisSpacing: 16,
               crossAxisSpacing: 16,
-              mainAxisExtent: cardAspectRatio * 300,
-              childAspectRatio: cardAspectRatio,
+              mainAxisExtent: config.aspectRatio * 300,
+              childAspectRatio: config.aspectRatio,
             ),
-            itemCount: projects.length,
-            itemBuilder: (_, i) => _buildCard(ref, projects[i]),
-          )
-        : ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: projects.length,
             itemBuilder: (_, i) => _buildCard(ref, projects[i]),
           );
+        }
+      },
+    );
   }
 
   Widget _buildCard(WidgetRef ref, ProjectInfo project) {
