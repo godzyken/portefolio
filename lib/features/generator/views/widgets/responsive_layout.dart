@@ -59,13 +59,24 @@ class ResponsiveLayout extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (hasImage)
-              AspectRatio(aspectRatio: config.aspectRatio, child: buildImage()),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  child: buildContent(),
+              Flexible(
+                flex: 50,
+                child: AspectRatio(
+                  aspectRatio: config.aspectRatio,
+                  child: buildImage(),
+                ),
+              ),
+            Flexible(
+              flex: 50,
+              child: SizedBox(
+                width: screenSize.width,
+                height: screenSize.height,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    child: buildContent(),
+                  ),
                 ),
               ),
             ),
@@ -80,7 +91,7 @@ class ResponsiveLayout extends ConsumerWidget {
       children: [
         if (hasImage)
           Flexible(
-            flex: 35,
+            flex: 45,
             child: SizedBox(
               width: screenSize.width,
               height: screenSize.height,
@@ -89,7 +100,7 @@ class ResponsiveLayout extends ConsumerWidget {
           ),
         const SizedBox(width: 12),
         Flexible(
-          flex: 65,
+          flex: 55,
           child: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
             child: buildContent(),
@@ -216,7 +227,7 @@ class _TextContent extends StatelessWidget {
               Expanded(
                 child: Text(
                   p,
-                  maxLines: 2,
+                  maxLines: isDesktop ? 3 : 2,
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.bodySmall?.copyWith(
                     fontSize: isDesktop ? 14 : 13,

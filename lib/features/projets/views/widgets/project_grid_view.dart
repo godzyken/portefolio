@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/grid_config_provider.dart';
 import 'package:portefolio/features/projets/views/widgets/project_card.dart';
 
-import '../../../../core/affichage/screen_size_detector.dart';
 import '../../../../core/provider/providers.dart';
 import '../../data/project_data.dart';
 
@@ -20,7 +19,6 @@ class ProjectGridView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final config = ref.watch(gridConfigProvider);
-    final cardWidth = ref.watch(cardWidthProvider);
 
     return LayoutBuilder(
       builder: (_, constraints) {
@@ -31,10 +29,7 @@ class ProjectGridView extends ConsumerWidget {
             itemCount: projects.length,
             itemBuilder: (_, i) => Padding(
               padding: const EdgeInsets.only(bottom: 16),
-              child: SizedBox(
-                width: cardWidth,
-                child: _buildCard(ref, projects[i]),
-              ),
+              child: SizedBox(child: _buildCard(ref, projects[i])),
             ),
           );
         } else {
