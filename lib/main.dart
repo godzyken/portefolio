@@ -30,10 +30,10 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = ref.watch(themeControllerProvider);
+    final router = ref.watch(goRouterProvider);
 
     return MaterialApp.router(
       title: 'Portfolio PDF',
-
       theme: theme.toThemeData(),
       darkTheme: theme.toThemeData(),
       themeMode: ThemeMode.system,

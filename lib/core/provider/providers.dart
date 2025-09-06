@@ -7,11 +7,14 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:portefolio/core/service/analytics_service.dart';
 import 'package:portefolio/features/generator/notifiers/hover_map_notifier.dart';
 
+import '../../constants/app_tab.dart';
 import '../../constants/tech_logos.dart';
 import '../../features/generator/data/extention_models.dart';
 import '../../features/generator/services/pdf_export_service.dart';
+import '../routes/router.dart';
 
 /// Titre dynamique de l’AppBar
 final appBarTitleProvider = StateProvider<String>((_) => "Portfolio");
@@ -21,6 +24,25 @@ final appBarActionsProvider = StateProvider<List<Widget>>((_) => []);
 
 /// Drawer dynamique
 final appBarDrawerProvider = StateProvider<Widget?>((_) => null);
+
+/// Location route actuelle
+final currentLocationProvider = Provider<String>((ref) {
+  final router = ref.watch(goRouterProvider);
+  return router.routerDelegate.currentConfiguration.last.matchedLocation;
+});
+
+/// Tab position actuelle
+final currentTabProvider = Provider<AppTab>((ref) {
+  final router = ref.watch(goRouterProvider);
+  final location =
+      router.routerDelegate.currentConfiguration.last.matchedLocation;
+  return AppTab.fromLocation(location);
+});
+
+/// Index actuelle
+final currentIndexProvider = Provider<int>((ref) {
+  return ref.watch(currentTabProvider).index;
+});
 
 // Exemple : état de chargement du PDF
 final isGeneratingProvider = StateProvider<bool>((ref) => false);
@@ -137,3 +159,7 @@ final sigPointsProvider = Provider.family<List<LatLng>, LatLng>((ref, userPos) {
 final followUserProvider = StateProvider<bool>((ref) => true);
 
 final mapControllerProvider = Provider<MapController>((ref) => MapController());
+
+final analyticsProvider = Provider<AnalyticsService>((ref) {
+  return AnalyticsService();
+});
