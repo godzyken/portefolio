@@ -3,8 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 import '../../../../core/provider/providers.dart';
+import '../../controllers/providers/youtube_player_controller_provider.dart';
 
-class YoutubeVideoPlayerIframe extends ConsumerStatefulWidget {
+class YoutubeVideoPlayerIframe extends ConsumerWidget {
   final String videoUrl;
   final String cardId;
 
@@ -15,67 +16,31 @@ class YoutubeVideoPlayerIframe extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<YoutubeVideoPlayerIframe> createState() =>
-      _YoutubeVideoPlayerIframeState();
-}
-
-class _YoutubeVideoPlayerIframeState
-    extends ConsumerState<YoutubeVideoPlayerIframe> {
-  late YoutubePlayerController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    final videoId =
-        YoutubePlayerController.convertUrlToId(widget.videoUrl) ?? '';
-    _controller = YoutubePlayerController.fromVideoId(
-      videoId: videoId,
-      autoPlay: false,
-      params: const YoutubePlayerParams(
-        playsInline: true,
-        mute: true,
-        showControls: true,
-        showFullscreenButton: true,
-        loop: false,
-      ),
-    );
-  }
-
-  @override
-  void didUpdateWidget(covariant YoutubeVideoPlayerIframe oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    final playingId = ref.read(playingVideoProvider);
-    _updatePlayback(playingId);
-  }
-
-  void _updatePlayback(String? playingId) {
-    if (playingId == widget.cardId) {
-      _controller.playVideo();
-    } else {
-      _controller.pauseVideo();
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final controller = ref.watch(youtubePlayerControllerProvider(videoUrl));
     final playingId = ref.watch(playingVideoProvider);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _updatePlayback(playingId);
-    });
 
-    return YoutubePlayerControllerProvider(
-      controller: _controller,
-      child: YoutubePlayer(
-        aspectRatio: 16 / 9,
-        controller: _controller,
-        key: ValueKey(playingId),
+    // Play/pause automatique via provider
+    if (playingId == cardId) {
+      controller.playVideo();
+    } else {
+      controller.pauseVideo();
+    }
+
+    return GestureDetector(
+      onTap: () {
+        ref.read(playingVideoProvider.notifier).state = playingId == cardId
+            ? null
+            : cardId;
+      },
+      child: YoutubePlayerControllerProvider(
+        controller: controller,
+        child: YoutubePlayer(
+          aspectRatio: 16 / 9,
+          controller: controller,
+          key: ValueKey(cardId),
+        ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _controller.close();
-    super.dispose();
   }
 }

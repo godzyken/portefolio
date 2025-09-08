@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:latlong2/latlong.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../../core/provider/providers.dart';
 
@@ -38,71 +37,59 @@ class _SigDiscoveryMapState extends ConsumerState<SigDiscoveryMap>
     final position = ref.watch(positionProvider);
     final userPosAsync = ref.watch(userLocationProvider);
     final followUser = ref.watch(followUserProvider);
-    final mapController = ref.read(mapControllerProvider);
+    final mapControllerCompleter = ref.read(mapControllerProvider);
 
     return userPosAsync.when(
       data: (pos) {
         final userPos = LatLng(pos.latitude, pos.longitude);
         final sigPoints = position.value ?? [];
 
+        final markers = <Marker>{
+          Marker(
+            markerId: const MarkerId("user"),
+            position: userPos,
+            icon: BitmapDescriptor.defaultMarkerWithHue(
+              BitmapDescriptor.hueBlue,
+            ),
+          ),
+          ...sigPoints.map((p) {
+            return Marker(
+              markerId: MarkerId(p.toString()),
+              position: p,
+              icon: BitmapDescriptor.defaultMarkerWithHue(
+                BitmapDescriptor.hueRed,
+              ),
+            );
+          }),
+        };
+
         if (followUser) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            mapController.move(userPos, mapController.camera.zoom);
+          WidgetsBinding.instance.addPostFrameCallback((_) async {
+            if (mapControllerCompleter.isCompleted) {
+              final controller = await mapControllerCompleter.future;
+              controller.animateCamera(CameraUpdate.newLatLng(userPos));
+            }
           });
         }
 
-        return FlutterMap(
-          mapController: mapController,
-          options: MapOptions(
-            initialCenter: userPos,
-            initialZoom: 16,
-            interactionOptions: InteractionOptions(flags: InteractiveFlag.all),
+        return GoogleMap(
+          initialCameraPosition: CameraPosition(
+            target: userPos,
+            zoom: 16,
+            tilt: 60, // angle pour voir en 3D
           ),
-          children: [
-            TileLayer(
-              urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-            ),
-
-            // Marqueur utilisateur
-            MarkerLayer(
-              markers: [
-                Marker(
-                  point: userPos,
-                  width: 40,
-                  height: 40,
-                  alignment: Alignment(0, -1),
-                  rotate: true,
-                  child: const Icon(
-                    Icons.my_location,
-                    color: Colors.blue,
-                    size: 40,
-                  ),
-                ),
-                // Marquer des Données Sig
-                ...sigPoints.map(
-                  (p) => Marker(
-                    point: p,
-                    width: 35,
-                    height: 35,
-                    child: AnimatedBuilder(
-                      animation: _pulseController,
-                      builder: (context, child) {
-                        final scale = 1.0 + 0.3 * _pulseController.value;
-                        return Transform.scale(
-                          scale: scale,
-                          child: const Icon(
-                            Icons.location_pin,
-                            color: Colors.red,
-                            size: 35,
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
+          mapType: MapType.hybrid,
+          markers: markers,
+          myLocationEnabled: true,
+          myLocationButtonEnabled: true,
+          compassEnabled: true,
+          buildingsEnabled: true, // active les bâtiments 3D
+          onMapCreated: (controller) {
+            if (!mapControllerCompleter.isCompleted) {
+              mapControllerCompleter.complete(controller);
+            }
+          },
+          webCameraControlEnabled: true,
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),

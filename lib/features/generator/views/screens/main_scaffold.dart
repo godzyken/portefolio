@@ -31,8 +31,6 @@ class MainScaffold extends ConsumerWidget {
           final tab = AppTab.values[index];
           router.go(tab.path);
         },
-        selectedItemColor: Colors.indigo,
-        unselectedItemColor: Colors.grey,
         items: AppTab.values.map((t) => t.navItem).toList(),
       ),
     );

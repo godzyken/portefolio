@@ -14,7 +14,7 @@
     This is a placeholder for base href that will be replaced by the value of
     the `--base-href` argument provided to `flutter build`.
   -->
-  <base href="$FLUTTER_BASE_HREF">
+  <base href="/portefolio/">
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
@@ -36,6 +36,10 @@
   <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0], j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src= 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-WQRTDMK3');</script>
   <!-- End Google Tag Manager -->
 
+  <script async
+          src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA1i1mjqEBbaVn8lYsOwabknT98jExkfus">
+  </script>
+
   <!-- Global site tag (gtag.js) - Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
   <script>
@@ -43,7 +47,14 @@
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
 
-    gtag('config', 'G-XXXXXXXXXX'); // <-- remplace par ton ID GA4
+    const trackingId = 'G-WQRTDMK3';
+
+    gtag('config', trackingId);
+
+    window.sendEvent = function(name, params) {
+      gtag('event', name, params || {});
+    };
+
   </script>
 
 </head>

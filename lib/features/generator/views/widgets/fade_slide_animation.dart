@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class FadeSlideAnimation extends ConsumerStatefulWidget {
@@ -24,6 +24,7 @@ class _FadeSlideAnimationState extends ConsumerState<FadeSlideAnimation>
   late final AnimationController _controller;
   late final Animation<Offset> _slideAnimation;
   late final Animation<double> _fadeAnimation;
+  bool _paused = false;
 
   @override
   void initState() {
@@ -38,10 +39,22 @@ class _FadeSlideAnimationState extends ConsumerState<FadeSlideAnimation>
     _fadeAnimation = CurvedAnimation(parent: _controller, curve: Curves.easeIn);
 
     Future.delayed(widget.delay, () {
-      if (mounted) {
-        _controller.forward();
-      }
+      if (mounted) _controller.forward();
     });
+  }
+
+  void pause() {
+    if (!_paused && _controller.isAnimating) {
+      _controller.stop(canceled: false);
+      _paused = true;
+    }
+  }
+
+  void resume() {
+    if (_paused && !_controller.isAnimating) {
+      _controller.forward();
+      _paused = false;
+    }
   }
 
   @override
@@ -50,29 +63,21 @@ class _FadeSlideAnimationState extends ConsumerState<FadeSlideAnimation>
     super.dispose();
   }
 
-  void _pauseAnimation() {
-    if (_controller.isAnimating) {
-      _controller.stop();
-    }
-  }
-
-  void _resumeAnimation() {
-    if (!_controller.isAnimating) {
-      if (_controller.isCompleted) {
-        _controller.reset();
-      }
-      _controller.forward();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return MouseRegion(
-      onEnter: (_) => _pauseAnimation(),
-      onExit: (_) => _resumeAnimation(),
-      child: FadeTransition(
-        opacity: _fadeAnimation,
-        child: SlideTransition(position: _slideAnimation, child: widget.child),
+      onEnter: (_) => pause(),
+      onExit: (_) => resume(),
+      child: GestureDetector(
+        onTapDown: (_) => pause(),
+        onTapUp: (_) => resume(),
+        child: FadeTransition(
+          opacity: _fadeAnimation,
+          child: SlideTransition(
+            position: _slideAnimation,
+            child: widget.child,
+          ),
+        ),
       ),
     );
   }

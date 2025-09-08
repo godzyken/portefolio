@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_highlight/flutter_highlight.dart';
 import 'package:flutter_highlight/themes/github.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/features/generator/data/extention_models.dart';
 import 'package:portefolio/features/generator/views/widgets/fade_slide_animation.dart';
 import 'package:portefolio/features/generator/views/widgets/hover_card.dart';
@@ -107,14 +108,14 @@ class ExperienceCard extends ConsumerWidget {
 // ===========================================================================
 // DETAIL SHEET
 // ===========================================================================
-class _ExperienceDetails extends StatelessWidget {
+class _ExperienceDetails extends ConsumerWidget {
   final Experience experience;
   const _ExperienceDetails({required this.experience});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final isWide = MediaQuery.of(context).size.width > 900;
+    final isWide = ref.watch(screenSizeProvider).width > 900;
 
     return Stack(
       children: [

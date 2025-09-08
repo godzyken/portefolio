@@ -37,8 +37,10 @@ dependencies:
   emailjs: ^4.0.0
   youtube_player_iframe: ^5.2.2
   geolocator: ^14.0.2
-  flutter_map: ^8.2.1
   latlong2: ^0.9.1
+  vector_math: ^2.2.0
+  google_maps_flutter: ^2.13.1
+  google_maps_flutter_web: ^0.5.14+2
 
 dev_dependencies:
   flutter_test:

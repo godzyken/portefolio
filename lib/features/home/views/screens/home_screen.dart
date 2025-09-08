@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/affichage/screen_size_detector.dart';
 import '../../../../core/provider/providers.dart';
 import '../../../home/views/widgets/services_card.dart';
+import '../../../parametres/themes/views/widgets/theme_selector.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -13,6 +14,21 @@ class HomeScreen extends ConsumerWidget {
     final servicesAsync = ref.watch(servicesFutureProvider);
     final isPortrait = ref.watch(isPortraitProvider);
     final screenSize = ref.watch(screenSizeProvider);
+
+    Future.microtask(() {
+      ref.read(appBarTitleProvider.notifier).state = "Godzyken Portefolio";
+      ref.read(appBarActionsProvider.notifier).state = [
+        IconButton(
+          icon: const Icon(Icons.color_lens),
+          onPressed: () {
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (_) => const ThemeSelector()));
+          },
+          tooltip: 'Personnaliser le thème',
+        ),
+      ];
+    });
 
     return SafeArea(
       child: servicesAsync.when(

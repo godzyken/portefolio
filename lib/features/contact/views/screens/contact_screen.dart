@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/provider/providers.dart';
 import '../../model/state/contact_form_state.dart';
 import '../../providers/contact_form_provider.dart';
 
@@ -15,6 +16,17 @@ class ContactScreen extends ConsumerStatefulWidget {
 class _ContactScreenState extends ConsumerState<ContactScreen> {
   final _formKey = GlobalKey<FormState>();
   final _scrollCtrl = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(appBarTitleProvider.notifier).state = "Contactez moi";
+      ref.read(appBarActionsProvider.notifier).state = [];
+      ref.read(appBarDrawerProvider.notifier).state = null;
+    });
+  }
 
   // Affiche un SnackBar selon le nouveau status.
   void _listenAndSnack(ContactFormState next) {

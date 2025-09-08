@@ -1,12 +1,12 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:latlong2/latlong.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:portefolio/core/service/analytics_service.dart';
 import 'package:portefolio/features/generator/notifiers/hover_map_notifier.dart';
 
@@ -158,8 +158,16 @@ final sigPointsProvider = Provider.family<List<LatLng>, LatLng>((ref, userPos) {
 
 final followUserProvider = StateProvider<bool>((ref) => true);
 
-final mapControllerProvider = Provider<MapController>((ref) => MapController());
+final mapControllerProvider = Provider<Completer<GoogleMapController>>(
+  (ref) => Completer(),
+);
+
+const _gaTrackingId = 'G-WQRTDMK3';
 
 final analyticsProvider = Provider<AnalyticsService>((ref) {
-  return AnalyticsService();
+  return AnalyticsService(_gaTrackingId);
+});
+
+final isVideoPlayingProvider = StateProvider<bool>((ref) {
+  return ref.watch(playingVideoProvider) != null;
 });

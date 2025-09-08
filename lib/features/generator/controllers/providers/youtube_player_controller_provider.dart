@@ -1,0 +1,60 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:youtube_player_iframe/youtube_player_iframe.dart';
+
+import '../../../../core/provider/providers.dart';
+
+final youtubeControllerProvider =
+    StateNotifierProvider<
+      YoutubeControllerNotifier,
+      Map<String, YoutubePlayerController>
+    >((ref) => YoutubeControllerNotifier());
+
+class YoutubeControllerNotifier
+    extends StateNotifier<Map<String, YoutubePlayerController>> {
+  YoutubeControllerNotifier() : super({});
+
+  void registerController(String id, YoutubePlayerController controller) {
+    state = {...state, id: controller};
+  }
+
+  void unregisterController(String id) {
+    final newState = {...state};
+    newState.remove(id);
+    state = newState;
+  }
+
+  void play(String id, WidgetRef ref) {
+    state.forEach((key, controller) {
+      if (key == id) {
+        controller.playVideo();
+        ref.read(playingVideoProvider.notifier).state = id;
+      } else {
+        controller.pauseVideo();
+      }
+    });
+  }
+
+  void pause(String id) {
+    state[id]?.pauseVideo();
+    // si c'était la vidéo en cours, reset playing
+  }
+}
+
+final youtubePlayerControllerProvider =
+    Provider.family<YoutubePlayerController, String>((ref, videoUrl) {
+      final videoId = YoutubePlayerController.convertUrlToId(videoUrl) ?? '';
+      final controller = YoutubePlayerController.fromVideoId(
+        videoId: videoId,
+        autoPlay: false,
+        params: const YoutubePlayerParams(
+          playsInline: true,
+          mute: false,
+          showControls: true,
+          showFullscreenButton: true,
+        ),
+      );
+
+      ref.onDispose(() => controller.close());
+
+      return controller;
+    });

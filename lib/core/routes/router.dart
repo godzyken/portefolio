@@ -16,9 +16,11 @@ final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
 // GoRouter fourni via Riverpod
 final goRouterProvider = Provider<GoRouter>((ref) {
+  final analytics = ref.read(analyticsProvider);
+
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
-    observers: [_RouteObserver(ref), GAObserver(ref.read(analyticsProvider))],
+    observers: [_RouteObserver(ref), GAObserver(analytics)],
     initialLocation: '/',
     routes: [
       ShellRoute(
@@ -42,7 +44,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             builder: (context, state) => const ProjectsScreen(),
             routes: [
               GoRoute(
-                path: 'pdf', // ⚠️ pas de "/" devant sinon le nested break
+                path: 'pdf',
                 name: 'pdf',
                 builder: (context, state) => const PdfScreen(),
               ),
@@ -68,7 +70,9 @@ class _RouteObserver extends NavigatorObserver {
     final location =
         route.settings.name ?? route.settings.arguments?.toString();
     if (location != null) {
-      ref.read(visitedPagesProvider.notifier).markVisited(location);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(visitedPagesProvider.notifier).markVisited(location);
+      });
     }
     super.didPush(route, previousRoute);
   }
@@ -76,11 +80,13 @@ class _RouteObserver extends NavigatorObserver {
 
 class GAObserver extends NavigatorObserver {
   final AnalyticsService analytics;
+
   GAObserver(this.analytics);
 
   @override
   void didPush(Route route, Route? previousRoute) {
     final path = route.settings.name ?? route.toString();
+
     analytics.pageview(path);
     super.didPush(route, previousRoute);
   }

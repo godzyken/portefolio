@@ -12,7 +12,7 @@ enum AppThemeMode {
   @HiveField(2)
   dark,
   @HiveField(3)
-  custom
+  custom,
 }
 
 @HiveType(typeId: 2)
@@ -52,14 +52,25 @@ class BasicTheme {
       AppThemeMode.custom => Brightness.light,
     };
 
+    final colorScheme = ColorScheme.fromSeed(
+      seedColor: primaryColor,
+      brightness: brightness,
+      surface: neutralColor,
+      tertiary: tertiaryColor,
+    );
+
     return ThemeData(
       useMaterial3: true,
       brightness: brightness,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: primaryColor,
-        brightness: brightness,
-        surface: neutralColor,
-        tertiary: tertiaryColor,
+      colorScheme: colorScheme,
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        type: BottomNavigationBarType.fixed,
+        backgroundColor: colorScheme.surface,
+        selectedItemColor: colorScheme.primary,
+        unselectedItemColor: colorScheme.onSurface.withAlpha(
+          (255 * 0.6).toInt(),
+        ),
+        showUnselectedLabels: true,
       ),
     );
   }
@@ -86,13 +97,13 @@ class BasicTheme {
   );
 
   Map<String, dynamic> toJson() => {
-        'primaryColorValue': primaryColorValue,
-        'tertiaryColorValue': tertiaryColorValue,
-        'neutralColorValue': neutralColorValue,
-        'mode': mode.name,
-        'name': name,
-        'emoji': emoji,
-      };
+    'primaryColorValue': primaryColorValue,
+    'tertiaryColorValue': tertiaryColorValue,
+    'neutralColorValue': neutralColorValue,
+    'mode': mode.name,
+    'name': name,
+    'emoji': emoji,
+  };
 
   static BasicTheme fromJson(Map<String, dynamic> json) {
     return BasicTheme(
@@ -138,13 +149,13 @@ final availableThemes = [
 
 extension BasicThemeSerialization on BasicTheme {
   Map<String, dynamic> toJson() => {
-        'primaryColor': primaryColorValue,
-        'tertiaryColor': tertiaryColorValue,
-        'neutralColor': neutralColorValue,
-        'mode': mode.name,
-        'name': name,
-        'emoji': emoji,
-      };
+    'primaryColor': primaryColorValue,
+    'tertiaryColor': tertiaryColorValue,
+    'neutralColor': neutralColorValue,
+    'mode': mode.name,
+    'name': name,
+    'emoji': emoji,
+  };
 
   static BasicTheme fromJson(Map<String, dynamic> json) {
     return BasicTheme(
