@@ -31,11 +31,37 @@ final currentLocationProvider = Provider<String>((ref) {
   return router.routerDelegate.currentConfiguration.last.matchedLocation;
 });
 
+/// Notifie quand on veut forcer un refresh
+final routerNotifierProvider = Provider<ValueNotifier<void>>((ref) {
+  return ValueNotifier(null);
+});
+
+/// Stream qui émet la location courante
+final routeLocationStreamProvider = StreamProvider<String>((ref) {
+  final router = ref.watch(goRouterProvider);
+  final controller = StreamController<String>.broadcast();
+
+  void listener() {
+    controller.add(router.routeInformationProvider.value.uri.toString());
+  }
+
+  router.routeInformationProvider.addListener(listener);
+
+  // emit initial
+  controller.add(router.routeInformationProvider.value.uri.toString());
+
+  ref.onDispose(() {
+    router.routeInformationProvider.removeListener(listener);
+    controller.close();
+  });
+
+  return controller.stream;
+});
+
 /// Tab position actuelle
 final currentTabProvider = Provider<AppTab>((ref) {
-  final router = ref.watch(goRouterProvider);
-  final location =
-      router.routerDelegate.currentConfiguration.last.matchedLocation;
+  final asyncLoc = ref.watch(routeLocationStreamProvider);
+  final location = asyncLoc.asData?.value ?? '/';
   return AppTab.fromLocation(location);
 });
 

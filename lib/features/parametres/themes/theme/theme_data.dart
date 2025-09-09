@@ -63,7 +63,7 @@ class BasicTheme {
       useMaterial3: true,
       brightness: brightness,
       colorScheme: colorScheme,
-      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+      /*      bottomNavigationBarTheme: BottomNavigationBarThemeData(
         type: BottomNavigationBarType.fixed,
         backgroundColor: colorScheme.surface,
         selectedItemColor: colorScheme.primary,
@@ -71,6 +71,36 @@ class BasicTheme {
           (255 * 0.6).toInt(),
         ),
         showUnselectedLabels: true,
+      ),*/
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: Colors.transparent,
+        elevation: 10,
+        indicatorColor: colorScheme.primaryContainer,
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return TextStyle(
+              color: colorScheme.primary,
+              fontWeight: FontWeight.bold,
+            );
+          }
+          return TextStyle(color: colorScheme.onSurface);
+        }),
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return IconThemeData(color: colorScheme.primary, size: 28);
+          }
+          return IconThemeData(color: colorScheme.onSurface, size: 24);
+        }),
+        overlayColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.hovered)) {
+            return colorScheme.primary.withAlpha((255 * 0.6).toInt());
+          }
+          if (states.contains(WidgetState.focused) ||
+              states.contains(WidgetState.pressed)) {
+            return colorScheme.primary.withAlpha((255 * 0.12).toInt());
+          }
+          return null;
+        }),
       ),
     );
   }

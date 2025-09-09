@@ -53,11 +53,31 @@ class _ProjectsScreenState extends ConsumerState<ProjectsScreen> {
     final projectsAsync = ref.watch(projectsFutureProvider);
     final selected = ref.watch(selectedProjectsProvider);
 
-    return projectsAsync.when(
-      data: (projects) =>
-          ProjectGridView(projects: projects, selected: selected),
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Center(child: Text('Erreur : $e')),
+    return Stack(
+      children: [
+        // --- Image de fond ---
+        Positioned.fill(
+          child: Image.asset(
+            "assets/images/design-digital.png", // ton image
+            fit: BoxFit.cover, // couvre tout l'écran
+          ),
+        ),
+
+        // --- Contenu principal ---
+        Positioned.fill(
+          child: Container(
+            color: Colors.black.withAlpha(
+              (255 * 0.4).toInt(),
+            ), // voile pour lisibilité
+            child: projectsAsync.when(
+              data: (projects) =>
+                  ProjectGridView(projects: projects, selected: selected),
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (e, _) => Center(child: Text('Erreur : $e')),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

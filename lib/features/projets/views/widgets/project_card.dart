@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/features/generator/services/pdf_export_service.dart';
+import 'package:portefolio/features/generator/views/widgets/code_high_light_list.dart';
 import 'package:portefolio/features/generator/views/widgets/fade_slide_animation.dart';
 import 'package:portefolio/features/generator/views/widgets/hover_card.dart';
 import 'package:portefolio/features/generator/views/widgets/youtube_video_player.dart';
@@ -15,6 +16,13 @@ import '../../data/project_data.dart';
 class ProjectCard extends ConsumerWidget {
   final ProjectInfo project;
   const ProjectCard({super.key, required this.project});
+
+  bool _hasProgrammingTag() {
+    const programmingTags = ['e-commerce', 'flutter', 'angular', 'digital'];
+
+    final titleLower = project.title.toLowerCase();
+    return programmingTags.any((tag) => titleLower.contains(tag));
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -138,23 +146,25 @@ class ProjectCard extends ConsumerWidget {
               )
             else
               const SizedBox.shrink(),
-            ...project.points.map(
-              (point) => Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('• ', style: TextStyle(fontSize: 16)),
-                    Expanded(
-                      child: Text(
-                        point,
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
+            if (_hasProgrammingTag())
+              CodeHighlightList(items: project.points, tag: '->')
+            else
+              Wrap(
+                spacing: 6,
+                children: project.points.take(3).map((p) {
+                  return Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: Colors.blueGrey.withAlpha((255 * 0.2).toInt()),
+                      borderRadius: BorderRadius.circular(6),
                     ),
-                  ],
-                ),
+                    child: Text(
+                      _mapPointToEmoji(p),
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  );
+                }).toList(),
               ),
-            ),
           ],
         ),
       ),
@@ -190,5 +200,12 @@ class ProjectCard extends ConsumerWidget {
     }
 
     return null;
+  }
+
+  String _mapPointToEmoji(String point) {
+    if (point.contains('objectif')) return '🎯';
+    if (point.contains('mission')) return '🛠';
+    if (point.contains('résultat')) return '📈';
+    return '•'; // fallback bullet
   }
 }

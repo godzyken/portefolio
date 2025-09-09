@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/grid_config_provider.dart';
+import 'package:portefolio/features/generator/views/widgets/code_high_light_list.dart';
 import 'package:portefolio/features/generator/views/widgets/sig_discovery_map.dart';
 
 import '../../../../core/affichage/screen_size_detector.dart';
@@ -91,7 +92,7 @@ class ResponsiveLayout extends ConsumerWidget {
       children: [
         if (hasImage)
           Flexible(
-            flex: 45,
+            flex: 50,
             child: SizedBox(
               width: screenSize.width,
               height: screenSize.height,
@@ -100,9 +101,10 @@ class ResponsiveLayout extends ConsumerWidget {
           ),
         const SizedBox(width: 12),
         Flexible(
-          flex: 55,
+          flex: 50,
           child: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
+            padding: EdgeInsets.symmetric(vertical: 0.5, horizontal: 0.5),
             child: buildContent(),
           ),
         ),
@@ -197,75 +199,148 @@ class _TextContent extends StatelessWidget {
     required this.isDesktop,
   });
 
+  bool _hasProgrammingTag() {
+    const programmingTags = [
+      'dart',
+      'flutter',
+      'angular',
+      'javascript',
+      'typescript',
+      'java',
+      'python',
+      'c#',
+      'c++',
+      'rust',
+      'github',
+      'git',
+      'go',
+      'php',
+      'swift',
+      'kotlin',
+      'mysql',
+      'prestashop',
+      'magento',
+      'ovh',
+      'html',
+      'css',
+    ];
+    return bulletPoints.any(
+      (tag) => programmingTags.contains(tag.toLowerCase()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final bulletsToShow = bulletPoints.take(3).toList();
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontSize: isDesktop ? 18 : 16,
-            fontWeight: FontWeight.bold,
-            color: isDesktop ? Colors.indigoAccent : Colors.cyanAccent,
-          ),
-        ),
-        const SizedBox(height: 8),
-        ...bulletsToShow.map(
-          (p) => Row(
+    return _hasProgrammingTag()
+        ? CodeHighlightList(items: bulletsToShow, tag: '//')
+        : Column(
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text(
-                "• ",
-                style: TextStyle(fontSize: 13, color: Colors.white70),
+              // Titre
+              Text(
+                title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontSize: isDesktop ? 20 : 16,
+                  fontWeight: FontWeight.w700,
+                  foreground: Paint()
+                    ..shader = LinearGradient(
+                      colors: [Colors.indigoAccent, Colors.cyanAccent],
+                    ).createShader(const Rect.fromLTWH(0, 0, 200, 70)),
+                ),
               ),
-              Flexible(
-                flex: 45,
-                child: Text(
-                  p,
-                  maxLines: isDesktop ? 3 : 2,
-                  overflow: TextOverflow.ellipsis,
-                  softWrap: true,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    fontSize: isDesktop ? 14 : 13,
-                    color: isDesktop ? Colors.black87 : Colors.white,
+              const SizedBox(height: 8),
+              ...bulletsToShow.map(
+                (p) => Container(
+                  margin: const EdgeInsets.symmetric(vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isDesktop
+                        ? Colors.indigo.withAlpha((255 * 0.05).toInt())
+                        : Colors.white10,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(
+                        Icons.arrow_right,
+                        size: 16,
+                        color: Colors.cyanAccent,
+                      ),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          p,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            fontSize: isDesktop ? 14 : 13,
+                            color: isDesktop ? Colors.black87 : Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
-            ],
-          ),
-        ),
-        if (bulletPoints.length > 3)
-          Text(
-            '+ ${bulletPoints.length - 3} autres…',
-            style: TextStyle(
-              fontSize: 12,
-              fontStyle: FontStyle.italic,
-              color: isDesktop ? Colors.black54 : Colors.white70,
-            ),
-          ),
-        const SizedBox(height: 12),
-        Align(
-          alignment: Alignment.centerRight,
-          child: trailingActions != null
-              ? Wrap(spacing: 4, children: trailingActions!)
-              : Wrap(
-                  spacing: 4,
-                  children: const [
-                    Icon(Icons.touch_app, size: 14, color: Colors.white70),
-                    Text(
-                      'Voir plus',
-                      style: TextStyle(fontSize: 12, color: Colors.white70),
+              if (bulletPoints.length > 3)
+                Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: AnimatedOpacity(
+                    duration: const Duration(milliseconds: 500),
+                    opacity: 1,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.withAlpha((255 * 0.2).toInt()),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        '+ ${bulletPoints.length - 3} autres…',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontStyle: FontStyle.italic,
+                          color: isDesktop ? Colors.black54 : Colors.white70,
+                        ),
+                      ),
                     ),
-                  ],
+                  ),
                 ),
-        ),
-      ],
-    );
+              const SizedBox(height: 12),
+              Align(
+                alignment: Alignment.centerRight,
+                child: trailingActions != null
+                    ? Wrap(spacing: 4, children: trailingActions!)
+                    : Wrap(
+                        spacing: 4,
+                        children: const [
+                          Icon(
+                            Icons.touch_app,
+                            size: 14,
+                            color: Colors.white70,
+                          ),
+                          Text(
+                            'Voir plus',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.white70,
+                            ),
+                          ),
+                        ],
+                      ),
+              ),
+            ],
+          );
   }
 }

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/provider/providers.dart';
+import 'package:portefolio/features/experience/views/screens/experience_screens_extentions.dart';
 
 import '../widgets/experience_widgets_extentions.dart';
-import 'experience_slide_screen.dart';
+import 'experience_jeux_screen.dart';
 
 class ExperiencesScreen extends ConsumerStatefulWidget {
   const ExperiencesScreen({super.key});
@@ -27,6 +29,7 @@ class _ExperiencesScreenState extends ConsumerState<ExperiencesScreen> {
   Widget build(BuildContext context) {
     final experiencesAsync = ref.watch(experiencesFutureProvider);
     final isPageView = ref.watch(isPageViewProvider);
+    final isMobile = ref.watch(isMobileProvider);
     // AppBarActions
     Future.microtask(() {
       ref.read(appBarActionsProvider.notifier).state = [
@@ -102,7 +105,9 @@ class _ExperiencesScreenState extends ConsumerState<ExperiencesScreen> {
         return filteredExperiences.isEmpty
             ? const Center(child: Text('Aucune expérience pour ce filtre.'))
             : isPageView
-            ? ExperienceSlideScreen(experiences: filteredExperiences)
+            ? isMobile
+                  ? ExperienceSlideScreen(experiences: filteredExperiences)
+                  : ExperienceJeuxScreen(experiences: filteredExperiences)
             : ExperienceTimeline(experiences: filteredExperiences);
       },
       error: (e, _) =>

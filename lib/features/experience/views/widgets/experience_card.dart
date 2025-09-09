@@ -1,9 +1,12 @@
+import 'dart:developer' as developer;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_highlight/flutter_highlight.dart';
 import 'package:flutter_highlight/themes/github.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/features/generator/data/extention_models.dart';
+import 'package:portefolio/features/generator/views/widgets/code_high_light_list.dart';
 import 'package:portefolio/features/generator/views/widgets/fade_slide_animation.dart';
 import 'package:portefolio/features/generator/views/widgets/hover_card.dart';
 import 'package:portefolio/features/generator/views/widgets/sig_discovery_map.dart';
@@ -25,6 +28,7 @@ class ExperienceCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    developer.log('experience : $experience');
     return HoverCard(
       id: experience.entreprise,
       child: InkWell(
@@ -118,19 +122,16 @@ class _ExperienceDetails extends ConsumerWidget {
     final isWide = ref.watch(screenSizeProvider).width > 900;
 
     return Stack(
+      clipBehavior: Clip.none,
       children: [
-        ?experience.tags.contains('SIG')
-            ? Align(
-                alignment: Alignment.bottomCenter,
-                child: Opacity(
-                  opacity: 0.3,
-                  child: AspectRatio(
-                    aspectRatio: 16 / 9,
-                    child: SigDiscoveryMap(),
-                  ),
-                ),
-              )
-            : null,
+        if (experience.tags.isNotEmpty && experience.tags.contains('SIG'))
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Opacity(
+              opacity: 0.3,
+              child: AspectRatio(aspectRatio: 16 / 9, child: SigDiscoveryMap()),
+            ),
+          ),
         SingleChildScrollView(
           padding: EdgeInsets.only(
             left: 24,
@@ -140,6 +141,13 @@ class _ExperienceDetails extends ConsumerWidget {
           ),
           child: isWide ? _buildWide(theme) : _buildNarrow(theme),
         ),
+        // Bulle flottante au-dessus
+        if (experience.poste.isNotEmpty)
+          Positioned(
+            right: -150, // marge à Droite
+            bottom: 18,
+            child: _BulletString(message: experience.poste),
+          ),
       ],
     );
   }
@@ -148,6 +156,7 @@ class _ExperienceDetails extends ConsumerWidget {
   Widget _buildWide(ThemeData theme) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         Expanded(
           flex: 2,
@@ -196,6 +205,7 @@ class _ExperienceDetails extends ConsumerWidget {
   Widget _buildNarrow(ThemeData theme) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         _Header(experience: experience),
         const SizedBox(height: 24),
@@ -260,7 +270,7 @@ class _Header extends StatelessWidget {
                 Text(
                   experience.periode,
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: Colors.grey[600],
+                    color: Colors.deepOrangeAccent[600],
                   ),
                 ),
             ],
@@ -290,10 +300,51 @@ class _BulletList extends StatelessWidget {
   final List<String> items;
   const _BulletList({required this.items});
 
+  bool _hasProgrammingTag() {
+    const programmingTags = [
+      'dart',
+      'flutter',
+      'angular',
+      'javascript',
+      'typescript',
+      'java',
+      'python',
+      'c#',
+      'c++',
+      'rust',
+      'github',
+      'git',
+      'go',
+      'php',
+      'swift',
+      'kotlin',
+      'mysql',
+      'prestashop',
+      'magento',
+      'ovh',
+    ];
+    return items.any((tag) => programmingTags.contains(tag.toLowerCase()));
+  }
+
+  /// Vérifie si le contenu ressemble à du code
+  bool _looksLikeCode() {
+    final regex = RegExp(r'(class|import|final|=>|{|}|\(|\))');
+    return items.any((bp) => regex.hasMatch(bp));
+  }
+
   @override
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.start,
-    children: items
+    children: [
+      if (_hasProgrammingTag() || _looksLikeCode())
+        CodeHighlightList(items: items, tag: '//')
+      else
+        ...buildListItems,
+    ],
+  );
+
+  List<Padding> get buildListItems {
+    return items
         .map(
           (e) => Padding(
             padding: const EdgeInsets.only(bottom: 6),
@@ -306,8 +357,171 @@ class _BulletList extends StatelessWidget {
             ),
           ),
         )
-        .toList(),
-  );
+        .toList();
+  }
+}
+
+class _BulletString extends ConsumerWidget {
+  final String message;
+  final IconData icon;
+  final Color? color;
+
+  const _BulletString({
+    required this.message,
+    this.icon = Icons.work_outline_rounded,
+    this.color,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final primaryColor = color ?? Colors.deepPurple;
+
+    final isMobile = ref.watch(isMobileProvider);
+
+    return Material(
+      color: Colors.transparent,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // --- Bulle principale ---
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 6),
+            width: isMobile ? double.infinity : null,
+            child: IntrinsicWidth(
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      primaryColor.withAlpha((255 * 0.08).toInt()),
+                      primaryColor.withAlpha((255 * 0.03).toInt()),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: primaryColor.withAlpha((255 * 0.15).toInt()),
+                    width: 1.5,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withAlpha((255 * 0.15).toInt()),
+                      blurRadius: 6,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: isMobile
+                        ? MainAxisSize.max
+                        : MainAxisSize.min,
+                    children: [
+                      // Icône circulaire
+                      Container(
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              primaryColor,
+                              primaryColor.withAlpha((255 * 0.08).toInt()),
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(icon, size: 24, color: Colors.white),
+                      ),
+                      const SizedBox(width: 16),
+
+                      // Texte
+                      Flexible(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Label
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: primaryColor.withAlpha(
+                                  (255 * 0.1).toInt(),
+                                ),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                'POSTE',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w700,
+                                  color: primaryColor,
+                                  letterSpacing: 1.5,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+
+                            // Texte du poste
+                            Text(
+                              message,
+                              softWrap: true,
+                              overflow: TextOverflow.visible,
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: isDark ? Colors.white : Colors.black87,
+                                height: 1.3,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          // --- Petit triangle ---
+          CustomPaint(
+            painter: _TrianglePainter(
+              color: primaryColor.withAlpha((255 * 0.15).toInt()),
+            ),
+            size: const Size(16, 8),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Dessine le petit triangle (flèche de bulle)
+class _TrianglePainter extends CustomPainter {
+  final Color color;
+  _TrianglePainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..color = color.withAlpha((255 * 0.15).toInt());
+    final path = Path()
+      ..moveTo(0, 0)
+      ..lineTo(size.width / 2, size.height)
+      ..lineTo(size.width, 0)
+      ..close();
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 class _ExperienceStack extends StatelessWidget {
@@ -316,6 +530,8 @@ class _ExperienceStack extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (stack.isEmpty) return const SizedBox.shrink();
+
     final allTechnos = stack.entries
         .expand(
           (entry) => entry.value.map(

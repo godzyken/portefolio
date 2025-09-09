@@ -5,6 +5,8 @@ import 'package:portefolio/features/projets/views/widgets/project_card.dart';
 
 import '../../../../core/provider/providers.dart';
 import '../../data/project_data.dart';
+import '../../providers/project_positions_provider.dart';
+import 'draguable_bubble.dart';
 
 class ProjectGridView extends ConsumerWidget {
   final List<ProjectInfo> projects;
@@ -20,35 +22,64 @@ class ProjectGridView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final config = ref.watch(gridConfigProvider);
 
+    // ⚡ seuil d’activation du mode bulle
+    final isBubbleMode = config.columns >= 3;
+
+    if (!isBubbleMode) {
+      // 📱 Mode liste/grille classique
+      return LayoutBuilder(
+        builder: (_, constraints) {
+          if (config.columns <= 1) {
+            return ListView.separated(
+              padding: const EdgeInsets.all(16),
+              itemCount: projects.length,
+              separatorBuilder: (_, _) => const SizedBox(height: 12),
+              itemBuilder: (_, i) => _buildCard(ref, projects[i]),
+            );
+          } else {
+            return GridView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: projects.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: config.columns,
+                mainAxisSpacing: 16,
+                crossAxisSpacing: 16,
+                mainAxisExtent: config.aspectRatio * 300,
+                childAspectRatio: config.aspectRatio,
+              ),
+              itemBuilder: (_, i) => _buildCard(ref, projects[i]),
+            );
+          }
+        },
+      );
+    }
+
+    // 💻 Mode bulles flottantes
+    final positions = ref.watch(projectPositionsProvider);
+
     return LayoutBuilder(
       builder: (_, constraints) {
-        if (config.columns <= 1) {
-          // Mode liste mobile
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: projects.length,
-            itemBuilder: (_, i) => Padding(
-              padding: const EdgeInsets.only(bottom: 16),
-              child: SizedBox(child: _buildCard(ref, projects[i])),
-            ),
-          );
-        } else {
-          // Mode grille desktop/tablette
-          return GridView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: projects.length,
-            shrinkWrap: true,
-            physics: const BouncingScrollPhysics(),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: config.columns,
-              mainAxisSpacing: 16,
-              crossAxisSpacing: 16,
-              mainAxisExtent: config.aspectRatio * 300,
-              childAspectRatio: config.aspectRatio,
-            ),
-            itemBuilder: (_, i) => _buildCard(ref, projects[i]),
-          );
-        }
+        return Stack(
+          children: [
+            for (final project in projects)
+              DraggableBubble(
+                key: ValueKey(project.id),
+                project: project,
+                isSelected: selected.any((p) => p.id == project.id),
+                initialOffset:
+                    positions[project.id] ??
+                    Offset(
+                      100 + projects.indexOf(project) * 40,
+                      100 + projects.indexOf(project) * 40,
+                    ),
+                onPositionChanged: (offset) {
+                  ref
+                      .read(projectPositionsProvider.notifier)
+                      .updatePosition(project.id, offset);
+                },
+              ),
+          ],
+        );
       },
     );
   }
@@ -63,18 +94,7 @@ class ProjectGridView extends ConsumerWidget {
             ? current.where((p) => p.id != project.id).toList()
             : [...current, project];
       },
-      child: Stack(
-        fit: StackFit.loose,
-        children: [
-          ProjectCard(project: project),
-          if (isSelected)
-            const Positioned(
-              top: 8,
-              right: 8,
-              child: Icon(Icons.check_circle, color: Colors.green),
-            ),
-        ],
-      ),
+      child: ProjectCard(project: project),
     );
   }
 }

@@ -8,7 +8,7 @@ import '../../../../core/provider/providers.dart';
 
 class AdaptiveCard extends ConsumerWidget {
   final String title;
-  final List<String> bulletPoints;
+  final List<String>? bulletPoints;
   final String? imagePath;
   final VoidCallback? onTap;
   final List<Widget>? trailingActions;
@@ -18,7 +18,7 @@ class AdaptiveCard extends ConsumerWidget {
   const AdaptiveCard({
     super.key,
     required this.title,
-    required this.bulletPoints,
+    this.bulletPoints,
     this.imagePath,
     this.onTap,
     this.trailingActions,
@@ -36,7 +36,7 @@ class AdaptiveCard extends ConsumerWidget {
       onExit: (_) => ref.read(hoverMapProvider.notifier).setHover(title, false),
       child: GestureDetector(
         onTap: () async {
-          if (bulletPoints.contains('SIG')) {
+          if (bulletPoints!.contains('SIG')) {
             await _showSigOverlay(context);
           } else {
             final current = ref.read(playingVideoProvider);
@@ -63,7 +63,7 @@ class AdaptiveCard extends ConsumerWidget {
             child: LayoutBuilder(
               builder: (context, constraints) => ResponsiveLayout(
                 title: title,
-                bulletPoints: bulletPoints,
+                bulletPoints: bulletPoints!,
                 imagePath: imagePath,
                 imageBuilder: imageBuilder,
                 videoBuilder: videoBuilder,

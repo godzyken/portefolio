@@ -17,6 +17,7 @@ final _rootNavigatorKey = GlobalKey<NavigatorState>();
 // GoRouter fourni via Riverpod
 final goRouterProvider = Provider<GoRouter>((ref) {
   final analytics = ref.read(analyticsProvider);
+  final notifier = ref.read(routerNotifierProvider);
 
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
@@ -58,6 +59,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         ],
       ),
     ],
+    refreshListenable: notifier,
   );
 });
 

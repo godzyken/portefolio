@@ -21,7 +21,8 @@
       "Taux de satisfaction client de 95 % sur l’ensemble des campagnes",
       "Respect de 58 % des SLA de traitement (temps de réponse, résolution)",
       "Expérrien bénéfique concernant la gestion de crise et de la sécurité mentale"
-    ]
+    ],
+    "poste": "Conseiller Clientèle"
   },
   {
     "entreprise": "UTS31",
@@ -45,7 +46,8 @@
       "Taux de livraison à temps de 99 % sur plus de 2 000 colis livrés",
       "Aucune perte ou incident signalé sur les livraisons durant la période",
       "Adaptabilité reconnue face à des contraintes météo ou imprévus de planning"
-    ]
+    ],
+    "poste": "Chauffeur Livreur - Express"
   },
   {
     "entreprise": "Groupe Keym",
@@ -67,7 +69,8 @@
       "Expérience utilisateur fluide grâce à une gestion centralisée des permissions",
       "Réduction du temps de latence de l’application de 30 %",
       "Code désormais modulaire, testable et évolutif"
-    ]
+    ],
+    "poste": "Conseiller Flutter architecture"
   },
   {
     "entreprise": "Apside",
@@ -101,7 +104,8 @@
       "UI validée dès le 2ᵉ sprint, zéro retouche majeure",
       "Backlog initial chiffré avec une dérive budgétaire < 5%",
       "Organisation Scrum mise en place et adoptée par toute l’équipe en moins d’un mois"
-    ]
+    ],
+    "poste": "Ingénieur d'études et développement"
   },
   {
     "entreprise": "EGOTE+RMC Rénovation et Services",
@@ -136,7 +140,8 @@
       "Digitalisation complète du cycle de vente (devis → facture) avec gain de 40% de temps",
       "Adoption immédiate par les équipes terrain (score de satisfaction interne: 4,7/5)",
       "Pipeline CI/CD robuste: déploiement et rollback automatisé"
-    ]
+    ],
+    "poste": "Responsable du secteur informatique"
   },
   {
     "entreprise": "Urbalyon",
@@ -170,7 +175,8 @@
       "Chargement des couches cartographiques 30% plus rapide",
       "Expérience mobile offline fonctionnelle pour les visites terrain",
       "Base de code consolidée → réduction de la dette technique de 40%"
-    ]
+    ],
+    "poste": "Developpeur Fullstack"
   },
   {
     "entreprise": "Jean Claude Aubry",
@@ -206,7 +212,8 @@
       "Sécurisation des stocks et suivi des collaborateurs via vidéo‑surveillance",
       "Déploiement continu maîtrisé",
       "Mise en production de l’application finale sans interruption de service"
-    ]
+    ],
+    "poste": "Développeur Fullstack"
   },
   {
     "entreprise": "Wayma Group - StartUp Nursery",
@@ -240,7 +247,8 @@
       "Réduction du temps de réponse API de 30% grâce au module de cache",
       "Livraison d’une architecture Edge‑to‑Cloud documentée et réutilisable",
       "Stage conclu par une présentation technique retenue pour la roadmap 2019"
-    ]
+    ],
+    "poste": "Développer Fullstack"
   },
   {
     "entreprise": "TME",
@@ -274,7 +282,8 @@
       "Livraison express moyenne: 3h entre le dépôt et le client",
       "Score de satisfaction client 4,3/5 sur la période",
       "Score de qualité (préstation Darty) 96% sur la période"
-    ]
+    ],
+    "poste": "Chauffeur Livreur Monteur"
   },
   {
     "entreprise": "SunPower",
@@ -305,7 +314,8 @@
       "Optimisation de la ligne: temps de montage réduit de 30%",
       "Mise en place d’automates pour le conditionnement (gain de 15% de cadence)",
       "Réduction de la pénibilité ergonomique (taux d’incidents -40%)"
-    ]
+    ],
+    "poste": "Opérateur de production"
   },
   {
     "entreprise": "Zodiac Pool Care",
@@ -337,7 +347,8 @@
       "Taux de conformité fonctionnelle 100 % sur > 2000 boîtiers",
       "Optimisation du conditionnement: rejets transport −15%",
       "Cycle d’assemblage réduit de 12% par rationalisation des gestes"
-    ]
+    ],
+    "poste": "Agent de Fabrication"
   },
   {
     "entreprise": "Dédienne Aerospace",
@@ -371,7 +382,8 @@
       "Conformité 100% aux spécifications AS9100",
       "Mise en place d’un log traçabilité numérique (recherche lot < 30s)",
       "Réduction des rebuts atelier de 8% par ajustement paramètres CNC"
-    ]
+    ],
+    "poste": "Technicien polyvalent usinage, contrôle et industrialisation (aéronautique)"
   },
   {
     "entreprise": "Thales",
@@ -404,7 +416,8 @@
       "Zéro non‑conformité détectée sur la période (> 5000 cartes)",
       "Temps de test réduit de 10% grâce à l’automatisation tablette",
       "Formation de 3 opérateurs à la méthode 5S électronique"
-    ]
+    ],
+    "poste": "Opérateur test et qualité en électronique (aéronautique/défense)"
   },
   {
     "entreprise": "Zodiac Pool Care",
@@ -425,7 +438,8 @@
     "resultats": [
       "100% de conformité aux tests fonctionnels",
       "Optimisation du processus de conditionnement réduisant les rejets de 15%"
-    ]
+    ],
+    "poste": "Agent de Fabrication"
   },
   {
     "entreprise": "Continental S.A.",
@@ -448,7 +462,8 @@
       "Participation à plus de 3000 unités produites sans incident majeur par session",
       "Zéro retour client signalé sur les lots traités",
       "Polyvalence acquise entre assemblage et contrôle qualité"
-    ]
+    ],
+    "poste": "Contrôlleur HQ"
   },
   {
     "entreprise": "CoyCoyCoy Ridders inside",
@@ -465,12 +480,14 @@
       "devops": ["FTP/SSH"]
     },
     "periode": "descembre 2010 - Fevrier 2011",
-    "lienProjet": "https://www.coycoycoy-ridders-inside.fr",
+    "lienProjet": "https://youtu.be/7_4wMUCyrh0",
     "resultats": [
       "Créer une boutique en ligne, installer PrestaShop",
       "Deployer sur OVH",
-      "Back-office opérationnel pour la gestion de stock et de commandes"
-    ]
+      "Back-office opérationnel pour la gestion de stock et de commandes",
+      "https://www.coycoycoy-ridders-inside.fr"
+    ],
+    "poste": "Developpeur Web"
   },
   {
     "entreprise": "Asics",
@@ -492,7 +509,8 @@
       "Zéro erreur de picking sur plusieurs centaines de commandes",
       "Respect des cadences horaires imposées",
       "Complémentarité entre environnement textile et hub logistique aéroportuaire"
-    ]
+    ],
+    "poste": "Préparateur de Commande"
   },
   {
     "entreprise": "2RouesVertes",
@@ -514,7 +532,8 @@
       "Créer une boutique en ligne, installer PrestaShop",
       "Deployer sur OVH",
       "Back-office opérationnel pour la gestion de stock et de commandes"
-    ]
+    ],
+    "poste": "Développeur Web"
   },
   {
     "entreprise": "Darty",
@@ -534,6 +553,7 @@
     "resultats": [
       "Taux de satisfaction client de 98%",
       "Respect de 100% des créneaux de livraison"
-    ]
+    ],
+    "poste": "Chauffeur Livreur - monteur"
   }
 ]

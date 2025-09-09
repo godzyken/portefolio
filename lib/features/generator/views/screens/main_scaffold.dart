@@ -25,13 +25,50 @@ class MainScaffold extends ConsumerWidget {
       ),
       endDrawer: drawer,
       body: child,
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: currentIndex,
-        onTap: (index) {
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: currentIndex,
+        onDestinationSelected: (index) {
           final tab = AppTab.values[index];
+          // ref.read(currentIndexProvider.notifier).state = index;
           router.go(tab.path);
         },
-        items: AppTab.values.map((t) => t.navItem).toList(),
+        labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
+        destinations: AppTab.values.map((t) {
+          final isActive = currentIndex == t.index;
+          return NavigationDestination(
+            icon: AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                boxShadow: isActive
+                    ? [
+                        BoxShadow(
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.primary.withAlpha((255 * 0.6).toInt()),
+                          blurRadius: 16,
+                          spreadRadius: 2,
+                        ),
+                      ]
+                    : [],
+              ),
+              child: Icon(
+                t.icon,
+                color: isActive
+                    ? Theme.of(context).colorScheme.primary
+                    : Theme.of(context).iconTheme.color,
+              ),
+            ),
+            selectedIcon: AnimatedScale(
+              scale: 1.2,
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.easeOutBack,
+              child: Icon(t.icon, color: Theme.of(context).colorScheme.primary),
+            ),
+            label: t.label,
+          );
+        }).toList(),
       ),
     );
   }
