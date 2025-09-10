@@ -12,7 +12,14 @@
       "🗃️ Gestion via phpMyAdmin et interface admin PrestaShop",
       "🧾 Catalogue, panier, suivi client et interface multilingue"
     ],
-    "image": ["assets/images/vitrine.png"]
+    "image": [
+      "assets/images/vitrine.png",
+      "https://pro.packlink.fr/wp-content/uploads/2021/12/services-g0e8be1220_640-1.jpg",
+      "https://www.reacteur.com/content/uploads/2018/05/magento-logo.png",
+      "https://www.pyreweb.com/files/medias/images/Wordpress-Security-Issues-1.jpg"
+    ],
+    "platform" : ["Web", "Desktop"],
+    "tags": ["FileZila", "Web", "Php", "Magento", "Prestashop", "Boutique", "Stock"]
   },
   {
     "id": "projet_2",
@@ -29,7 +36,13 @@
       "🚀 Tests, packaging et déploiement sur le Play Store",
       "🔐 Conformité avec les normes RGPD (protection des données utilisateurs)"
     ],
-    "image": ["assets/images/flutter-image.png"]
+    "image": [
+      "assets/images/flutter-image.png",
+      "https://storage.googleapis.com/cms-storage-bucket/build-more-with-flutter.f399274b364a6194c43d.png",
+      "https://teachmeidea.com/wp-content/uploads/2025/04/ChatGPT-Image-Apr-3-2025-03_36_47-PM-1024x683.png"
+    ],
+    "platform" : ["Smartphone", "tablet", "DeskTop", "LargeDesktop"],
+    "tags": ["Flutter", "Firebase", "IoT", "VR", "Management", "UX/UI", "Digitalisation"]
   },
   {
     "id": "projet_3",
@@ -44,7 +57,13 @@
       "🔁 Mise en œuvre des pipelines CI/CD et pratiques TDD (Test-Driven Development)",
       "💬 Analyse UX, optimisation des parcours utilisateurs (User Flow) et ergonomie"
     ],
-    "image": ["assets/images/medimail-app.png"]
+    "image": [
+      "assets/images/medimail-app.png",
+      "https://www.tatvasoft.com/outsourcing/wp-content/uploads/2023/06/Angular-Architecture.jpg",
+      "https://techpearl.com/wp-content/uploads/2021/11/Ionic-App.svg"
+    ],
+    "platform" : ["Smartphone", "tablet", "DeskTop", "LargeDesktop"],
+    "tags": ["UX/UI", "Digitalisation"]
   },
   {
     "id": "projet_4",
@@ -57,7 +76,12 @@
       "📝 Spécialisation en développement Flutter, design d’interfaces modernes et intégration de services innovants (IoT, VR, génération automatique de documents).",
       "🧪 Mise en œuvre de solutions numériques complètes : sites web, applications mobiles et stratégies de communication digitale."
     ],
-    "image": ["assets/images/getty-images.jpg"],
+    "image": [
+      "assets/images/getty-images.jpg",
+      "gestion-portefeuilles-projets-banniere.jpg",
+      "https://cenotia.com/wp-content/uploads/2017/05/transformation-digitale.jpg"
+    ],
+    "platform" : ["Smartphone", "tablet", "DeskTop", "LargeDesktop"],
     "tags": ["Flutter", "Firebase", "IoT", "VR", "Management", "UX/UI", "Digitalisation"]
   }
 ]

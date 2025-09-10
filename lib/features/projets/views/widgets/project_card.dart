@@ -40,7 +40,7 @@ class ProjectCard extends ConsumerWidget {
               : null,
           onTap: () => showDialog(
             context: context,
-            builder: (_) => _buildAlertDialog(context, ref, pdfService),
+            builder: (_) => buildAlertDialog(context, ref, pdfService),
           ),
           imageBuilder: project.image!.isNotEmpty
               ? (ctx, size) => _buildImage(size)
@@ -76,12 +76,13 @@ class ProjectCard extends ConsumerWidget {
     );
   }
 
-  AlertDialog _buildAlertDialog(
+  AlertDialog buildAlertDialog(
     BuildContext context,
     WidgetRef ref,
     PdfExportService pdfService,
   ) {
     final youtubeId = extractYoutubeId(project.lienProjet ?? '');
+    final info = ref.watch(responsiveInfoProvider);
 
     return AlertDialog(
       title: Text(
@@ -134,8 +135,8 @@ class ProjectCard extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(12),
                   child: ConstrainedBox(
                     constraints: BoxConstraints(
-                      maxWidth: ref.watch(screenSizeProvider).width * 0.8,
-                      maxHeight: ref.watch(screenSizeProvider).height * 0.4,
+                      maxWidth: info.size.width * 0.8,
+                      maxHeight: info.size.height * 0.4,
                     ),
                     child: Image.asset(
                       project.image!.first,

@@ -29,7 +29,7 @@ class _ExperiencesScreenState extends ConsumerState<ExperiencesScreen> {
   Widget build(BuildContext context) {
     final experiencesAsync = ref.watch(experiencesFutureProvider);
     final isPageView = ref.watch(isPageViewProvider);
-    final isMobile = ref.watch(isMobileProvider);
+    final info = ref.watch(responsiveInfoProvider);
     // AppBarActions
     Future.microtask(() {
       ref.read(appBarActionsProvider.notifier).state = [
@@ -105,10 +105,10 @@ class _ExperiencesScreenState extends ConsumerState<ExperiencesScreen> {
         return filteredExperiences.isEmpty
             ? const Center(child: Text('Aucune expérience pour ce filtre.'))
             : isPageView
-            ? isMobile
+            ? info.isMobile
                   ? ExperienceSlideScreen(experiences: filteredExperiences)
                   : ExperienceJeuxScreen(experiences: filteredExperiences)
-            : ExperienceTimeline(experiences: filteredExperiences);
+            : ExperienceTimelineWrapper(experiences: filteredExperiences);
       },
       error: (e, _) =>
           Center(child: Text('Une erreur est survenue: ${e.toString()}')),

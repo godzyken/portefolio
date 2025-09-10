@@ -16,7 +16,7 @@ class ProjectAppBar extends ConsumerWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isCompact = ref.watch(isCompactWidthProvider);
+    final info = ref.watch(responsiveInfoProvider);
     final selected = ref.watch(selectedProjectsProvider);
 
     return AppBar(
@@ -30,14 +30,17 @@ class ProjectAppBar extends ConsumerWidget implements PreferredSizeWidget {
           fontStyle: FontStyle.italic,
         ),
       ),
-      actions: isCompact
+      actions: info.isWatch
           ? [_buildCompactMenu(context, ref, selected)]
           : _buildDesktopButtons(context, ref, selected),
     );
   }
 
   List<Widget> _buildDesktopButtons(
-      BuildContext ctx, WidgetRef ref, List<ProjectInfo> selected) {
+    BuildContext ctx,
+    WidgetRef ref,
+    List<ProjectInfo> selected,
+  ) {
     return [
       IconButton(
         icon: const Icon(Icons.select_all),
@@ -53,7 +56,10 @@ class ProjectAppBar extends ConsumerWidget implements PreferredSizeWidget {
   }
 
   Widget _buildCompactMenu(
-      BuildContext c, WidgetRef ref, List<ProjectInfo> selected) {
+    BuildContext c,
+    WidgetRef ref,
+    List<ProjectInfo> selected,
+  ) {
     return PopupMenuButton<_MenuAction>(
       icon: const Icon(Icons.more_vert),
       onSelected: (action) {
@@ -86,10 +92,9 @@ class ProjectAppBar extends ConsumerWidget implements PreferredSizeWidget {
   }
 
   void _toggleAll(WidgetRef ref) {
-    final List<ProjectInfo> all = ref.read(projectsFutureProvider).maybeWhen(
-          data: (list) => list,
-          orElse: () => [],
-        );
+    final List<ProjectInfo> all = ref
+        .read(projectsFutureProvider)
+        .maybeWhen(data: (list) => list, orElse: () => []);
     ref.read(selectedProjectsProvider.notifier).state = all;
   }
 

@@ -12,8 +12,7 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final servicesAsync = ref.watch(servicesFutureProvider);
-    final isPortrait = ref.watch(isPortraitProvider);
-    final screenSize = ref.watch(screenSizeProvider);
+    final info = ref.watch(responsiveInfoProvider);
 
     Future.microtask(() {
       ref.read(appBarTitleProvider.notifier).state = "Godzyken Portefolio";
@@ -34,15 +33,15 @@ class HomeScreen extends ConsumerWidget {
       child: servicesAsync.when(
         data: (services) {
           // ------------------------ PORTRAIT ------------------------------
-          if (isPortrait) {
+          if (info.isPortrait) {
             return Column(
               children: [
                 const SizedBox(height: 20),
                 Center(
                   child: Image.asset(
                     'assets/images/logo_godzyken.png',
-                    width: screenSize.width * 0.3,
-                    height: screenSize.width * 0.3,
+                    width: info.size.width * 0.3,
+                    height: info.size.width * 0.3,
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -86,8 +85,8 @@ class HomeScreen extends ConsumerWidget {
                       children: [
                         Image.asset(
                           'assets/images/logo_godzyken.png',
-                          width: screenSize.height * 0.25,
-                          height: screenSize.height * 0.25,
+                          width: info.size.height * 0.25,
+                          height: info.size.height * 0.25,
                         ),
                         const SizedBox(height: 12),
                         const Text(

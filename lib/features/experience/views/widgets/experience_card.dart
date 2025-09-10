@@ -119,7 +119,8 @@ class _ExperienceDetails extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final isWide = ref.watch(screenSizeProvider).width > 900;
+    final info = ref.watch(responsiveInfoProvider);
+    final isWide = info.size.width > 900;
 
     return Stack(
       clipBehavior: Clip.none,
@@ -378,7 +379,7 @@ class _BulletString extends ConsumerWidget {
     final isDark = theme.brightness == Brightness.dark;
     final primaryColor = color ?? Colors.deepPurple;
 
-    final isMobile = ref.watch(isMobileProvider);
+    final info = ref.watch(responsiveInfoProvider);
 
     return Material(
       color: Colors.transparent,
@@ -388,7 +389,7 @@ class _BulletString extends ConsumerWidget {
           // --- Bulle principale ---
           Container(
             margin: const EdgeInsets.symmetric(vertical: 6),
-            width: isMobile ? double.infinity : null,
+            width: info.isMobile ? double.infinity : null,
             child: IntrinsicWidth(
               child: Container(
                 decoration: BoxDecoration(
@@ -417,7 +418,7 @@ class _BulletString extends ConsumerWidget {
                   padding: const EdgeInsets.all(20),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: isMobile
+                    mainAxisSize: info.isMobile
                         ? MainAxisSize.max
                         : MainAxisSize.min,
                     children: [

@@ -12,8 +12,8 @@ class ThemeSwitcher extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final themeController = ref.read(themeControllerProvider.notifier);
     final current = ref.watch(themeControllerProvider);
-    final width = ref.watch(screenSizeProvider).width;
-    if (width < 500) {
+    final info = ref.watch(responsiveInfoProvider);
+    if (info.size.width < 500) {
       // Mode compact : on peut changer le thème par défaut
       themeController.applyTheme(
         BasicTheme(

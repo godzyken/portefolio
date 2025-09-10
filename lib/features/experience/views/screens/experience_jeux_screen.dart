@@ -20,76 +20,83 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final size = ref.watch(screenSizeProvider);
-    final isPortrait = ref.watch(isPortraitProvider);
+    final info = ref.watch(responsiveInfoProvider);
 
     if (widget.experiences.isEmpty) {
       return const Center(child: Text('Aucune expérience pour ce filtre.'));
     }
 
-    return Stack(
-      children: [
-        // 📌 Pile de gauche
-        Align(
-          alignment: Alignment.centerLeft,
-          child: SizedBox(
-            width: size.width * 0.35,
-            child: Stack(
-              children: widget.experiences.asMap().entries.map((entry) {
-                final index = entry.key;
-                final exp = entry.value;
+    return Container(
+      decoration: const BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/images/tapis-poker.png'),
+          fit: BoxFit.cover,
+        ),
+      ),
+      child: Stack(
+        children: [
+          // 📌 Pile de gauche
+          Align(
+            alignment: Alignment.centerLeft,
+            child: SizedBox(
+              width: info.size.width * 0.35,
+              child: Stack(
+                children: widget.experiences.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final exp = entry.value;
 
-                final angle =
-                    (index % 2 == 0 ? 1 : -1) * (5 + index).toDouble();
+                  final angle =
+                      (index % 2 == 0 ? 1 : -1) * (5 + index).toDouble();
 
-                return Positioned(
-                  top: 20.0 * index,
-                  left: 0,
-                  child: Transform.rotate(
-                    angle: angle * pi / 180,
-                    child: Draggable<Experience>(
-                      data: exp,
-                      feedback: Transform.scale(
-                        scale: 0.8,
+                  return Positioned(
+                    top: 20.0 * index,
+                    left: 0,
+                    child: Transform.rotate(
+                      angle: angle * pi / 180,
+                      child: Draggable<Experience>(
+                        data: exp,
+                        feedback: Transform.scale(
+                          scale: 0.8,
+                          child: _buildMiniCard(exp),
+                        ),
+                        childWhenDragging: const SizedBox.shrink(),
                         child: _buildMiniCard(exp),
                       ),
-                      childWhenDragging: const SizedBox.shrink(),
-                      child: _buildMiniCard(exp),
                     ),
-                  ),
-                );
-              }).toList(),
+                  );
+                }).toList(),
+              ),
             ),
           ),
-        ),
 
-        // 🎯 Zone centrale
-        Align(
-          alignment: Alignment.center,
-          child: DragTarget<Experience>(
-            onAcceptWithDetails: (exp) {
-              setState(() => activeExperience = exp.data);
-            },
-            builder: (_, _, _) {
-              if (activeExperience == null) {
-                return Container(
-                  width: size.width * 0.5,
-                  height: size.height * 0.6,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors.grey.withAlpha((255 * 0.5).toInt()),
-                      style: BorderStyle.solid,
+          // 🎯 Zone centrale
+          Align(
+            alignment: Alignment.center,
+            child: DragTarget<Experience>(
+              onAcceptWithDetails: (exp) {
+                setState(() => activeExperience = exp.data);
+              },
+              builder: (_, _, _) {
+                if (activeExperience == null) {
+                  return Container(
+                    width: info.size.width * 0.5,
+                    height: info.size.height * 0.6,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.grey.withAlpha((255 * 0.5).toInt()),
+                        style: BorderStyle.solid,
+                      ),
                     ),
-                  ),
-                  child: const Text("👉 Glisse une carte ici"),
-                );
-              }
-              return _buildFullCard(activeExperience!);
-            },
+                    child: const Text("👉 Glisse une carte ici"),
+                  );
+                }
+                return _buildFullCard(activeExperience!);
+              },
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

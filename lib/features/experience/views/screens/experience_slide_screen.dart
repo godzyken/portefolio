@@ -72,11 +72,12 @@ class _ExperienceSlideScreenState extends ConsumerState<ExperienceSlideScreen>
 
   @override
   Widget build(BuildContext context) {
-    final isPortrait = ref.watch(isPortraitProvider);
-    final size = ref.watch(screenSizeProvider);
+    final info = ref.watch(responsiveInfoProvider);
 
     if (!_isControllerInitialized) {
-      _controller = PageController(viewportFraction: isPortrait ? 0.95 : 0.85);
+      _controller = PageController(
+        viewportFraction: info.isPortrait ? 0.95 : 0.85,
+      );
       _isControllerInitialized = true;
     }
 
@@ -115,7 +116,9 @@ class _ExperienceSlideScreenState extends ConsumerState<ExperienceSlideScreen>
                   scale: scale,
                   child: Center(
                     child: SizedBox(
-                      width: isPortrait ? size.width * 0.95 : size.width * 0.75,
+                      width: info.isPortrait
+                          ? info.size.width * 0.95
+                          : info.size.width * 0.75,
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         child: FadeSlideAnimation(

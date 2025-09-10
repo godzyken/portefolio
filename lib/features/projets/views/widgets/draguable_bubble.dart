@@ -10,6 +10,7 @@ class DraggableBubble extends ConsumerStatefulWidget {
   final bool isSelected;
   final Offset initialOffset;
   final ValueChanged<Offset> onPositionChanged;
+  final double rotationAngle; // optionnel pour effet pile
 
   const DraggableBubble({
     super.key,
@@ -17,6 +18,7 @@ class DraggableBubble extends ConsumerStatefulWidget {
     required this.isSelected,
     required this.initialOffset,
     required this.onPositionChanged,
+    this.rotationAngle = 0.0,
   });
 
   @override
@@ -33,44 +35,63 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble> {
     offset = widget.initialOffset;
   }
 
+  /// 🔹 Taille dynamique de la bulle en fonction des plateformes
+  Size _getBubbleSize() {
+    final platforms = widget.project.platform
+        ?.map((e) => e.toLowerCase())
+        .toList();
+
+    if (platforms!.contains('watch')) {
+      return const Size(60, 60);
+    } else if (platforms.contains('smartphone')) {
+      return const Size(80, 140);
+    } else if (platforms.contains('tablet')) {
+      return const Size(120, 180);
+    } else if (platforms.contains('desktop')) {
+      return const Size(160, 140);
+    } else if (platforms.contains('largedesktop')) {
+      return const Size(200, 160);
+    }
+    return const Size(140, 140); // défaut carré
+  }
+
   @override
   Widget build(BuildContext context) {
-    final screenSize = ref.watch(screenSizeProvider);
+    final info = ref.watch(responsiveInfoProvider);
+    final bubbleSize = _getBubbleSize();
 
     return Positioned(
       left: offset.dx,
       top: offset.dy,
       child: GestureDetector(
-        onPanStart: (_) {
-          setState(() => isDragging = true);
-        },
-        onPanEnd: (_) {
-          setState(() => isDragging = false);
-        },
+        onPanStart: (_) => setState(() => isDragging = true),
+        onPanEnd: (_) => setState(() => isDragging = false),
         onPanUpdate: (details) {
           final newOffset = offset + details.delta;
 
-          // empêcher de sortir complètement
+          // ⛔ Empêche de sortir de l’écran en fonction de la vraie taille
           final clamped = Offset(
-            newOffset.dx.clamp(0, screenSize.width - 120),
-            newOffset.dy.clamp(0, screenSize.height - 120),
+            newOffset.dx.clamp(0, info.size.width - bubbleSize.width),
+            newOffset.dy.clamp(0, info.size.height - bubbleSize.height),
           );
 
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted) {
-              setState(() => offset = clamped);
-            }
-          });
-
+          setState(() => offset = clamped);
           widget.onPositionChanged(clamped);
         },
-        child: AnimatedScale(
-          scale: isDragging ? 1.1 : 1.0,
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeOut,
-          child: ProjectBubble(
-            project: widget.project,
-            isSelected: widget.isSelected,
+        child: Transform.rotate(
+          angle: widget.rotationAngle,
+          child: AnimatedScale(
+            scale: isDragging ? 1.1 : 1.0,
+            duration: const Duration(milliseconds: 150),
+            curve: Curves.easeOut,
+            child: SizedBox(
+              width: bubbleSize.width,
+              height: bubbleSize.height,
+              child: ProjectBubble(
+                project: widget.project,
+                isSelected: widget.isSelected,
+              ),
+            ),
           ),
         ),
       ),

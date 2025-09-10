@@ -4,6 +4,8 @@ class ProjectInfo {
   final List<String> points;
   final List<String>? image;
   final String? lienProjet;
+  final List<String>? platform;
+  final List<String>? tags;
 
   ProjectInfo({
     required this.id,
@@ -11,6 +13,8 @@ class ProjectInfo {
     required this.points,
     this.image,
     this.lienProjet,
+    this.platform,
+    this.tags,
   });
 
   factory ProjectInfo.fromJson(Map<String, dynamic> json) {
@@ -20,6 +24,10 @@ class ProjectInfo {
       points: List<String>.from(json['points']),
       image: json['image'] != null ? List<String>.from(json['image']) : null,
       lienProjet: json['lienProjet'],
+      platform: json['platform'] != null
+          ? List<String>.from(json['platform'])
+          : null,
+      tags: json['tags'] != null ? List<String>.from(json['tags']) : null,
     );
   }
 }

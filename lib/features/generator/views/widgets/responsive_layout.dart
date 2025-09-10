@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:portefolio/core/affichage/grid_config_provider.dart';
 import 'package:portefolio/features/generator/views/widgets/code_high_light_list.dart';
 import 'package:portefolio/features/generator/views/widgets/sig_discovery_map.dart';
 
@@ -30,12 +29,10 @@ class ResponsiveLayout extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final config = ref.watch(gridConfigProvider);
-    final screenSize = ref.watch(screenSizeProvider);
-    final isDesktop = ref.watch(isDesktopProvider);
+    final info = ref.watch(responsiveInfoProvider);
 
     final hasImage = imagePath != null || imageBuilder != null;
-    final maxHeight = screenSize.height * config.aspectRatio;
+    final maxHeight = info.size.height * info.grid.aspectRatio;
 
     Widget buildImage() => _AnimatedImage(
       title: title,
@@ -43,17 +40,17 @@ class ResponsiveLayout extends ConsumerWidget {
       imagePath: imagePath,
       imageBuilder: imageBuilder,
       videoBuilder: videoBuilder,
-      size: Size(screenSize.width, screenSize.width / 1.2),
+      size: Size(info.size.width, info.size.width / 1.2),
     );
 
     Widget buildContent() => _TextContent(
       title: title,
       bulletPoints: bulletPoints,
       trailingActions: trailingActions,
-      isDesktop: isDesktop,
+      isDesktop: info.isDesktop,
     );
 
-    if (!isDesktop || config.columns == 1) {
+    if (!info.isDesktop || info.grid.columns == 1) {
       return ConstrainedBox(
         constraints: BoxConstraints(maxHeight: maxHeight),
         child: Column(
@@ -63,15 +60,15 @@ class ResponsiveLayout extends ConsumerWidget {
               Flexible(
                 flex: 50,
                 child: AspectRatio(
-                  aspectRatio: config.aspectRatio,
+                  aspectRatio: info.grid.aspectRatio,
                   child: buildImage(),
                 ),
               ),
             Flexible(
               flex: 50,
               child: SizedBox(
-                width: screenSize.width,
-                height: screenSize.height,
+                width: info.size.width,
+                height: info.size.height,
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: SingleChildScrollView(
@@ -94,8 +91,8 @@ class ResponsiveLayout extends ConsumerWidget {
           Flexible(
             flex: 50,
             child: SizedBox(
-              width: screenSize.width,
-              height: screenSize.height,
+              width: info.size.width,
+              height: info.size.height,
               child: buildImage(),
             ),
           ),
