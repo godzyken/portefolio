@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:portefolio/features/generator/views/widgets/responsive_layout.dart';
 import 'package:portefolio/features/generator/views/widgets/sig_discovery_map.dart';
 import 'package:portefolio/features/parametres/themes/provider/theme_repository_provider.dart';
@@ -99,7 +100,7 @@ class AdaptiveCard extends ConsumerWidget {
                       color: Colors.white,
                       size: 32,
                     ),
-                    onPressed: () => Navigator.of(context).pop(),
+                    onPressed: () => context.pop(),
                   ),
                 ),
               ],

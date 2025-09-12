@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer' as developer;
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' as ui;
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
@@ -14,6 +16,7 @@ import '../../constants/app_tab.dart';
 import '../../constants/tech_logos.dart';
 import '../../features/generator/data/extention_models.dart';
 import '../../features/generator/services/pdf_export_service.dart';
+import '../affichage/grid_config_provider.dart';
 import '../routes/router.dart';
 
 /// Titre dynamique de l’AppBar
@@ -197,3 +200,104 @@ final analyticsProvider = Provider<AnalyticsService>((ref) {
 final isVideoPlayingProvider = StateProvider<bool>((ref) {
   return ref.watch(playingVideoProvider) != null;
 });
+
+Future<List<String>> loadAssetsFromManifest({String? filter}) async {
+  final manifestContent = await rootBundle.loadString('AssetManifest.json');
+  final Map<String, dynamic> manifestMap = json.decode(manifestContent);
+
+  // 🔹 On récupère tous les chemins d’assets
+  final assets = manifestMap.keys.toList();
+
+  // 🔹 Optionnel : filtrer par dossier
+  if (filter != null) {
+    return assets.where((path) => path.startsWith(filter)).toList();
+  }
+  return assets;
+}
+
+Future<void> loadCustomFont(String assetPath, String family) async {
+  final byteData = await rootBundle.load(assetPath);
+  final fontLoader = ui.FontLoader(family)..addFont(Future.value(byteData));
+  await fontLoader.load();
+}
+
+/// Liste globale des images (tu l’alimentes depuis projets, expériences, services)
+final appImagesProvider = FutureProvider<List<String>>((ref) async {
+  // 1. Charger toutes les images dans assets/images/
+  final assetImages = await loadAssetsFromManifest(filter: 'assets/images/');
+
+  // 2. Ajouter des images réseau
+  final networkImages = [
+    'https://www.tatvasoft.com/outsourcing/wp-content/uploads/2023/06/Angular-Architecture.jpg',
+    'https://techpearl.com/wp-content/uploads/2021/11/Ionic-App.svg',
+    'https://cenotia.com/wp-content/uploads/2017/05/transformation-digitale.jpg',
+    'https://teachmeidea.com/wp-content/uploads/2025/04/ChatGPT-Image-Apr-3-2025-03_36_47-PM-1024x683.png',
+    'https://storage.googleapis.com/cms-storage-bucket/build-more-with-flutter.f399274b364a6194c43d.png',
+    'https://www.pyreweb.com/files/medias/images/Wordpress-Security-Issues-1.jpg',
+    'https://www.reacteur.com/content/uploads/2018/05/magento-logo.png',
+    'https://pro.packlink.fr/wp-content/uploads/2021/12/services-g0e8be1220_640-1.jpg',
+  ];
+
+  return [...assetImages, ...networkImages];
+});
+
+/// Provider qui précache toutes les images de l’app
+final precacheAllAssetsProvider = FutureProvider<void>((ref) async {
+  final context = ref.read(navigatorKeyProvider).currentContext;
+  if (context == null) return;
+
+  /// 1. Fonts
+  await loadCustomFont(
+    'assets/fonts/Noto_Sans/NotoSans-Italic-VariableFont_wdth-wght.ttf',
+    'NotoSansItalic',
+  );
+  await loadCustomFont(
+    'assets/fonts/Noto_Sans/NotoSans-VariableFont_wdth-wght.ttf',
+    'NotoSans',
+  );
+
+  /// 2. Images
+  final images = await ref.read(appImagesProvider.future);
+
+  for (final url in images) {
+    final imageProvider = url.startsWith('http')
+        ? NetworkImage(url)
+        : AssetImage(url) as ImageProvider;
+
+    try {
+      await precacheImage(imageProvider, context);
+      developer.log('❌ Erreur de précache: $url →');
+    } catch (e) {
+      developer.log('❌ Erreur de précache: $url →', error: e);
+    }
+  }
+});
+
+/*
+
+final projectImagesProvider = FutureProvider<List<String>>((ref) async {
+  return loadAssetsFromManifest(filter: 'assets/projects/');
+});
+
+final experienceImagesProvider = FutureProvider<List<String>>((ref) async {
+  return loadAssetsFromManifest(filter: 'assets/experience/');
+});
+
+final serviceImagesProvider = FutureProvider<List<String>>((ref) async {
+  return loadAssetsFromManifest(filter: 'assets/services/');
+});
+
+/// Regroupe tout
+final appImagesProvider = FutureProvider<List<String>>((ref) async {
+  final projects = await ref.read(projectImagesProvider.future);
+  final experiences = await ref.read(experienceImagesProvider.future);
+  final services = await ref.read(serviceImagesProvider.future);
+
+  // 🔹 Ajoute les images réseaux si tu veux
+  final networkImages = [
+    'https://picsum.photos/400/800',
+    'https://picsum.photos/300/600',
+  ];
+
+  return [...projects, ...experiences, ...services, ...networkImages];
+});*/

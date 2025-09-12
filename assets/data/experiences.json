@@ -113,7 +113,7 @@
     "image": "assets/images/egote-foto.png",
     "contexte": "TPE du secteur BTP/électricité sans outil numérique unifié: devis sur Excel, suivi chantier papier, facturation Word… Objectif: digitaliser l’ensemble du cycle de vente et de production via une application Flutter multi‑modules.",
     "objectifs": [
-      "Concevoir un outil tout‑en‑un (CRM, devis, factures, gestion SAV) accessible sur mobile et tablette hors‑connexion",
+      "Concevoir un outil tout‑en‑un (CRM, ERP, SaaS, gestion SAV)",
       "Intégrer des modules IoT (capteurs chantier) et VR (visite 3D) pour différencier l’offre",
       "Automatiser la génération de documents PDF conformes aux normes BTP",
       "Déployer une usine logicielle CI/CD pour des mises à jour sans interruption"
@@ -318,7 +318,7 @@
     "poste": "Opérateur de production"
   },
   {
-    "entreprise": "Zodiac Pool Care",
+    "entreprise": "Zodiac Pool Care (saison 2)",
     "logo": "assets/images/zodiac-logo.png",
     "image": "assets/images/rv-4200.png",
     "contexte": "Zodiac conçoit et assemble des robots nettoyeurs de piscine haut de gamme. Le poste se situe en fin de chaîne, sur l’assemblage et la validation des boîtiers de commande avant expédition mondiale.",
@@ -420,7 +420,7 @@
     "poste": "Opérateur test et qualité en électronique (aéronautique/défense)"
   },
   {
-    "entreprise": "Zodiac Pool Care",
+    "entreprise": "Zodiac Pool Care (Saison 1)",
     "logo": "assets/images/zodiac-logo.png",
     "image": "assets/images/rv-4200.png",
     "contexte": "Saisonnier sur la chaîne de fabrication des robots de piscine, axée sur l’assemblage du boîtier de commande et la préparation des unités pour l’expédition.",

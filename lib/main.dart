@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:portefolio/core/affichage/grid_config_provider.dart';
+import 'package:portefolio/core/provider/providers.dart';
+import 'package:portefolio/features/home/views/screens/splash_screen.dart';
 import 'package:portefolio/features/parametres/themes/services/theme_repository.dart';
 
 import 'core/routes/router.dart';
@@ -19,6 +22,7 @@ void main() async {
         themeControllerProvider.overrideWith(
           (ref) => ThemeController(repo, initial),
         ),
+        navigatorKeyProvider.overrideWithValue(GlobalKey<NavigatorState>()),
       ],
       child: ResponsiveScope(child: MyApp()),
     ),
@@ -31,6 +35,7 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = ref.watch(themeControllerProvider);
     final router = ref.watch(goRouterProvider);
+    final precache = ref.watch(precacheAllAssetsProvider);
 
     return MaterialApp.router(
       title: 'Portfolio PDF',
@@ -58,6 +63,14 @@ class MyApp extends ConsumerWidget {
         useMaterial3: true,
       ),*/
       routerConfig: router,
+      builder: (context, child) {
+        return precache.when(
+          data: (_) => child!,
+          error: (err, stack) =>
+              Scaffold(body: Center(child: Text('Erreur : $err'))),
+          loading: () => const SplashScreen(),
+        );
+      },
     );
   }
 }

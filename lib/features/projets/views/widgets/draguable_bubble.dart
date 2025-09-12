@@ -35,24 +35,35 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble> {
     offset = widget.initialOffset;
   }
 
-  /// 🔹 Taille dynamique de la bulle en fonction des plateformes
-  Size _getBubbleSize() {
-    final platforms = widget.project.platform
-        ?.map((e) => e.toLowerCase())
+  /// 🔹 Détermine la plateforme prioritaire pour calculer la taille
+  String _getPrimaryPlatform() {
+    final platforms = widget.project.platform!
+        .map((e) => e.toLowerCase())
         .toList();
+    if (platforms.contains('largedesktop')) return 'largedesktop';
+    if (platforms.contains('desktop')) return 'desktop';
+    if (platforms.contains('tablet')) return 'tablet';
+    if (platforms.contains('smartphone')) return 'smartphone';
+    if (platforms.contains('watch')) return 'watch';
+    return 'default';
+  }
 
-    if (platforms!.contains('watch')) {
-      return const Size(60, 60);
-    } else if (platforms.contains('smartphone')) {
-      return const Size(80, 140);
-    } else if (platforms.contains('tablet')) {
-      return const Size(120, 180);
-    } else if (platforms.contains('desktop')) {
-      return const Size(160, 140);
-    } else if (platforms.contains('largedesktop')) {
-      return const Size(200, 160);
+  /// 🔹 Retourne la taille de la bulle selon la plateforme
+  Size _getBubbleSize() {
+    switch (_getPrimaryPlatform()) {
+      case 'watch':
+        return const Size(60, 60);
+      case 'smartphone':
+        return const Size(80, 160);
+      case 'tablet':
+        return const Size(120, 180);
+      case 'desktop':
+        return const Size(160, 140);
+      case 'largedesktop':
+        return const Size(200, 160);
+      default:
+        return const Size(140, 140);
     }
-    return const Size(140, 140); // défaut carré
   }
 
   @override

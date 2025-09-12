@@ -78,7 +78,7 @@
     ],
     "image": [
       "assets/images/getty-images.jpg",
-      "gestion-portefeuilles-projets-banniere.jpg",
+      "assets/images/gestion-portefeuilles-projets-banniere.jpg",
       "https://cenotia.com/wp-content/uploads/2017/05/transformation-digitale.jpg"
     ],
     "platform" : ["Smartphone", "tablet", "DeskTop", "LargeDesktop"],

@@ -7,7 +7,7 @@ import '../../../generator/views/widgets/code_high_light_list.dart';
 import '../../../generator/views/widgets/hover_card.dart';
 import '../../data/project_data.dart';
 
-class ProjectBubble extends ConsumerWidget {
+class ProjectBubble extends ConsumerStatefulWidget {
   final ProjectInfo project;
   final bool isSelected;
 
@@ -18,9 +18,79 @@ class ProjectBubble extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final bubbleSize = _getBubbleSize(project);
-    final borderRadius = _getBorderRadius(project);
+  ConsumerState<ConsumerStatefulWidget> createState() => _ProjectBubbleState();
+}
+
+class _ProjectBubbleState extends ConsumerState<ProjectBubble>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _screenCtrl;
+  late final Animation<double> _screenAnim;
+  int _currentImageIndex = 0;
+
+  final ScrollController _scrollCtrl = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    // 🔹 Animation continue pour “live screen”
+    _screenCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 3),
+    );
+    _screenAnim = CurvedAnimation(parent: _screenCtrl, curve: Curves.easeInOut);
+
+    _screenCtrl.repeat(reverse: true);
+
+    if (widget.project.image != null && widget.project.image!.length > 1) {
+      Future.delayed(const Duration(seconds: 0), _nextImageLoop);
+    }
+
+    // 🔹 Scroll automatique simulé si l'image est plus grande que le conteneur
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollCtrl.hasClients) {
+        final maxScroll = _scrollCtrl.position.maxScrollExtent;
+        _scrollCtrl
+            .animateTo(
+              maxScroll,
+              duration: const Duration(seconds: 4),
+              curve: Curves.easeInOut,
+            )
+            .then(
+              (_) => _scrollCtrl.animateTo(
+                0,
+                duration: const Duration(seconds: 4),
+                curve: Curves.easeInOut,
+              ),
+            );
+      }
+    });
+  }
+
+  void _nextImageLoop() async {
+    while (mounted) {
+      await Future.delayed(const Duration(seconds: 3));
+
+      if (!mounted) return;
+
+      setState(() {
+        _currentImageIndex =
+            (_currentImageIndex + 1) % widget.project.image!.length;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _screenCtrl.dispose();
+    _scrollCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bubbleSize = _getBubbleSize(widget.project);
+    final borderRadius = _getBorderRadius(widget.project);
 
     return Stack(
       clipBehavior: Clip.none,
@@ -30,31 +100,38 @@ class ProjectBubble extends ConsumerWidget {
           color: Colors.transparent,
           elevation: 8,
           child: HoverCard(
-            id: project.id,
+            id: widget.project.id,
             child: InkWell(
               onTap: () => _showProjectDialog(context, ref),
               borderRadius: borderRadius,
-              child: ClipRRect(
-                borderRadius: borderRadius,
-                child: Container(
-                  width: bubbleSize.width,
-                  height: bubbleSize.height,
-                  decoration: BoxDecoration(
-                    color: Colors.black,
-                    border: Border.all(color: Colors.black, width: 3),
+              child: AnimatedBuilder(
+                animation: _screenAnim,
+                builder: (_, _) {
+                  return ClipRRect(
                     borderRadius: borderRadius,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withAlpha(50),
-                        blurRadius: 6,
-                        offset: const Offset(3, 3),
+                    child: Container(
+                      width: bubbleSize.width,
+                      height: bubbleSize.height,
+                      decoration: BoxDecoration(
+                        color: Colors.black,
+                        border: Border.all(color: Colors.black, width: 3),
+                        borderRadius: borderRadius,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withAlpha(50),
+                            blurRadius: 6,
+                            offset: const Offset(3, 3),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                  child: project.image != null && project.image!.isNotEmpty
-                      ? Image.asset(project.image!.first, fit: BoxFit.cover)
-                      : const Icon(Icons.image_not_supported, size: 40),
-                ),
+                      child:
+                          widget.project.image != null &&
+                              widget.project.image!.isNotEmpty
+                          ? _buildScreenContent(bubbleSize)
+                          : const Icon(Icons.image_not_supported, size: 40),
+                    ),
+                  );
+                },
               ),
             ),
           ),
@@ -71,12 +148,20 @@ class ProjectBubble extends ConsumerWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Colors.white.withAlpha((255 * 0.9).toInt()),
                 border: Border.all(color: Colors.black, width: 2),
                 borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withAlpha(50),
+                    blurRadius: 4,
+                    offset: const Offset(2, 2),
+                  ),
+                ],
               ),
               child: Text(
-                project.title,
+                widget.project.title,
+                maxLines: 1,
                 style: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w900,
@@ -98,12 +183,53 @@ class ProjectBubble extends ConsumerWidget {
         ),
 
         // === ICÔNE DE SELECTION ===
-        if (isSelected)
+        if (widget.isSelected)
           const Positioned(
             bottom: -10,
             right: -10,
             child: Icon(Icons.check_circle, color: Colors.green, size: 22),
           ),
+      ],
+    );
+  }
+
+  Widget _buildScreenContent(Size bubbleSize) {
+    if (widget.project.image == null || widget.project.image!.isEmpty) {
+      return const Icon(Icons.image_not_supported, size: 40);
+    }
+
+    final imageUrl = widget.project.image![_currentImageIndex];
+
+    return Stack(
+      fit: StackFit.expand, // ✅ occupe toute la bulle
+      children: [
+        // Image pricipale
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 800),
+          transitionBuilder: (child, animation) =>
+              FadeTransition(opacity: animation, child: child),
+          child: imageUrl.startsWith('http')
+              ? Image.network(
+                  imageUrl,
+                  key: ValueKey(imageUrl),
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, _, _) =>
+                      const Icon(Icons.broken_image, size: 40),
+                )
+              : Image.asset(
+                  imageUrl,
+                  key: ValueKey(imageUrl),
+                  fit: BoxFit.cover,
+                ),
+        ),
+
+        // Overlay clignotant pour effet "écran actif"
+        AnimatedBuilder(
+          animation: _screenAnim,
+          builder: (_, _) => Container(
+            color: Colors.white.withAlpha((0.05 * _screenAnim.value).toInt()),
+          ),
+        ),
       ],
     );
   }
@@ -145,7 +271,7 @@ class ProjectBubble extends ConsumerWidget {
       context: context,
       builder: (_) => AlertDialog(
         title: Text(
-          project.title,
+          widget.project.title,
           style: Theme.of(
             context,
           ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
@@ -154,13 +280,17 @@ class ProjectBubble extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (project.image != null && project.image!.isNotEmpty)
+              if (widget.project.image != null &&
+                  widget.project.image!.isNotEmpty)
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12),
-                  child: Image.asset(project.image!.first, fit: BoxFit.contain),
+                  child: Image.asset(
+                    widget.project.image!.first,
+                    fit: BoxFit.contain,
+                  ),
                 ),
               const SizedBox(height: 16),
-              CodeHighlightList(items: project.points, tag: '->'),
+              CodeHighlightList(items: widget.project.points, tag: '->'),
             ],
           ),
         ),
@@ -172,7 +302,7 @@ class ProjectBubble extends ConsumerWidget {
           TextButton.icon(
             icon: const Icon(Icons.picture_as_pdf),
             label: const Text('Imprimer ce projet'),
-            onPressed: () => pdfService.export([project]),
+            onPressed: () => pdfService.export([widget.project]),
           ),
         ],
       ),
