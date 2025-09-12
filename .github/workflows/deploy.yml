@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - main
-    tags:
-      - '*'
   workflow_dispatch:
 
 permissions:
@@ -21,37 +19,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Python 3.x
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.x'
-
-      - name: Cache pip packages
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-
-      - name: Install Python dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install Pillow tqdm
-
-      - name: Verify assets/images folder exists
-        run: |
-          if [ ! -d "assets/images" ]; then
-            echo "Erreur : le dossier assets/images est introuvable."
-            exit 1
-          else
-            echo "Dossier assets/images trouvé."
-          fi
-
-      - name: Generate image asset variants
-        run: |
-          python generate_asset_variants.py --src assets/images --scales 2,3
-
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -62,35 +29,17 @@ jobs:
       - name: Install Flutter dependencies
         run: flutter pub get
 
-      - name: Generate files
-        run: flutter pub run build_runner build --delete-conflicting-outputs
-
-      - name: Clean build
-        run: flutter clean
-
       - name: Build Flutter web
-        run: flutter build web --release --base-href="/portefolio/" --dart-define=EMAILJS_SERVICE_ID=${{ secrets.EMAILJS_SERVICE_ID }} --dart-define=EMAILJS_TEMPLATE_ID=${{ secrets.EMAILJS_TEMPLATE_ID }} --dart-define=EMAILJS_PUBLIC_KEY=${{ secrets.EMAILJS_PUBLIC_KEY }} --dart-define=WHATSAPP_PHONE=${{ secrets.WHATSAPP_PHONE }}
+        run: flutter build web --release --base-href="/portefolio/"
 
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build/web
-          force_orphan: true
-
-      # ✅ Publier build/web comme artifact Pages
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          name: github-pages
           path: build/web
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    permissions:
-      pages: write
-      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

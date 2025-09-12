@@ -195,6 +195,67 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
     );
   }
 
+  Widget _buildTopDragTarget() {
+    return Align(
+      alignment: Alignment.topRight,
+      child: DragTarget<Experience>(
+        onWillAcceptWithDetails: (details) => true,
+        onAcceptWithDetails: (details) {
+          setState(() {
+            // Logique pour mettre à jour l'état de la carte
+            final cardNotifier = ref.read(cardFlightProvider.notifier);
+            cardNotifier.setStateForCard(
+              details.data.entreprise,
+              CardFlightState.inTop,
+            );
+          });
+        },
+        builder: (context, candidateData, rejectedData) {
+          final selected = widget.experiences
+              .where(
+                (e) =>
+                    (ref.watch(cardFlightProvider)[e.entreprise] ??
+                        CardFlightState.inPile) ==
+                    CardFlightState.inTop,
+              )
+              .toList();
+
+          if (selected.isEmpty) {
+            return const SizedBox(
+              height: 200,
+              child: Center(
+                child: Text(
+                  'Déposez une carte ici',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            );
+          }
+
+          return SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: 20,
+                horizontal: 100,
+              ),
+              child: Row(
+                children: selected
+                    .map(
+                      (exp) => Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: _buildMiniCard(exp),
+                      ),
+                    )
+                    .toList(),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   Widget _buildCardTarget(ResponsiveInfo info) {
     return Align(
       alignment: Alignment.center,
@@ -278,6 +339,7 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
   Widget _interactivePot() {
     final activeTags = ref.watch(activeTagsProvider);
     final tagsNotifier = ref.read(activeTagsProvider.notifier);
+    final cardNotifier = ref.read(cardFlightProvider.notifier);
 
     return Positioned(
       bottom: 30,
@@ -294,10 +356,7 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
                 .where((e) => e.tags.contains(tag))
                 .toList();
 
-            // 3️⃣ Attendre un bref moment pour que le rebuild se fasse
-            await Future.delayed(const Duration(milliseconds: 50));
-
-            // 4️⃣ Lancer l'animation Overlay pour chaque carte
+            // 3️⃣ Lancer l'animation Overlay pour chaque carte
             for (var exp in cardsToFly) {
               if (mounted) {
                 _flyCard(context, exp, toTop: true);
@@ -366,6 +425,90 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
     );
   }
 
+  /// 🃏 Carte réduite
+  Widget _buildMiniCard(Experience exp) {
+    return SizedBox(
+      width: 120,
+      height: 160,
+      child: Card(
+        elevation: 6,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: Column(
+          children: [
+            if (exp.image.isNotEmpty)
+              Expanded(
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(12),
+                  ),
+                  child: Image.asset(exp.image, fit: BoxFit.cover),
+                ),
+              ),
+            Padding(
+              padding: const EdgeInsets.all(4),
+              child: Text(
+                exp.entreprise,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// 🃏 Carte en grand au centre
+  Widget _buildFullCard(Experience exp) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 400),
+      width: 400,
+      height: 500,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: const [BoxShadow(blurRadius: 12, color: Colors.black26)],
+      ),
+      child: ExperienceCard(experience: exp, pageOffset: 0),
+    );
+  }
+
+  /// [🃏🃏🃏🃏] NOUVEAU WIDGET pour la zone de cartes sélectionnées en haut
+  Widget _buildSelectedCardsDisplay() {
+    final selectedCards = widget.experiences
+        .where(
+          (e) =>
+              (ref.watch(cardFlightProvider)[e.entreprise] ??
+                  CardFlightState.inPile) ==
+              CardFlightState.inTop,
+        )
+        .toList();
+
+    return Align(
+      alignment: Alignment.topCenter,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Padding(
+          padding: const EdgeInsets.only(top: 20.0, left: 100),
+          child: Row(
+            children: selectedCards.map((exp) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: _buildMiniCard(exp),
+              );
+            }).toList(),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final info = ref.watch(responsiveInfoProvider);
@@ -375,14 +518,6 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
               (ref.watch(cardFlightProvider)[e.entreprise] ??
                   CardFlightState.inPile) ==
               CardFlightState.inPile,
-        )
-        .toList();
-    final selected = widget.experiences
-        .where(
-          (e) =>
-              (ref.watch(cardFlightProvider)[e.entreprise] ??
-                  CardFlightState.inPile) ==
-              CardFlightState.inTop,
         )
         .toList();
 
@@ -397,7 +532,7 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
               ),
             ),
           ),
-          _buildSelectedCards(selected),
+          _buildSelectedCardsDisplay(),
           _buildCardPile(info, pile),
           _buildCardTarget(info),
           _interactivePot(),
