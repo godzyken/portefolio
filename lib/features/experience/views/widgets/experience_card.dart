@@ -478,7 +478,7 @@ class _BulletString extends ConsumerWidget {
                               style: theme.textTheme.titleMedium?.copyWith(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
-                                color: isDark ? Colors.white : Colors.black87,
+                                color: isDark ? Colors.white : Colors.white70,
                                 height: 1.3,
                               ),
                             ),

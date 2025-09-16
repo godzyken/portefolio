@@ -2,20 +2,15 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:portefolio/features/experience/views/widgets/tap_chip.dart';
 
 import '../../../../constants/enum_global.dart';
 import '../../../../core/affichage/screen_size_detector.dart';
 import '../../controllers/providers/card_flight_provider.dart';
 import '../../data/experiences_data.dart';
-import '../widgets/animated_card_flight.dart';
+import '../widgets/animated_card_overlay.dart';
 import '../widgets/experience_card.dart';
-
-const Map<String, Color> tagColors = {
-  'flutter': Colors.blue,
-  'devOps': Colors.red,
-  'react': Colors.white,
-  'firebase': Colors.grey,
-};
+import '../widgets/interactive_pot.dart';
 
 class ExperienceJeuxScreen extends ConsumerStatefulWidget {
   const ExperienceJeuxScreen({super.key, required this.experiences});
@@ -28,6 +23,7 @@ class ExperienceJeuxScreen extends ConsumerStatefulWidget {
 class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
   final Map<String, GlobalKey> _cardKeys = {};
   Experience? activeExperience;
+  final List<Experience> _potCards = [];
 
   @override
   void initState() {
@@ -37,45 +33,55 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
     }
   }
 
-  /// Animation carte vers le haut
-  /// remplacer par _FlyCard
-  void _flyCard(BuildContext context, Experience exp, {required bool toTop}) {
+  /// Fonction pour animer une carte vers un target
+  void _flyCard(Experience exp, Offset target, {bool flyUp = true}) {
     final key = _cardKeys[exp.entreprise];
     if (key == null) return;
-
     final renderBox = key.currentContext?.findRenderObject() as RenderBox?;
     if (renderBox == null) return;
 
     final start = renderBox.localToGlobal(Offset.zero);
     final size = renderBox.size;
     final overlay = Overlay.of(context);
-    if (overlay == null) return;
 
-    final cardNotifier = ref.read(cardFlightProvider.notifier);
-    final info = ref.watch(responsiveInfoProvider);
+    ref
+        .read(cardFlightProvider.notifier)
+        .setStateForCard(
+          exp.entreprise,
+          flyUp ? CardFlightState.flyingUp : CardFlightState.inPile,
+        );
 
-    // marquer l'état initial
-    cardNotifier.setStateForCard(
-      exp.entreprise,
-      toTop ? CardFlightState.flyingUp : CardFlightState.flyingDown,
-    );
+    late OverlayEntry entry;
 
-    OverlayEntry? entry;
     entry = OverlayEntry(
-      builder: (_) => AnimatedCardFlight(
+      builder: (_) => AnimatedCardOverlay(
         start: start,
-        end: toTop
-            ? Offset(info.size.width / 2 - size.width / 2, 20)
-            : start, // retour pile
+        end: target,
         size: size,
-        flyUp: toTop,
-        child: _cardWidget(exp),
+        child: _cardClone(exp),
         onEnd: () {
-          entry?.remove();
-          cardNotifier.setStateForCard(
-            exp.entreprise,
-            toTop ? CardFlightState.inTop : CardFlightState.inPile,
-          );
+          entry.remove();
+          ref
+              .read(cardFlightProvider.notifier)
+              .setStateForCard(
+                exp.entreprise,
+                flyUp ? CardFlightState.inTop : CardFlightState.inPile,
+              );
+
+          setState(() {
+            if (flyUp) {
+              // Mode pot (main de poker, max 4 cartes)
+              if (!_potCards.contains(exp) && _potCards.length < 4) {
+                _potCards.add(exp);
+              }
+              activeExperience =
+                  null; // 👉 pas de détail quand on ajoute au pot
+            } else {
+              // Mode drag & drop (détail unique)
+              activeExperience = exp;
+              _potCards.clear(); // 👉 on vide la main pour ne pas mélanger
+            }
+          });
         },
       ),
     );
@@ -83,8 +89,48 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
     overlay.insert(entry);
   }
 
-  Widget _cardWidget(Experience exp, {Key? key}) => Card(
-    key: key,
+  // Fonction callback pour le pot quand des cartes arrivent
+  void _onCardsArrivedInPot(List<Experience> cards) {
+    setState(() {
+      activeExperience = null; // Très important !
+      _potCards.clear();
+      _potCards.addAll(cards.take(4)); // Max 4 cartes dans la main
+    });
+  }
+
+  // Fonction callback pour vider le pot
+  void _onPotCleared() {
+    setState(() {
+      _potCards.clear();
+      activeExperience = null;
+    });
+  }
+
+  // clone sans key
+  Widget _cardClone(Experience exp) {
+    return Card(
+      elevation: 6,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Column(
+        children: [
+          if (exp.image.isNotEmpty)
+            Expanded(child: Image.asset(exp.image, fit: BoxFit.cover)),
+          Padding(
+            padding: const EdgeInsets.all(4),
+            child: Text(
+              exp.entreprise,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Le Widget de la Carte (utilisé dans la pile)
+  Widget _cardWidget(Experience exp) => Card(
+    key: _cardKeys[exp.entreprise],
     elevation: 6,
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     child: Column(
@@ -107,13 +153,23 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
   Widget _pileCard(Experience exp) =>
       SizedBox(width: 120, height: 160, child: _cardWidget(exp));
 
-  Widget _buildCardPile(ResponsiveInfo info, List<Experience> experiences) {
+  // La construction de la Pile
+  Widget _buildCardPile(ResponsiveInfo info) {
+    final pile = widget.experiences
+        .where(
+          (e) =>
+              (ref.watch(cardFlightProvider)[e.entreprise] ??
+                  CardFlightState.inPile) ==
+              CardFlightState.inPile,
+        )
+        .toList();
+
     return Align(
       alignment: Alignment.centerLeft,
       child: SizedBox(
         width: info.size.width * 0.35,
         child: Stack(
-          children: experiences.asMap().entries.map((entry) {
+          children: pile.asMap().entries.map((entry) {
             final exp = entry.value;
             final angle =
                 (entry.key % 2 == 0 ? 1 : -1) * (5 + entry.key).toDouble();
@@ -130,24 +186,18 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
                     child: SizedBox(
                       width: 120,
                       height: 160,
-                      child: _cardWidget(
-                        exp,
-                        key: ValueKey(
-                          "feedback_${exp.entreprise}_${DateTime.now().millisecondsSinceEpoch}",
-                        ),
-                      ),
+                      child: _cardClone(exp),
                     ),
                   ),
                   childWhenDragging: SizedBox(
                     width: 120,
                     height: 160,
-                    child: Opacity(opacity: 0.3, child: _pileCard(exp)),
+                    child: Opacity(opacity: 0.3, child: _cardClone(exp)),
                   ),
                   child: SizedBox(
-                    key: _cardKeys[exp.entreprise],
                     width: 120,
                     height: 160,
-                    child: _pileCard(exp),
+                    child: _cardClone(exp),
                   ),
                 ),
               ),
@@ -158,271 +208,151 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
     );
   }
 
-  Widget _buildSelectedCards(List<Experience> selected) {
-    if (selected.isEmpty) {
-      return Align(
-        alignment: Alignment.topCenter,
-        child: Padding(
-          padding: const EdgeInsets.only(top: 20),
-          child: Text(
-            'Déposez des jetons dans le pot pour voir les cartes correspondantes.',
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-      );
-    }
-    return Align(
-      alignment: Alignment.topCenter,
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Padding(
-          padding: const EdgeInsets.only(top: 20, left: 100),
-          child: Row(
-            children: selected
-                .map(
-                  (e) =>
-                      SizedBox(width: 120, height: 160, child: _cardWidget(e)),
-                )
-                .toList(),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTopDragTarget() {
-    return Align(
-      alignment: Alignment.topRight,
-      child: DragTarget<Experience>(
-        onWillAcceptWithDetails: (details) => true,
-        onAcceptWithDetails: (details) {
-          setState(() {
-            // Logique pour mettre à jour l'état de la carte
-            final cardNotifier = ref.read(cardFlightProvider.notifier);
-            cardNotifier.setStateForCard(
-              details.data.entreprise,
-              CardFlightState.inTop,
-            );
-          });
-        },
-        builder: (context, candidateData, rejectedData) {
-          final selected = widget.experiences
-              .where(
-                (e) =>
-                    (ref.watch(cardFlightProvider)[e.entreprise] ??
-                        CardFlightState.inPile) ==
-                    CardFlightState.inTop,
-              )
-              .toList();
-
-          if (selected.isEmpty) {
-            return const SizedBox(
-              height: 200,
-              child: Center(
-                child: Text(
-                  'Déposez une carte ici',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-            );
-          }
-
-          return SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical: 20,
-                horizontal: 100,
-              ),
-              child: Row(
-                children: selected
-                    .map(
-                      (exp) => Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: _buildMiniCard(exp),
-                      ),
-                    )
-                    .toList(),
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
+  /// Zone centrale pour déposer la carte
   Widget _buildCardTarget(ResponsiveInfo info) {
-    return Align(
-      alignment: Alignment.center,
-      child: DragTarget<Experience>(
-        onAcceptWithDetails: (details) =>
-            setState(() => activeExperience = details.data),
-        builder: (_, _, _) {
-          if (activeExperience == null) {
-            return Container(
-              width: info.size.width * 0.5,
-              height: info.size.height * 0.6,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey.withAlpha(128)),
-              ),
-              child: const Text("👉 Glisse une carte ici"),
-            );
-          }
-          return AnimatedContainer(
-            duration: const Duration(milliseconds: 400),
-            width: 400,
-            height: 500,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: const [
-                BoxShadow(blurRadius: 12, color: Colors.black26),
-              ],
-            ),
-            child: ExperienceCard(experience: activeExperience!, pageOffset: 0),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildChip(Color color, String tag) => Draggable<String>(
-    data: tag,
-    feedback: Material(
-      color: Colors.transparent,
-      child: _chipVisual(color, tag, 0.8),
-    ),
-    childWhenDragging: SizedBox(width: 50, height: 50),
-    child: _chipVisual(color, tag),
-  );
-
-  Widget _chipVisual(Color color, String tag, [double opacity = 1.0]) =>
-      Container(
-        width: 50,
-        height: 50,
-        decoration: BoxDecoration(
-          color: color.withAlpha((255 * opacity).toInt()),
-          shape: BoxShape.circle,
-          boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 4)],
-        ),
-        child: Center(
-          child: Text(
-            tag,
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 10,
-            ),
-          ),
-        ),
-      );
-
-  Widget _buildChipPile(Color color, String tag) => SizedBox(
-    height: 100,
-    width: 50,
-    child: Stack(
-      alignment: Alignment.bottomCenter,
-      children: List.generate(
-        5,
-        (i) => Positioned(bottom: i * 10.0, child: _buildChip(color, tag)),
-      ),
-    ),
-  );
-
-  Widget _interactivePot() {
-    final activeTags = ref.watch(activeTagsProvider);
-    final tagsNotifier = ref.read(activeTagsProvider.notifier);
-    final cardNotifier = ref.read(cardFlightProvider.notifier);
-
-    return Positioned(
-      bottom: 30,
-      right: 30,
-      child: DragTarget<String>(
-        onAcceptWithDetails: (details) async {
-          final tag = details.data;
-          if (!activeTags.contains(tag)) {
-            // 1️⃣ Mettre à jour le pot
-            tagsNotifier.state = [...activeTags, tag];
-
-            // 2️⃣ Marquer les cartes correspondantes comme "flyingUp"
-            final cardsToFly = widget.experiences
-                .where((e) => e.tags.contains(tag))
-                .toList();
-
-            // 3️⃣ Lancer l'animation Overlay pour chaque carte
-            for (var exp in cardsToFly) {
-              if (mounted) {
-                _flyCard(context, exp, toTop: true);
-              }
-            }
-          }
-        },
-        builder: (context, candidateData, rejectedData) {
-          final glow = candidateData.isNotEmpty;
-          return AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            width: 160,
-            height: 160,
+    return DragTarget<Experience>(
+      onAcceptWithDetails: (details) {
+        setState(() {
+          activeExperience = details.data;
+          _potCards.clear(); // Vider le pot si on fait du drag & drop direct
+        });
+      },
+      builder: (context, candidateData, rejectedData) {
+        // Priorité 1: Mode drag & drop (1 carte au centre)
+        if (activeExperience != null && _potCards.isEmpty) {
+          return Align(
             alignment: Alignment.center,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.black.withAlpha(120),
-              border: glow ? Border.all(color: Colors.yellow, width: 4) : null,
-              boxShadow: glow
-                  ? [
-                      BoxShadow(
-                        color: Colors.yellow.withAlpha((255 * 0.6).toInt()),
-                        blurRadius: 20,
-                      ),
-                    ]
-                  : null,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 400),
+              width: 400,
+              height: 500,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: const [
+                  BoxShadow(blurRadius: 12, color: Colors.black26),
+                ],
+              ),
+              child: ExperienceCard(
+                experience: activeExperience!,
+                pageOffset: 0,
+              ),
             ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                if (activeTags.isEmpty)
+          );
+        }
+
+        // Priorité 2: Mode "main de poker" (cartes du pot)
+        if (_potCards.isNotEmpty) {
+          return Align(
+            alignment: Alignment.center,
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.black.withAlpha((255 * 0.7).toInt()),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: Colors.yellow, width: 3),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.yellow.withAlpha((255 * 0.5).toInt()),
+                    blurRadius: 15,
+                    spreadRadius: 2,
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
                   const Text(
-                    "Glisse un jeton ici",
+                    "🎰 Main de Poker 🎰",
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Colors.yellow,
+                      fontSize: 24,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                Wrap(
-                  spacing: 4,
-                  children: activeTags
-                      .map(
-                        (t) =>
-                            _chipVisual(tagColors[t] ?? Colors.white, t, 0.3),
-                      )
-                      .toList(),
-                ),
-                if (activeTags.isNotEmpty)
-                  ElevatedButton(
-                    onPressed: () {
-                      tagsNotifier.state = [];
-                      for (var e in widget.experiences) {
-                        _flyCard(context, e, toTop: false);
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                    ),
-                    child: const Text("Vider le pot"),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: _potCards.take(4).map((exp) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: SizedBox(
+                          width: 120,
+                          height: 160,
+                          child: _cardClone(exp),
+                        ),
+                      );
+                    }).toList(),
                   ),
-              ],
+                  const SizedBox(height: 20),
+                  Text(
+                    "${_potCards.length} carte(s) sélectionnée(s)",
+                    style: const TextStyle(color: Colors.white, fontSize: 16),
+                  ),
+                ],
+              ),
             ),
           );
-        },
-      ),
+        }
+
+        // Priorité 3: Zone vide par défaut
+        return Align(
+          alignment: Alignment.center,
+          child: Container(
+            width: info.size.width * 0.5,
+            height: info.size.height * 0.6,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey.withAlpha(128)),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Text(
+              "👉 Glisse une carte ici\n🎰 ou utilise les jetons",
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.white, fontSize: 18),
+            ),
+          ),
+        );
+      },
     );
+  }
+
+  List<Widget> _buildScatteredChips() {
+    return [
+      Positioned(
+        top: 120,
+        right: 80,
+        child: TagChip(
+          tag: 'flutter',
+          color: tagColors['flutter'] ?? Colors.grey,
+        ),
+      ),
+      Positioned(
+        top: 200,
+        right: 100,
+        child: TagChip(
+          tag: 'angular',
+          color: tagColors['angular'] ?? Colors.grey,
+        ),
+      ),
+      Positioned(
+        bottom: 250,
+        right: 80,
+        child: TagChip(
+          tag: 'devOps',
+          color: tagColors['devOps'] ?? Colors.grey,
+        ),
+      ),
+      Positioned(
+        bottom: 180,
+        right: 140,
+        child: TagChip(
+          tag: 'firebase',
+          color: tagColors['firebase'] ?? Colors.grey,
+        ),
+      ),
+    ];
   }
 
   /// 🃏 Carte réduite
@@ -463,67 +393,29 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
     );
   }
 
-  /// 🃏 Carte en grand au centre
-  Widget _buildFullCard(Experience exp) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 400),
-      width: 400,
-      height: 500,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: const [BoxShadow(blurRadius: 12, color: Colors.black26)],
-      ),
-      child: ExperienceCard(experience: exp, pageOffset: 0),
-    );
-  }
-
-  /// [🃏🃏🃏🃏] NOUVEAU WIDGET pour la zone de cartes sélectionnées en haut
-  Widget _buildSelectedCardsDisplay() {
-    final selectedCards = widget.experiences
-        .where(
-          (e) =>
-              (ref.watch(cardFlightProvider)[e.entreprise] ??
-                  CardFlightState.inPile) ==
-              CardFlightState.inTop,
-        )
-        .toList();
-
-    return Align(
-      alignment: Alignment.topCenter,
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Padding(
-          padding: const EdgeInsets.only(top: 20.0, left: 100),
-          child: Row(
-            children: selectedCards.map((exp) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: _buildMiniCard(exp),
-              );
-            }).toList(),
-          ),
+  Widget _buildChipPile(Color color, String tag) => SizedBox(
+    height: 120,
+    width: 80,
+    child: Stack(
+      alignment: Alignment.bottomCenter,
+      children: List.generate(
+        5,
+        (i) => Positioned(
+          bottom: i * 10.0,
+          child: TagChip(color: color, tag: tag),
         ),
       ),
-    );
-  }
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
     final info = ref.watch(responsiveInfoProvider);
-    final pile = widget.experiences
-        .where(
-          (e) =>
-              (ref.watch(cardFlightProvider)[e.entreprise] ??
-                  CardFlightState.inPile) ==
-              CardFlightState.inPile,
-        )
-        .toList();
 
     return Scaffold(
       body: Stack(
         children: [
+          // Tapis de fond
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
@@ -532,24 +424,24 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
               ),
             ),
           ),
-          _buildSelectedCardsDisplay(),
-          _buildCardPile(info, pile),
+          _buildCardPile(info),
           _buildCardTarget(info),
-          _interactivePot(),
-          _buildChip(tagColors['flutter']!, 'flutter'),
-          _buildChip(tagColors['react']!, 'react'),
-          _buildChip(tagColors['devOps']!, 'devOps'),
-          _buildChip(tagColors['firebase']!, 'firebase'),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _buildChipPile(tagColors['flutter']!, 'flutter'),
-                _buildChipPile(tagColors['devOps']!, 'devOps'),
-                _buildChipPile(tagColors['react']!, 'react'),
-                _buildChipPile(tagColors['firebase']!, 'firebase'),
-              ],
+          InteractivePot(
+            experiences: widget.experiences,
+            cardKeys: _cardKeys,
+            flyCard: _flyCard,
+            onCardsArrivedInPot: _onCardsArrivedInPot,
+            onPotCleared: _onPotCleared,
+          ),
+          ..._buildScatteredChips(),
+          Positioned(
+            bottom: 20,
+            left: 20,
+            child: Wrap(
+              spacing: 8,
+              children: tagColors.keys
+                  .map((t) => _buildChipPile(tagColors[t]!, t))
+                  .toList(),
             ),
           ),
         ],

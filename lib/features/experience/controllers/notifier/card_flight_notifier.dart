@@ -5,16 +5,10 @@ import '../../../../constants/enum_global.dart';
 class CardFlightNotifier extends StateNotifier<Map<String, CardFlightState>> {
   CardFlightNotifier() : super({});
 
-  /// Initialiser l'état d'une carte
-  void initCard(String id) {
-    if (!state.containsKey(id)) {
-      state = {...state, id: CardFlightState.inPile};
-    }
-  }
-
   /// Mettre à jour l'état d'une carte
-  void setStateForCard(String id, CardFlightState newState) {
-    state = {...state, id: newState};
+  void setStateForCard(String entreprise, CardFlightState state) {
+    state = state;
+    this.state = {...this.state, entreprise: state};
   }
 
   /// Récupérer l'état d'une carte (utile dans les Widgets)
@@ -23,10 +17,19 @@ class CardFlightNotifier extends StateNotifier<Map<String, CardFlightState>> {
   }
 
   /// Marquer toutes les cartes liées à un tag comme "flyingUp"
-  void flyCardsUp(List<String> cardIds) {
+  void flyCardUp(List<String> cardIds) {
     final newState = {...state};
     for (var id in cardIds) {
       newState[id] = CardFlightState.flyingUp;
+    }
+    state = newState;
+  }
+
+  /// Lancer l'animation de plusieurs cartes vers le haut
+  void flyCardsUp(List<String> entreprises) {
+    final newState = Map<String, CardFlightState>.from(state);
+    for (var e in entreprises) {
+      newState[e] = CardFlightState.flyingUp;
     }
     state = newState;
   }
@@ -47,5 +50,14 @@ class CardFlightNotifier extends StateNotifier<Map<String, CardFlightState>> {
       }
       state = finalState;
     });
+  }
+
+  /// 🔹 Nouvelle méthode pour réinitialiser toutes les cartes
+  void resetAllCards() {
+    final newState = <String, CardFlightState>{};
+    for (var key in state.keys) {
+      newState[key] = CardFlightState.inPile;
+    }
+    state = newState;
   }
 }
