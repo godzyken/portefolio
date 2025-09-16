@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:portefolio/features/experience/views/widgets/tap_chip.dart';
+import 'package:portefolio/features/experience/views/widgets/competences_chip.dart';
 
 import '../../../../core/affichage/screen_size_detector.dart';
 import '../../controllers/providers/card_flight_provider.dart';
+import '../../data/competences_data.dart';
 import '../../data/experiences_data.dart';
 import 'animated_card_overlay.dart';
 import 'falling_tag.dart';
@@ -62,7 +63,7 @@ class _InteractivePotState extends ConsumerState<InteractivePot>
       builder: (context) => FallingTag(
         start: start,
         end: target,
-        child: TagChip(tag: tag, color: tagColors[tag] ?? Colors.white),
+        child: CompetenceChip(competenceName: tag, opacity: 1.0),
       ),
     );
 
@@ -86,7 +87,7 @@ class _InteractivePotState extends ConsumerState<InteractivePot>
         start: start,
         end: target,
         size: size,
-        child: TagChip(color: tagColors[tag] ?? Colors.white, tag: tag),
+        child: CompetenceChip(competenceName: tag),
         onEnd: () => entry.remove(),
       ),
     );
@@ -95,8 +96,13 @@ class _InteractivePotState extends ConsumerState<InteractivePot>
   }
 
   void _onCoinDrop(String tag) {
+    // Trouver la compétence
+    final comp = competences.firstWhere(
+      (c) => c.nom.toLowerCase() == tag.toLowerCase(),
+    );
+
     final cardsToFly = widget.experiences
-        .where((e) => e.tags.contains(tag))
+        .where((e) => comp.entreprises.contains(e.entreprise))
         .toList();
 
     widget.onCardsArrivedInPot?.call(cardsToFly);
@@ -112,11 +118,7 @@ class _InteractivePotState extends ConsumerState<InteractivePot>
             _chipPositions[tag] = rb.localToGlobal(Offset.zero);
           }
         });
-        return TagChip(
-          tag: tag,
-          color: tagColors[tag] ?? Colors.white,
-          opacity: opacity,
-        );
+        return CompetenceChip(competenceName: tag, opacity: opacity);
       },
     );
   }
@@ -205,11 +207,20 @@ class _InteractivePotState extends ConsumerState<InteractivePot>
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                  Wrap(
-                    spacing: 4,
-                    children: activeTags
-                        .map((t) => _buildTagChip(t, opacity: 0.3))
-                        .toList(),
+                  SizedBox(
+                    width: 100,
+                    height: 100,
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        for (int i = 0; i < activeTags.length; i++)
+                          Positioned(
+                            left: (i * 12).toDouble(), // décalage horizontal
+                            top: (i * 8).toDouble(), // décalage vertical
+                            child: _buildTagChip(activeTags[i], opacity: 0.8),
+                          ),
+                      ],
+                    ),
                   ),
                   if (activeTags.isNotEmpty)
                     ElevatedButton(

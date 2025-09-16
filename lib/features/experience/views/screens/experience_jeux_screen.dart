@@ -2,13 +2,14 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:portefolio/features/experience/views/widgets/tap_chip.dart';
+import 'package:portefolio/features/experience/views/widgets/competences_chip.dart';
 
 import '../../../../constants/enum_global.dart';
 import '../../../../core/affichage/screen_size_detector.dart';
 import '../../controllers/providers/card_flight_provider.dart';
 import '../../data/experiences_data.dart';
 import '../widgets/animated_card_overlay.dart';
+import '../widgets/competence_niveau_pile.dart';
 import '../widgets/experience_card.dart';
 import '../widgets/interactive_pot.dart';
 
@@ -323,34 +324,22 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
       Positioned(
         top: 120,
         right: 80,
-        child: TagChip(
-          tag: 'flutter',
-          color: tagColors['flutter'] ?? Colors.grey,
-        ),
+        child: CompetenceChip(competenceName: 'full-stack'),
       ),
       Positioned(
         top: 200,
         right: 100,
-        child: TagChip(
-          tag: 'angular',
-          color: tagColors['angular'] ?? Colors.grey,
-        ),
+        child: CompetenceChip(competenceName: 'qualite'),
       ),
       Positioned(
         bottom: 250,
         right: 80,
-        child: TagChip(
-          tag: 'devOps',
-          color: tagColors['devOps'] ?? Colors.grey,
-        ),
+        child: CompetenceChip(competenceName: 'Relation Client'),
       ),
       Positioned(
         bottom: 180,
         right: 140,
-        child: TagChip(
-          tag: 'firebase',
-          color: tagColors['firebase'] ?? Colors.grey,
-        ),
+        child: CompetenceChip(competenceName: 'Logistique'),
       ),
     ];
   }
@@ -393,21 +382,6 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
     );
   }
 
-  Widget _buildChipPile(Color color, String tag) => SizedBox(
-    height: 120,
-    width: 80,
-    child: Stack(
-      alignment: Alignment.bottomCenter,
-      children: List.generate(
-        5,
-        (i) => Positioned(
-          bottom: i * 10.0,
-          child: TagChip(color: color, tag: tag),
-        ),
-      ),
-    ),
-  );
-
   @override
   Widget build(BuildContext context) {
     final info = ref.watch(responsiveInfoProvider);
@@ -434,16 +408,7 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
             onPotCleared: _onPotCleared,
           ),
           ..._buildScatteredChips(),
-          Positioned(
-            bottom: 20,
-            left: 20,
-            child: Wrap(
-              spacing: 8,
-              children: tagColors.keys
-                  .map((t) => _buildChipPile(tagColors[t]!, t))
-                  .toList(),
-            ),
-          ),
+          CompetencesPilesByNiveau(),
         ],
       ),
     );
