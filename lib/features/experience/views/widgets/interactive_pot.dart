@@ -215,13 +215,17 @@ class _InteractivePotState extends ConsumerState<InteractivePot>
                       children: [
                         for (int i = 0; i < activeTags.length; i++)
                           Positioned(
-                            left: (i * 12).toDouble(), // décalage horizontal
-                            top: (i * 8).toDouble(), // décalage vertical
-                            child: _buildTagChip(activeTags[i], opacity: 0.8),
+                            left: (i * 8).toDouble(), // décalage horizontal
+                            top: (i * 6).toDouble(), // décalage vertical
+                            child: _buildTagChip(
+                              activeTags[i],
+                              opacity: 0.9 - i * 0.1,
+                            ),
                           ),
                       ],
                     ),
                   ),
+
                   if (activeTags.isNotEmpty)
                     ElevatedButton(
                       onPressed: () {
