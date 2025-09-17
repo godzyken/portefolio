@@ -3,11 +3,18 @@
 <head>
   <base href="$FLUTTER_BASE_HREF">
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta name="description" content="Ce portfolio a été conçu pour illustrer mes compétences en Flutter et offrir un aperçu clair et esthétique de mon parcours.">
 
-  <title>Portfolio</title>
+  <!-- iOS meta tags & icons -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="portefolio">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
+  <title>portefolio</title>
   <link rel="manifest" href="manifest.json">
 
   <style>
@@ -15,10 +22,19 @@
       height: 100%;
       margin: 0;
       padding: 0;
+      overflow: hidden;
+    }
+    #flutter_container {
+      height: 100%;
+      width: 100%;
     }
   </style>
 </head>
 <body>
+<!-- Conteneur Flutter -->
+<div id="flutter_container"></div>
+
+<!-- Bootstrap Flutter -->
 <script async src="flutter_bootstrap.js"></script>
 </body>
 </html>
