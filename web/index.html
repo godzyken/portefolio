@@ -2,32 +2,13 @@
 <html lang="fr-FR">
 <head>
   <base href="$FLUTTER_BASE_HREF">
-
   <meta charset="UTF-8">
-  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta content="Ce portfolio a été conçu pour illustrer mes compétences en Flutter et offrir un aperçu clair et esthétique de mon parcours à toute personne intéressée." name="description">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Ce portfolio a été conçu pour illustrer mes compétences en Flutter et offrir un aperçu clair et esthétique de mon parcours.">
 
-  <meta content="yes" name="mobile-web-app-capable">
-  <meta content="black" name="apple-mobile-web-app-status-bar-style">
-  <meta content="portefolio" name="apple-mobile-web-app-title">
-  <link href="icons/Icon-192.png" rel="apple-touch-icon">
-  <link href="favicon.png" rel="icon" type="image/png"/>
-  <title>portefolio</title>
-  <link href="manifest.json" rel="manifest">
-
-  <!-- Google Tag Manager -->
-  <script>
-    (function(w,d,s,l,i){
-      w[l]=w[l]||[];
-      w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});
-      var f=d.getElementsByTagName(s)[0],
-          j=d.createElement(s),
-          dl=l!='dataLayer'?'&l='+l:'';
-      j.async=true;
-      j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;
-      f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-WQRTDMK3');
-  </script>
+  <title>Portfolio</title>
+  <link rel="icon" type="image/png" href="favicon.png"/>
+  <link rel="manifest" href="manifest.json">
 
   <style>
     html, body {
@@ -35,64 +16,9 @@
       margin: 0;
       padding: 0;
     }
-
-    .place-picker-container {
-      padding: 20px;
-    }
-
-    /* Masquer la carte par défaut */
-    #map-demo-container {
-      display: none;
-      height: 100%;
-      width: 100%;
-    }
   </style>
 </head>
 <body>
-<!-- Conteneur de la carte, masqué par défaut -->
-<div id="map-demo-container">
-  <gmp-map></gmp-map>
-  <gmp-advanced-marker></gmp-advanced-marker>
-  <gmpx-place-picker></gmpx-place-picker>
-</div>
-
-<script type="module" src="https://ajax.googleapis.com/ajax/libs/@googlemaps/extended-component-library/0.6.11/index.min.js"></script>
 <script async src="flutter_bootstrap.js"></script>
-
-<!-- Initialisation conditionnelle de Google Maps -->
-<script>
-  function initMapDemo() {
-    const container = document.getElementById('map-demo-container');
-    container.style.display = 'block'; // afficher le container seulement maintenant
-
-    const map = container.querySelector('gmp-map');
-    const marker = container.querySelector('gmp-advanced-marker');
-    const placePicker = container.querySelector('gmpx-place-picker');
-    const infowindow = new google.maps.InfoWindow();
-
-    map.innerMap.setOptions({ mapTypeControl: false });
-
-    placePicker.addEventListener('gmpx-placechange', () => {
-      const place = placePicker.value;
-
-      if (!place.location) {
-        window.alert("No details available for input: '" + place.name + "'");
-        infowindow.close();
-        marker.position = null;
-        return;
-      }
-
-      if (place.viewport) map.innerMap.fitBounds(place.viewport);
-      else { map.center = place.location; map.zoom = 17; }
-
-      marker.position = place.location;
-      infowindow.setContent(
-        `<strong>${place.displayName}</strong><br>
-         <span>${place.formattedAddress}</span>`
-      );
-      infowindow.open(map.innerMap, marker);
-    });
-  }
-</script>
 </body>
 </html>
