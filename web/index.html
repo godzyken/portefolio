@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr-FR">
 <head>
   <!--
     If you are serving your web app in a path other than the root, change the
@@ -41,31 +41,73 @@
   </script>
 
   <!-- Global site tag (gtag.js) - Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
   <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
+    async function init() {
+      await customElements.whenDefined('gmp-map');
 
-    const trackingId = 'G-WQRTDMK3';
+      const map = document.querySelector('gmp-map');
+      const marker = document.querySelector('gmp-advanced-marker');
+      const placePicker = document.querySelector('gmpx-place-picker');
+      const infowindow = new google.maps.InfoWindow();
 
-    gtag('config', trackingId);
+      map.innerMap.setOptions({
+        mapTypeControl: false
+      });
 
-    window.sendEvent = function(name, params) {
-      gtag('event', name, params || {});
-    };
+      placePicker.addEventListener('gmpx-placechange', () => {
+        const place = placePicker.value;
 
+        if (!place.location) {
+          window.alert(
+            "No details available for input: '" + place.name + "'"
+          );
+          infowindow.close();
+          marker.position = null;
+          return;
+        }
+
+        if (place.viewport) {
+          map.innerMap.fitBounds(place.viewport);
+        } else {
+          map.center = place.location;
+          map.zoom = 17;
+        }
+
+        marker.position = place.location;
+        infowindow.setContent(
+          `<strong>${place.displayName}</strong><br>
+           <span>${place.formattedAddress}</span>
+        `);
+        infowindow.open(map.innerMap, marker);
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
   </script>
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/@googlemaps/extended-component-library/0.6.11/index.min.js">
+  </script>
+  <style>
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
 
+    .place-picker-container {
+      padding: 20px;
+    }
+  </style>
 </head>
 <body>
-  <!-- Google Tag Manager (noscript) -->
-  <noscript>
-    <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WQRTDMK3"
-            height="0" width="0" style="display:none;visibility:hidden">
-    </iframe>
-  </noscript>
-  <!-- End Google Tag Manager (noscript) -->
+  <gmpx-api-loader key="AIzaSyA1i1mjqEBbaVn8lYsOwabknT98jExkfus" solution-channel="GMP_GE_mapsandplacesautocomplete_v2">
+  </gmpx-api-loader>
+  <gmp-map center="40.749933,-73.98633" zoom="13" map-id="DEMO_MAP_ID">
+    <div slot="control-block-start-inline-start" class="place-picker-container">
+      <gmpx-place-picker placeholder="Enter an address"></gmpx-place-picker>
+    </div>
+    <gmp-advanced-marker></gmp-advanced-marker>
+  </gmp-map>
   <script async src="flutter_bootstrap.js"></script>
 </body>
 </html>
