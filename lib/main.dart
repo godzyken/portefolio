@@ -1,20 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/grid_config_provider.dart';
 import 'package:portefolio/core/provider/providers.dart';
 import 'package:portefolio/features/home/views/screens/splash_screen.dart';
 import 'package:portefolio/features/parametres/themes/services/theme_repository.dart';
+import 'package:web/web.dart' as web;
 
 import 'core/routes/router.dart';
-import 'features/generator/views/widgets/generator_widgets_extentions.dart';
+import 'features/generator/views/widgets/responsive_scope.dart';
 import 'features/parametres/themes/controller/theme_controller.dart';
+
+// Clé injectée avec --dart-define
+const mapsApiKey = String.fromEnvironment('MAPS_API_KEY');
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Injection dynamique du script Google Maps
+  final script = web.HTMLScriptElement();
+  script.src =
+      'https://maps.googleapis.com/maps/api/js?key=$mapsApiKey&libraries=places';
+  script.async = true;
+
+  web.document.head!.append(script);
+
   final repo = ThemeRepository();
   final initial = await repo.loadTheme();
-  await dotenv.load(fileName: "assets/.env");
 
   runApp(
     ProviderScope(
@@ -31,6 +42,7 @@ void main() async {
 
 class MyApp extends ConsumerWidget {
   const MyApp({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = ref.watch(themeControllerProvider);
@@ -42,26 +54,6 @@ class MyApp extends ConsumerWidget {
       theme: theme.toThemeData(),
       darkTheme: theme.toThemeData(),
       themeMode: ThemeMode.system,
-      /* theme: ThemeData(
-        fontFamily: 'NotoSans',
-        brightness: Brightness.light,
-        primarySwatch: Colors.blue,
-        useMaterial3: true,
-        cardTheme: CardThemeData(
-          color: Colors.white,
-          elevation: 4,
-          margin: EdgeInsets.all(12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(16)),
-          ),
-        ),
-        textTheme: Theme.of(context).textTheme.apply(fontFamily: 'NotoSans'),
-      ),
-      darkTheme: ThemeData(
-        brightness: Brightness.dark,
-        primarySwatch: Colors.teal,
-        useMaterial3: true,
-      ),*/
       routerConfig: router,
       builder: (context, child) {
         return precache.when(

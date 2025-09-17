@@ -36,9 +36,16 @@
   <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0], j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src= 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-WQRTDMK3');</script>
   <!-- End Google Tag Manager -->
 
-  <script
-          src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA1i1mjqEBbaVn8lYsOwabknT98jExkfus" async defer>
+  <script>
+    // Flutter injecte la variable dans window via `flutterConfiguration`
+
+    // Dynamically inject the script with the API key
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${MAPS_API_KEY}&libraries=places`;
+    script.async = true;
+    document.head.appendChild(script);
   </script>
+
 
   <!-- Global site tag (gtag.js) - Google Analytics -->
   <script>
@@ -100,14 +107,7 @@
   </style>
 </head>
 <body>
-  <gmpx-api-loader key="AIzaSyA1i1mjqEBbaVn8lYsOwabknT98jExkfus" solution-channel="GMP_GE_mapsandplacesautocomplete_v2">
-  </gmpx-api-loader>
-  <gmp-map center="40.749933,-73.98633" zoom="13" map-id="DEMO_MAP_ID">
-    <div slot="control-block-start-inline-start" class="place-picker-container">
-      <gmpx-place-picker placeholder="Enter an address"></gmpx-place-picker>
-    </div>
-    <gmp-advanced-marker></gmp-advanced-marker>
-  </gmp-map>
+  <gmp-map></gmp-map>
   <script async src="flutter_bootstrap.js"></script>
 </body>
 </html>

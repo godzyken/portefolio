@@ -41,6 +41,7 @@ dependencies:
   vector_math: ^2.2.0
   google_maps_flutter: ^2.13.1
   google_maps_flutter_web: ^0.5.14+2
+  web: ^1.1.1
 
 dev_dependencies:
   flutter_test:
