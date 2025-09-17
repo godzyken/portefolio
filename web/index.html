@@ -1,101 +1,115 @@
 <!DOCTYPE html>
 <html lang="fr-FR">
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
   <base href="$FLUTTER_BASE_HREF">
 
   <meta charset="UTF-8">
-  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta content="Ce portfolio a été conçu pour illustrer mes compétences en Flutter et offrir un aperçu clair et esthétique de mon parcours à toute personne intéressée." name="description">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="description" content="Ce portfolio a été conçu pour illustrer mes compétences en Flutter et offrir un aperçu clair et esthétique de mon parcours.">
 
   <!-- iOS meta tags & icons -->
-  <meta content="yes" name="mobile-web-app-capable">
-  <meta content="black" name="apple-mobile-web-app-status-bar-style">
-  <meta content="portefolio" name="apple-mobile-web-app-title">
-  <link href="icons/Icon-192.png" rel="apple-touch-icon">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="portefolio">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
-  <link href="favicon.png" rel="icon" type="image/png"/>
+  <link rel="icon" type="image/png" href="favicon.png">
 
   <title>portefolio</title>
-  <link href="manifest.json" rel="manifest">
+  <link rel="manifest" href="manifest.json">
 
   <!-- Google Tag Manager -->
-  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0], j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src= 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-WQRTDMK3');</script>
-  <!-- End Google Tag Manager -->
-  <!-- Global site tag (gtag.js) - Google Analytics -->
   <script>
-    async function init() {
-      await customElements.whenDefined('gmp-map');
-
-      const map = document.querySelector('gmp-map');
-      const marker = document.querySelector('gmp-advanced-marker');
-      const placePicker = document.querySelector('gmpx-place-picker');
-      const infowindow = new google.maps.InfoWindow();
-
-      map.innerMap.setOptions({
-        mapTypeControl: false
-      });
-
-      placePicker.addEventListener('gmpx-placechange', () => {
-        const place = placePicker.value;
-
-        if (!place.location) {
-          window.alert(
-            "No details available for input: '" + place.name + "'"
-          );
-          infowindow.close();
-          marker.position = null;
-          return;
-        }
-
-        if (place.viewport) {
-          map.innerMap.fitBounds(place.viewport);
-        } else {
-          map.center = place.location;
-          map.zoom = 17;
-        }
-
-        marker.position = place.location;
-        infowindow.setContent(
-          `<strong>${place.displayName}</strong><br>
-           <span>${place.formattedAddress}</span>
-        `);
-        infowindow.open(map.innerMap, marker);
-      });
-    }
-
-    document.addEventListener('DOMContentLoaded', init);
+    (function(w,d,s,l,i){
+      w[l]=w[l]||[];
+      w[l].push({'gtm.start': new Date().getTime(), event:'gtm.js'});
+      var f=d.getElementsByTagName(s)[0],
+          j=d.createElement(s),
+          dl=l!='dataLayer'?'&l='+l:'';
+      j.async=true;
+      j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;
+      f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-WQRTDMK3');
   </script>
-  <script type="module" src="https://ajax.googleapis.com/ajax/libs/@googlemaps/extended-component-library/0.6.11/index.min.js">
-  </script>
+  <!-- End Google Tag Manager -->
+
+  <!-- Google Maps Extended Component Library -->
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/@googlemaps/extended-component-library/0.6.11/index.min.js"></script>
+
   <style>
-    html,
-    body {
+    html, body {
       height: 100%;
       margin: 0;
       padding: 0;
+      font-family: sans-serif;
+    }
+
+    gmp-map {
+      width: 100%;
+      height: 500px; /* Ajuste selon besoin */
     }
 
     .place-picker-container {
       padding: 20px;
+      max-width: 400px;
     }
   </style>
 </head>
 <body>
-  <gmp-map></gmp-map>
-  <script async src="flutter_bootstrap.js"></script>
+<!-- Flutter Web -->
+<script async src="flutter_bootstrap.js"></script>
+
+<!-- Google Maps -->
+<div class="place-picker-container">
+  <gmpx-place-picker placeholder="Rechercher un lieu"></gmpx-place-picker>
+</div>
+<gmp-map></gmp-map>
+<gmp-advanced-marker></gmp-advanced-marker>
+
+<script>
+  async function init() {
+    await customElements.whenDefined('gmp-map');
+
+    const map = document.querySelector('gmp-map');
+    const marker = document.querySelector('gmp-advanced-marker');
+    const placePicker = document.querySelector('gmpx-place-picker');
+    const infowindow = new google.maps.InfoWindow();
+
+    // Options de la carte
+    map.innerMap.setOptions({
+      mapTypeControl: false,
+      zoom: 5,
+      center: { lat: 46.6, lng: 2.4 } // Centre la France par défaut
+    });
+
+    placePicker.addEventListener('gmpx-placechange', () => {
+      const place = placePicker.value;
+
+      if (!place.location) {
+        window.alert("Aucun détail disponible pour : '" + place.name + "'");
+        infowindow.close();
+        marker.position = null;
+        return;
+      }
+
+      if (place.viewport) {
+        map.innerMap.fitBounds(place.viewport);
+      } else {
+        map.center = place.location;
+        map.zoom = 17;
+      }
+
+      marker.position = place.location;
+      infowindow.setContent(`
+        <strong>${place.displayName}</strong><br>
+        <span>${place.formattedAddress}</span>
+      `);
+      infowindow.open(map.innerMap, marker);
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', init);
+</script>
 </body>
 </html>
