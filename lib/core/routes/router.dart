@@ -87,9 +87,31 @@ class GAObserver extends NavigatorObserver {
 
   @override
   void didPush(Route route, Route? previousRoute) {
-    final path = route.settings.name ?? route.toString();
-
-    analytics.pageview(path);
+    _sendPageView(route);
     super.didPush(route, previousRoute);
+  }
+
+  @override
+  void didReplace({Route? newRoute, Route? oldRoute}) {
+    if (newRoute != null) {
+      _sendPageView(newRoute);
+    }
+    super.didReplace(newRoute: newRoute, oldRoute: oldRoute);
+  }
+
+  @override
+  void didPop(Route route, Route? previousRoute) {
+    if (previousRoute != null) {
+      _sendPageView(previousRoute);
+    }
+    super.didPop(route, previousRoute);
+  }
+
+  void _sendPageView(Route route) {
+    final path =
+        route.settings.name ??
+        route.settings.arguments?.toString() ??
+        route.toString();
+    analytics.pageview(path);
   }
 }
