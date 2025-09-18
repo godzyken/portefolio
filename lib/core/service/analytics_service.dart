@@ -1,7 +1,7 @@
 import 'dart:js_interop';
 
 @JS('gtag')
-external void gtag(String command, String eventName, [Object? params]);
+external void gtag(JSAny name, [JSAny? params]);
 
 class AnalyticsService {
   final String trackingId;
@@ -10,10 +10,10 @@ class AnalyticsService {
 
   void pageview(String path) {
     // On passe directement des types Dart simples
-    gtag("event", "page_view", {'page_path': path, 'page_title': path});
+    gtag('page_view'.toJS, ({'page_path': path, 'page_title': path}).toJSBox);
   }
 
   void event(String name, {Map<String, Object?>? params}) {
-    gtag("event", name, params ?? {});
+    gtag(name.toJS, (params ?? {}).toJSBox);
   }
 }
