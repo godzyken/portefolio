@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:latlong2/latlong.dart';
 
 import '../../../../core/provider/providers.dart';
 
@@ -15,10 +16,15 @@ class SigDiscoveryMap extends ConsumerStatefulWidget {
 class _SigDiscoveryMapState extends ConsumerState<SigDiscoveryMap>
     with SingleTickerProviderStateMixin {
   late final AnimationController _pulseController;
+  late bool _ready = false;
 
   @override
   void initState() {
     super.initState();
+
+    WidgetsBinding.instance.endOfFrame.then((_) {
+      if (mounted) setState(() => _ready = true);
+    });
 
     _pulseController = AnimationController(
       vsync: this,
@@ -44,56 +50,130 @@ class _SigDiscoveryMapState extends ConsumerState<SigDiscoveryMap>
         final userPos = LatLng(pos.latitude, pos.longitude);
         final sigPoints = position.value ?? [];
 
-        final markers = <Marker>{
+        final markers = <Marker>[
           Marker(
-            markerId: const MarkerId("user"),
-            position: userPos,
-            icon: BitmapDescriptor.defaultMarkerWithHue(
-              BitmapDescriptor.hueBlue,
+            point: userPos,
+            width: 40,
+            height: 40,
+            child: const Icon(
+              Icons.person_pin_circle,
+              color: Colors.blue,
+              size: 40,
             ),
           ),
           ...sigPoints.map((p) {
             return Marker(
-              markerId: MarkerId(p.toString()),
-              position: p,
-              icon: BitmapDescriptor.defaultMarkerWithHue(
-                BitmapDescriptor.hueRed,
-              ),
+              point: p,
+              width: 40,
+              height: 40,
+              child: const Icon(Icons.location_on, color: Colors.red, size: 40),
             );
           }),
-        };
+        ];
 
         if (followUser) {
-          WidgetsBinding.instance.addPostFrameCallback((_) async {
-            if (mapControllerCompleter.isCompleted) {
-              final controller = await mapControllerCompleter.future;
-              controller.animateCamera(CameraUpdate.newLatLng(userPos));
-            }
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            mapControllerCompleter.move(userPos, 16.0);
           });
         }
 
-        return GoogleMap(
-          initialCameraPosition: CameraPosition(
-            target: userPos,
-            zoom: 16,
-            tilt: 60, // angle pour voir en 3D
-          ),
-          mapType: MapType.hybrid,
-          markers: markers,
-          myLocationEnabled: true,
-          myLocationButtonEnabled: true,
-          compassEnabled: true,
-          buildingsEnabled: true, // active les bâtiments 3D
-          onMapCreated: (controller) {
-            if (!mapControllerCompleter.isCompleted) {
-              mapControllerCompleter.complete(controller);
-            }
-          },
-          webCameraControlEnabled: true,
+        if (!_ready) const Center(child: CircularProgressIndicator());
+
+        return FlutterMap(
+          mapController: mapControllerCompleter,
+          options: MapOptions(
+              initialCenter: userPos,
+              initialZoom: 16.0,
+              minZoom: 3.0,
+              maxZoom: 18.0,
+              keepAlive: true,
+              backgroundColor: Colors.grey.shade100),
+          children: [
+            // Couche de tuiles - OpenStreetMap
+            TileLayer(
+              urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+              subdomains: const ['a', 'b', 'c'],
+              userAgentPackageName: 'com.example.app',
+            ),
+
+            // Couche satellite alternative (optionnel)
+            TileLayer(
+              urlTemplate:
+                  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+              userAgentPackageName: 'com.godzyken.portfolio',
+            ),
+
+            // Couche des marqueurs
+            MarkerLayer(markers: markers),
+
+            // Contrôles de la carte
+            RichAttributionWidget(
+              popupInitialDisplayDuration: const Duration(seconds: 5),
+              animationConfig: const ScaleRAWA(),
+              showFlutterMapAttribution: false,
+              attributions: [
+                TextSourceAttribution(
+                  '© OpenStreetMap contributors',
+                  onTap: () {}, // Vous pouvez ajouter un lien vers OSM
+                ),
+                const TextSourceAttribution('SIG Discovery Map'),
+              ],
+            ),
+          ],
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, st) => Text("Erreur: $e"),
+      loading: () => Container(
+        color: Colors.grey.shade200,
+        child: const Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(height: 16),
+              Text('Chargement de la carte SIG...'),
+            ],
+          ),
+        ),
+      ),
+      error: (e, st) => Container(
+        color: Colors.red.shade50,
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.error_outline,
+                size: 48,
+                color: Colors.red.shade400,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                "Erreur de géolocalisation",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.red.shade700,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                "$e",
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.red.shade600),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton.icon(
+                onPressed: () {
+                  // Relancer la géolocalisation
+                  ref.invalidate(userLocationProvider);
+                },
+                icon: const Icon(Icons.refresh),
+                label: const Text('Réessayer'),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

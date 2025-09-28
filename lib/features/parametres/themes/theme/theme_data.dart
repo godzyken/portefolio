@@ -127,13 +127,13 @@ class BasicTheme {
   );
 
   Map<String, dynamic> toJson() => {
-    'primaryColorValue': primaryColorValue,
-    'tertiaryColorValue': tertiaryColorValue,
-    'neutralColorValue': neutralColorValue,
-    'mode': mode.name,
-    'name': name,
-    'emoji': emoji,
-  };
+        'primaryColorValue': primaryColorValue,
+        'tertiaryColorValue': tertiaryColorValue,
+        'neutralColorValue': neutralColorValue,
+        'mode': mode.name,
+        'name': name,
+        'emoji': emoji,
+      };
 
   static BasicTheme fromJson(Map<String, dynamic> json) {
     return BasicTheme(
@@ -151,7 +151,7 @@ class BasicTheme {
 }
 
 final availableThemes = [
-  BasicTheme(
+  const BasicTheme(
     name: 'Jungle',
     emoji: '🌿',
     mode: AppThemeMode.light,
@@ -159,7 +159,7 @@ final availableThemes = [
     tertiaryColorValue: 0xFFF8A776,
     neutralColorValue: 0xFF7ECA64,
   ),
-  BasicTheme(
+  const BasicTheme(
     name: 'Océan',
     emoji: '🌊',
     mode: AppThemeMode.light,
@@ -167,7 +167,7 @@ final availableThemes = [
     tertiaryColorValue: 0xFFFFC107,
     neutralColorValue: 0xFFE1F5FE,
   ),
-  BasicTheme(
+  const BasicTheme(
     name: 'Nuit',
     emoji: '🌙',
     mode: AppThemeMode.dark,
@@ -179,13 +179,13 @@ final availableThemes = [
 
 extension BasicThemeSerialization on BasicTheme {
   Map<String, dynamic> toJson() => {
-    'primaryColor': primaryColorValue,
-    'tertiaryColor': tertiaryColorValue,
-    'neutralColor': neutralColorValue,
-    'mode': mode.name,
-    'name': name,
-    'emoji': emoji,
-  };
+        'primaryColor': primaryColorValue,
+        'tertiaryColor': tertiaryColorValue,
+        'neutralColor': neutralColorValue,
+        'mode': mode.name,
+        'name': name,
+        'emoji': emoji,
+      };
 
   static BasicTheme fromJson(Map<String, dynamic> json) {
     return BasicTheme(

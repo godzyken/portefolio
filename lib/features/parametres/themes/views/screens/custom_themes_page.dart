@@ -20,7 +20,7 @@ class CustomThemesPage extends ConsumerWidget {
           ? const Center(child: Text("Aucun thème personnalisé."))
           : ListView.separated(
               padding: const EdgeInsets.all(16),
-              separatorBuilder: (_, _) => const Divider(),
+              separatorBuilder: (_, __) => const Divider(),
               itemCount: customThemes.length,
               itemBuilder: (_, i) {
                 final theme = customThemes[i];

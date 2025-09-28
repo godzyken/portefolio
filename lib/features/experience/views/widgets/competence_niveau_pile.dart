@@ -150,13 +150,13 @@ class CompetencesPilesByNiveau extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Positioned(
+    return const Positioned(
       bottom: 20,
       left: 20,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Compétences',
             style: TextStyle(
               color: Colors.white,
@@ -164,23 +164,23 @@ class CompetencesPilesByNiveau extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: 10),
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               // Expert (Or)
-              const CompetenceNiveauPile(niveau: NiveauCompetence.expert),
-              const SizedBox(width: 15),
+              CompetenceNiveauPile(niveau: NiveauCompetence.expert),
+              SizedBox(width: 15),
               // Confirmé (Argent)
-              const CompetenceNiveauPile(niveau: NiveauCompetence.confirme),
-              const SizedBox(width: 15),
+              CompetenceNiveauPile(niveau: NiveauCompetence.confirme),
+              SizedBox(width: 15),
               // Intermédiaire (Bronze)
-              const CompetenceNiveauPile(
+              CompetenceNiveauPile(
                 niveau: NiveauCompetence.intermediaire,
               ),
-              const SizedBox(width: 15),
+              SizedBox(width: 15),
               // Fonctionnel (Cuivre)
-              const CompetenceNiveauPile(niveau: NiveauCompetence.fonctionnel),
+              CompetenceNiveauPile(niveau: NiveauCompetence.fonctionnel),
             ],
           ),
         ],

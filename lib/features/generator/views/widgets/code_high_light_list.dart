@@ -24,8 +24,8 @@ class CodeHighlightList extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Header type éditeur
-          Row(
-            children: const [
+          const Row(
+            children: [
               _EditorDot(color: Colors.red),
               SizedBox(width: 6),
               _EditorDot(color: Colors.amber),

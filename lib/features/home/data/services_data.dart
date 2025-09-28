@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 class Service {
   final String title;
   final String description;
+  final List<String> features;
   final IconData icon;
   final String? imageUrl;
 
   Service({
     required this.title,
     required this.description,
+    required this.features,
     required this.icon,
     this.imageUrl,
   });
@@ -17,6 +19,7 @@ class Service {
     return Service(
       title: json['title'],
       description: json['description'],
+      features: json['features'],
       icon: _getIconFromName(json['icon']),
       imageUrl: json['imageUrl'],
     );

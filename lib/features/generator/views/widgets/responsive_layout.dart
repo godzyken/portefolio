@@ -35,20 +35,20 @@ class ResponsiveLayout extends ConsumerWidget {
     final maxHeight = info.size.height * info.grid.aspectRatio;
 
     Widget buildImage() => _AnimatedImage(
-      title: title,
-      bulletPoints: bulletPoints,
-      imagePath: imagePath,
-      imageBuilder: imageBuilder,
-      videoBuilder: videoBuilder,
-      size: Size(info.size.width, info.size.width / 1.2),
-    );
+          title: title,
+          bulletPoints: bulletPoints,
+          imagePath: imagePath,
+          imageBuilder: imageBuilder,
+          videoBuilder: videoBuilder,
+          size: Size(info.size.width, info.size.width / 1.2),
+        );
 
     Widget buildContent() => _TextContent(
-      title: title,
-      bulletPoints: bulletPoints,
-      trailingActions: trailingActions,
-      isDesktop: info.isDesktop,
-    );
+          title: title,
+          bulletPoints: bulletPoints,
+          trailingActions: trailingActions,
+          isDesktop: info.isDesktop,
+        );
 
     if (!info.isDesktop || info.grid.columns == 1) {
       return ConstrainedBox(
@@ -101,7 +101,7 @@ class ResponsiveLayout extends ConsumerWidget {
           flex: 50,
           child: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
-            padding: EdgeInsets.symmetric(vertical: 0.5, horizontal: 0.5),
+            padding: const EdgeInsets.symmetric(vertical: 0.5, horizontal: 0.5),
             child: buildContent(),
           ),
         ),
@@ -247,7 +247,7 @@ class _TextContent extends StatelessWidget {
                   fontSize: isDesktop ? 20 : 16,
                   fontWeight: FontWeight.w700,
                   foreground: Paint()
-                    ..shader = LinearGradient(
+                    ..shader = const LinearGradient(
                       colors: [Colors.indigoAccent, Colors.cyanAccent],
                     ).createShader(const Rect.fromLTWH(0, 0, 200, 70)),
                 ),
@@ -269,7 +269,7 @@ class _TextContent extends StatelessWidget {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.arrow_right,
                         size: 16,
                         color: Colors.cyanAccent,
@@ -319,9 +319,9 @@ class _TextContent extends StatelessWidget {
                 alignment: Alignment.centerRight,
                 child: trailingActions != null
                     ? Wrap(spacing: 4, children: trailingActions!)
-                    : Wrap(
+                    : const Wrap(
                         spacing: 4,
-                        children: const [
+                        children: [
                           Icon(
                             Icons.touch_app,
                             size: 14,

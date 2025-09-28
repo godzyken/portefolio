@@ -8,19 +8,18 @@ import '../../features/experience/views/screens/experiences_screen.dart';
 import '../../features/generator/views/screens/generator_extentions_screens.dart';
 import '../../features/home/views/screens/home_screen.dart';
 import '../../features/projets/views/screens/projects_screen.dart';
+import '../affichage/navigator_key_provider.dart';
 import '../notifier/visited_page_notifier.dart';
 import '../service/analytics_service.dart';
-
-// Un navigatorKey global pour ShellRoute
-final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
 // GoRouter fourni via Riverpod
 final goRouterProvider = Provider<GoRouter>((ref) {
   final analytics = ref.read(analyticsProvider);
   final notifier = ref.read(routerNotifierProvider);
+  final navigatorKey = ref.watch(navigatorKeyProvider);
 
   return GoRouter(
-    navigatorKey: _rootNavigatorKey,
+    navigatorKey: navigatorKey,
     observers: [_RouteObserver(ref), GAObserver(analytics)],
     initialLocation: '/',
     routes: [
@@ -69,14 +68,28 @@ class _RouteObserver extends NavigatorObserver {
 
   @override
   void didPush(Route route, Route? previousRoute) {
-    final location =
-        route.settings.name ?? route.settings.arguments?.toString();
+    final location = _getLocationFromRoute(route);
     if (location != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         ref.read(visitedPagesProvider.notifier).markVisited(location);
       });
     }
     super.didPush(route, previousRoute);
+  }
+
+  String? _getLocationFromRoute(Route route) {
+    // Essaye d'obtenir le nom de la route
+    if (route.settings.name != null) {
+      return route.settings.name;
+    }
+
+    // Fallback pour obtenir le path depuis les arguments
+    final arguments = route.settings.arguments;
+    if (arguments is Map && arguments.containsKey('location')) {
+      return arguments['location'] as String?;
+    }
+
+    return null;
   }
 }
 
@@ -108,10 +121,20 @@ class GAObserver extends NavigatorObserver {
   }
 
   void _sendPageView(Route route) {
-    final path =
-        route.settings.name ??
-        route.settings.arguments?.toString() ??
-        route.toString();
+    final path = _getPathFromRoute(route);
     analytics.pageview(path);
+  }
+
+  String _getPathFromRoute(Route route) {
+    if (route.settings.name != null) {
+      return route.settings.name!;
+    }
+
+    final arguments = route.settings.arguments;
+    if (arguments is Map && arguments.containsKey('location')) {
+      return arguments['location'] as String;
+    }
+
+    return route.toString();
   }
 }

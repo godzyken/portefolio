@@ -77,8 +77,8 @@ class _InteractivePotState extends ConsumerState<InteractivePot>
   }
 
   void _flyChip(String tag, Offset target) {
-    final size = const Size(50, 50);
-    final start = _chipPositions[tag] ?? Offset(0, 0);
+    const size = Size(50, 50);
+    final start = _chipPositions[tag] ?? const Offset(0, 0);
     final overlay = Overlay.of(context);
 
     late OverlayEntry entry;
@@ -145,12 +145,11 @@ class _InteractivePotState extends ConsumerState<InteractivePot>
 
             _onCoinDrop(tag);
 
-            final cardsToFly = widget.experiences
-                .where((e) => e.tags.contains(tag))
-                .toList();
+            final cardsToFly =
+                widget.experiences.where((e) => e.tags.contains(tag)).toList();
 
-            final cardWidth = 120.0;
-            final cardHeight = 160.0;
+            const cardWidth = 120.0;
+            const cardHeight = 160.0;
             final target = Offset(
               info.size.width / 2 - cardWidth / 2,
               info.size.height / 2 - cardHeight / 2,
@@ -185,9 +184,8 @@ class _InteractivePotState extends ConsumerState<InteractivePot>
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: Colors.black.withAlpha(120),
-                border: glow
-                    ? Border.all(color: Colors.yellow, width: 4)
-                    : null,
+                border:
+                    glow ? Border.all(color: Colors.yellow, width: 4) : null,
                 boxShadow: [
                   if (glow)
                     BoxShadow(
@@ -225,7 +223,6 @@ class _InteractivePotState extends ConsumerState<InteractivePot>
                       ],
                     ),
                   ),
-
                   if (activeTags.isNotEmpty)
                     ElevatedButton(
                       onPressed: () {

@@ -58,7 +58,7 @@ class ExperienceTimeline extends ConsumerWidget {
                 ),
               ),
             ),
-            indicatorPositionBuilder: (_, _) => 0.5,
+            indicatorPositionBuilder: (_, __) => 0.5,
             indicatorStyle: IndicatorStyle.outlined,
             connectorStyle: ConnectorStyle.solidLine,
           ),

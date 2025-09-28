@@ -41,9 +41,8 @@ class AdaptiveCard extends ConsumerWidget {
             await _showSigOverlay(context);
           } else {
             final current = ref.read(playingVideoProvider);
-            ref.read(playingVideoProvider.notifier).state = current == title
-                ? null
-                : title;
+            ref.read(playingVideoProvider.notifier).state =
+                current == title ? null : title;
           }
           onTap?.call();
         },
@@ -55,8 +54,7 @@ class AdaptiveCard extends ConsumerWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
-            color:
-                theme.value?.tertiaryColor ??
+            color: theme.value?.tertiaryColor ??
                 theme.value?.neutralColor ??
                 theme.value?.primaryColor,
             elevation: 4,
@@ -84,7 +82,7 @@ class AdaptiveCard extends ConsumerWidget {
       barrierDismissible: true,
       barrierLabel: "Fermer",
       barrierColor: Colors.black54,
-      pageBuilder: (context, _, _) {
+      pageBuilder: (context, _, __) {
         return SafeArea(
           child: Material(
             color: Colors.transparent,

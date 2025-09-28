@@ -126,7 +126,7 @@ class _ExperienceDetails extends ConsumerWidget {
       clipBehavior: Clip.none,
       children: [
         if (experience.tags.isNotEmpty && experience.tags.contains('SIG'))
-          Align(
+          const Align(
             alignment: Alignment.bottomCenter,
             child: Opacity(
               opacity: 0.3,
@@ -166,14 +166,14 @@ class _ExperienceDetails extends ConsumerWidget {
             children: [
               _Header(experience: experience),
               const SizedBox(height: 24),
-              _SectionTitle('🎯 Objectifs'),
+              const _SectionTitle('🎯 Objectifs'),
               _BulletList(items: experience.objectifs),
               const SizedBox(height: 24),
-              _SectionTitle('🛠 Missions'),
+              const _SectionTitle('🛠 Missions'),
               _BulletList(items: experience.missions),
               if (experience.stack.isNotEmpty) ...[
                 const SizedBox(height: 24),
-                _SectionTitle('🧰 Stack'),
+                const _SectionTitle('🧰 Stack'),
                 const SizedBox(height: 8),
                 _ExperienceStack(stack: experience.stack),
               ],
@@ -187,7 +187,7 @@ class _ExperienceDetails extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (experience.resultats.isNotEmpty) ...[
-                _SectionTitle('📈 Résultats'),
+                const _SectionTitle('📈 Résultats'),
                 _BulletList(items: experience.resultats),
                 const SizedBox(height: 24),
               ],
@@ -210,20 +210,20 @@ class _ExperienceDetails extends ConsumerWidget {
       children: [
         _Header(experience: experience),
         const SizedBox(height: 24),
-        _SectionTitle('🎯 Objectifs'),
+        const _SectionTitle('🎯 Objectifs'),
         _BulletList(items: experience.objectifs),
         const SizedBox(height: 20),
-        _SectionTitle('🛠 Missions'),
+        const _SectionTitle('🛠 Missions'),
         _BulletList(items: experience.missions),
         if (experience.stack.isNotEmpty) ...[
           const SizedBox(height: 20),
-          _SectionTitle('🧰 Stack'),
+          const _SectionTitle('🧰 Stack'),
           const SizedBox(height: 8),
           _ExperienceStack(stack: experience.stack),
         ],
         if (experience.resultats.isNotEmpty) ...[
           const SizedBox(height: 20),
-          _SectionTitle('📈 Résultats'),
+          const _SectionTitle('📈 Résultats'),
           _ExperienceResults(resultats: experience.resultats),
         ],
         if (experience.lienProjet.isNotEmpty) ...[
@@ -287,14 +287,14 @@ class _SectionTitle extends StatelessWidget {
   const _SectionTitle(this.title);
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.only(bottom: 4),
-    child: Text(
-      title,
-      style: Theme.of(
-        context,
-      ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-    ),
-  );
+        padding: const EdgeInsets.only(bottom: 4),
+        child: Text(
+          title,
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+        ),
+      );
 }
 
 class _BulletList extends StatelessWidget {
@@ -335,14 +335,14 @@ class _BulletList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      if (_hasProgrammingTag() || _looksLikeCode())
-        CodeHighlightList(items: items, tag: '//')
-      else
-        ...buildListItems,
-    ],
-  );
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (_hasProgrammingTag() || _looksLikeCode())
+            CodeHighlightList(items: items, tag: '//')
+          else
+            ...buildListItems,
+        ],
+      );
 
   List<Padding> get buildListItems {
     return items
@@ -418,9 +418,8 @@ class _BulletString extends ConsumerWidget {
                   padding: const EdgeInsets.all(20),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: info.isMobile
-                        ? MainAxisSize.max
-                        : MainAxisSize.min,
+                    mainAxisSize:
+                        info.isMobile ? MainAxisSize.max : MainAxisSize.min,
                     children: [
                       // Icône circulaire
                       Container(
@@ -550,7 +549,7 @@ class _ExperienceStack extends StatelessWidget {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: allTechnos.length,
-        separatorBuilder: (_, _) => const SizedBox(width: 8),
+        separatorBuilder: (_, __) => const SizedBox(width: 8),
         itemBuilder: (_, i) {
           final t = allTechnos[i];
           return Column(
@@ -621,19 +620,19 @@ class _ProjectLinkButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => TextButton.icon(
-    icon: const Icon(Icons.link),
-    label: const Text('Voir le projet'),
-    onPressed: () async {
-      final uri = Uri.parse(url);
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(uri, mode: LaunchMode.inAppBrowserView);
-      } else {
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Impossible d’ouvrir le lien.')),
-          );
-        }
-      }
-    },
-  );
+        icon: const Icon(Icons.link),
+        label: const Text('Voir le projet'),
+        onPressed: () async {
+          final uri = Uri.parse(url);
+          if (await canLaunchUrl(uri)) {
+            await launchUrl(uri, mode: LaunchMode.inAppBrowserView);
+          } else {
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Impossible d’ouvrir le lien.')),
+              );
+            }
+          }
+        },
+      );
 }

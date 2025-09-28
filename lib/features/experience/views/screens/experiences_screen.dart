@@ -33,30 +33,33 @@ class _ExperiencesScreenState extends ConsumerState<ExperiencesScreen> {
     // AppBarActions
     Future.microtask(() {
       ref.read(appBarActionsProvider.notifier).state = [
-        Padding(
-          padding: const EdgeInsets.only(right: 12),
-          child: Row(
-            children: [
-              const Text('Vue:', style: TextStyle(fontSize: 12)),
-              const SizedBox(width: 4),
-              ToggleButtons(
-                constraints: const BoxConstraints(minHeight: 30, minWidth: 40),
-                isSelected: <bool>[isPageView, !isPageView],
-                onPressed: (index) {
-                  ref.read(isPageViewProvider.notifier).state = index == 0;
-                },
-                selectedColor: Theme.of(context).colorScheme.onPrimary,
-                color: Theme.of(context).colorScheme.primary,
-                fillColor: Theme.of(context).colorScheme.primary.withAlpha(50),
-                borderRadius: BorderRadius.circular(8),
-                children: const [
-                  Text("⇆", style: TextStyle(fontSize: 12)), // Swipe
-                  Text("⏱", style: TextStyle(fontSize: 12)), // Timeline
-                ],
-              ),
-            ],
+        if (context.mounted)
+          Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: Row(
+              children: [
+                const Text('Vue:', style: TextStyle(fontSize: 12)),
+                const SizedBox(width: 4),
+                ToggleButtons(
+                  constraints:
+                      const BoxConstraints(minHeight: 30, minWidth: 40),
+                  isSelected: <bool>[isPageView, !isPageView],
+                  onPressed: (index) {
+                    ref.read(isPageViewProvider.notifier).state = index == 0;
+                  },
+                  selectedColor: Theme.of(context).colorScheme.onPrimary,
+                  color: Theme.of(context).colorScheme.primary,
+                  fillColor:
+                      Theme.of(context).colorScheme.primary.withAlpha(50),
+                  borderRadius: BorderRadius.circular(8),
+                  children: const [
+                    Text("⇆", style: TextStyle(fontSize: 12)), // Swipe
+                    Text("⏱", style: TextStyle(fontSize: 12)), // Timeline
+                  ],
+                ),
+              ],
+            ),
           ),
-        ),
       ];
     });
 
@@ -68,10 +71,8 @@ class _ExperiencesScreenState extends ConsumerState<ExperiencesScreen> {
             padding: const EdgeInsets.all(16),
             child: experiencesAsync.when(
               data: (allExperiences) {
-                final allTags = allExperiences
-                    .expand((e) => e.tags)
-                    .toSet()
-                    .toList();
+                final allTags =
+                    allExperiences.expand((e) => e.tags).toSet().toList();
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -105,10 +106,10 @@ class _ExperiencesScreenState extends ConsumerState<ExperiencesScreen> {
         return filteredExperiences.isEmpty
             ? const Center(child: Text('Aucune expérience pour ce filtre.'))
             : isPageView
-            ? info.isMobile
-                  ? ExperienceSlideScreen(experiences: filteredExperiences)
-                  : ExperienceJeuxScreen(experiences: filteredExperiences)
-            : ExperienceTimelineWrapper(experiences: filteredExperiences);
+                ? info.isMobile
+                    ? ExperienceSlideScreen(experiences: filteredExperiences)
+                    : ExperienceJeuxScreen(experiences: filteredExperiences)
+                : ExperienceTimelineWrapper(experiences: filteredExperiences);
       },
       error: (e, _) =>
           Center(child: Text('Une erreur est survenue: ${e.toString()}')),

@@ -3,21 +3,22 @@ import 'dart:convert';
 import 'dart:developer' as developer;
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' as ui;
-import 'package:flutter/services.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:portefolio/core/service/analytics_service.dart';
+import 'package:portefolio/features/generator/data/location_data.dart';
 import 'package:portefolio/features/generator/notifiers/hover_map_notifier.dart';
 
 import '../../constants/app_tab.dart';
 import '../../constants/tech_logos.dart';
 import '../../features/generator/data/extention_models.dart';
+import '../../features/generator/services/location_service.dart';
 import '../../features/generator/services/pdf_export_service.dart';
-import '../affichage/grid_config_provider.dart';
-import '../routes/router.dart';
+import '../affichage/navigator_key_provider.dart';
 
 /// Titre dynamique de l’AppBar
 final appBarTitleProvider = StateProvider<String>((_) => "Portfolio");
@@ -29,10 +30,7 @@ final appBarActionsProvider = StateProvider<List<Widget>>((_) => []);
 final appBarDrawerProvider = StateProvider<Widget?>((_) => null);
 
 /// Location route actuelle
-final currentLocationProvider = Provider<String>((ref) {
-  final router = ref.watch(goRouterProvider);
-  return router.routerDelegate.currentConfiguration.last.matchedLocation;
-});
+final currentLocationProvider = StateProvider<String>((_) => '/');
 
 /// Notifie quand on veut forcer un refresh
 final routerNotifierProvider = Provider<ValueNotifier<void>>((ref) {
@@ -41,20 +39,15 @@ final routerNotifierProvider = Provider<ValueNotifier<void>>((ref) {
 
 /// Stream qui émet la location courante
 final routeLocationStreamProvider = StreamProvider<String>((ref) {
-  final router = ref.watch(goRouterProvider);
   final controller = StreamController<String>.broadcast();
 
-  void listener() {
-    controller.add(router.routeInformationProvider.value.uri.toString());
-  }
+  controller.add(ref.read(currentLocationProvider));
 
-  router.routeInformationProvider.addListener(listener);
-
-  // emit initial
-  controller.add(router.routeInformationProvider.value.uri.toString());
+  ref.listen(currentLocationProvider, (p, n) {
+    controller.add(n);
+  });
 
   ref.onDispose(() {
-    router.routeInformationProvider.removeListener(listener);
     controller.close();
   });
 
@@ -82,8 +75,8 @@ final isPageViewProvider = StateProvider<bool>((ref) => true);
 // Etat de detection du survol d'un élément
 final hoverMapProvider =
     StateNotifierProvider<HoverMapNotifier, Map<String, bool>>(
-      (ref) => HoverMapNotifier(),
-    );
+  (ref) => HoverMapNotifier(),
+);
 
 // Etat du lecteur YoutubeVideoIframe
 final playingVideoProvider = StateProvider<String?>((ref) => null);
@@ -94,7 +87,9 @@ final selectedProjectsProvider = StateProvider<List<ProjectInfo>>((ref) => []);
 // Listes des expériences
 final experiencesProvider = StateProvider<List<Experience>>((ref) => []);
 final experiencesFutureProvider = FutureProvider<List<Experience>>((ref) async {
-  final jsonStr = await rootBundle.loadString('assets/data/experiences.json');
+  final jsonStr = await ui.rootBundle.loadString(
+    'assets/data/experiences.json',
+  );
   final List<dynamic> jsonList = jsonDecode(jsonStr);
   return jsonList.map((json) => Experience.fromJson(json)).toList();
 });
@@ -114,14 +109,14 @@ final filterExperiencesProvider = Provider<List<Experience>>((ref) {
 
 // List des Services proposer
 final servicesFutureProvider = FutureProvider<List<Service>>((ref) async {
-  final jsonStr = await rootBundle.loadString('assets/data/services.json');
+  final jsonStr = await ui.rootBundle.loadString('assets/data/services.json');
   final List jsonList = jsonDecode(jsonStr);
   return jsonList.map((json) => Service.fromJson(json)).toList();
 });
 
 // Liste des projets
 final projectsFutureProvider = FutureProvider<List<ProjectInfo>>((ref) async {
-  final jsonStr = await rootBundle.loadString('assets/data/projects.json');
+  final jsonStr = await ui.rootBundle.loadString('assets/data/projects.json');
   final List<dynamic> jsonList = jsonDecode(jsonStr);
   return jsonList.map((json) => ProjectInfo.fromJson(json)).toList();
 });
@@ -153,26 +148,42 @@ final positionProvider = StreamProvider<List<LatLng>>((ref) {
       ];
       yield nearbyPoints;
     },
-    error: (_, _) async* {},
-    loading: () async* {},
+    error: (error, _) async* {
+      if (kDebugMode) {
+        print('Erreur de localisation: $error');
+      }
+      // Yield empty list en cas d'erreur
+      yield <LatLng>[];
+    },
+    loading: () async* {
+      // Yield empty list pendant le chargement
+      yield <LatLng>[];
+    },
   );
 });
 
-final userLocationProvider = StreamProvider<Position>((ref) async* {
-  // Demande la permission
-  LocationPermission permission = await Geolocator.checkPermission();
-  if (permission == LocationPermission.denied ||
-      permission == LocationPermission.deniedForever) {
-    permission = await Geolocator.requestPermission();
+final userLocationProvider = StreamProvider<LocationData>((ref) async* {
+  final locationService = LocationService.instance;
+
+  // Vérifier les permissions
+  var permission = await locationService.checkPermission();
+  if (permission == LocationPermissionStatus.denied ||
+      permission == LocationPermissionStatus.deniedForever) {
+    permission = await locationService.requestPermission();
+    if (permission != LocationPermissionStatus.always &&
+        permission != LocationPermissionStatus.whileInUse) {
+      throw Exception('Permission de localisation refusée');
+    }
   }
 
-  // Retourne le flux de positions
-  yield* Geolocator.getPositionStream(
-    locationSettings: const LocationSettings(
-      accuracy: LocationAccuracy.high,
-      distanceFilter: 5, // update every 5 meters
-    ),
-  );
+  // Vérifier si les services de localisation sont activés
+  final isEnabled = await locationService.isLocationEnabled();
+  if (!isEnabled) {
+    throw Exception('Services de localisation désactivés');
+  }
+
+  // Retourner le flux de positions
+  yield* locationService.getLocationStream();
 });
 
 final sigPointsProvider = Provider.family<List<LatLng>, LatLng>((ref, userPos) {
@@ -187,9 +198,7 @@ final sigPointsProvider = Provider.family<List<LatLng>, LatLng>((ref, userPos) {
 
 final followUserProvider = StateProvider<bool>((ref) => true);
 
-final mapControllerProvider = Provider<Completer<GoogleMapController>>(
-  (ref) => Completer(),
-);
+final mapControllerProvider = Provider<MapController>((ref) => MapController());
 
 const _gaTrackingId = 'G-WQRTDMK3';
 
@@ -202,7 +211,7 @@ final isVideoPlayingProvider = StateProvider<bool>((ref) {
 });
 
 Future<List<String>> loadAssetsFromManifest({String? filter}) async {
-  final manifestContent = await rootBundle.loadString('AssetManifest.json');
+  final manifestContent = await ui.rootBundle.loadString('AssetManifest.json');
   final Map<String, dynamic> manifestMap = json.decode(manifestContent);
 
   // 🔹 On récupère tous les chemins d’assets
@@ -216,7 +225,7 @@ Future<List<String>> loadAssetsFromManifest({String? filter}) async {
 }
 
 Future<void> loadCustomFont(String assetPath, String family) async {
-  final byteData = await rootBundle.load(assetPath);
+  final byteData = await ui.rootBundle.load(assetPath);
   final fontLoader = ui.FontLoader(family)..addFont(Future.value(byteData));
   await fontLoader.load();
 }
@@ -265,7 +274,7 @@ final precacheAllAssetsProvider = FutureProvider<void>((ref) async {
         : AssetImage(url) as ImageProvider;
 
     try {
-      await precacheImage(imageProvider, context);
+      if (context.mounted) await precacheImage(imageProvider, context);
       developer.log('❌ Erreur de précache: $url →');
     } catch (e) {
       developer.log('❌ Erreur de précache: $url →', error: e);

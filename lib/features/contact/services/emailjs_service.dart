@@ -57,7 +57,7 @@ class EmailJsService {
         templateParams,
         EmailJS.Options(
           publicKey: publicKey,
-          limitRate: EmailJS.LimitRate(id: 'portefolio', throttle: 250),
+          limitRate: const EmailJS.LimitRate(id: 'portefolio', throttle: 250),
         ),
       );
       developer.log("EmailJS sent successfully");

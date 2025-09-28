@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:portefolio/core/provider/providers.dart';
-import 'package:portefolio/core/routes/router.dart';
 
 import '../../../../constants/app_tab.dart';
 
@@ -13,11 +13,10 @@ class MainScaffold extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentIndex = ref.watch(currentIndexProvider);
-    final router = ref.watch(goRouterProvider);
-
     final title = ref.watch(appBarTitleProvider);
     final actions = ref.watch(appBarActionsProvider);
     final drawer = ref.watch(appBarDrawerProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(title, overflow: TextOverflow.ellipsis),
@@ -29,8 +28,12 @@ class MainScaffold extends ConsumerWidget {
         selectedIndex: currentIndex,
         onDestinationSelected: (index) {
           final tab = AppTab.values[index];
-          // ref.read(currentIndexProvider.notifier).state = index;
-          router.go(tab.path);
+
+          // Mettre à jour la location courante
+          ref.read(currentLocationProvider.notifier).state = tab.path;
+
+          // Naviguer vers la route
+          context.go(tab.path);
         },
         labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
         destinations: AppTab.values.map((t) {

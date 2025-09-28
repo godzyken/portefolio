@@ -106,7 +106,7 @@ class _ProjectBubbleState extends ConsumerState<ProjectBubble>
               borderRadius: borderRadius,
               child: AnimatedBuilder(
                 animation: _screenAnim,
-                builder: (_, _) {
+                builder: (_, __) {
                   return ClipRRect(
                     borderRadius: borderRadius,
                     child: Container(
@@ -124,8 +124,7 @@ class _ProjectBubbleState extends ConsumerState<ProjectBubble>
                           ),
                         ],
                       ),
-                      child:
-                          widget.project.image != null &&
+                      child: widget.project.image != null &&
                               widget.project.image!.isNotEmpty
                           ? _buildScreenContent(bubbleSize)
                           : const Icon(Icons.image_not_supported, size: 40),
@@ -213,7 +212,7 @@ class _ProjectBubbleState extends ConsumerState<ProjectBubble>
                   imageUrl,
                   key: ValueKey(imageUrl),
                   fit: BoxFit.cover,
-                  errorBuilder: (_, _, _) =>
+                  errorBuilder: (_, __, ___) =>
                       const Icon(Icons.broken_image, size: 40),
                 )
               : Image.asset(
@@ -226,7 +225,7 @@ class _ProjectBubbleState extends ConsumerState<ProjectBubble>
         // Overlay clignotant pour effet "écran actif"
         AnimatedBuilder(
           animation: _screenAnim,
-          builder: (_, _) => Container(
+          builder: (_, __) => Container(
             color: Colors.white.withAlpha((0.05 * _screenAnim.value).toInt()),
           ),
         ),

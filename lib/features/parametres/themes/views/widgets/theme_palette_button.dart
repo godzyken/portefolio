@@ -19,19 +19,19 @@ class _ThemePaletteButtonState extends ConsumerState<ThemePaletteButton>
   late AnimationController controller;
 
   final List<BasicTheme> themes = [
-    BasicTheme(
+    const BasicTheme(
       mode: AppThemeMode.system,
       primaryColorValue: 0xFF356859,
       tertiaryColorValue: 0xFFF8A776,
       neutralColorValue: 0xFF37966F,
     ),
-    BasicTheme(
+    const BasicTheme(
       mode: AppThemeMode.light,
       primaryColorValue: 0xFF388887,
       tertiaryColorValue: 0xFFF88876,
       neutralColorValue: 0xFF34436F,
     ),
-    BasicTheme(
+    const BasicTheme(
       mode: AppThemeMode.dark,
       primaryColorValue: 0xFF921859,
       tertiaryColorValue: 0xFFF2A226,
@@ -65,7 +65,7 @@ class _ThemePaletteButtonState extends ConsumerState<ThemePaletteButton>
       children: [
         ...List.generate(themes.length, (i) {
           final angle = (i / themes.length) * pi / 2; // 90° spread
-          final radius = 100.0;
+          const radius = 100.0;
 
           return AnimatedBuilder(
             animation: controller,

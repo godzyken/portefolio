@@ -1,20 +1,50 @@
 [
   {
-    "title": "Applications Flutter",
-    "description": "Des apps performantes pour iOS et Android.",
-    "icon": "phone_android",
-    "imageUrl": "assets/images/flutter-image.png"
+    "title": "Développement Mobile",
+    "description": "Applications Flutter cross-platform pour iOS et Android avec des performances natives",
+    "features": [
+      "🚀 Interface utilisateur moderne et responsive",
+      "⚡ Performance native optimisée",
+      "🔄 Synchronisation temps réel",
+      "🎨 Design personnalisé selon vos besoins"
+    ],
+    "icon": "mobile_friendly",
+    "image": "assets/images/mobile-dev.jpg"
   },
   {
-    "title": "Design UI/UX",
-    "description": "Interfaces modernes et ergonomiques.",
-    "icon": "design_services",
-    "imageUrl": "assets/images/ui-ux-design-service.png"
+    "title": "Développement Web",
+    "description": "Sites web et applications web modernes avec les dernières technologies",
+    "features": [
+      "🌐 Responsive design adaptatif",
+      "🔒 Sécurisé et optimisé SEO",
+      "⚡ Chargement ultra-rapide",
+      "📊 Analytics et suivi des performances"
+    ],
+    "icon": "web",
+    "image": "assets/images/web-dev.jpg"
   },
   {
-    "title": "API & Backend",
-    "description": "Intégration Firebase, Supabase ou Node.",
+    "title": "Solutions Cloud",
+    "description": "Déploiement et hébergement d'applications dans le cloud",
+    "features": [
+      "☁️ Infrastructure scalable",
+      "🔐 Sécurité renforcée",
+      "📈 Monitoring en temps réel",
+      "💾 Sauvegarde automatique"
+    ],
     "icon": "cloud",
-    "imageUrl": "assets/images/api-img.png"
+    "image": "assets/images/cloud-services.jpg"
+  },
+  {
+    "title": "Support & Maintenance",
+    "description": "Support technique et maintenance continue de vos applications",
+    "features": [
+      "🛠️ Maintenance préventive",
+      "🚨 Support réactif 24/7",
+      "🔄 Mises à jour régulières",
+      "📊 Rapports de performance"
+    ],
+    "icon": "support",
+    "image": "assets/images/support.jpg"
   }
 ]

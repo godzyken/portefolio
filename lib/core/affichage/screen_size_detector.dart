@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:portefolio/core/affichage/grid_config_provider.dart';
+
+import 'grid_config.dart';
 
 /// 📐 Breakpoints centralisés
 class Breakpoints {

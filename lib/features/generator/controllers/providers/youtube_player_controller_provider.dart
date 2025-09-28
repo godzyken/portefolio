@@ -3,11 +3,9 @@ import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 import '../../../../core/provider/providers.dart';
 
-final youtubeControllerProvider =
-    StateNotifierProvider<
-      YoutubeControllerNotifier,
-      Map<String, YoutubePlayerController>
-    >((ref) => YoutubeControllerNotifier());
+final youtubeControllerProvider = StateNotifierProvider<
+    YoutubeControllerNotifier,
+    Map<String, YoutubePlayerController>>((ref) => YoutubeControllerNotifier());
 
 class YoutubeControllerNotifier
     extends StateNotifier<Map<String, YoutubePlayerController>> {
@@ -18,6 +16,10 @@ class YoutubeControllerNotifier
   }
 
   void unregisterController(String id) {
+    final controller = state[id];
+    if (controller != null) {
+      controller.close();
+    }
     final newState = {...state};
     newState.remove(id);
     state = newState;
@@ -42,19 +44,21 @@ class YoutubeControllerNotifier
 
 final youtubePlayerControllerProvider =
     Provider.family<YoutubePlayerController, String>((ref, videoUrl) {
-      final videoId = YoutubePlayerController.convertUrlToId(videoUrl) ?? '';
-      final controller = YoutubePlayerController.fromVideoId(
-        videoId: videoId,
-        autoPlay: false,
-        params: const YoutubePlayerParams(
-          playsInline: true,
-          mute: false,
-          showControls: true,
-          showFullscreenButton: true,
-        ),
-      );
+  final videoId = YoutubePlayerController.convertUrlToId(videoUrl) ?? '';
+  final controller = YoutubePlayerController.fromVideoId(
+    videoId: videoId,
+    autoPlay: false,
+    params: const YoutubePlayerParams(
+      playsInline: true,
+      mute: false,
+      showControls: true,
+      showFullscreenButton: true,
+      loop: false,
+      enableJavaScript: true,
+    ),
+  );
 
-      ref.onDispose(() => controller.close());
+  ref.onDispose(() => controller.close());
 
-      return controller;
-    });
+  return controller;
+});

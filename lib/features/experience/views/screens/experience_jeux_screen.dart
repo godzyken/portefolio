@@ -45,9 +45,7 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
     final size = renderBox.size;
     final overlay = Overlay.of(context);
 
-    ref
-        .read(cardFlightProvider.notifier)
-        .setStateForCard(
+    ref.read(cardFlightProvider.notifier).setStateForCard(
           exp.entreprise,
           flyUp ? CardFlightState.flyingUp : CardFlightState.inPile,
         );
@@ -62,9 +60,7 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
         child: _cardClone(exp),
         onEnd: () {
           entry.remove();
-          ref
-              .read(cardFlightProvider.notifier)
-              .setStateForCard(
+          ref.read(cardFlightProvider.notifier).setStateForCard(
                 exp.entreprise,
                 flyUp ? CardFlightState.inTop : CardFlightState.inPile,
               );
@@ -130,29 +126,30 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
   }
 
   // Le Widget de la Carte (utilisé dans la pile)
-  Widget _cardWidget(Experience exp) => Card(
-    key: _cardKeys[exp.entreprise],
-    elevation: 6,
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-    child: Column(
-      children: [
-        if (exp.image.isNotEmpty)
-          Expanded(child: Image.asset(exp.image, fit: BoxFit.cover)),
-        Padding(
-          padding: const EdgeInsets.all(4),
-          child: Text(
-            exp.entreprise,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-            textAlign: TextAlign.center,
-          ),
+/*  Widget _cardWidget(Experience exp) => Card(
+        key: _cardKeys[exp.entreprise],
+        elevation: 6,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: Column(
+          children: [
+            if (exp.image.isNotEmpty)
+              Expanded(child: Image.asset(exp.image, fit: BoxFit.cover)),
+            Padding(
+              padding: const EdgeInsets.all(4),
+              child: Text(
+                exp.entreprise,
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
         ),
-      ],
-    ),
-  );
+      );*/
 
   /// Carte dans la pile
-  Widget _pileCard(Experience exp) =>
-      SizedBox(width: 120, height: 160, child: _cardWidget(exp));
+  // Widget _pileCard(Experience exp) =>
+  //     SizedBox(width: 120, height: 160, child: _cardWidget(exp));
 
   // La construction de la Pile
   Widget _buildCardPile(ResponsiveInfo info) {
@@ -321,22 +318,22 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
 
   List<Widget> _buildScatteredChips() {
     return [
-      Positioned(
+      const Positioned(
         top: 120,
         right: 80,
         child: CompetenceChip(competenceName: 'full-stack'),
       ),
-      Positioned(
+      const Positioned(
         top: 200,
         right: 100,
         child: CompetenceChip(competenceName: 'qualite'),
       ),
-      Positioned(
+      const Positioned(
         bottom: 250,
         right: 80,
         child: CompetenceChip(competenceName: 'Relation Client'),
       ),
-      Positioned(
+      const Positioned(
         bottom: 180,
         right: 140,
         child: CompetenceChip(competenceName: 'Logistique'),
@@ -345,40 +342,97 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
   }
 
   /// 🃏 Carte réduite
-  Widget _buildMiniCard(Experience exp) {
-    return SizedBox(
-      width: 120,
-      height: 160,
-      child: Card(
-        elevation: 6,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        child: Column(
-          children: [
-            if (exp.image.isNotEmpty)
-              Expanded(
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(12),
-                  ),
-                  child: Image.asset(exp.image, fit: BoxFit.cover),
-                ),
-              ),
-            Padding(
-              padding: const EdgeInsets.all(4),
-              child: Text(
-                exp.entreprise,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12,
-                ),
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
+  // Widget _buildMiniCard(Experience exp) {
+  //   return SizedBox(
+  //     width: 120,
+  //     height: 160,
+  //     child: Card(
+  //       elevation: 6,
+  //       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+  //       child: Column(
+  //         children: [
+  //           if (exp.image.isNotEmpty)
+  //             Expanded(
+  //               child: ClipRRect(
+  //                 borderRadius: const BorderRadius.vertical(
+  //                   top: Radius.circular(12),
+  //                 ),
+  //                 child: Image.asset(exp.image, fit: BoxFit.cover),
+  //               ),
+  //             ),
+  //           Padding(
+  //             padding: const EdgeInsets.all(4),
+  //             child: Text(
+  //               exp.entreprise,
+  //               style: const TextStyle(
+  //                 fontWeight: FontWeight.bold,
+  //                 fontSize: 12,
+  //               ),
+  //               textAlign: TextAlign.center,
+  //               maxLines: 2,
+  //               overflow: TextOverflow.ellipsis,
+  //             ),
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
+
+  Widget _buildPortraitLayout(ResponsiveInfo info) {
+    return Stack(
+      children: [
+        // Tapis de fond
+        Container(
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/images/tapis-poker.png'),
+              fit: BoxFit.cover,
             ),
-          ],
+          ),
         ),
-      ),
+        _buildCardPile(info),
+        _buildCardTarget(info),
+        InteractivePot(
+          experiences: widget.experiences,
+          cardKeys: _cardKeys,
+          flyCard: _flyCard,
+          onCardsArrivedInPot: _onCardsArrivedInPot,
+          onPotCleared: _onPotCleared,
+        ),
+        ..._buildScatteredChips(),
+        const CompetencesPilesByNiveau(),
+      ],
+    );
+  }
+
+  Widget _buildLandscapeLayout(ResponsiveInfo info) {
+    return Row(
+      children: [
+        // Colonne gauche : pile
+        Expanded(flex: 2, child: _buildCardPile(info)),
+
+        // Colonne centrale : zone de jeu
+        Expanded(flex: 3, child: _buildCardTarget(info)),
+
+        // Colonne droite : pot et compétences
+        Expanded(
+          flex: 2,
+          child: Stack(
+            children: [
+              InteractivePot(
+                experiences: widget.experiences,
+                cardKeys: _cardKeys,
+                flyCard: _flyCard,
+                onCardsArrivedInPot: _onCardsArrivedInPot,
+                onPotCleared: _onPotCleared,
+              ),
+              const CompetencesPilesByNiveau(),
+              ..._buildScatteredChips(),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -387,30 +441,9 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
     final info = ref.watch(responsiveInfoProvider);
 
     return Scaffold(
-      body: Stack(
-        children: [
-          // Tapis de fond
-          Container(
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/images/tapis-poker.png'),
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          _buildCardPile(info),
-          _buildCardTarget(info),
-          InteractivePot(
-            experiences: widget.experiences,
-            cardKeys: _cardKeys,
-            flyCard: _flyCard,
-            onCardsArrivedInPot: _onCardsArrivedInPot,
-            onPotCleared: _onPotCleared,
-          ),
-          ..._buildScatteredChips(),
-          CompetencesPilesByNiveau(),
-        ],
-      ),
+      body: info.isLandscape
+          ? _buildLandscapeLayout(info)
+          : _buildPortraitLayout(info),
     );
   }
 }
