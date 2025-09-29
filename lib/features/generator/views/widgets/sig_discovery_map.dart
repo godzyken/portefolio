@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:portefolio/features/generator/data/location_data.dart';
 
 import '../../../../core/provider/providers.dart';
 
@@ -40,89 +41,104 @@ class _SigDiscoveryMapState extends ConsumerState<SigDiscoveryMap>
 
   @override
   Widget build(BuildContext context) {
-    final position = ref.watch(positionProvider);
     final userPosAsync = ref.watch(userLocationProvider);
-    final followUser = ref.watch(followUserProvider);
-    final mapControllerCompleter = ref.read(mapControllerProvider);
 
     return userPosAsync.when(
-      data: (pos) {
-        final userPos = LatLng(pos.latitude, pos.longitude);
-        final sigPoints = position.value ?? [];
+      data: (pos) => Stack(
+        children: [
+          _buildMap(pos),
+          _buildRecenterButton(pos),
+        ],
+      ),
+      loading: () => _buildLoading(),
+      error: (e, st) => _buildError(e),
+    );
+  }
 
-        final markers = <Marker>[
-          Marker(
-            point: userPos,
+  Widget _buildMap(LocationData pos) {
+    final userPos = LatLng(pos.latitude, pos.longitude);
+    final sigPoints = ref.watch(positionProvider).value ?? [];
+    final followUser = ref.watch(followUserProvider);
+    final mapController = ref.read(mapControllerProvider);
+    final mapOptionsFactory = ref.watch(mapConfigProvider);
+
+    final markers = <Marker>[
+      Marker(
+        point: userPos,
+        width: 40,
+        height: 40,
+        child: ScaleTransition(
+          scale: Tween(begin: 0.8, end: 1.2).animate(
+            CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
+          ),
+          child: const Icon(
+            Icons.person_pin_circle,
+            color: Colors.blue,
+            size: 40,
+          ),
+        ),
+      ),
+      ...sigPoints.map((p) => Marker(
+            point: p,
             width: 40,
             height: 40,
-            child: const Icon(
-              Icons.person_pin_circle,
-              color: Colors.blue,
-              size: 40,
-            ),
-          ),
-          ...sigPoints.map((p) {
-            return Marker(
-              point: p,
-              width: 40,
-              height: 40,
-              child: const Icon(Icons.location_on, color: Colors.red, size: 40),
-            );
-          }),
-        ];
+            child: const Icon(Icons.location_on, color: Colors.red, size: 40),
+          )),
+    ];
 
-        if (followUser) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            mapControllerCompleter.move(userPos, 16.0);
-          });
-        }
+    if (followUser) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        mapController.move(userPos, 16.0);
+      });
+    }
 
-        if (!_ready) const Center(child: CircularProgressIndicator());
-
-        return FlutterMap(
-          mapController: mapControllerCompleter,
-          options: MapOptions(
-              initialCenter: userPos,
-              initialZoom: 16.0,
-              minZoom: 3.0,
-              maxZoom: 18.0,
-              keepAlive: true,
-              backgroundColor: Colors.grey.shade100),
-          children: [
-            // Couche de tuiles - OpenStreetMap
-            TileLayer(
-              urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-              subdomains: const ['a', 'b', 'c'],
-              userAgentPackageName: 'com.example.app',
-            ),
-
-            // Couche satellite alternative (optionnel)
-            TileLayer(
-              urlTemplate:
-                  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-              userAgentPackageName: 'com.godzyken.portfolio',
-            ),
-
-            // Couche des marqueurs
-            MarkerLayer(markers: markers),
-
-            // Contrôles de la carte
-            RichAttributionWidget(
-              popupInitialDisplayDuration: const Duration(seconds: 5),
-              animationConfig: const ScaleRAWA(),
-              showFlutterMapAttribution: false,
-              attributions: [
-                TextSourceAttribution(
-                  '© OpenStreetMap contributors',
-                  onTap: () {}, // Vous pouvez ajouter un lien vers OSM
-                ),
-                const TextSourceAttribution('SIG Discovery Map'),
-              ],
-            ),
+    return FlutterMap(
+      mapController: mapController,
+      options: mapOptionsFactory(userPos),
+      children: [
+        TileLayer(
+          urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+          subdomains: const ['a', 'b', 'c'],
+          userAgentPackageName: 'com.example.app',
+        ),
+        TileLayer(
+          urlTemplate:
+              'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+          userAgentPackageName: 'com.godzyken.portfolio',
+        ),
+        MarkerLayer(markers: markers),
+        RichAttributionWidget(
+          popupInitialDisplayDuration: const Duration(seconds: 5),
+          showFlutterMapAttribution: false,
+          attributions: [
+            TextSourceAttribution('© OpenStreetMap contributors'),
+            const TextSourceAttribution('SIG Discovery Map'),
           ],
-        );
-      },
-      loading: () => Container(
+        ),
+      ],
+    );
+  }
+
+  /// Bouton flottant pour recadrer sur la position utilisateur
+  Widget _buildRecenterButton(LocationData pos) {
+    final mapController = ref.read(mapControllerProvider);
+    final userPos = LatLng(pos.latitude, pos.longitude);
+
+    return Positioned(
+      bottom: 20,
+      right: 20,
+      child: FloatingActionButton(
+        heroTag: "recenter_btn",
+        onPressed: () {
+          mapController.move(userPos, 16.0);
+        },
+        backgroundColor: Colors.white,
+        child: const Icon(Icons.my_location, color: Colors.blue),
+      ),
+    );
+  }
+
+  Widget _buildLoading() => Container(
         color: Colors.grey.shade200,
         child: const Center(
           child: Column(
@@ -134,46 +150,35 @@ class _SigDiscoveryMapState extends ConsumerState<SigDiscoveryMap>
             ],
           ),
         ),
-      ),
-      error: (e, st) => Container(
+      );
+
+  Widget _buildError(Object e) => Container(
         color: Colors.red.shade50,
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.error_outline,
-                size: 48,
-                color: Colors.red.shade400,
-              ),
+              Icon(Icons.error_outline, size: 48, color: Colors.red.shade400),
               const SizedBox(height: 16),
               Text(
                 "Erreur de géolocalisation",
                 style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.red.shade700,
-                ),
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red.shade700),
               ),
               const SizedBox(height: 8),
-              Text(
-                "$e",
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.red.shade600),
-              ),
+              Text("$e",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.red.shade600)),
               const SizedBox(height: 16),
               ElevatedButton.icon(
-                onPressed: () {
-                  // Relancer la géolocalisation
-                  ref.invalidate(userLocationProvider);
-                },
+                onPressed: () => ref.invalidate(userLocationProvider),
                 icon: const Icon(Icons.refresh),
                 label: const Text('Réessayer'),
               ),
             ],
           ),
         ),
-      ),
-    );
-  }
+      );
 }

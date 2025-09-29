@@ -104,11 +104,7 @@ class ProjectGridView extends ConsumerWidget {
     // final isSelected = selected.any((p) => p.id == project.id);
     return GestureDetector(
       onLongPress: () {
-        final notifier = ref.read(selectedProjectsProvider.notifier);
-        final current = notifier.state;
-        notifier.state = current.any((p) => p.id == project.id)
-            ? current.where((p) => p.id != project.id).toList()
-            : [...current, project];
+        ref.read(selectedProjectsProvider.notifier).toggle(project);
       },
       child: ProjectCard(project: project),
     );

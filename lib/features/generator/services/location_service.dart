@@ -1,9 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
+import 'package:geolocator/geolocator.dart';
 
 import '../data/location_data.dart';
 
 abstract class LocationService {
-  static LocationService get instance => _getLocationService();
+  static LocationService get _instance => _PlatformLocationService();
+  static LocationService get instance => _instance;
 
   Future<LocationPermissionStatus> checkPermission();
   Future<LocationPermissionStatus> requestPermission();
@@ -12,107 +16,151 @@ abstract class LocationService {
   Future<bool> isLocationEnabled();
 }
 
-// Implementation pour différentes plateformes
-LocationService _getLocationService() {
-  if (kIsWeb) {
-    return _WebLocationService();
-  } else if (defaultTargetPlatform == TargetPlatform.android ||
-      defaultTargetPlatform == TargetPlatform.iOS) {
-    return _MobileLocationService();
-  } else {
-    return _StubLocationService();
-  }
+/// 🌐 / 📱 / Stub unifié
+class _PlatformLocationService extends LocationService {
+  final LocationService _impl;
+
+  _PlatformLocationService()
+      : _impl = kIsWeb
+            ? _WebLocationService()
+            : (defaultTargetPlatform == TargetPlatform.android ||
+                    defaultTargetPlatform == TargetPlatform.iOS)
+                ? _MobileLocationService()
+                : _StubLocationService();
+
+  @override
+  Future<LocationPermissionStatus> checkPermission() => _impl.checkPermission();
+
+  @override
+  Future<LocationPermissionStatus> requestPermission() =>
+      _impl.requestPermission();
+
+  @override
+  Future<LocationData?> getCurrentLocation() => _impl.getCurrentLocation();
+
+  @override
+  Stream<LocationData> getLocationStream() => _impl.getLocationStream();
+
+  @override
+  Future<bool> isLocationEnabled() => _impl.isLocationEnabled();
 }
 
-// === Implementation Web ===
+/// === Web ===
 class _WebLocationService extends LocationService {
-  @override
-  Future<LocationPermissionStatus> checkPermission() async {
-    // Logique de vérification des permissions web
-    return LocationPermissionStatus.denied;
-  }
+  StreamController<LocationData>? _controller;
 
   @override
-  Future<LocationPermissionStatus> requestPermission() async {
-    try {
-      if (kIsWeb) {
-        // Utilisation de dart:html si disponible
-        return LocationPermissionStatus.whileInUse;
-      }
-      return LocationPermissionStatus.denied;
-    } catch (e) {
-      return LocationPermissionStatus.denied;
-    }
-  }
+  Future<LocationPermissionStatus> checkPermission() async =>
+      LocationPermissionStatus.whileInUse;
 
   @override
-  Future<LocationData?> getCurrentLocation() async {
-    // Pour le web, on peut utiliser l'API navigator.geolocation
-    // ou retourner une position simulée pour le développement
-    return LocationData(
-      latitude: 48.8566, // Paris par défaut
-      longitude: 2.3522,
-      accuracy: 100.0,
-      timestamp: DateTime.now(),
+  Future<LocationPermissionStatus> requestPermission() async =>
+      LocationPermissionStatus.whileInUse;
+
+  @override
+  Future<LocationData?> getCurrentLocation() async => LocationData(
+        latitude: 48.8566,
+        longitude: 2.3522,
+        accuracy: 100,
+        timestamp: DateTime.now(),
+      );
+
+  @override
+  Stream<LocationData> getLocationStream() {
+    _controller ??= StreamController<LocationData>.broadcast(
+      onListen: _startEmitting,
+      onCancel: _stopEmitting,
     );
+    return _controller!.stream;
   }
 
-  @override
-  Stream<LocationData> getLocationStream() async* {
-    // Stream simulé pour le web
-    while (true) {
+  void _startEmitting() async {
+    while (_controller != null &&
+        !_controller!.isClosed &&
+        _controller!.hasListener) {
       await Future.delayed(const Duration(seconds: 5));
-      final location = await getCurrentLocation();
-      if (location != null) {
-        yield location;
-      }
+      final loc = await getCurrentLocation() ??
+          LocationData(
+              latitude: 0.0,
+              longitude: 0.0,
+              accuracy: 9999,
+              timestamp: DateTime.now());
+      _controller?.add(loc);
     }
+  }
+
+  void _stopEmitting() {
+    // Rien de spécial, le while vérifie `hasListener`
   }
 
   @override
   Future<bool> isLocationEnabled() async => true;
 }
 
-// === Implementation Mobile (stub pour l'instant) ===
+/// === Mobile ===
 class _MobileLocationService extends LocationService {
   @override
   Future<LocationPermissionStatus> checkPermission() async {
-    // Implementation avec permission_handler ou logique native
-    return LocationPermissionStatus.whileInUse;
+    final perm = await Geolocator.checkPermission();
+    return _mapPermission(perm);
   }
 
   @override
   Future<LocationPermissionStatus> requestPermission() async {
-    return LocationPermissionStatus.whileInUse;
+    final perm = await Geolocator.requestPermission();
+    return _mapPermission(perm);
   }
 
   @override
   Future<LocationData?> getCurrentLocation() async {
-    // Position simulée - à remplacer par logique native
-    return LocationData(
-      latitude: 48.8566,
-      longitude: 2.3522,
-      accuracy: 10.0,
-      timestamp: DateTime.now(),
-    );
-  }
-
-  @override
-  Stream<LocationData> getLocationStream() async* {
-    while (true) {
-      await Future.delayed(const Duration(seconds: 2));
-      final location = await getCurrentLocation();
-      if (location != null) {
-        yield location;
-      }
+    if (!await Geolocator.isLocationServiceEnabled()) {
+      debugPrint('GPS désactivé, position simulée renvoyée');
+      return LocationData(
+          latitude: 0, longitude: 0, accuracy: 9999, timestamp: DateTime.now());
     }
+    final pos = await Geolocator.getCurrentPosition();
+    return _toLocationData(pos);
   }
 
   @override
-  Future<bool> isLocationEnabled() async => true;
+  Stream<LocationData> getLocationStream() {
+    return Geolocator.getPositionStream(
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: 10,
+      ),
+    ).map((pos) => LocationData(
+          latitude: pos.latitude,
+          longitude: pos.longitude,
+          accuracy: pos.accuracy,
+          timestamp: pos.timestamp ?? DateTime.now(),
+        ));
+  }
+
+  @override
+  Future<bool> isLocationEnabled() => Geolocator.isLocationServiceEnabled();
+
+  LocationPermissionStatus _mapPermission(LocationPermission perm) {
+    return switch (perm) {
+      LocationPermission.denied ||
+      LocationPermission.deniedForever =>
+        LocationPermissionStatus.denied,
+      LocationPermission.whileInUse => LocationPermissionStatus.whileInUse,
+      LocationPermission.always => LocationPermissionStatus.always,
+      LocationPermission.unableToDetermine =>
+        LocationPermissionStatus.unableToDetermine,
+    };
+  }
+
+  LocationData _toLocationData(Position pos) => LocationData(
+        latitude: pos.latitude,
+        longitude: pos.longitude,
+        accuracy: pos.accuracy,
+        timestamp: pos.timestamp ?? DateTime.now(),
+      );
 }
 
-// === Implementation Stub ===
+/// === Stub fallback ===
 class _StubLocationService extends LocationService {
   @override
   Future<LocationPermissionStatus> checkPermission() async =>
@@ -126,9 +174,7 @@ class _StubLocationService extends LocationService {
   Future<LocationData?> getCurrentLocation() async => null;
 
   @override
-  Stream<LocationData> getLocationStream() async* {
-    // Stream vide
-  }
+  Stream<LocationData> getLocationStream() async* {}
 
   @override
   Future<bool> isLocationEnabled() async => false;

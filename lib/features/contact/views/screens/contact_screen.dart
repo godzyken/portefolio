@@ -22,9 +22,9 @@ class _ContactScreenState extends ConsumerState<ContactScreen> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(appBarTitleProvider.notifier).state = "Contactez moi";
-      ref.read(appBarActionsProvider.notifier).state = [];
-      ref.read(appBarDrawerProvider.notifier).state = null;
+      ref.read(appBarTitleProvider.notifier).setTitle("Contactez moi");
+      ref.read(appBarActionsProvider.notifier).clearActions();
+      ref.read(appBarDrawerProvider.notifier).setDrawer;
     });
   }
 

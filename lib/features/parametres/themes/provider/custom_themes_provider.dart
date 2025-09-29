@@ -4,14 +4,17 @@ import 'package:hive/hive.dart';
 import '../theme/theme_data.dart';
 
 final customThemesProvider =
-    StateNotifierProvider<CustomThemesNotifier, List<BasicTheme>>((ref) {
-  return CustomThemesNotifier();
-});
+    NotifierProvider<CustomThemesNotifier, List<BasicTheme>>(
+        CustomThemesNotifier.new);
 
-class CustomThemesNotifier extends StateNotifier<List<BasicTheme>> {
-  static final _box = Hive.box<BasicTheme>('themes');
+class CustomThemesNotifier extends Notifier<List<BasicTheme>> {
+  late final Box<BasicTheme> _box;
 
-  CustomThemesNotifier() : super(_box.values.toList());
+  @override
+  List<BasicTheme> build() {
+    _box = Hive.box<BasicTheme>('themes');
+    return _box.values.toList();
+  }
 
   void addTheme(BasicTheme theme) {
     _box.add(theme);

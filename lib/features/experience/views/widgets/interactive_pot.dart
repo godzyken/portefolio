@@ -141,7 +141,7 @@ class _InteractivePotState extends ConsumerState<InteractivePot>
           _triggerFeedback();
 
           if (!ref.read(activeTagsProvider).contains(tag)) {
-            tagsNotifier.state = [...ref.read(activeTagsProvider), tag];
+            tagsNotifier.setTags([...ref.read(activeTagsProvider), tag]);
 
             _onCoinDrop(tag);
 
@@ -226,7 +226,7 @@ class _InteractivePotState extends ConsumerState<InteractivePot>
                   if (activeTags.isNotEmpty)
                     ElevatedButton(
                       onPressed: () {
-                        tagsNotifier.state = [];
+                        tagsNotifier.clearTags();
 
                         widget.onPotCleared?.call();
 

@@ -6,6 +6,5 @@ import '../notifiers/project_position_notifier.dart';
 
 /// Provider pour stocker les positions des bulles
 final projectPositionsProvider =
-    StateNotifierProvider<ProjectPositionsNotifier, Map<String, Offset>>(
-      (ref) => ProjectPositionsNotifier(),
-    );
+    NotifierProvider<ProjectPositionsNotifier, Map<String, Offset>>(
+        ProjectPositionsNotifier.new);

@@ -233,11 +233,11 @@ class _CompetenceChipState extends ConsumerState<CompetenceChip> {
             onTap: () {
               final notifier = ref.read(activeTagsProvider.notifier);
               if (isActive) {
-                notifier.state = activeTags
+                notifier.setTags(activeTags
                     .where((t) => t != widget.competenceName)
-                    .toList();
+                    .toList());
               } else {
-                notifier.state = [...activeTags, widget.competenceName];
+                notifier.setTags([...activeTags, widget.competenceName]);
               }
             },
             child: AnimatedScale(

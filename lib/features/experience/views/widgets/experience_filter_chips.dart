@@ -23,18 +23,16 @@ class _ExperienceFilterChipsState extends ConsumerState<ExperienceFilterChips> {
       alignment: WrapAlignment.start,
       runAlignment: WrapAlignment.center,
       runSpacing: 2,
-      children:
-          widget.tags.map((tag) {
-            final isSelected = selectedTags == tag;
-            return ChoiceChip(
-              label: Text(tag),
-              selected: isSelected,
-              onSelected:
-                  (_) =>
-                      ref.read(experienceFilterProvider.notifier).state =
-                          isSelected ? null : tag,
-            );
-          }).toList(),
+      children: widget.tags.map((tag) {
+        final isSelected = selectedTags == tag;
+        return ChoiceChip(
+          label: Text(tag),
+          selected: isSelected,
+          onSelected: (_) => ref
+              .read(experienceFilterProvider.notifier)
+              .setFilter(isSelected ? null : tag),
+        );
+      }).toList(),
     );
   }
 }

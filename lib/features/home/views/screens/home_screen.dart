@@ -15,8 +15,8 @@ class HomeScreen extends ConsumerWidget {
     final info = ref.watch(responsiveInfoProvider);
 
     Future.microtask(() {
-      ref.read(appBarTitleProvider.notifier).state = "Godzyken Portefolio";
-      ref.read(appBarActionsProvider.notifier).state = [
+      ref.read(appBarTitleProvider.notifier).setTitle("Godzyken Portefolio");
+      ref.read(appBarActionsProvider.notifier).setActions([
         IconButton(
           icon: const Icon(Icons.color_lens),
           onPressed: () {
@@ -26,7 +26,7 @@ class HomeScreen extends ConsumerWidget {
           },
           tooltip: 'Personnaliser le thème',
         ),
-      ];
+      ]);
     });
 
     return SafeArea(

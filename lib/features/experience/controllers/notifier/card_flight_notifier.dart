@@ -2,13 +2,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../constants/enum_global.dart';
 
-class CardFlightNotifier extends StateNotifier<Map<String, CardFlightState>> {
-  CardFlightNotifier() : super({});
+class CardFlightNotifier extends Notifier<Map<String, CardFlightState>> {
+  @override
+  Map<String, CardFlightState> build() {
+    return {};
+  }
 
   /// Mettre à jour l'état d'une carte
-  void setStateForCard(String entreprise, CardFlightState state) {
-    state = state;
-    this.state = {...this.state, entreprise: state};
+  void setStateForCard(String entreprise, CardFlightState newState) {
+    state = {...state, entreprise: newState};
   }
 
   /// Récupérer l'état d'une carte (utile dans les Widgets)
@@ -59,5 +61,28 @@ class CardFlightNotifier extends StateNotifier<Map<String, CardFlightState>> {
       newState[key] = CardFlightState.inPile;
     }
     state = newState;
+  }
+}
+
+class ActiveTagsNotifier extends Notifier<List<String>> {
+  @override
+  List<String> build() {
+    return [];
+  }
+
+  void setTags(List<String> newTags) {
+    state = newTags;
+  }
+
+  void addTag(String newTag) {
+    state = [...state, newTag];
+  }
+
+  void removeTag(String tagToRemove) {
+    state = state.where((tag) => tag != tagToRemove).toList();
+  }
+
+  void clearTags() {
+    state = [];
   }
 }

@@ -41,8 +41,10 @@ class AdaptiveCard extends ConsumerWidget {
             await _showSigOverlay(context);
           } else {
             final current = ref.read(playingVideoProvider);
-            ref.read(playingVideoProvider.notifier).state =
-                current == title ? null : title;
+
+            if (current != null) {
+              ref.read(playingVideoProvider.notifier).play(title);
+            }
           }
           onTap?.call();
         },

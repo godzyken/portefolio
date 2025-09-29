@@ -8,19 +8,21 @@ import '../services/contact_form_service.dart';
 
 enum Channel { email, whatsapp }
 
+// Nouveau provider Notifier (Riverpod 3)
 final contactFormProvider =
-    StateNotifierProvider<ContactFormNotifier, ContactFormState>((ref) {
-      return ContactFormNotifier(ref);
-    });
+    NotifierProvider<ContactFormNotifier, ContactFormState>(
+  ContactFormNotifier.new,
+);
 
-class ContactFormNotifier extends StateNotifier<ContactFormState> {
-  ContactFormNotifier(this.ref) : super(const ContactFormState());
-  final Ref ref;
+class ContactFormNotifier extends Notifier<ContactFormState> {
+  @override
+  ContactFormState build() {
+    return const ContactFormState();
+  }
 
-  // updates
-  void updateName(String v) => state = state.copyWith(name: v);
-  void updateEmail(String v) => state = state.copyWith(email: v);
-  void updateMessage(String v) => state = state.copyWith(message: v);
+  void updateName(String value) => state = state.copyWith(name: value);
+  void updateEmail(String value) => state = state.copyWith(email: value);
+  void updateMessage(String value) => state = state.copyWith(message: value);
 
   Future<void> submit(Channel channel) async {
     state = state.copyWith(status: SubmitStatus.loading, error: null);
@@ -37,21 +39,21 @@ class ContactFormNotifier extends StateNotifier<ContactFormState> {
 
           await emailJs.sendEmail(
             name: state.name.isNotEmpty ? state.name : "Anonyme",
-            email: state.email.isNotEmpty
-                ? state.email
-                : "no-reply@example.com",
+            email:
+                state.email.isNotEmpty ? state.email : "no-reply@example.com",
             message: state.message.isNotEmpty ? state.message : "-",
           );
           state = state.copyWith(status: SubmitStatus.success);
           break;
+
         case Channel.whatsapp:
-          await ref
-              .read(whatsappServiceProvider)
-              .send(state.name, state.email, state.message);
+          final whatsappService = ref.read(whatsappServiceProvider);
+          await whatsappService.send(state.name, state.email, state.message);
+          state = state.copyWith(status: SubmitStatus.success);
           break;
       }
-      state = state.copyWith(status: SubmitStatus.success);
-    } catch (e) {
+    } catch (e, st) {
+      developer.log('Error submitting contact form', error: e, stackTrace: st);
       state = state.copyWith(status: SubmitStatus.error, error: e.toString());
     }
   }

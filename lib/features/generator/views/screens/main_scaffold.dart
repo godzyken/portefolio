@@ -30,7 +30,7 @@ class MainScaffold extends ConsumerWidget {
           final tab = AppTab.values[index];
 
           // Mettre à jour la location courante
-          ref.read(currentLocationProvider.notifier).state = tab.path;
+          ref.read(currentLocationProvider.notifier).setLocation(tab.path);
 
           // Naviguer vers la route
           context.go(tab.path);

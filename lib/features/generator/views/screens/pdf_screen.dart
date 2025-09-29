@@ -33,13 +33,13 @@ class PdfScreen extends ConsumerWidget {
             onPressed: isGenerating
                 ? null
                 : () async {
-                    ref.read(isGeneratingProvider.notifier).state = true;
+                    ref.read(isGeneratingProvider.notifier).start();
 
                     final pdfService = ref.read(pdfExportProvider);
                     final selectedProjects = ref.read(selectedProjectsProvider);
                     await pdfService.export(selectedProjects);
 
-                    ref.read(isGeneratingProvider.notifier).state = false;
+                    ref.read(isGeneratingProvider.notifier).stop();
                   },
           ),
         ],

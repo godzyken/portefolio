@@ -5,15 +5,16 @@ import '../services/theme_repository.dart';
 import '../theme/theme_data.dart';
 
 final themeControllerProvider =
-    StateNotifierProvider<ThemeController, BasicTheme>(
-  (ref) =>
-      ThemeController(ref.watch(themeRepositoryProvider), BasicTheme.fallback),
-);
+    NotifierProvider<ThemeController, BasicTheme>(ThemeController.new);
 
-class ThemeController extends StateNotifier<BasicTheme> {
-  final ThemeRepository repo;
+class ThemeController extends Notifier<BasicTheme> {
+  late final ThemeRepository repo;
 
-  ThemeController(this.repo, BasicTheme initial) : super(initial);
+  @override
+  BasicTheme build() {
+    repo = ref.watch(themeRepositoryProvider);
+    return BasicTheme.fallback;
+  }
 
   void toggleBrightness() {
     final next = switch (state.mode) {
@@ -46,6 +47,6 @@ class ThemeController extends StateNotifier<BasicTheme> {
 }
 
 final themeFutureProvider = FutureProvider<BasicTheme>((ref) async {
-  final repo = ThemeRepository();
+  final repo = ref.watch(themeRepositoryProvider);
   return await repo.loadTheme();
 });

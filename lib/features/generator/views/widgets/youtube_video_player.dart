@@ -29,9 +29,7 @@ class YoutubeVideoPlayerIframe extends ConsumerWidget {
 
     return GestureDetector(
       onTap: () {
-        ref.read(playingVideoProvider.notifier).state = playingId == cardId
-            ? null
-            : cardId;
+        toggle(ref, playingId);
       },
       child: YoutubePlayerControllerProvider(
         controller: controller,
@@ -42,5 +40,14 @@ class YoutubeVideoPlayerIframe extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  void toggle(WidgetRef ref, String? playingId) {
+    final notifier = ref.read(playingVideoProvider.notifier);
+    if (playingId == cardId) {
+      notifier.stop();
+    } else {
+      notifier.play(cardId);
+    }
   }
 }

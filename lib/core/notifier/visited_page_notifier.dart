@@ -1,7 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class VisitedPagesNotifier extends StateNotifier<Set<String>> {
-  VisitedPagesNotifier() : super({});
+class VisitedPagesNotifier extends Notifier<Set<String>> {
+  @override
+  Set<String> build() {
+    return {};
+  }
 
   void markVisited(String route) {
     state = {...state, route};
@@ -14,6 +17,6 @@ class VisitedPagesNotifier extends StateNotifier<Set<String>> {
 }
 
 final visitedPagesProvider =
-    StateNotifierProvider<VisitedPagesNotifier, Set<String>>(
-      (ref) => VisitedPagesNotifier(),
-    );
+    NotifierProvider<VisitedPagesNotifier, Set<String>>(
+  VisitedPagesNotifier.new,
+);

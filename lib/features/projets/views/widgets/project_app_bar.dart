@@ -95,7 +95,7 @@ class ProjectAppBar extends ConsumerWidget implements PreferredSizeWidget {
     final List<ProjectInfo> all = ref
         .read(projectsFutureProvider)
         .maybeWhen(data: (list) => list, orElse: () => []);
-    ref.read(selectedProjectsProvider.notifier).state = all;
+    ref.read(selectedProjectsProvider.notifier).toggleAll(all);
   }
 
   void _exportPdf(BuildContext ctx, WidgetRef ref, List<ProjectInfo> selected) {

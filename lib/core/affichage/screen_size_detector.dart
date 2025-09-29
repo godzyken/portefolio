@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:portefolio/core/notifier/notifiers.dart';
 
 import 'grid_config.dart';
 
@@ -45,15 +46,16 @@ class ResponsiveInfo {
 }
 
 /// Taille brute de l’écran (mise à jour par ResponsiveScope)
-final screenSizeProvider = StateProvider<Size>((_) => Size.zero);
+final screenSizeProvider =
+    NotifierProvider<ScreenSizeNotifier, Size>(ScreenSizeNotifier.new);
 
 /// Fournit un objet `ResponsiveInfo` complet
 final responsiveInfoProvider = Provider<ResponsiveInfo>((ref) {
   final size = ref.watch(screenSizeProvider);
   final orientation = size.width > 0
       ? (size.width >= size.height
-            ? Orientation.landscape
-            : Orientation.portrait)
+          ? Orientation.landscape
+          : Orientation.portrait)
       : Orientation.portrait;
 
   final w = size.width;

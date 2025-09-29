@@ -20,8 +20,10 @@ class _ExperiencesScreenState extends ConsumerState<ExperiencesScreen> {
     super.initState();
 
     Future.microtask(() {
-      ref.read(appBarTitleProvider.notifier).state = "Expériences";
-      ref.read(appBarActionsProvider.notifier).state = []; // ou un ToggleButton
+      ref.read(appBarTitleProvider.notifier).setTitle("Expériences");
+      ref
+          .read(appBarActionsProvider.notifier)
+          .clearActions(); // ou un ToggleButton
     });
   }
 
@@ -32,7 +34,7 @@ class _ExperiencesScreenState extends ConsumerState<ExperiencesScreen> {
     final info = ref.watch(responsiveInfoProvider);
     // AppBarActions
     Future.microtask(() {
-      ref.read(appBarActionsProvider.notifier).state = [
+      ref.read(appBarActionsProvider.notifier).setActions([
         if (context.mounted)
           Padding(
             padding: const EdgeInsets.only(right: 12),
@@ -45,7 +47,7 @@ class _ExperiencesScreenState extends ConsumerState<ExperiencesScreen> {
                       const BoxConstraints(minHeight: 30, minWidth: 40),
                   isSelected: <bool>[isPageView, !isPageView],
                   onPressed: (index) {
-                    ref.read(isPageViewProvider.notifier).state = index == 0;
+                    ref.read(isPageViewProvider.notifier).toggle();
                   },
                   selectedColor: Theme.of(context).colorScheme.onPrimary,
                   color: Theme.of(context).colorScheme.primary,
@@ -60,44 +62,46 @@ class _ExperiencesScreenState extends ConsumerState<ExperiencesScreen> {
               ],
             ),
           ),
-      ];
+      ]);
     });
 
     // AppBarDrawer
     Future.microtask(() {
-      ref.read(appBarDrawerProvider.notifier).state = Drawer(
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: experiencesAsync.when(
-              data: (allExperiences) {
-                final allTags =
-                    allExperiences.expand((e) => e.tags).toSet().toList();
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Filtres',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Expanded(
-                      child: SingleChildScrollView(
-                        child: ExperienceFilterChips(tags: allTags),
-                      ),
-                    ),
-                  ],
-                );
-              },
-              error: (e, _) => Text("Erreur de chargement: ${e.toString()}"),
-              loading: () => const Center(child: CircularProgressIndicator()),
+      ref.read(appBarDrawerProvider.notifier).setDrawer(Drawer(
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: experiencesAsync.when(
+                  data: (allExperiences) {
+                    final allTags =
+                        allExperiences.expand((e) => e.tags).toSet().toList();
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Filtres',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Expanded(
+                          child: SingleChildScrollView(
+                            child: ExperienceFilterChips(tags: allTags),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                  error: (e, _) =>
+                      Text("Erreur de chargement: ${e.toString()}"),
+                  loading: () =>
+                      const Center(child: CircularProgressIndicator()),
+                ),
+              ),
             ),
-          ),
-        ),
-      );
+          ));
     });
 
     return experiencesAsync.when(

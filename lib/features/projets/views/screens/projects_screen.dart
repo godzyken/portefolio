@@ -23,13 +23,13 @@ class _ProjectsScreenState extends ConsumerState<ProjectsScreen> {
           .read(projectsFutureProvider)
           .maybeWhen(data: (list) => list, orElse: () => <ProjectInfo>[]);
 
-      ref.read(appBarTitleProvider.notifier).state = "Mes Projets";
-      ref.read(appBarActionsProvider.notifier).state = [
+      ref.read(appBarTitleProvider.notifier).setTitle("Mes Projets");
+      ref.read(appBarActionsProvider.notifier).setActions([
         IconButton(
           icon: const Icon(Icons.select_all),
           tooltip: "Tout sélectionner",
           onPressed: () {
-            ref.read(selectedProjectsProvider.notifier).state = projects;
+            ref.read(selectedProjectsProvider.notifier).toggleAll(projects);
           },
         ),
         IconButton(
@@ -43,8 +43,8 @@ class _ProjectsScreenState extends ConsumerState<ProjectsScreen> {
             }
           },
         ),
-      ];
-      ref.read(appBarDrawerProvider.notifier).state = null;
+      ]);
+      ref.read(appBarDrawerProvider.notifier).clearDrawer();
     });
   }
 

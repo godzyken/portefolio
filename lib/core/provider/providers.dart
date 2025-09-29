@@ -19,18 +19,26 @@ import '../../features/generator/data/extention_models.dart';
 import '../../features/generator/services/location_service.dart';
 import '../../features/generator/services/pdf_export_service.dart';
 import '../affichage/navigator_key_provider.dart';
+import '../exeptions/state/global_error_state.dart';
+import '../notifier/notifiers.dart';
 
 /// Titre dynamique de l’AppBar
-final appBarTitleProvider = StateProvider<String>((_) => "Portfolio");
+final appBarTitleProvider =
+    NotifierProvider<AppBarTitleNotifier, String>(AppBarTitleNotifier.new);
 
 /// Actions dynamiques de l’AppBar
-final appBarActionsProvider = StateProvider<List<Widget>>((_) => []);
+final appBarActionsProvider =
+    NotifierProvider<AppBarActionsNotifier, List<Widget>>(
+        AppBarActionsNotifier.new);
 
 /// Drawer dynamique
-final appBarDrawerProvider = StateProvider<Widget?>((_) => null);
+final appBarDrawerProvider =
+    NotifierProvider<AppBarDrawerNotifier, Widget?>(AppBarDrawerNotifier.new);
 
 /// Location route actuelle
-final currentLocationProvider = StateProvider<String>((_) => '/');
+final currentLocationProvider =
+    NotifierProvider<CurrentLocationNotifier, String>(
+        CurrentLocationNotifier.new);
 
 /// Notifie quand on veut forcer un refresh
 final routerNotifierProvider = Provider<ValueNotifier<void>>((ref) {
@@ -67,25 +75,31 @@ final currentIndexProvider = Provider<int>((ref) {
 });
 
 // Exemple : état de chargement du PDF
-final isGeneratingProvider = StateProvider<bool>((ref) => false);
+final isGeneratingProvider =
+    NotifierProvider<IsGeneratingNotifier, bool>(IsGeneratingNotifier.new);
 
 // Etat de la page courante
-final isPageViewProvider = StateProvider<bool>((ref) => true);
+final isPageViewProvider =
+    NotifierProvider<IsPageViewNotifier, bool>(IsPageViewNotifier.new);
 
 // Etat de detection du survol d'un élément
-final hoverMapProvider =
-    StateNotifierProvider<HoverMapNotifier, Map<String, bool>>(
-  (ref) => HoverMapNotifier(),
+final hoverMapProvider = NotifierProvider<HoverMapNotifier, Map<String, bool>>(
+  HoverMapNotifier.new,
 );
 
 // Etat du lecteur YoutubeVideoIframe
-final playingVideoProvider = StateProvider<String?>((ref) => null);
+final playingVideoProvider =
+    NotifierProvider<PlayingVideoNotifier, String?>(PlayingVideoNotifier.new);
 
 // Liste des projets sélectionnés
-final selectedProjectsProvider = StateProvider<List<ProjectInfo>>((ref) => []);
+final selectedProjectsProvider =
+    NotifierProvider<SelectedProjectsNotifier, List<ProjectInfo>>(
+        SelectedProjectsNotifier.new);
 
 // Listes des expériences
-final experiencesProvider = StateProvider<List<Experience>>((ref) => []);
+final experiencesProvider =
+    NotifierProvider<ExperiencesNotifier, List<Experience>>(
+        ExperiencesNotifier.new);
 final experiencesFutureProvider = FutureProvider<List<Experience>>((ref) async {
   final jsonStr = await ui.rootBundle.loadString(
     'assets/data/experiences.json',
@@ -95,7 +109,9 @@ final experiencesFutureProvider = FutureProvider<List<Experience>>((ref) async {
 });
 
 // Filtre des expériences
-final experienceFilterProvider = StateProvider<String?>((ref) => null);
+final experienceFilterProvider =
+    NotifierProvider<ExperienceFilterNotifier, String?>(
+        ExperienceFilterNotifier.new);
 final filterExperiencesProvider = Provider<List<Experience>>((ref) {
   final List<Experience> all = ref
       .watch(experiencesFutureProvider)
@@ -150,7 +166,7 @@ final positionProvider = StreamProvider<List<LatLng>>((ref) {
     },
     error: (error, _) async* {
       if (kDebugMode) {
-        print('Erreur de localisation: $error');
+        developer.log('Erreur de localisation: $error');
       }
       // Yield empty list en cas d'erreur
       yield <LatLng>[];
@@ -162,29 +178,9 @@ final positionProvider = StreamProvider<List<LatLng>>((ref) {
   );
 });
 
-final userLocationProvider = StreamProvider<LocationData>((ref) async* {
-  final locationService = LocationService.instance;
-
-  // Vérifier les permissions
-  var permission = await locationService.checkPermission();
-  if (permission == LocationPermissionStatus.denied ||
-      permission == LocationPermissionStatus.deniedForever) {
-    permission = await locationService.requestPermission();
-    if (permission != LocationPermissionStatus.always &&
-        permission != LocationPermissionStatus.whileInUse) {
-      throw Exception('Permission de localisation refusée');
-    }
-  }
-
-  // Vérifier si les services de localisation sont activés
-  final isEnabled = await locationService.isLocationEnabled();
-  if (!isEnabled) {
-    throw Exception('Services de localisation désactivés');
-  }
-
-  // Retourner le flux de positions
-  yield* locationService.getLocationStream();
-});
+final userLocationProvider =
+    StreamNotifierProvider<UserLocationNotifier, LocationData>(
+        UserLocationNotifier.new);
 
 final sigPointsProvider = Provider.family<List<LatLng>, LatLng>((ref, userPos) {
   final rng = Random();
@@ -196,18 +192,38 @@ final sigPointsProvider = Provider.family<List<LatLng>, LatLng>((ref, userPos) {
   });
 });
 
-final followUserProvider = StateProvider<bool>((ref) => true);
+final followUserProvider =
+    NotifierProvider<FollowUserNotifier, bool>(FollowUserNotifier.new);
 
 final mapControllerProvider = Provider<MapController>((ref) => MapController());
+
+final mapConfigProvider = Provider<MapOptions Function(LatLng)>((ref) {
+  return (LatLng userPos) {
+    return MapOptions(
+      initialCenter: userPos,
+      initialZoom: 16.0,
+      initialRotation: 0.0,
+      initialCameraFit: CameraFit.bounds(
+          bounds: LatLngBounds.fromPoints(
+              [LatLng(48.85, 2.34), LatLng(48.87, 2.36)])),
+      interactionOptions: const InteractionOptions(
+          flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
+          enableMultiFingerGestureRace: true),
+      minZoom: 3.0,
+      maxZoom: 18.0,
+      keepAlive: true,
+      backgroundColor: Colors.grey.shade100,
+      cameraConstraint: CameraConstraint.contain(
+          bounds: LatLngBounds.fromPoints(
+              [LatLng(48.85, 2.34), LatLng(48.87, 2.36)])),
+    );
+  };
+});
 
 const _gaTrackingId = 'G-WQRTDMK3';
 
 final analyticsProvider = Provider<AnalyticsService>((ref) {
   return AnalyticsService(_gaTrackingId);
-});
-
-final isVideoPlayingProvider = StateProvider<bool>((ref) {
-  return ref.watch(playingVideoProvider) != null;
 });
 
 Future<List<String>> loadAssetsFromManifest({String? filter}) async {
@@ -275,11 +291,43 @@ final precacheAllAssetsProvider = FutureProvider<void>((ref) async {
 
     try {
       if (context.mounted) await precacheImage(imageProvider, context);
-      developer.log('❌ Erreur de précache: $url →');
+      developer.log('✅ Image précachée: $url');
     } catch (e) {
       developer.log('❌ Erreur de précache: $url →', error: e);
     }
   }
+});
+
+/// 🔹 Provider à utiliser dans l'app
+final globalErrorProvider =
+    NotifierProvider<GlobalErrorNotifier, GlobalErrorState?>(
+        GlobalErrorNotifier.new);
+
+/// 🔹 Provider pour le statut de permission GPS
+final locationPermissionProvider =
+    FutureProvider<LocationPermissionStatus>((ref) async {
+  return await LocationService.instance.checkPermission();
+});
+
+/// 🔹 Provider pour activer/demander la permission
+final requestLocationPermissionProvider =
+    FutureProvider<LocationPermissionStatus>((ref) async {
+  return await LocationService.instance.requestPermission();
+});
+
+/// 🔹 Provider pour la position actuelle (snapshot unique)
+final currentActuLocationProvider = FutureProvider<LocationData?>((ref) async {
+  return await LocationService.instance.getCurrentLocation();
+});
+
+/// 🔹 Provider pour le flux en temps réel (mise à jour continue)
+final locationStreamProvider = StreamProvider<LocationData>((ref) {
+  return LocationService.instance.getLocationStream();
+});
+
+/// 🔹 Provider pour savoir si le GPS est activé
+final isGpsEnabledProvider = FutureProvider<bool>((ref) async {
+  return await LocationService.instance.isLocationEnabled();
 });
 
 /*

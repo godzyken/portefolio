@@ -3,13 +3,15 @@ import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 import '../../../../core/provider/providers.dart';
 
-final youtubeControllerProvider = StateNotifierProvider<
-    YoutubeControllerNotifier,
-    Map<String, YoutubePlayerController>>((ref) => YoutubeControllerNotifier());
+final youtubeControllerProvider = NotifierProvider<YoutubeControllerNotifier,
+    Map<String, YoutubePlayerController>>(YoutubeControllerNotifier.new);
 
 class YoutubeControllerNotifier
-    extends StateNotifier<Map<String, YoutubePlayerController>> {
-  YoutubeControllerNotifier() : super({});
+    extends Notifier<Map<String, YoutubePlayerController>> {
+  @override
+  Map<String, YoutubePlayerController> build() {
+    return {};
+  }
 
   void registerController(String id, YoutubePlayerController controller) {
     state = {...state, id: controller};
