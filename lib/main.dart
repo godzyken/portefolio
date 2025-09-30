@@ -8,9 +8,10 @@ import 'features/generator/views/widgets/responsive_scope.dart';
 import 'features/parametres/themes/controller/theme_controller.dart';
 
 // ====================
-// MAIN DEBUG (Étape 1)
+// ÉTAPE 1 : Test minimal
+// Décommentez UNIQUEMENT cette section pour tester
 // ====================
-void main() {
+/*void main() {
   runApp(const MyMinimalApp());
 }
 
@@ -46,12 +47,13 @@ class DebugScreen extends StatelessWidget {
       ),
     );
   }
-}
+}*/
 
-// ======================
-// MAIN ROUTER (Étape 2)
-// ======================
-void mainRouter() {
+// ====================
+// ÉTAPE 2 : Test avec Router
+// Décommentez cette section après validation de l'étape 1
+// ====================
+/*void main() {
   runApp(
     ProviderScope(
       overrides: [
@@ -76,14 +78,22 @@ class MyRouterApp extends ConsumerWidget {
       theme: theme.toThemeData(),
       darkTheme: theme.toThemeData(),
       routerConfig: router,
+      debugShowCheckedModeBanner: false,
     );
   }
-}
+}*/
 
-// ======================
-// MAIN FULL (Étape 3)
-// ======================
-void mainFull() {
+// ====================
+// ÉTAPE 3 : Application complète
+// Version finale avec toutes les fonctionnalités
+// ====================
+void main() {
+  // Capturer les erreurs Flutter
+  FlutterError.onError = (details) {
+    debugPrint('Flutter Error: ${details.exceptionAsString()}');
+    debugPrint('Stack trace: ${details.stack}');
+  };
+
   runApp(
     ProviderScope(
       overrides: [
@@ -109,11 +119,53 @@ class MyFullApp extends ConsumerWidget {
       theme: theme.toThemeData(),
       darkTheme: theme.toThemeData(),
       routerConfig: router,
+      debugShowCheckedModeBanner: false,
       builder: (context, child) {
         return precache.when(
-          data: (_) => child ?? const Text("Erreur UI"),
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (err, stack) => Center(child: Text("Erreur: $err")),
+          data: (_) =>
+              child ??
+              const Scaffold(
+                body: Center(child: Text("Erreur: Widget null")),
+              ),
+          loading: () => const Scaffold(
+            body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 16),
+                  Text("Chargement des ressources..."),
+                ],
+              ),
+            ),
+          ),
+          error: (err, stack) {
+            debugPrint("Erreur de précache: $err");
+            debugPrint("Stack: $stack");
+            return Scaffold(
+              body: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.error, size: 48, color: Colors.red),
+                      const SizedBox(height: 16),
+                      Text(
+                        "Erreur de chargement",
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        err.toString(),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
         );
       },
     );

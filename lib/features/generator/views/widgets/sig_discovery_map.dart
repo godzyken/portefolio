@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -41,17 +42,136 @@ class _SigDiscoveryMapState extends ConsumerState<SigDiscoveryMap>
 
   @override
   Widget build(BuildContext context) {
+    if (kIsWeb) {
+      return _buildStaticMap();
+    }
     final userPosAsync = ref.watch(userLocationProvider);
 
     return userPosAsync.when(
       data: (pos) => Stack(
         children: [
           _buildMap(pos),
+          _buildDemoBadge(),
           _buildRecenterButton(pos),
         ],
       ),
       loading: () => _buildLoading(),
       error: (e, st) => _buildError(e),
+    );
+  }
+
+  /// Carte statique pour le Web (position fixe : Paris)
+  Widget _buildStaticMap() {
+    const parisPos = LatLng(48.8566, 2.3522);
+    final mapController = MapController();
+
+    return Stack(
+      children: [
+        FlutterMap(
+          mapController: mapController,
+          options: MapOptions(
+            initialCenter: parisPos,
+            initialZoom: 13.0,
+            minZoom: 3.0,
+            maxZoom: 18.0,
+            interactionOptions: const InteractionOptions(
+              flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
+            ),
+          ),
+          children: [
+            TileLayer(
+              urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+              subdomains: const ['a', 'b', 'c'],
+              userAgentPackageName: 'com.godzyken.portfolio',
+            ),
+            MarkerLayer(
+              markers: [
+                Marker(
+                  point: parisPos,
+                  width: 40,
+                  height: 40,
+                  child: const Icon(
+                    Icons.location_city,
+                    color: Colors.blue,
+                    size: 40,
+                  ),
+                ),
+              ],
+            ),
+            RichAttributionWidget(
+              popupInitialDisplayDuration: const Duration(seconds: 3),
+              showFlutterMapAttribution: false,
+              attributions: [
+                TextSourceAttribution('© OpenStreetMap'),
+                const TextSourceAttribution('Mode démo Web'),
+              ],
+            ),
+          ],
+        ),
+        // Badge "Mode Démo"
+        Positioned(
+          top: 16,
+          left: 16,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: Colors.orange.withAlpha((255 * 0.9).toInt()),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: const Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.info_outline, size: 16, color: Colors.white),
+                SizedBox(width: 4),
+                Text(
+                  'Mode Démo (Web)',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDemoBadge() {
+    return Positioned(
+      top: 16,
+      left: 16,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: Colors.green.withAlpha((255 * 0.9).toInt()),
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withAlpha((255 * 0.2).toInt()),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: const Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.gps_fixed, size: 16, color: Colors.white),
+            SizedBox(width: 6),
+            Text(
+              'Géolocalisation active',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -99,7 +219,7 @@ class _SigDiscoveryMapState extends ConsumerState<SigDiscoveryMap>
         TileLayer(
           urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
           subdomains: const ['a', 'b', 'c'],
-          userAgentPackageName: 'com.example.app',
+          userAgentPackageName: 'com.godzyken.portfolio',
         ),
         TileLayer(
           urlTemplate:

@@ -10,7 +10,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="portefolio">
-  <meta name="permissions-policy" content="geolocation=(self)">
+  <meta http-equiv="Permissions-Policy" content="geolocation=(self)">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
@@ -39,13 +39,60 @@
       height: 100%;
       width: 100%;
     }
+     #loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .loader {
+      width: 50px;
+      height: 50px;
+      border: 5px solid #f3f3f3;
+      border-top: 5px solid #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body>
   <!-- Conteneur Flutter -->
-  <div id="flutter_container"></div>
+  <!-- Écran de chargement -->
+  <div id="loading">
+    <div class="loader"></div>
+  </div>
 
-  <script src="main.dart.js" type="application/javascript"></script>
+  <script>
+    // Vérifier si la géolocalisation est supportée
+    if ('geolocation' in navigator) {
+      console.log('✅ Géolocalisation disponible');
+    } else {
+      console.warn('❌ Géolocalisation non supportée par ce navigateur');
+    }
+
+    // Configuration Flutter
+    window.addEventListener('load', function(ev) {
+      _flutter.loader.loadEntrypoint({
+        serviceWorker: {
+          serviceWorkerVersion: serviceWorkerVersion,
+        },
+        onEntrypointLoaded: function(engineInitializer) {
+          engineInitializer.initializeEngine().then(function(appRunner) {
+            appRunner.runApp();
+            // Cacher l'écran de chargement
+            document.getElementById('loading').style.display = 'none';
+          });
+        }
+      });
+    });
+  </script>
 
   <!-- Bootstrap Flutter -->
   <script async src="flutter_bootstrap.js"></script>

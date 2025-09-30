@@ -14,20 +14,7 @@ class HomeScreen extends ConsumerWidget {
     final servicesAsync = ref.watch(servicesFutureProvider);
     final info = ref.watch(responsiveInfoProvider);
 
-    Future.microtask(() {
-      ref.read(appBarTitleProvider.notifier).setTitle("Godzyken Portefolio");
-      ref.read(appBarActionsProvider.notifier).setActions([
-        IconButton(
-          icon: const Icon(Icons.color_lens),
-          onPressed: () {
-            Navigator.of(
-              context,
-            ).push(MaterialPageRoute(builder: (_) => const ThemeSelector()));
-          },
-          tooltip: 'Personnaliser le thème',
-        ),
-      ]);
-    });
+    appBarTitleAction(ref, context);
 
     return SafeArea(
       child: servicesAsync.when(
@@ -125,5 +112,22 @@ class HomeScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
       ),
     );
+  }
+
+  void appBarTitleAction(WidgetRef ref, BuildContext context) {
+    Future.microtask(() {
+      ref.read(appBarTitleProvider.notifier).setTitle("Godzyken Portefolio");
+      ref.read(appBarActionsProvider.notifier).setActions([
+        IconButton(
+          icon: const Icon(Icons.color_lens),
+          onPressed: () {
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (_) => const ThemeSelector()));
+          },
+          tooltip: 'Personnaliser le thème',
+        ),
+      ]);
+    });
   }
 }

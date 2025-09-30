@@ -6,6 +6,9 @@ import 'package:portefolio/features/generator/views/widgets/sig_discovery_map.da
 import 'package:portefolio/features/parametres/themes/provider/theme_repository_provider.dart';
 
 import '../../../../core/provider/providers.dart';
+import '../../data/location_data.dart';
+import '../../services/location_service.dart';
+import 'location_permission_dialog.dart';
 
 class AdaptiveCard extends ConsumerWidget {
   final String title;
@@ -38,7 +41,7 @@ class AdaptiveCard extends ConsumerWidget {
       child: GestureDetector(
         onTap: () async {
           if (bulletPoints!.contains('SIG')) {
-            await _showSigOverlay(context);
+            await _showSigOverlay(context, ref);
           } else {
             final current = ref.read(playingVideoProvider);
 
@@ -78,39 +81,62 @@ class AdaptiveCard extends ConsumerWidget {
     );
   }
 
-  Future<void> _showSigOverlay(BuildContext context) async {
-    await showGeneralDialog(
-      context: context,
-      barrierDismissible: true,
-      barrierLabel: "Fermer",
-      barrierColor: Colors.black54,
-      pageBuilder: (context, _, __) {
-        return SafeArea(
-          child: Material(
-            color: Colors.transparent,
-            child: Stack(
-              children: [
-                const Positioned.fill(child: SigDiscoveryMap()),
-                Positioned(
-                  top: 16,
-                  right: 16,
-                  child: IconButton(
-                    icon: const Icon(
-                      Icons.close,
-                      color: Colors.white,
-                      size: 32,
-                    ),
-                    onPressed: () => context.pop(),
-                  ),
-                ),
-              ],
+  Future<void> _showSigOverlay(BuildContext context, WidgetRef ref) async {
+    // Vérifier si la permission est déjà accordée
+    final service = LocationService.instance;
+    final permission = await service.checkPermission();
+
+    if (permission == LocationPermissionStatus.denied && context.mounted) {
+      // Demander la permission via dialog
+      final granted = await showLocationPermissionDialog(context);
+      if (!granted) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Permission de géolocalisation requise'),
+              backgroundColor: Colors.orange,
             ),
-          ),
-        );
-      },
-      transitionBuilder: (context, anim1, _, child) {
-        return FadeTransition(opacity: anim1, child: child);
-      },
-    );
+          );
+        }
+        return;
+      }
+    }
+
+    // Afficher la carte
+    if (context.mounted) {
+      await showGeneralDialog(
+        context: context,
+        barrierDismissible: true,
+        barrierLabel: "Fermer",
+        barrierColor: Colors.black54,
+        pageBuilder: (context, _, __) {
+          return SafeArea(
+            child: Material(
+              color: Colors.transparent,
+              child: Stack(
+                children: [
+                  const Positioned.fill(child: SigDiscoveryMap()),
+                  Positioned(
+                    top: 16,
+                    right: 16,
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.close,
+                        color: Colors.white,
+                        size: 32,
+                      ),
+                      onPressed: () => context.pop(),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+        transitionBuilder: (context, anim1, _, child) {
+          return FadeTransition(opacity: anim1, child: child);
+        },
+      );
+    }
   }
 }
