@@ -24,12 +24,9 @@ class ServicesCard extends ConsumerWidget {
             // --- Image de fond ---
             if (service.imageUrl != null)
               Positioned.fill(
-                child: Container(
-                  color: Colors.yellowAccent, // test
-                  child: Image.asset(
-                    service.imageUrl!,
-                    fit: BoxFit.cover,
-                  ),
+                child: Image.asset(
+                  service.imageUrl!,
+                  fit: BoxFit.cover,
                 ),
               ),
 
