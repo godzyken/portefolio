@@ -267,35 +267,90 @@ final appImagesProvider = FutureProvider<List<String>>((ref) async {
   return [...assetImages, ...networkImages];
 });
 
-/// Provider qui précache toutes les images de l’app
+/// Provider qui précache toutes les images de l'app
 final precacheAllAssetsProvider = FutureProvider<void>((ref) async {
+  final context = ref.read(navigatorKeyProvider).currentContext;
+  if (context == null) {
+    debugPrint('❌ Context is null, cannot precache');
+    return;
+  }
+
+  try {
+    debugPrint('🎨 Début du précache des assets...');
+
+    /// 1. Fonts
+    debugPrint('📝 Chargement des fonts...');
+    await loadCustomFont(
+      'assets/fonts/Noto_Sans/NotoSans-Italic-VariableFont_wdth-wght.ttf',
+      'NotoSansItalic',
+    );
+    await loadCustomFont(
+      'assets/fonts/Noto_Sans/NotoSans-VariableFont_wdth-wght.ttf',
+      'NotoSans',
+    );
+    debugPrint('✅ Fonts chargées');
+
+    /// 2. Images
+    debugPrint('🖼️ Chargement des images...');
+    final images = await ref.read(appImagesProvider.future);
+    debugPrint('📊 Total d\'images à précacher: ${images.length}');
+
+    int successCount = 0;
+    int errorCount = 0;
+
+    for (final url in images) {
+      try {
+        final imageProvider = url.startsWith('http')
+            ? NetworkImage(url)
+            : AssetImage(url) as ImageProvider;
+
+        if (context.mounted) {
+          await precacheImage(imageProvider, context);
+          successCount++;
+          debugPrint(
+              '✅ Image précachée ($successCount/${images.length}): ${url.split('/').last}');
+        }
+      } catch (e) {
+        errorCount++;
+        debugPrint(
+            '⚠️ Erreur de précache ($errorCount): ${url.split('/').last} → $e');
+        // Continue même en cas d'erreur
+      }
+    }
+
+    debugPrint(
+        '🎉 Précache terminé: $successCount succès, $errorCount erreurs');
+  } catch (e, stack) {
+    debugPrint('❌ Erreur globale de précache: $e');
+    debugPrint('Stack: $stack');
+    // On ne throw pas pour ne pas bloquer l'app
+  }
+});
+
+/// Version alternative qui précache seulement les assets critiques
+final precacheCriticalAssetsProvider = FutureProvider<void>((ref) async {
   final context = ref.read(navigatorKeyProvider).currentContext;
   if (context == null) return;
 
-  /// 1. Fonts
-  await loadCustomFont(
-    'assets/fonts/Noto_Sans/NotoSans-Italic-VariableFont_wdth-wght.ttf',
-    'NotoSansItalic',
-  );
-  await loadCustomFont(
-    'assets/fonts/Noto_Sans/NotoSans-VariableFont_wdth-wght.ttf',
-    'NotoSans',
-  );
+  debugPrint('🚀 Précache rapide des assets critiques...');
 
-  /// 2. Images
-  final images = await ref.read(appImagesProvider.future);
+  try {
+    // Seulement le logo et les fonts
+    await loadCustomFont(
+      'assets/fonts/Noto_Sans/NotoSans-VariableFont_wdth-wght.ttf',
+      'NotoSans',
+    );
 
-  for (final url in images) {
-    final imageProvider = url.startsWith('http')
-        ? NetworkImage(url)
-        : AssetImage(url) as ImageProvider;
-
-    try {
-      if (context.mounted) await precacheImage(imageProvider, context);
-      developer.log('✅ Image précachée: $url');
-    } catch (e) {
-      developer.log('❌ Erreur de précache: $url →', error: e);
+    if (context.mounted) {
+      await precacheImage(
+        const AssetImage('assets/images/logo_godzyken.png'),
+        context,
+      );
     }
+
+    debugPrint('✅ Assets critiques chargés');
+  } catch (e) {
+    debugPrint('⚠️ Erreur précache critique: $e');
   }
 });
 

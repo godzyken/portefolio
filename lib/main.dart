@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/affichage/navigator_key_provider.dart';
-import 'core/provider/providers.dart';
 import 'core/routes/router.dart';
 import 'features/generator/views/widgets/responsive_scope.dart';
+import 'features/home/views/screens/splash_screen.dart';
+import 'features/home/views/widgets/precache_wrapper.dart';
 import 'features/parametres/themes/controller/theme_controller.dart';
 
 // ====================
@@ -110,62 +111,53 @@ class MyFullApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = ref.watch(themeControllerProvider);
+    final themeAsync = ref.watch(themeFutureProvider);
     final router = ref.watch(goRouterProvider);
-    final precache = ref.watch(precacheAllAssetsProvider);
 
-    return MaterialApp.router(
-      title: 'Portfolio PDF',
-      theme: theme.toThemeData(),
-      darkTheme: theme.toThemeData(),
-      routerConfig: router,
-      debugShowCheckedModeBanner: false,
-      builder: (context, child) {
-        return precache.when(
-          data: (_) =>
-              child ??
-              const Scaffold(
-                body: Center(child: Text("Erreur: Widget null")),
-              ),
-          loading: () => const Scaffold(
-            body: Center(
+    return themeAsync.when(
+      data: (theme) {
+        return MaterialApp.router(
+          title: 'Portfolio PDF',
+          theme: theme.toThemeData(),
+          darkTheme: theme.toThemeData(),
+          themeMode: ThemeMode.dark,
+          routerConfig: router,
+          debugShowCheckedModeBanner: false,
+          builder: (context, child) {
+            // Ici on wrappe avec le système de précache
+            return PrecacheWrapper(child: child);
+          },
+        );
+      },
+      loading: () => MaterialApp(
+        home: const SplashScreen(),
+        debugShowCheckedModeBanner: false,
+      ),
+      error: (err, stack) {
+        debugPrint("Erreur de précache: $err");
+        debugPrint("Stack: $stack");
+        return Scaffold(
+          body: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  CircularProgressIndicator(),
-                  SizedBox(height: 16),
-                  Text("Chargement des ressources..."),
+                  const Icon(Icons.error, size: 48, color: Colors.red),
+                  const SizedBox(height: 16),
+                  Text(
+                    "Erreur de chargement",
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    err.toString(),
+                    textAlign: TextAlign.center,
+                  ),
                 ],
               ),
             ),
           ),
-          error: (err, stack) {
-            debugPrint("Erreur de précache: $err");
-            debugPrint("Stack: $stack");
-            return Scaffold(
-              body: Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.error, size: 48, color: Colors.red),
-                      const SizedBox(height: 16),
-                      Text(
-                        "Erreur de chargement",
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        err.toString(),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          },
         );
       },
     );
