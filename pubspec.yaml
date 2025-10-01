@@ -63,8 +63,13 @@ flutter:
 
   assets:
     - assets/images/
+    - assets/images/2.0x/
+    - assets/images/3.0x/
+    - assets/images/4.0x/
+    - assets/images/logos/
     - assets/data/
-    - assets/fonts/
+    - assets/fonts/Noto_Sans/
+    - assets/fonts/Noto_Sans/static/
 
   fonts:
     - family: NotoSans

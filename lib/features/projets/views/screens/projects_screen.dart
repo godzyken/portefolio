@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/logging/app_logger.dart';
 import '../../../../core/provider/providers.dart';
 import '../../data/project_data.dart';
 import '../widgets/project_grid_view.dart';
@@ -73,7 +74,15 @@ class _ProjectsScreenState extends ConsumerState<ProjectsScreen> {
               data: (projects) =>
                   ProjectGridView(projects: projects, selected: selected),
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (e, _) => Center(child: Text('Erreur : $e')),
+              error: (e, st) {
+                ref.read(loggerProvider("ProjetsScreen")).log(
+                      "Erreur lors du chargement des services",
+                      level: LogLevel.error,
+                      error: e,
+                      stackTrace: st,
+                    );
+                return Center(child: Text('Erreur : $e'));
+              },
             ),
           ),
         ),

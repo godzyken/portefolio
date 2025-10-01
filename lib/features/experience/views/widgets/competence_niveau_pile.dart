@@ -150,41 +150,45 @@ class CompetencesPilesByNiveau extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Positioned(
-      bottom: 20,
-      left: 20,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Compétences',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          SizedBox(height: 10),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
+    return Stack(
+      children: [
+        const Positioned(
+          bottom: 20,
+          left: 20,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Expert (Or)
-              CompetenceNiveauPile(niveau: NiveauCompetence.expert),
-              SizedBox(width: 15),
-              // Confirmé (Argent)
-              CompetenceNiveauPile(niveau: NiveauCompetence.confirme),
-              SizedBox(width: 15),
-              // Intermédiaire (Bronze)
-              CompetenceNiveauPile(
-                niveau: NiveauCompetence.intermediaire,
+              Text(
+                'Compétences',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-              SizedBox(width: 15),
-              // Fonctionnel (Cuivre)
-              CompetenceNiveauPile(niveau: NiveauCompetence.fonctionnel),
+              SizedBox(height: 10),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  // Expert (Or)
+                  CompetenceNiveauPile(niveau: NiveauCompetence.expert),
+                  SizedBox(width: 15),
+                  // Confirmé (Argent)
+                  CompetenceNiveauPile(niveau: NiveauCompetence.confirme),
+                  SizedBox(width: 15),
+                  // Intermédiaire (Bronze)
+                  CompetenceNiveauPile(
+                    niveau: NiveauCompetence.intermediaire,
+                  ),
+                  SizedBox(width: 15),
+                  // Fonctionnel (Cuivre)
+                  CompetenceNiveauPile(niveau: NiveauCompetence.fonctionnel),
+                ],
+              ),
             ],
           ),
-        ],
-      ),
+        )
+      ],
     );
   }
 }

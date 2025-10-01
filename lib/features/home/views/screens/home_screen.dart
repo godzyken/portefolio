@@ -2,15 +2,42 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/affichage/screen_size_detector.dart';
+import '../../../../core/logging/app_logger.dart';
 import '../../../../core/provider/providers.dart';
 import '../../../home/views/widgets/services_card.dart';
 import '../../../parametres/themes/views/widgets/theme_selector.dart';
 
-class HomeScreen extends ConsumerWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return; // <-- sécurité importante
+      ref.read(appBarTitleProvider.notifier).setTitle("Godzyken Portefolio");
+      ref.read(appBarActionsProvider.notifier).setActions([
+        IconButton(
+          icon: const Icon(Icons.color_lens),
+          tooltip: 'Personnaliser le thème',
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const ThemeSelector()),
+            );
+          },
+        ),
+      ]);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final servicesAsync = ref.watch(servicesFutureProvider);
     final info = ref.watch(responsiveInfoProvider);
 
@@ -108,7 +135,15 @@ class HomeScreen extends ConsumerWidget {
             );
           }
         },
-        error: (e, _) => Center(child: Text('Erreur : $e')),
+        error: (e, st) {
+          ref.read(loggerProvider("HomeScreen")).log(
+                "Erreur lors du chargement des services",
+                level: LogLevel.error,
+                error: e,
+                stackTrace: st,
+              );
+          return Center(child: Text('Erreur : $e'));
+        },
         loading: () => const Center(child: CircularProgressIndicator()),
       ),
     );

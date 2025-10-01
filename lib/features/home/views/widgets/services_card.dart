@@ -6,88 +6,110 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/features/generator/data/extention_models.dart';
 import 'package:portefolio/features/generator/views/widgets/hover_card.dart';
 
-class ServicesCard extends ConsumerStatefulWidget {
+class ServicesCard extends ConsumerWidget {
   final Service service;
 
   const ServicesCard({super.key, required this.service});
 
   @override
-  ConsumerState<ServicesCard> createState() => _ServicesCardState();
-}
-
-class _ServicesCardState extends ConsumerState<ServicesCard> {
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
 
     return HoverCard(
-      id: widget.service.title,
+      id: service.title,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(20),
         child: Stack(
           children: [
             // --- Image de fond ---
-            Image.asset(
-              widget.service.imageUrl!,
-              fit: BoxFit.cover,
-              height: double.infinity,
-              width: double.infinity,
-              alignment: Alignment.center,
-            ),
+            if (service.imageUrl != null)
+              Positioned.fill(
+                child: Container(
+                  color: Colors.yellowAccent, // test
+                  child: Image.asset(
+                    service.imageUrl!,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
 
-            // --- Film glass / blur + dégradé ---
-            BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Colors.lightGreenAccent.withAlpha(
-                        (255 * 0.35).toInt(),
-                      ),
-                      Colors.indigoAccent.withAlpha((255 * 0.35).toInt()),
-                    ],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
+            // --- Effet glassmorphism ---
+            Positioned.fill(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.black.withAlpha((255 * 0.55).toInt()),
+                        theme.colorScheme.primary
+                            .withAlpha((255 * 0.35).toInt()),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
                   ),
                 ),
               ),
             ),
 
-            // ✅ Contenu
+            // --- Contenu ---
             Padding(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(20),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisSize: MainAxisSize.max,
                 children: [
-                  const Spacer(),
-                  Icon(
-                    widget.service.icon,
-                    size: 56,
-                    color: Colors.black87,
+                  CircleAvatar(
+                    radius: 32,
+                    backgroundColor: theme.colorScheme.primary
+                        .withAlpha((255 * 0.8).toInt()),
+                    child: Icon(service.icon, size: 36, color: Colors.white),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 16),
+
+                  // Titre
                   Text(
-                    widget.service.title,
-                    style: theme.textTheme.titleLarge?.copyWith(
+                    service.title,
+                    style: theme.textTheme.headlineSmall?.copyWith(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
+                      letterSpacing: 1.2,
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 16),
-                  Expanded(
+
+                  const SizedBox(height: 12),
+
+                  // Description scrollable
+                  SizedBox(
+                    height: 80,
                     child: SingleChildScrollView(
                       child: Text(
-                        widget.service.description,
+                        service.description,
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: Colors.white70,
+                          height: 1.4,
                         ),
                         textAlign: TextAlign.center,
                       ),
                     ),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // Features sous forme de Chips
+                  Wrap(
+                    alignment: WrapAlignment.center,
+                    spacing: 8,
+                    runSpacing: 6,
+                    children: service.features.map((f) {
+                      return Chip(
+                        label: Text(f),
+                        backgroundColor: theme.colorScheme.secondary
+                            .withAlpha((255 * 0.25).toInt()),
+                        labelStyle: const TextStyle(color: Colors.white),
+                      );
+                    }).toList(),
                   ),
                 ],
               ),
@@ -97,7 +119,8 @@ class _ServicesCardState extends ConsumerState<ServicesCard> {
       ),
     )
         .animate()
-        .fadeIn(duration: 450.ms, delay: 100.ms)
-        .slideY(begin: 0.15, duration: 450.ms, curve: Curves.easeOutBack);
+        .fadeIn(duration: 500.ms, delay: 150.ms)
+        .slideY(begin: 0.2, duration: 500.ms, curve: Curves.easeOutBack)
+        .scale(begin: const Offset(0.95, 0.95));
   }
 }

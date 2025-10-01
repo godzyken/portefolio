@@ -8,8 +8,8 @@
       "🔄 Synchronisation temps réel",
       "🎨 Design personnalisé selon vos besoins"
     ],
-    "icon": "mobile_friendly",
-    "image": "assets/images/mobile-dev.jpg"
+    "icon": "phone",
+    "image": "assets/images/flutter-image.png"
   },
   {
     "title": "Développement Web",
@@ -21,7 +21,7 @@
       "📊 Analytics et suivi des performances"
     ],
     "icon": "web",
-    "image": "assets/images/web-dev.jpg"
+    "image": "assets/images/ui-ux-design-service.png"
   },
   {
     "title": "Solutions Cloud",
@@ -33,7 +33,7 @@
       "💾 Sauvegarde automatique"
     ],
     "icon": "cloud",
-    "image": "assets/images/cloud-services.jpg"
+    "image": "assets/images/api-img.png"
   },
   {
     "title": "Support & Maintenance",
@@ -44,7 +44,7 @@
       "🔄 Mises à jour régulières",
       "📊 Rapports de performance"
     ],
-    "icon": "support",
-    "image": "assets/images/support.jpg"
+    "icon": "design",
+    "image": "assets/images/technical-support-maintenance.png"
   }
 ]

@@ -20,6 +20,7 @@ import '../../features/generator/services/location_service.dart';
 import '../../features/generator/services/pdf_export_service.dart';
 import '../affichage/navigator_key_provider.dart';
 import '../exeptions/state/global_error_state.dart';
+import '../logging/app_logger.dart';
 import '../notifier/notifiers.dart';
 
 /// Titre dynamique de l’AppBar
@@ -328,6 +329,11 @@ final locationStreamProvider = StreamProvider<LocationData>((ref) {
 /// 🔹 Provider pour savoir si le GPS est activé
 final isGpsEnabledProvider = FutureProvider<bool>((ref) async {
   return await LocationService.instance.isLocationEnabled();
+});
+
+/// Fournit un logger spécifique à une catégorie (ex: HomeScreen, ExperiencesScreen)
+final loggerProvider = Provider.family<AppLogger, String>((ref, category) {
+  return AppLogger(category);
 });
 
 /*

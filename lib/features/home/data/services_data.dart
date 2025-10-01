@@ -19,7 +19,7 @@ class Service {
     return Service(
       title: json['title'],
       description: json['description'],
-      features: json['features'],
+      features: (json['features'] as List?)?.cast<String>() ?? [],
       icon: _getIconFromName(json['icon']),
       imageUrl: json['imageUrl'],
     );
@@ -27,13 +27,14 @@ class Service {
 
   static IconData _getIconFromName(String name) {
     switch (name) {
-      case 'phone_android':
+      case 'phone':
         return Icons.phone_android;
-      case 'design_services':
+      case 'design':
         return Icons.design_services;
       case 'cloud':
         return Icons.cloud;
-      // Ajoute ici d'autres icônes au besoin
+      case 'web':
+        return Icons.web_stories;
       default:
         return Icons.extension;
     }

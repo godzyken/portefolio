@@ -5,6 +5,7 @@ import 'package:portefolio/core/provider/providers.dart';
 import 'package:portefolio/features/experience/data/experiences_data.dart';
 import 'package:portefolio/features/experience/views/screens/experience_screens_extentions.dart';
 
+import '../../../../core/logging/app_logger.dart';
 import '../widgets/experience_widgets_extentions.dart';
 import 'experience_jeux_screen.dart';
 
@@ -47,8 +48,15 @@ class _ExperiencesScreenState extends ConsumerState<ExperiencesScreen> {
                     : ExperienceJeuxScreen(experiences: filteredExperiences)
                 : ExperienceTimelineWrapper(experiences: filteredExperiences);
       },
-      error: (e, _) =>
-          Center(child: Text('Une erreur est survenue: ${e.toString()}')),
+      error: (e, st) {
+        ref.read(loggerProvider("ExperienceScreen")).log(
+              "Erreur lors du chargement des services",
+              level: LogLevel.error,
+              error: e,
+              stackTrace: st,
+            );
+        return Center(child: Text('Erreur : $e'));
+      },
       loading: () => const Center(child: CircularProgressIndicator()),
     );
   }

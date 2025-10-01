@@ -383,12 +383,10 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
     return Stack(
       children: [
         // Tapis de fond
-        Container(
-          decoration: const BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('assets/images/tapis-poker.png'),
-              fit: BoxFit.cover,
-            ),
+        Positioned.fill(
+          child: Image.asset(
+            'assets/images/tapis-poker.png',
+            fit: BoxFit.cover,
           ),
         ),
         _buildCardPile(info),
@@ -401,37 +399,65 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
           onPotCleared: _onPotCleared,
         ),
         ..._buildScatteredChips(),
-        const CompetencesPilesByNiveau(),
+
+        // 🪙 Compétences collées en bas
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: SizedBox(
+            height: info.size.height * 0.2,
+            child: const CompetencesPilesByNiveau(),
+          ),
+        ),
       ],
     );
   }
 
   Widget _buildLandscapeLayout(ResponsiveInfo info) {
-    return Row(
+    return Stack(
       children: [
-        // Colonne gauche : pile
-        Expanded(flex: 2, child: _buildCardPile(info)),
-
-        // Colonne centrale : zone de jeu
-        Expanded(flex: 3, child: _buildCardTarget(info)),
-
-        // Colonne droite : pot et compétences
-        Expanded(
-          flex: 2,
-          child: Stack(
-            children: [
-              InteractivePot(
-                experiences: widget.experiences,
-                cardKeys: _cardKeys,
-                flyCard: _flyCard,
-                onCardsArrivedInPot: _onCardsArrivedInPot,
-                onPotCleared: _onPotCleared,
-              ),
-              const CompetencesPilesByNiveau(),
-              ..._buildScatteredChips(),
-            ],
+        // Tapis de fond
+        Positioned.fill(
+          child: Image.asset(
+            'assets/images/tapis-poker.png',
+            fit: BoxFit.cover,
           ),
         ),
+        Column(children: [
+          Expanded(
+            flex: 8,
+            child: Row(
+              children: [
+                // 🃏 Pile de cartes à gauche
+                Expanded(flex: 2, child: _buildCardPile(info)),
+
+                // 🎯 Zone de jeu au centre
+                Expanded(flex: 3, child: _buildCardTarget(info)),
+
+                // 🎲 Pot + chips à droite
+                Expanded(
+                  flex: 2,
+                  child: Stack(
+                    children: [
+                      InteractivePot(
+                        experiences: widget.experiences,
+                        cardKeys: _cardKeys,
+                        flyCard: _flyCard,
+                        onCardsArrivedInPot: _onCardsArrivedInPot,
+                        onPotCleared: _onPotCleared,
+                      ),
+                      ..._buildScatteredChips(),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // 🪙 Piles de compétences en bas
+          SizedBox(
+            height: info.size.height * 0.2,
+            child: const CompetencesPilesByNiveau(),
+          ),
+        ]),
       ],
     );
   }
