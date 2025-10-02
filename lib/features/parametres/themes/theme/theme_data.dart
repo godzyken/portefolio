@@ -43,9 +43,6 @@ class BasicTheme {
   Color get tertiaryColor => Color(tertiaryColorValue);
   Color get neutralColor => Color(neutralColorValue);
 
-  // Ajoutez cette méthode améliorée dans la classe BasicTheme
-// Remplacez la méthode toThemeData() existante :
-
   ThemeData toThemeData() {
     final brightness = switch (mode) {
       AppThemeMode.light => Brightness.light,
@@ -277,13 +274,14 @@ class BasicTheme {
     );
   }
 
+  // Fallback = Multiverse
   static const fallback = BasicTheme(
-    primaryColorValue: 0xFF00D9FF,
-    tertiaryColorValue: 0xFF000000, // Noir pur
-    neutralColorValue: 0xFF000000, // Noir pur
+    primaryColorValue: 0xFF00E5FF,
+    tertiaryColorValue: 0xFF9C27FF,
+    neutralColorValue: 0xFF000000,
     mode: AppThemeMode.dark,
-    name: 'Professional Dark',
-    emoji: '💼',
+    name: 'Multiverse',
+    emoji: '🌌',
   );
 
   Map<String, dynamic> toJson() => {
@@ -388,6 +386,86 @@ final availableThemes = [
     mode: AppThemeMode.system,
     primaryColorValue: 0xFF2196F3,
     tertiaryColorValue: 0xFF000000,
+    neutralColorValue: 0xFF000000,
+  ),
+
+  // Thème Multivers Principal (Cyan/Violet)
+  const BasicTheme(
+    name: 'Multiverse',
+    emoji: '🌌',
+    mode: AppThemeMode.dark,
+    primaryColorValue: 0xFF00E5FF, // Cyan néon
+    tertiaryColorValue: 0xFF9C27FF, // Violet néon
+    neutralColorValue: 0xFF000000, // Noir spatial pur
+  ),
+
+  // Thème Galaxie (Violet/Rose)
+  const BasicTheme(
+    name: 'Galaxy',
+    emoji: '🪐',
+    mode: AppThemeMode.dark,
+    primaryColorValue: 0xFFBB86FC, // Violet pastel
+    tertiaryColorValue: 0xFFFF4081, // Rose néon
+    neutralColorValue: 0xFF000000,
+  ),
+
+  // Thème Nebula (Bleu/Violet)
+  const BasicTheme(
+    name: 'Nebula',
+    emoji: '✨',
+    mode: AppThemeMode.dark,
+    primaryColorValue: 0xFF536DFE, // Bleu indigo électrique
+    tertiaryColorValue: 0xFFAB47BC, // Violet profond
+    neutralColorValue: 0xFF000000,
+  ),
+
+  // Thème Quantum (Cyan/Vert)
+  const BasicTheme(
+    name: 'Quantum',
+    emoji: '⚛️',
+    mode: AppThemeMode.dark,
+    primaryColorValue: 0xFF00FFF7, // Cyan fluo
+    tertiaryColorValue: 0xFF00E676, // Vert néon
+    neutralColorValue: 0xFF000000,
+  ),
+
+  // Thème Black Hole (Violet sombre)
+  const BasicTheme(
+    name: 'Black Hole',
+    emoji: '⚫',
+    mode: AppThemeMode.dark,
+    primaryColorValue: 0xFF7C4DFF, // Violet intense
+    tertiaryColorValue: 0xFF9C27B0, // Violet Material
+    neutralColorValue: 0xFF000000,
+  ),
+
+  // Thème Cosmic (Orange/Rose)
+  const BasicTheme(
+    name: 'Cosmic',
+    emoji: '🔥',
+    mode: AppThemeMode.dark,
+    primaryColorValue: 0xFFFF6E40, // Orange cosmique
+    tertiaryColorValue: 0xFFE91E63, // Rose vibrant
+    neutralColorValue: 0xFF000000,
+  ),
+
+  // Thème Aurora (Vert/Bleu)
+  const BasicTheme(
+    name: 'Aurora',
+    emoji: '🌠',
+    mode: AppThemeMode.dark,
+    primaryColorValue: 0xFF00E676, // Vert aurore
+    tertiaryColorValue: 0xFF00B8D4, // Bleu glacier
+    neutralColorValue: 0xFF000000,
+  ),
+
+  // Thème Void (Minimaliste noir/blanc)
+  const BasicTheme(
+    name: 'Void',
+    emoji: '⬛',
+    mode: AppThemeMode.dark,
+    primaryColorValue: 0xFFFFFFFF, // Blanc pur
+    tertiaryColorValue: 0xFF616161, // Gris neutre
     neutralColorValue: 0xFF000000,
   ),
 ];

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:portefolio/features/home/data/services_data.dart';
 
 import '../../../../core/affichage/screen_size_detector.dart';
-import '../../../../core/debug/assets_debugger.dart';
 import '../../../../core/logging/app_logger.dart';
 import '../../../../core/provider/providers.dart';
 import '../../../home/views/widgets/services_card.dart';
-import '../../../parametres/themes/views/widgets/theme_selector.dart';
+import '../../../parametres/themes/views/widgets/space_background.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -17,159 +17,23 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
-  void initState() {
-    super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      ref.read(appBarTitleProvider.notifier).setTitle("Godzyken Portfolio");
-      ref.read(appBarActionsProvider.notifier).setActions([
-        // Bouton de debug (à retirer en production)
-        IconButton(
-          icon: const Icon(Icons.bug_report),
-          tooltip: 'Debug Assets',
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const AssetsDebugger()),
-            );
-          },
-        ),
-        IconButton(
-          icon: const Icon(Icons.palette_outlined),
-          tooltip: 'Personnaliser le thème',
-          onPressed: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const ThemeSelector()),
-            );
-          },
-        ),
-      ]);
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     final servicesAsync = ref.watch(servicesFutureProvider);
     final info = ref.watch(responsiveInfoProvider);
+    final theme = Theme.of(context);
 
     return SafeArea(
       child: servicesAsync.when(
         data: (services) {
-          // MODE PORTRAIT (Mobile/Tablet)
-          if (info.isPortrait) {
-            return Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Theme.of(context).colorScheme.surface,
-                    Theme.of(context).colorScheme.surfaceContainer,
-                  ],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-              ),
-              child: Column(
-                children: [
-                  const SizedBox(height: 32),
-                  // Header section
-                  _buildHeader(context, info, isPortrait: true),
-                  const SizedBox(height: 24),
-                  // Services carousel
-                  Expanded(
-                    child: PageView.builder(
-                      scrollDirection: Axis.horizontal,
-                      controller: PageController(viewportFraction: 0.88),
-                      itemCount: services.length,
-                      itemBuilder: (_, index) => Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        child: ServicesCard(service: services[index]),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  // Pagination dots
-                  _buildPaginationDots(services.length),
-                  const SizedBox(height: 16),
-                ],
-              ),
-            );
-          }
-          // MODE LANDSCAPE (Desktop/Large tablet)
-          else {
-            return Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Theme.of(context).colorScheme.surface,
-                    Theme.of(context).colorScheme.surfaceContainer,
-                  ],
-                  begin: Alignment.centerLeft,
-                  end: Alignment.centerRight,
-                ),
-              ),
-              child: Row(
-                children: [
-                  // Left panel - Header
-                  Flexible(
-                    flex: 3,
-                    child: Container(
-                      padding: const EdgeInsets.all(32),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            Theme.of(context)
-                                .colorScheme
-                                .primary
-                                .withAlpha((255 * 0.1).toInt()),
-                            Colors.transparent,
-                          ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                      ),
-                      child: _buildHeader(context, info, isPortrait: false),
-                    ),
-                  ),
-                  // Right panel - Services
-                  Flexible(
-                    flex: 7,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(24),
-                          child: Text(
-                            "Mes Services",
-                            style: Theme.of(context)
-                                .textTheme
-                                .headlineMedium
-                                ?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                          ),
-                        ),
-                        Expanded(
-                          child: PageView.builder(
-                            scrollDirection: Axis.vertical,
-                            controller: PageController(viewportFraction: 0.88),
-                            itemCount: services.length,
-                            itemBuilder: (_, index) => Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 24,
-                                vertical: 8,
-                              ),
-                              child: ServicesCard(service: services[index]),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }
+          // Wrapper avec fond spatial
+          return SpaceBackground(
+            primaryColor: theme.colorScheme.primary,
+            secondaryColor: theme.colorScheme.secondary,
+            starCount: 150, // Plus d'étoiles pour effet spatial
+            child: info.isPortrait
+                ? _buildPortraitLayout(context, info, services)
+                : _buildLandscapeLayout(context, info, services),
+          );
         },
         error: (e, st) {
           ref.read(loggerProvider("HomeScreen")).log(
@@ -211,6 +75,119 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Container _buildLandscapeLayout(
+      BuildContext context, ResponsiveInfo info, List<Service> services) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Theme.of(context).colorScheme.surface,
+            Theme.of(context).colorScheme.surfaceContainer,
+          ],
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+        ),
+      ),
+      child: Row(
+        children: [
+          // Left panel - Header
+          Flexible(
+            flex: 3,
+            child: Container(
+              padding: const EdgeInsets.all(32),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Theme.of(context)
+                        .colorScheme
+                        .primary
+                        .withAlpha((255 * 0.1).toInt()),
+                    Colors.transparent,
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+              child: _buildHeader(context, info, isPortrait: false),
+            ),
+          ),
+          // Right panel - Services
+          Flexible(
+            flex: 7,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Text(
+                    "Mes Services",
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                ),
+                Expanded(
+                  child: PageView.builder(
+                    scrollDirection: Axis.vertical,
+                    controller: PageController(viewportFraction: 0.88),
+                    itemCount: services.length,
+                    itemBuilder: (_, index) => Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 8,
+                      ),
+                      child: ServicesCard(service: services[index]),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Container _buildPortraitLayout(
+      BuildContext context, ResponsiveInfo info, List<Service> services) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Theme.of(context).colorScheme.surface,
+            Theme.of(context).colorScheme.surfaceContainer,
+          ],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
+      ),
+      child: Column(
+        children: [
+          const SizedBox(height: 32),
+          // Header section
+          _buildHeader(context, info, isPortrait: true),
+          const SizedBox(height: 24),
+          // Services carousel
+          Expanded(
+            child: PageView.builder(
+              scrollDirection: Axis.horizontal,
+              controller: PageController(viewportFraction: 0.88),
+              itemCount: services.length,
+              itemBuilder: (_, index) => Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: ServicesCard(service: services[index]),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          // Pagination dots
+          _buildPaginationDots(services.length),
+          const SizedBox(height: 16),
+        ],
       ),
     );
   }

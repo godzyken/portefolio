@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../../core/logging/app_logger.dart';
 import '../../../../core/provider/providers.dart';
-import '../../data/project_data.dart';
 import '../widgets/project_grid_view.dart';
 
 class ProjectsScreen extends ConsumerStatefulWidget {
@@ -15,40 +13,6 @@ class ProjectsScreen extends ConsumerStatefulWidget {
 }
 
 class _ProjectsScreenState extends ConsumerState<ProjectsScreen> {
-  @override
-  void initState() {
-    super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final projects = ref
-          .read(projectsFutureProvider)
-          .maybeWhen(data: (list) => list, orElse: () => <ProjectInfo>[]);
-
-      ref.read(appBarTitleProvider.notifier).setTitle("Mes Projets");
-      ref.read(appBarActionsProvider.notifier).setActions([
-        IconButton(
-          icon: const Icon(Icons.select_all),
-          tooltip: "Tout sélectionner",
-          onPressed: () {
-            ref.read(selectedProjectsProvider.notifier).toggleAll(projects);
-          },
-        ),
-        IconButton(
-          icon: const Icon(Icons.picture_as_pdf),
-          tooltip: "Exporter PDF",
-          onPressed: () {
-            final selected = ref.read(selectedProjectsProvider);
-            if (selected.isNotEmpty) {
-              ref.read(pdfExportProvider).export(selected);
-              context.pushNamed("pdf");
-            }
-          },
-        ),
-      ]);
-      ref.read(appBarDrawerProvider.notifier).clearDrawer();
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final projectsAsync = ref.watch(projectsFutureProvider);

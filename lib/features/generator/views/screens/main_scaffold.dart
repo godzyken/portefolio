@@ -13,16 +13,15 @@ class MainScaffold extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentIndex = ref.watch(currentIndexProvider);
-    final title = ref.watch(appBarTitleProvider);
-    final actions = ref.watch(appBarActionsProvider);
-    final drawer = ref.watch(appBarDrawerProvider);
+    final currentTab = AppTab.values[currentIndex];
+    final config = currentTab.config(context, ref);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(title, overflow: TextOverflow.ellipsis),
-        actions: actions,
+        title: Text(config.title, overflow: TextOverflow.ellipsis),
+        actions: config.actions,
       ),
-      endDrawer: drawer,
+      endDrawer: config.drawer,
       body: child,
       bottomNavigationBar: NavigationBar(
         selectedIndex: currentIndex,
