@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:portefolio/features/parametres/themes/theme/theme_data.dart';
 
 import 'core/affichage/navigator_key_provider.dart';
 import 'core/routes/router.dart';
@@ -114,14 +115,18 @@ class MyFullApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final themeAsync = ref.watch(themeLoaderProvider);
     final router = ref.watch(goRouterProvider);
+    final themeMode = ref.watch(themeControllerProvider);
+    final themeData = themeMode.toThemeData();
 
     return themeAsync.when(
       data: (theme) {
         return MaterialApp.router(
-          title: 'Portfolio PDF',
-          theme: theme.toThemeData(),
-          darkTheme: theme.toThemeData(),
-          themeMode: ThemeMode.dark,
+          title: 'Portfolio',
+          theme: themeData,
+          darkTheme: themeData,
+          themeMode: themeMode.mode == AppThemeMode.dark
+              ? ThemeMode.dark
+              : ThemeMode.light,
           routerConfig: router,
           debugShowCheckedModeBanner: false,
           builder: (context, child) {

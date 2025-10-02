@@ -102,6 +102,7 @@ class _ThemeSelectorState extends ConsumerState<ThemeSelector> {
                       ElevatedButton(
                         onPressed: () {
                           controller.applyTheme(theme);
+                          Navigator.of(context).pop();
                         },
                         child: const Text('Appliquer'),
                       ),
