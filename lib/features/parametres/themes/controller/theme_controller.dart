@@ -45,8 +45,3 @@ class ThemeController extends Notifier<BasicTheme> {
     state = loaded;
   }
 }
-
-final themeFutureProvider = FutureProvider<BasicTheme>((ref) async {
-  final repo = ref.watch(themeRepositoryProvider);
-  return await repo.loadTheme();
-});

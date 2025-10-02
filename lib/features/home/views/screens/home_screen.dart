@@ -279,7 +279,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         if (!isPortrait) ...[
           const SizedBox(height: 24),
           Text(
-            "Expert en Flutter, React et solutions cloud.\nCréation d'applications performantes et élégantes.",
+            "Expert en Flutter, Angular et solutions cloud.\nCréation d'applications performantes et élégantes.",
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Theme.of(context)
                       .colorScheme

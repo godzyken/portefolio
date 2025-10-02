@@ -7,6 +7,7 @@ import 'features/generator/views/widgets/responsive_scope.dart';
 import 'features/home/views/screens/splash_screen.dart';
 import 'features/home/views/widgets/precache_wrapper.dart';
 import 'features/parametres/themes/controller/theme_controller.dart';
+import 'features/parametres/themes/provider/theme_repository_provider.dart';
 
 // ====================
 // ÉTAPE 1 : Test minimal
@@ -111,7 +112,7 @@ class MyFullApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final themeAsync = ref.watch(themeFutureProvider);
+    final themeAsync = ref.watch(themeLoaderProvider);
     final router = ref.watch(goRouterProvider);
 
     return themeAsync.when(

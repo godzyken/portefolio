@@ -278,9 +278,9 @@ class BasicTheme {
   }
 
   static const fallback = BasicTheme(
-    primaryColorValue: 0xFF00D9FF, // Cyan
-    tertiaryColorValue: 0xFF1A1A1A,
-    neutralColorValue: 0xFF0A0A0A,
+    primaryColorValue: 0xFF00D9FF,
+    tertiaryColorValue: 0xFF000000, // Noir pur
+    neutralColorValue: 0xFF000000, // Noir pur
     mode: AppThemeMode.dark,
     name: 'Professional Dark',
     emoji: '💼',
@@ -311,59 +311,59 @@ class BasicTheme {
 }
 
 final availableThemes = [
-  // Thème Pro Dark (recommandé)
+  // Thème Ultra Dark (OLED Black)
   const BasicTheme(
     name: 'Professional Dark',
     emoji: '💼',
     mode: AppThemeMode.dark,
     primaryColorValue: 0xFF00D9FF, // Cyan électrique
-    tertiaryColorValue: 0xFF1A1A1A, // Presque noir
-    neutralColorValue: 0xFF0A0A0A, // Noir profond
+    tertiaryColorValue: 0xFF000000, // Noir pur
+    neutralColorValue: 0xFF000000, // Noir pur
   ),
 
-  // Thème Midnight Blue
+  // Thème Pure Black
   const BasicTheme(
-    name: 'Midnight Blue',
+    name: 'Pure Black',
+    emoji: '⬛',
+    mode: AppThemeMode.dark,
+    primaryColorValue: 0xFF00E5FF, // Cyan clair
+    tertiaryColorValue: 0xFF000000,
+    neutralColorValue: 0xFF000000,
+  ),
+
+  // Thème Midnight OLED
+  const BasicTheme(
+    name: 'Midnight OLED',
     emoji: '🌙',
     mode: AppThemeMode.dark,
-    primaryColorValue: 0xFF3D5AFE, // Bleu indigo vibrant
-    tertiaryColorValue: 0xFF121212,
-    neutralColorValue: 0xFF0D0D0D,
+    primaryColorValue: 0xFF3D5AFE, // Bleu indigo
+    tertiaryColorValue: 0xFF000000,
+    neutralColorValue: 0xFF000000,
   ),
 
-  // Thème Purple Haze
+  // Thème Noir/Violet
   const BasicTheme(
-    name: 'Purple Haze',
+    name: 'Purple Black',
     emoji: '🔮',
     mode: AppThemeMode.dark,
-    primaryColorValue: 0xFF9C27B0, // Violet
-    tertiaryColorValue: 0xFF1C1C1E,
-    neutralColorValue: 0xFF0F0F0F,
+    primaryColorValue: 0xFFBB86FC, // Violet clair
+    tertiaryColorValue: 0xFF000000,
+    neutralColorValue: 0xFF000000,
   ),
 
-  // Thème Emerald Night
+  // Thème Noir/Vert
   const BasicTheme(
-    name: 'Emerald Night',
+    name: 'Emerald Black',
     emoji: '💎',
     mode: AppThemeMode.dark,
     primaryColorValue: 0xFF00E676, // Vert émeraude
-    tertiaryColorValue: 0xFF141414,
-    neutralColorValue: 0xFF0A0A0A,
+    tertiaryColorValue: 0xFF000000,
+    neutralColorValue: 0xFF000000,
   ),
 
-  // Thème Amber Dark
+  // Thème Matrix (noir pur)
   const BasicTheme(
-    name: 'Amber Dark',
-    emoji: '⚡',
-    mode: AppThemeMode.dark,
-    primaryColorValue: 0xFFFFB300, // Orange/Ambre
-    tertiaryColorValue: 0xFF181818,
-    neutralColorValue: 0xFF0C0C0C,
-  ),
-
-  // Thème Matrix (pour les devs)
-  const BasicTheme(
-    name: 'Matrix',
+    name: 'Matrix OLED',
     emoji: '🖥️',
     mode: AppThemeMode.dark,
     primaryColorValue: 0xFF00FF41, // Vert Matrix
@@ -371,24 +371,24 @@ final availableThemes = [
     neutralColorValue: 0xFF000000,
   ),
 
-  // Thème Minimal Light (si besoin de clair)
+  // Thème Dark Grey (si noir trop intense)
   const BasicTheme(
-    name: 'Minimal Light',
-    emoji: '☀️',
-    mode: AppThemeMode.light,
-    primaryColorValue: 0xFF1976D2,
-    tertiaryColorValue: 0xFFF5F5F5,
-    neutralColorValue: 0xFFFFFFFF,
+    name: 'Dark Grey',
+    emoji: '🌑',
+    mode: AppThemeMode.dark,
+    primaryColorValue: 0xFF00D9FF,
+    tertiaryColorValue: 0xFF0A0A0A, // Gris très sombre
+    neutralColorValue: 0xFF050505,
   ),
 
-  // Thème System (s'adapte)
+  // Thème System
   const BasicTheme(
     name: 'System',
     emoji: '⚙️',
     mode: AppThemeMode.system,
     primaryColorValue: 0xFF2196F3,
-    tertiaryColorValue: 0xFF1E1E1E,
-    neutralColorValue: 0xFF121212,
+    tertiaryColorValue: 0xFF000000,
+    neutralColorValue: 0xFF000000,
   ),
 ];
 
