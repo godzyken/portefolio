@@ -162,7 +162,7 @@
       "Soutien de la version PHP/Laravel (correctifs de sécurité, patches SQL)"
     ],
     "code": "// Extrait HTTP POST location vers serveur\nsendLocationToServer(double lat, double lng) async { /* … */ }",
-    "tags": ["Flutter", "SIG", "Angular", "PostGIS", "CI/CD"],
+    "tags": ["Angular", "Flutter", "SIG", "PostGIS", "CI/CD"],
     "stack": {
       "frontend": ["Flutter", "Angular", "Laravel"],
       "backend": ["Node.js", "PostgreSQL/PostGIS", "API PHP"],
@@ -186,7 +186,7 @@
     "objectifs": [
       "Transformer la maquette présentée au Salon du Numérique en un produit abouti",
       "Migrer les données critiques de MongoDB vers Elasticsearch sans interruption de service",
-      "Maintenir et optimiser l’application existante pendant la transition",
+      "Maintenir et optimiser le site internet existant pendant la transition",
       "Garantir une expérience utilisateur fluide sur web, tablette et mobile"
     ],
     "missions": [
@@ -198,7 +198,7 @@
       "Monitoring applicatif et alertes en temps réel (Elastic APM + dashboards Kibana)"
     ],
     "code": "// Exemple de service Angular pour la recherche Elasticsearch\\nconstructor(private searchService: SearchService) {}",
-    "tags": ["Full‑Stack", "IoT", "Angular", "Ionic", "CI/CD", "Elasticsearch", "Video‑surveillance"],
+    "tags": ["Angular", "Full‑Stack", "IoT", "Ionic", "CI/CD", "Elasticsearch", "Video‑surveillance"],
     "stack": {
       "frontend": ["Angular", "Ionic"],
       "backend": ["Node.js", "Express.js"],
@@ -234,7 +234,7 @@
       "Participations aux daily stand‑up et rétrospectives Scrum"
     ],
     "code": "// Injection d'un service Angular\nconstructor(private searchService: SearchService) {}",
-    "tags": ["Full‑Stack", "Angular", "Ionic", "CI/CD", "Node.js", "UX"],
+    "tags": ["Angular", "Full‑Stack", "JavaScript",  "Ionic", "CI/CD", "Node.js", "UX"],
     "stack": {
       "frontend": ["Angular", "Ionic"],
       "backend": ["Node.js", "AWS Cloud"],

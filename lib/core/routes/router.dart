@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:portefolio/core/provider/providers.dart';
 
 import '../../features/contact/views/screens/contact_screen.dart';
-import '../../features/experience/views/screens/experiences_screen.dart';
+import '../../features/experience/views/screens/experience_screens_extentions.dart';
 import '../../features/generator/views/screens/generator_extentions_screens.dart';
 import '../../features/home/views/screens/home_screen.dart';
 import '../../features/projets/views/screens/projects_screen.dart';

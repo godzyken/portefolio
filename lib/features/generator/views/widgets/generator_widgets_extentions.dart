@@ -1,5 +1,10 @@
 export 'adaptive_card.dart';
+export 'code_high_light_list.dart';
 export 'fade_slide_animation.dart';
+export 'hover_card.dart';
+export 'location_permission_dialog.dart';
 export 'responsive_layout.dart';
 export 'responsive_scope.dart';
+export 'sig_discovery_map.dart';
 export 'wakatime_badge.dart';
+export 'youtube_video_player.dart';

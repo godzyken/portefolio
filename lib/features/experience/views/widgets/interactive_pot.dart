@@ -131,7 +131,7 @@ class _InteractivePotState extends ConsumerState<InteractivePot>
     final info = ref.read(responsiveInfoProvider);
 
     return Positioned(
-      bottom: 30,
+      bottom: 0,
       right: 30,
       child: DragTarget<String>(
         onAcceptWithDetails: (details) {

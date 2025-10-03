@@ -6,15 +6,10 @@ import 'package:flutter_highlight/themes/github.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/features/generator/data/extention_models.dart';
-import 'package:portefolio/features/generator/views/widgets/code_high_light_list.dart';
-import 'package:portefolio/features/generator/views/widgets/fade_slide_animation.dart';
-import 'package:portefolio/features/generator/views/widgets/hover_card.dart';
-import 'package:portefolio/features/generator/views/widgets/sig_discovery_map.dart';
+import 'package:portefolio/features/generator/views/widgets/generator_widgets_extentions.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../constants/tech_logos.dart';
-import '../../../generator/views/widgets/adaptive_card.dart';
-import '../../../generator/views/widgets/youtube_video_player.dart';
 
 class ExperienceCard extends ConsumerWidget {
   final Experience experience;

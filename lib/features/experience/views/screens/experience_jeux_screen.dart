@@ -2,16 +2,12 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:portefolio/features/experience/views/widgets/competences_chip.dart';
 
 import '../../../../constants/enum_global.dart';
 import '../../../../core/affichage/screen_size_detector.dart';
 import '../../controllers/providers/card_flight_provider.dart';
 import '../../data/experiences_data.dart';
-import '../widgets/animated_card_overlay.dart';
-import '../widgets/competence_niveau_pile.dart';
-import '../widgets/experience_card.dart';
-import '../widgets/interactive_pot.dart';
+import '../widgets/experience_widgets_extentions.dart';
 
 class ExperienceJeuxScreen extends ConsumerStatefulWidget {
   const ExperienceJeuxScreen({super.key, required this.experiences});
