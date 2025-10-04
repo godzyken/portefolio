@@ -6,7 +6,6 @@ import 'package:portefolio/features/experience/views/screens/experience_screens_
 
 import '../../../../core/logging/app_logger.dart';
 import '../widgets/experience_widgets_extentions.dart';
-import 'experience_jeux_screen.dart';
 
 class ExperiencesScreen extends ConsumerStatefulWidget {
   const ExperiencesScreen({super.key});

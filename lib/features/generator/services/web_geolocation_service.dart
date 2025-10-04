@@ -16,7 +16,7 @@ class WebGeolocationService {
   static bool isSupported() {
     if (!kIsWeb) return false;
     try {
-      return web.window.navigator.geolocation != null;
+      return web.window.navigator.geolocation.isDefinedAndNotNull;
     } catch (e) {
       debugPrint('❌ Geolocation API non disponible: $e');
       return false;

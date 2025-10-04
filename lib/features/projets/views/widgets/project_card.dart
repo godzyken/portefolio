@@ -3,19 +3,23 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/features/generator/services/pdf_export_service.dart';
-import 'package:portefolio/features/generator/views/widgets/code_high_light_list.dart';
-import 'package:portefolio/features/generator/views/widgets/fade_slide_animation.dart';
-import 'package:portefolio/features/generator/views/widgets/hover_card.dart';
-import 'package:portefolio/features/generator/views/widgets/youtube_video_player.dart';
+import 'package:portefolio/features/generator/views/widgets/generator_widgets_extentions.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 import '../../../../core/provider/providers.dart';
-import '../../../generator/views/widgets/adaptive_card.dart';
 import '../../data/project_data.dart';
 
 class ProjectCard extends ConsumerWidget {
   final ProjectInfo project;
-  const ProjectCard({super.key, required this.project});
+  final double? width;
+  final double? height;
+
+  const ProjectCard({
+    super.key,
+    required this.project,
+    this.width,
+    this.height,
+  });
 
   bool _hasProgrammingTag() {
     const programmingTags = ['e-commerce', 'flutter', 'angular', 'digital'];
@@ -26,6 +30,21 @@ class ProjectCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // wrap with LayoutBuilder so the card adapts if no width/height passed
+    return LayoutBuilder(builder: (context, constraints) {
+      final w = width ?? constraints.maxWidth;
+      final h = height ?? constraints.maxHeight;
+
+      // you can adjust aspect ratio or layout depending on w/h here
+      return SizedBox(
+        width: w,
+        height: h,
+        child: _buildCardContent(context, ref, Size(w, h)),
+      );
+    });
+  }
+
+  Widget _buildCardContent(BuildContext context, WidgetRef ref, Size size) {
     final pdfService = ref.watch(pdfExportProvider);
 
     return HoverCard(
@@ -61,19 +80,36 @@ class ProjectCard extends ConsumerWidget {
     );
   }
 
-  AspectRatio _buildImage(Size size) {
-    return AspectRatio(
-      aspectRatio: size.aspectRatio * 1.2,
-      child: ClipRRect(
+  Widget _buildImage(Size size) {
+    final displayW = size.width;
+    final displayH =
+        size.height * 0.45; // par exemple image prend 45% hauteur du card
+    if ((project.image?.length ?? 0) > 1) {
+      return PageView(
+        children: project.image!
+            .map((img) => ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.asset(
+                    img,
+                    width: displayW,
+                    height: displayH,
+                    fit: BoxFit.cover,
+                  ),
+                ))
+            .toList(),
+      );
+    } else if (project.image != null && project.image!.isNotEmpty) {
+      return ClipRRect(
         borderRadius: BorderRadius.circular(12),
         child: Image.asset(
           project.image!.first,
+          width: displayW,
+          height: displayH,
           fit: BoxFit.cover,
-          height: size.height,
-          width: size.width,
         ),
-      ),
-    );
+      );
+    }
+    return const SizedBox.shrink();
   }
 
   AlertDialog buildAlertDialog(
