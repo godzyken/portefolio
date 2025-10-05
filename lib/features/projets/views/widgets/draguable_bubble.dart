@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
+import 'package:portefolio/features/parametres/views/widgets/smart_image.dart';
 import 'package:portefolio/features/projets/views/widgets/project_card.dart';
 import 'package:vector_math/vector_math_64.dart' show Vector3;
 
@@ -284,7 +285,7 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
     final screenWidth = spec.size.width - 2 * spec.bezelSize;
     final screenHeight = spec.size.height - 2 * spec.bezelSize;
 
-    final images = widget.project.image ?? [];
+    final images = widget.project.cleanedImages ?? [];
     final hasImages = images.isNotEmpty;
 
     if (!hasImages) {
@@ -306,16 +307,16 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
     final screenContent = images.length > 1
         ? PageView(
             children: images
-                .map((img) => Image.asset(
-                      img,
+                .map((img) => SmartImage(
+                      path: img,
                       fit: BoxFit.cover,
                       width: screenWidth,
                       height: screenHeight,
                     ))
                 .toList(),
           )
-        : Image.asset(
-            images.first,
+        : SmartImage(
+            path: images.first,
             fit: BoxFit.cover,
             width: screenWidth,
             height: screenHeight,

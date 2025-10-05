@@ -1,3 +1,5 @@
+import 'dart:developer' as developer;
+
 class ProjectInfo {
   final String id;
   final String title;
@@ -17,6 +19,29 @@ class ProjectInfo {
     this.tags,
   });
 
+  // Getter qui retourne les images nettoyées
+  List<String>? get cleanedImages {
+    if (image == null) return null;
+    return image!.map((img) {
+      // Nettoyer "assets/https://..." -> "https://..."
+      if (img.contains('assets/http')) {
+        final httpIndex = img.indexOf('http');
+        if (httpIndex != -1) {
+          img = img.substring(httpIndex);
+        }
+      }
+      // Décoder les URLs encodées
+      if (img.contains('%')) {
+        try {
+          img = Uri.decodeFull(img);
+        } catch (e) {
+          developer.log('⚠️ Erreur décodage: $img');
+        }
+      }
+      return img;
+    }).toList();
+  }
+
   factory ProjectInfo.fromJson(Map<String, dynamic> json) {
     return ProjectInfo(
       id: json['id'],
@@ -24,9 +49,8 @@ class ProjectInfo {
       points: List<String>.from(json['points']),
       image: json['image'] != null ? List<String>.from(json['image']) : null,
       lienProjet: json['lienProjet'],
-      platform: json['platform'] != null
-          ? List<String>.from(json['platform'])
-          : null,
+      platform:
+          json['platform'] != null ? List<String>.from(json['platform']) : null,
       tags: json['tags'] != null ? List<String>.from(json['tags']) : null,
     );
   }

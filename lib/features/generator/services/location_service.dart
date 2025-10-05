@@ -28,7 +28,6 @@ class _PlatformLocationService extends LocationService {
       return _WebLocationServiceWrapper();
     }
     // Pour mobile/desktop, utilisez un service simulé ou geolocator
-    // (à réactiver selon vos besoins)
     return _SimulatedLocationService();
   }
 

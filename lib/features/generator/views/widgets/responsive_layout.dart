@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/features/generator/views/widgets/code_high_light_list.dart';
 import 'package:portefolio/features/generator/views/widgets/sig_discovery_map.dart';
+import 'package:portefolio/features/parametres/views/widgets/smart_image.dart';
 
 import '../../../../core/affichage/screen_size_detector.dart';
 import '../../../../core/provider/providers.dart';
@@ -141,8 +142,8 @@ class _AnimatedImage extends ConsumerWidget {
     } else if (imageBuilder != null) {
       content = imageBuilder!(context, size);
     } else if (imagePath != null) {
-      content = Image.asset(
-        imagePath!,
+      content = SmartImage(
+        path: imagePath!,
         fit: BoxFit.cover,
         width: size.width,
         height: size.height,

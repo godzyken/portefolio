@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/features/generator/services/pdf_export_service.dart';
 import 'package:portefolio/features/generator/views/widgets/generator_widgets_extentions.dart';
+import 'package:portefolio/features/parametres/views/widgets/smart_image.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 import '../../../../core/provider/providers.dart';
@@ -54,14 +55,14 @@ class ProjectCard extends ConsumerWidget {
         child: AdaptiveCard(
           title: project.title,
           bulletPoints: project.points,
-          imagePath: (project.image?.isNotEmpty ?? false)
-              ? project.image!.first
-              : project.image!.last,
+          imagePath: (project.cleanedImages?.isNotEmpty ?? false)
+              ? project.cleanedImages!.first
+              : project.cleanedImages!.last,
           onTap: () => showDialog(
             context: context,
             builder: (_) => buildAlertDialog(context, ref, pdfService),
           ),
-          imageBuilder: project.image!.isNotEmpty
+          imageBuilder: project.cleanedImages!.isNotEmpty
               ? (ctx, size) => _buildImage(size)
               : null,
           videoBuilder: (context, size) {
@@ -84,13 +85,13 @@ class ProjectCard extends ConsumerWidget {
     final displayW = size.width;
     final displayH =
         size.height * 0.45; // par exemple image prend 45% hauteur du card
-    if ((project.image?.length ?? 0) > 1) {
+    if ((project.cleanedImages?.length ?? 0) > 1) {
       return PageView(
-        children: project.image!
+        children: project.cleanedImages!
             .map((img) => ClipRRect(
                   borderRadius: BorderRadius.circular(12),
-                  child: Image.asset(
-                    img,
+                  child: SmartImage(
+                    path: img,
                     width: displayW,
                     height: displayH,
                     fit: BoxFit.cover,
@@ -98,11 +99,12 @@ class ProjectCard extends ConsumerWidget {
                 ))
             .toList(),
       );
-    } else if (project.image != null && project.image!.isNotEmpty) {
+    } else if (project.cleanedImages != null &&
+        project.cleanedImages!.isNotEmpty) {
       return ClipRRect(
         borderRadius: BorderRadius.circular(12),
-        child: Image.asset(
-          project.image!.first,
+        child: SmartImage(
+          path: project.cleanedImages!.first,
           width: displayW,
           height: displayH,
           fit: BoxFit.cover,
@@ -163,8 +165,8 @@ class ProjectCard extends ConsumerWidget {
                   ),
                 ),
               )
-            else if (project.image != null &&
-                project.image!.isNotEmpty) // 🖼 Image
+            else if (project.cleanedImages != null &&
+                project.cleanedImages!.isNotEmpty) // 🖼 Image
               Padding(
                 padding: const EdgeInsets.only(bottom: 16.0),
                 child: ClipRRect(
@@ -174,8 +176,8 @@ class ProjectCard extends ConsumerWidget {
                       maxWidth: info.size.width * 0.8,
                       maxHeight: info.size.height * 0.4,
                     ),
-                    child: Image.asset(
-                      project.image!.first,
+                    child: SmartImage(
+                      path: project.cleanedImages!.first,
                       fit: BoxFit.contain,
                     ),
                   ),

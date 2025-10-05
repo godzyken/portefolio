@@ -51,9 +51,9 @@ class PdfExportService {
     for (final project in projects) {
       pw.MemoryImage? bgImage;
 
-      if (project.image != null && project.image!.isNotEmpty) {
+      if (project.cleanedImages != null && project.cleanedImages!.isNotEmpty) {
         try {
-          final data = await rootBundle.load(project.image!.first);
+          final data = await rootBundle.load(project.cleanedImages!.first);
           final bytes = data.buffer.asUint8List();
           bgImage = pw.MemoryImage(bytes);
         } catch (e) {
