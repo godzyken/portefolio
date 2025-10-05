@@ -247,7 +247,7 @@ Future<void> loadCustomFont(String assetPath, String family) async {
   await fontLoader.load();
 }
 
-/// Liste globale des images (tu l’alimentes depuis projets, expériences, services)
+/// Liste globale des images
 final appImagesProvider = FutureProvider<List<String>>((ref) async {
   // 1. Charger toutes les images dans assets/images/
   final assetImages = await loadAssetsFromManifest(filter: 'assets/images/');
@@ -298,6 +298,48 @@ final precacheAllAssetsProvider = FutureProvider<void>((ref) async {
     int successCount = 0;
     int errorCount = 0;
 
+    // Séparer les images locales et réseau
+    final localImages = images.where((url) => !url.startsWith('http')).toList();
+    final networkImages =
+        images.where((url) => url.startsWith('http')).toList();
+
+    // Précacher les images locales en priorité (plus rapide)
+    for (final url in localImages) {
+      if (!context.mounted) break;
+
+      try {
+        await precacheImage(AssetImage(url), context);
+        successCount++;
+        debugPrint(
+            '✅ Asset précaché ($successCount/${images.length}): ${url.split('/').last}');
+      } catch (e) {
+        errorCount++;
+        debugPrint(
+            '⚠️ Erreur asset ($errorCount): ${url.split('/').last} → $e');
+      }
+    }
+
+    // Précacher les images réseau avec timeout et retry
+    for (final url in networkImages) {
+      if (!context.mounted) break;
+
+      final success = await _precacheNetworkImageWithRetry(
+        url,
+        context,
+        maxRetries: 2,
+        timeout: const Duration(seconds: 10),
+      );
+
+      if (success) {
+        successCount++;
+        debugPrint(
+            '✅ Network précaché ($successCount/${images.length}): ${Uri.parse(url).host}');
+      } else {
+        errorCount++;
+        debugPrint('⚠️ Échec network ($errorCount): ${Uri.parse(url).host}');
+      }
+    }
+
     for (final url in images) {
       try {
         final imageProvider = url.startsWith('http')
@@ -327,6 +369,44 @@ final precacheAllAssetsProvider = FutureProvider<void>((ref) async {
   }
 });
 
+/// Fonction helper pour précacher une image réseau avec retry et timeout
+Future<bool> _precacheNetworkImageWithRetry(
+  String url,
+  BuildContext context, {
+  int maxRetries = 2,
+  Duration timeout = const Duration(seconds: 10),
+}) async {
+  for (int attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      if (!context.mounted) return false;
+
+      // Créer un completer avec timeout
+      final imageProvider = NetworkImage(url);
+
+      await precacheImage(imageProvider, context).timeout(
+        timeout,
+        onTimeout: () {
+          debugPrint(
+              '⏱️ Timeout pour: $url (tentative ${attempt + 1}/$maxRetries)');
+          throw TimeoutException('Image loading timeout', timeout);
+        },
+      );
+
+      return true; // Succès
+    } catch (e) {
+      if (attempt == maxRetries) {
+        debugPrint('❌ Échec définitif après $maxRetries tentatives: $url');
+        return false;
+      }
+
+      // Attendre avant de réessayer (backoff exponentiel)
+      await Future.delayed(Duration(milliseconds: 500 * (attempt + 1)));
+    }
+  }
+
+  return false;
+}
+
 /// Version alternative qui précache seulement les assets critiques
 final precacheCriticalAssetsProvider = FutureProvider<void>((ref) async {
   final context = ref.read(navigatorKeyProvider).currentContext;
@@ -353,6 +433,99 @@ final precacheCriticalAssetsProvider = FutureProvider<void>((ref) async {
     debugPrint('⚠️ Erreur précache critique: $e');
   }
 });
+
+/// Version optimisée qui précache en parallèle (plus rapide mais plus de charge)
+final precacheAllAssetsParallelProvider = FutureProvider<void>((ref) async {
+  final context = ref.read(navigatorKeyProvider).currentContext;
+  if (context == null) {
+    debugPrint('❌ Context is null, cannot precache');
+    return;
+  }
+
+  try {
+    debugPrint('🎨 Début du précache parallèle des assets...');
+
+    /// 1. Fonts
+    await Future.wait([
+      loadCustomFont(
+        'assets/fonts/Noto_Sans/NotoSans-Italic-VariableFont_wdth-wght.ttf',
+        'NotoSansItalic',
+      ),
+      loadCustomFont(
+        'assets/fonts/Noto_Sans/NotoSans-VariableFont_wdth-wght.ttf',
+        'NotoSans',
+      ),
+    ]);
+    debugPrint('✅ Fonts chargées');
+
+    /// 2. Images
+    final images = await ref.read(appImagesProvider.future);
+    debugPrint('📊 Total d\'images à précacher: ${images.length}');
+
+    // Précacher en parallèle avec limite de concurrence
+    final results = await _precacheImagesInBatches(
+      images,
+      context,
+      batchSize: 5, // 5 images à la fois max
+    );
+
+    final successCount = results.where((r) => r).length;
+    final errorCount = results.where((r) => !r).length;
+
+    debugPrint(
+        '🎉 Précache parallèle terminé: $successCount succès, $errorCount erreurs');
+  } catch (e, stack) {
+    debugPrint('❌ Erreur globale de précache parallèle: $e');
+    debugPrint('Stack: $stack');
+  }
+});
+
+/// Précache les images par lots pour éviter de surcharger le réseau
+Future<List<bool>> _precacheImagesInBatches(
+  List<String> images,
+  BuildContext context, {
+  int batchSize = 5,
+}) async {
+  final results = <bool>[];
+
+  for (int i = 0; i < images.length; i += batchSize) {
+    if (!context.mounted) break;
+
+    final batch = images.skip(i).take(batchSize).toList();
+
+    final batchResults = await Future.wait(
+      batch.map((url) async {
+        try {
+          if (!context.mounted) return false;
+
+          if (url.startsWith('http')) {
+            return await _precacheNetworkImageWithRetry(
+              url,
+              context,
+              maxRetries: 2,
+              timeout: const Duration(seconds: 10),
+            );
+          } else {
+            await precacheImage(AssetImage(url), context);
+            return true;
+          }
+        } catch (e) {
+          debugPrint('⚠️ Erreur batch: ${url.split('/').last} → $e');
+          return false;
+        }
+      }),
+    );
+
+    results.addAll(batchResults);
+
+    // Petit délai entre les lots
+    if (i + batchSize < images.length) {
+      await Future.delayed(const Duration(milliseconds: 100));
+    }
+  }
+
+  return results;
+}
 
 /// 🔹 Provider à utiliser dans l'app
 final globalErrorProvider =

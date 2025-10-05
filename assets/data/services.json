@@ -9,7 +9,7 @@
       "🎨 Design personnalisé selon vos besoins"
     ],
     "icon": "phone",
-    "image": "assets/images/flutter_image.png"
+    "imageUrl": "assets/images/flutter-image.png"
   },
   {
     "title": "Développement Web",
@@ -21,7 +21,7 @@
       "📊 Analytics et suivi des performances"
     ],
     "icon": "web",
-    "image": "assets/images/ui_ux_design_service.png"
+    "imageUrl": "assets/images/ui-ux-design-service.png"
   },
   {
     "title": "Solutions Cloud",
@@ -33,7 +33,7 @@
       "💾 Sauvegarde automatique"
     ],
     "icon": "cloud",
-    "image": "assets/images/api_img.png"
+    "imageUrl": "assets/images/api-img.png"
   },
   {
     "title": "Support & Maintenance",
@@ -45,6 +45,6 @@
       "📊 Rapports de performance"
     ],
     "icon": "design",
-    "image": "assets/images/technical_support_maintenance.png"
+    "imageUrl": "assets/images/technical-support-maintenance.png"
   }
 ]

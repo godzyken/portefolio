@@ -131,7 +131,11 @@ class MyFullApp extends ConsumerWidget {
           debugShowCheckedModeBanner: false,
           builder: (context, child) {
             // Ici on wrappe avec le système de précache
-            return PrecacheWrapper(child: child);
+            return PrecacheWrapper(
+              useParallelPrecache: true,
+              maxWaitDuration: Duration(seconds: 20),
+              child: child,
+            );
           },
         );
       },

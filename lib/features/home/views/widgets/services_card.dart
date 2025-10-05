@@ -1,3 +1,5 @@
+// lib/features/home/views/widgets/services_card.dart
+
 import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
@@ -17,9 +19,16 @@ class ServicesCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
 
-    // 🔍 DEBUG: Afficher l'URL de l'image
-    developer.log('🖼️ SERVICE: ${service.title}');
-    developer.log('📍 IMAGE URL: ${service.imageUrl}');
+    // 🔍 DEBUG: Afficher les infos du service
+    developer.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    developer.log('🎴 RENDERING SERVICE CARD');
+    developer.log('📌 Title: ${service.title}');
+    developer.log('🖼️ Image URL: ${service.imageUrl}');
+    developer.log('✨ Cleaned URL: ${service.cleanedImageUrl}');
+    developer.log('✅ Has Valid Image: ${service.hasValidImage}');
+    developer.log('🌐 Is Network: ${service.isNetworkImage}');
+    developer.log('📦 Is Asset: ${service.isAssetImage}');
+    developer.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
     return HoverCard(
       id: service.title,
@@ -28,28 +37,9 @@ class ServicesCard extends ConsumerWidget {
         child: Stack(
           children: [
             // --- Image de fond ---
-            if (service.imageUrl != null && service.imageUrl!.isNotEmpty)
-              Positioned.fill(
-                child: _buildImage(service.imageUrl!, context),
-              )
-            else
-              // Fallback si pas d'image
-              Positioned.fill(
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        theme.colorScheme.primary
-                            .withAlpha((255 * 0.3).toInt()),
-                        theme.colorScheme.secondary
-                            .withAlpha((255 * 0.2).toInt()),
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                  ),
-                ),
-              ),
+            Positioned.fill(
+              child: _buildBackgroundImage(context, theme),
+            ),
 
             // --- Overlay sombre pour meilleure lisibilité ---
             Positioned.fill(
@@ -75,31 +65,7 @@ class ServicesCard extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Icône avec glow effect
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: LinearGradient(
-                        colors: [
-                          theme.colorScheme.primary,
-                          theme.colorScheme.secondary,
-                        ],
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: theme.colorScheme.primary
-                              .withAlpha((255 * 0.5).toInt()),
-                          blurRadius: 20,
-                          spreadRadius: 2,
-                        ),
-                      ],
-                    ),
-                    child: Icon(
-                      service.icon,
-                      size: 32,
-                      color: Colors.white,
-                    ),
-                  ),
+                  _buildIconBadge(theme),
                   const SizedBox(height: 20),
 
                   // Titre
@@ -131,33 +97,7 @@ class ServicesCard extends ConsumerWidget {
                   const SizedBox(height: 16),
 
                   // Features
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: service.features.map((f) {
-                      return Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withAlpha((255 * 0.15).toInt()),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: Colors.white.withAlpha((255 * 0.3).toInt()),
-                          ),
-                        ),
-                        child: Text(
-                          f,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
+                  _buildFeatures(service.features),
                 ],
               ),
             ),
@@ -170,13 +110,205 @@ class ServicesCard extends ConsumerWidget {
         .slideY(begin: 0.2, duration: 500.ms, curve: Curves.easeOutBack);
   }
 
-  // Widget pour gérer à la fois les assets locaux et les URLs réseau
-  Widget _buildImage(String path, BuildContext context) {
+  /// Construit l'image de fond avec gestion d'erreur robuste
+  Widget _buildBackgroundImage(BuildContext context, ThemeData theme) {
+    // Si pas d'image valide, afficher un gradient
+    if (!service.hasValidImage) {
+      developer
+          .log('⚠️ Pas d\'image valide, affichage du gradient de fallback');
+      return _buildFallbackGradient(theme);
+    }
+
+    final imageUrl = service.cleanedImageUrl!;
+    developer.log('🎨 Tentative d\'affichage de l\'image: $imageUrl');
+
+    // Utiliser SmartImage pour gérer automatiquement les assets et le réseau
     return SmartImage(
-      path: path,
+      path: imageUrl,
       fit: BoxFit.cover,
       fallbackIcon: service.icon,
-      fallbackColor: Theme.of(context).colorScheme.primary,
+      fallbackColor: theme.colorScheme.primary,
+      loadingWidget: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(
+              strokeWidth: 2,
+              color: theme.colorScheme.primary,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Chargement...',
+              style: TextStyle(
+                color: Colors.white.withAlpha((255 * 0.7).toInt()),
+                fontSize: 12,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Gradient de fallback quand pas d'image
+  Widget _buildFallbackGradient(ThemeData theme) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            theme.colorScheme.primary.withAlpha((255 * 0.4).toInt()),
+            theme.colorScheme.secondary.withAlpha((255 * 0.3).toInt()),
+            theme.colorScheme.tertiary.withAlpha((255 * 0.2).toInt()),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: Center(
+        child: Icon(
+          service.icon,
+          size: 120,
+          color: Colors.white.withAlpha((255 * 0.15).toInt()),
+        ),
+      ),
+    );
+  }
+
+  /// Badge d'icône avec effet lumineux
+  Widget _buildIconBadge(ThemeData theme) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: LinearGradient(
+          colors: [
+            theme.colorScheme.primary,
+            theme.colorScheme.secondary,
+          ],
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: theme.colorScheme.primary.withAlpha((255 * 0.5).toInt()),
+            blurRadius: 20,
+            spreadRadius: 2,
+          ),
+        ],
+      ),
+      child: Icon(
+        service.icon,
+        size: 32,
+        color: Colors.white,
+      ),
+    );
+  }
+
+  /// Construit la liste des features
+  Widget _buildFeatures(List<String> features) {
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: features.map((feature) {
+        return Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 12,
+            vertical: 6,
+          ),
+          decoration: BoxDecoration(
+            color: Colors.white.withAlpha((255 * 0.15).toInt()),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: Colors.white.withAlpha((255 * 0.3).toInt()),
+            ),
+          ),
+          child: Text(
+            feature,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+}
+
+/// Widget de debug pour tester l'affichage d'une image
+class ServiceImageDebug extends StatelessWidget {
+  final Service service;
+
+  const ServiceImageDebug({super.key, required this.service});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Debug: ${service.title}'),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Infos
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Title: ${service.title}'),
+                    const SizedBox(height: 8),
+                    Text('Original URL: ${service.imageUrl ?? "null"}'),
+                    const SizedBox(height: 8),
+                    Text('Cleaned URL: ${service.cleanedImageUrl ?? "null"}'),
+                    const SizedBox(height: 8),
+                    Text('Has Valid Image: ${service.hasValidImage}'),
+                    const SizedBox(height: 8),
+                    Text('Is Network: ${service.isNetworkImage}'),
+                    const SizedBox(height: 8),
+                    Text('Is Asset: ${service.isAssetImage}'),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Test d'affichage
+            const Text(
+              'Test d\'affichage:',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+
+            if (service.hasValidImage)
+              SizedBox(
+                height: 300,
+                child: SmartImage(
+                  path: service.cleanedImageUrl!,
+                  fit: BoxFit.contain,
+                  fallbackIcon: service.icon,
+                ),
+              )
+            else
+              Container(
+                height: 300,
+                color: Colors.grey.shade300,
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(service.icon, size: 64),
+                      const SizedBox(height: 8),
+                      const Text('Pas d\'image disponible'),
+                    ],
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
     );
   }
 }
