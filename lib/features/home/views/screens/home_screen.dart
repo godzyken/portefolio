@@ -3,75 +3,37 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/features/home/data/services_data.dart';
 
 import '../../../../core/affichage/screen_size_detector.dart';
-import '../../../../core/logging/app_logger.dart';
 import '../../../../core/provider/providers.dart';
 import '../../../home/views/widgets/services_card.dart';
 import '../../../parametres/themes/views/widgets/space_background.dart';
 
-class HomeScreen extends ConsumerStatefulWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
-  ConsumerState<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends ConsumerState<HomeScreen> {
-  @override
-  Widget build(BuildContext context) {
-    final servicesAsync = ref.watch(servicesFutureProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final servicesAsync = ref.watch(servicesProvider);
     final info = ref.watch(responsiveInfoProvider);
     final theme = Theme.of(context);
 
     return SafeArea(
       child: servicesAsync.when(
-        data: (services) {
-          // Wrapper avec fond spatial
-          return SpaceBackground(
-            primaryColor: theme.colorScheme.primary,
-            secondaryColor: theme.colorScheme.secondary,
-            starCount: 150, // Plus d'étoiles pour effet spatial
-            child: info.isPortrait
-                ? _buildPortraitLayout(context, info, services)
-                : _buildLandscapeLayout(context, info, services),
-          );
-        },
-        error: (e, st) {
-          ref.read(loggerProvider("HomeScreen")).log(
-                "Erreur lors du chargement des services",
-                level: LogLevel.error,
-                error: e,
-                stackTrace: st,
-              );
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.error_outline, size: 64, color: Colors.red),
-                const SizedBox(height: 16),
-                Text(
-                  'Erreur de chargement',
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  e.toString(),
-                  style: Theme.of(context).textTheme.bodySmall,
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
-          );
-        },
-        loading: () => Center(
+        data: (services) => SpaceBackground(
+          primaryColor: theme.colorScheme.primary,
+          secondaryColor: theme.colorScheme.secondary,
+          starCount: 150,
+          child: info.isPortrait
+              ? _buildPortraitLayout(context, info, services, theme)
+              : _buildLandscapeLayout(context, info, services, theme),
+        ),
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, st) => Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const CircularProgressIndicator(),
+              const Icon(Icons.error_outline, size: 64, color: Colors.red),
               const SizedBox(height: 16),
-              Text(
-                "Chargement des services...",
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
+              Text('Erreur: $e'),
             ],
           ),
         ),
@@ -79,137 +41,102 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Container _buildLandscapeLayout(
-      BuildContext context, ResponsiveInfo info, List<Service> services) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Theme.of(context).colorScheme.surface,
-            Theme.of(context).colorScheme.surfaceContainer,
-          ],
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-        ),
-      ),
-      child: Row(
-        children: [
-          // Left panel - Header
-          Flexible(
-            flex: 3,
-            child: Container(
-              padding: const EdgeInsets.all(32),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Theme.of(context)
-                        .colorScheme
-                        .primary
-                        .withAlpha((255 * 0.1).toInt()),
-                    Colors.transparent,
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
-              child: _buildHeader(context, info, isPortrait: false),
+  Widget _buildPortraitLayout(
+    BuildContext context,
+    ResponsiveInfo info,
+    List<Service> services,
+    ThemeData theme,
+  ) {
+    return Column(
+      children: [
+        const SizedBox(height: 32),
+        _buildHeader(context, info, theme, isPortrait: true),
+        const SizedBox(height: 24),
+        Expanded(
+          child: PageView.builder(
+            controller: PageController(viewportFraction: 0.88),
+            itemCount: services.length,
+            itemBuilder: (_, index) => Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: ServicesCard(service: services[index]),
             ),
           ),
-          // Right panel - Services
-          Flexible(
-            flex: 7,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Text(
-                    "Mes Services",
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+        ),
+        const SizedBox(height: 16),
+        _buildPaginationDots(services.length, theme),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
+  Widget _buildLandscapeLayout(
+    BuildContext context,
+    ResponsiveInfo info,
+    List<Service> services,
+    ThemeData theme,
+  ) {
+    return Row(
+      children: [
+        Flexible(
+          flex: 3,
+          child: Padding(
+            padding: const EdgeInsets.all(32),
+            child: _buildHeader(context, info, theme, isPortrait: false),
+          ),
+        ),
+        Flexible(
+          flex: 7,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(24),
+                child: Text(
+                  "Mes Services",
+                  style: theme.textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                Expanded(
-                  child: PageView.builder(
-                    scrollDirection: Axis.vertical,
-                    controller: PageController(viewportFraction: 0.88),
-                    itemCount: services.length,
-                    itemBuilder: (_, index) => Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 8,
-                      ),
-                      child: ServicesCard(service: services[index]),
+              ),
+              Expanded(
+                child: PageView.builder(
+                  scrollDirection: Axis.vertical,
+                  controller: PageController(viewportFraction: 0.88),
+                  itemCount: services.length,
+                  itemBuilder: (_, index) => Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 8,
                     ),
+                    child: ServicesCard(service: services[index]),
                   ),
                 ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Container _buildPortraitLayout(
-      BuildContext context, ResponsiveInfo info, List<Service> services) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Theme.of(context).colorScheme.surface,
-            Theme.of(context).colorScheme.surfaceContainer,
-          ],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
-      ),
-      child: Column(
-        children: [
-          const SizedBox(height: 32),
-          // Header section
-          _buildHeader(context, info, isPortrait: true),
-          const SizedBox(height: 24),
-          // Services carousel
-          Expanded(
-            child: PageView.builder(
-              scrollDirection: Axis.horizontal,
-              controller: PageController(viewportFraction: 0.88),
-              itemCount: services.length,
-              itemBuilder: (_, index) => Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: ServicesCard(service: services[index]),
               ),
-            ),
+            ],
           ),
-          const SizedBox(height: 16),
-          // Pagination dots
-          _buildPaginationDots(services.length),
-          const SizedBox(height: 16),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
-  Widget _buildHeader(BuildContext context, ResponsiveInfo info,
-      {required bool isPortrait}) {
+  Widget _buildHeader(
+    BuildContext context,
+    ResponsiveInfo info,
+    ThemeData theme, {
+    required bool isPortrait,
+  }) {
     return Column(
       mainAxisAlignment:
           isPortrait ? MainAxisAlignment.start : MainAxisAlignment.center,
       crossAxisAlignment:
           isPortrait ? CrossAxisAlignment.center : CrossAxisAlignment.start,
       children: [
-        // Logo avec effet de glow
         Container(
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: Theme.of(context)
-                    .colorScheme
-                    .primary
-                    .withAlpha((255 * 0.3).toInt()),
+                color: theme.colorScheme.primary.withAlpha((255 * 0.3).toInt()),
                 blurRadius: 30,
                 spreadRadius: 5,
               ),
@@ -227,29 +154,27 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         ),
         const SizedBox(height: 24),
-        // Nom
         Text(
           'Godzyken',
-          style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-                letterSpacing: 2,
-              ),
+          style: theme.textTheme.headlineLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+            letterSpacing: 2,
+          ),
           textAlign: isPortrait ? TextAlign.center : TextAlign.left,
         ),
         const SizedBox(height: 8),
-        // Sous-titre
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primaryContainer,
+            color: theme.colorScheme.primaryContainer,
             borderRadius: BorderRadius.circular(20),
           ),
           child: Text(
             "Développement Mobile & Web",
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Theme.of(context).colorScheme.onPrimaryContainer,
-                  fontWeight: FontWeight.w500,
-                ),
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: theme.colorScheme.onPrimaryContainer,
+              fontWeight: FontWeight.w500,
+            ),
             textAlign: isPortrait ? TextAlign.center : TextAlign.left,
           ),
         ),
@@ -271,7 +196,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget _buildPaginationDots(int count) {
+  Widget _buildPaginationDots(int count, ThemeData theme) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(
@@ -282,10 +207,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           height: 8,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: Theme.of(context)
-                .colorScheme
-                .primary
-                .withAlpha((255 * 0.3).toInt()),
+            color: theme.colorScheme.primary.withAlpha((255 * 0.3).toInt()),
           ),
         ),
       ),

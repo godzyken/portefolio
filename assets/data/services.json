@@ -1,5 +1,6 @@
 [
   {
+    "id": "mobile-dev",
     "title": "Développement Mobile",
     "description": "Applications Flutter cross-platform pour iOS et Android avec des performances natives",
     "features": [
@@ -9,9 +10,12 @@
       "🎨 Design personnalisé selon vos besoins"
     ],
     "icon": "phone",
-    "imageUrl": "assets/images/flutter-image.png"
+    "imageUrl": "assets/images/flutter-image.png",
+    "category": "mobile",
+    "priority": 1
   },
   {
+    "id": "web-dev",
     "title": "Développement Web",
     "description": "Sites web et applications web modernes avec les dernières technologies",
     "features": [
@@ -21,9 +25,12 @@
       "📊 Analytics et suivi des performances"
     ],
     "icon": "web",
-    "imageUrl": "assets/images/ui-ux-design-service.png"
+    "imageUrl": "assets/images/ui-ux-design-service.png",
+    "category": "web",
+    "priority": 2
   },
   {
+    "id": "cloud-solutions",
     "title": "Solutions Cloud",
     "description": "Déploiement et hébergement d'applications dans le cloud",
     "features": [
@@ -33,9 +40,12 @@
       "💾 Sauvegarde automatique"
     ],
     "icon": "cloud",
-    "imageUrl": "assets/images/api-img.png"
+    "imageUrl": "assets/images/api-img.png",
+    "category": "cloud",
+    "priority": 3
   },
   {
+    "id": "support-maintenance",
     "title": "Support & Maintenance",
     "description": "Support technique et maintenance continue de vos applications",
     "features": [
@@ -45,6 +55,8 @@
       "📊 Rapports de performance"
     ],
     "icon": "design",
-    "imageUrl": "assets/images/technical-support-maintenance.png"
+    "imageUrl": "assets/images/technical-support-maintenance.png",
+    "category": "support",
+    "priority": 4
   }
 ]

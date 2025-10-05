@@ -1,107 +1,38 @@
-// lib/features/home/views/widgets/services_card.dart
-
-import 'dart:developer' as developer;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/features/generator/data/extention_models.dart';
 import 'package:portefolio/features/generator/views/widgets/hover_card.dart';
 
+import '../../../../core/affichage/screen_size_detector.dart';
 import '../../../parametres/views/widgets/smart_image.dart';
 
 class ServicesCard extends ConsumerWidget {
   final Service service;
+  final VoidCallback? onTap;
 
-  const ServicesCard({super.key, required this.service});
+  const ServicesCard({
+    super.key,
+    required this.service,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final info = ref.watch(responsiveInfoProvider);
 
-    // 🔍 DEBUG: Afficher les infos du service
-    developer.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    developer.log('🎴 RENDERING SERVICE CARD');
-    developer.log('📌 Title: ${service.title}');
-    developer.log('🖼️ Image URL: ${service.imageUrl}');
-    developer.log('✨ Cleaned URL: ${service.cleanedImageUrl}');
-    developer.log('✅ Has Valid Image: ${service.hasValidImage}');
-    developer.log('🌐 Is Network: ${service.isNetworkImage}');
-    developer.log('📦 Is Asset: ${service.isAssetImage}');
-    developer.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-
-    return HoverCard(
-      id: service.title,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: Stack(
-          children: [
-            // --- Image de fond ---
-            Positioned.fill(
-              child: _buildBackgroundImage(context, theme),
-            ),
-
-            // --- Overlay sombre pour meilleure lisibilité ---
-            Positioned.fill(
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Colors.black.withAlpha((255 * 0.75).toInt()),
-                      Colors.black.withAlpha((255 * 0.45).toInt()),
-                    ],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                  ),
-                ),
-              ),
-            ),
-
-            // --- Contenu ---
-            Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Icône avec glow effect
-                  _buildIconBadge(theme),
-                  const SizedBox(height: 20),
-
-                  // Titre
-                  Text(
-                    service.title,
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-
-                  const SizedBox(height: 12),
-
-                  // Description
-                  SizedBox(
-                    height: 70,
-                    child: SingleChildScrollView(
-                      child: Text(
-                        service.description,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: Colors.white.withAlpha((255 * 0.9).toInt()),
-                          height: 1.5,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  // Features
-                  _buildFeatures(service.features),
-                ],
-              ),
-            ),
-          ],
+    return GestureDetector(
+      onTap: onTap,
+      child: HoverCard(
+        id: service.id,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(_getBorderRadius(info)),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return _buildCardContent(context, theme, info, constraints);
+            },
+          ),
         ),
       ),
     )
@@ -110,47 +41,139 @@ class ServicesCard extends ConsumerWidget {
         .slideY(begin: 0.2, duration: 500.ms, curve: Curves.easeOutBack);
   }
 
-  /// Construit l'image de fond avec gestion d'erreur robuste
-  Widget _buildBackgroundImage(BuildContext context, ThemeData theme) {
-    // Si pas d'image valide, afficher un gradient
+  Widget _buildCardContent(
+    BuildContext context,
+    ThemeData theme,
+    ResponsiveInfo info,
+    BoxConstraints constraints,
+  ) {
+    // Layout vertical pour mobile/portrait
+    if (info.isMobile || info.isWatch || info.isPortrait) {
+      return _buildVerticalLayout(theme, info, constraints);
+    }
+
+    // Layout horizontal pour desktop/landscape
+    return _buildHorizontalLayout(theme, info, constraints);
+  }
+
+  Widget _buildVerticalLayout(
+    ThemeData theme,
+    ResponsiveInfo info,
+    BoxConstraints constraints,
+  ) {
+    final imageHeight = constraints.maxHeight * 0.5;
+    final contentHeight = constraints.maxHeight * 0.5;
+
+    return Column(
+      children: [
+        SizedBox(
+          height: imageHeight,
+          width: double.infinity,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              _buildBackgroundImage(theme),
+              _buildOverlay(),
+            ],
+          ),
+        ),
+        Container(
+          height: contentHeight,
+          padding: EdgeInsets.all(_getPadding(info)),
+          child: _buildContent(theme, info, compact: true),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildHorizontalLayout(
+    ThemeData theme,
+    ResponsiveInfo info,
+    BoxConstraints constraints,
+  ) {
+    return Stack(
+      children: [
+        Positioned.fill(child: _buildBackgroundImage(theme)),
+        Positioned.fill(child: _buildOverlay()),
+        Positioned.fill(
+          child: Padding(
+            padding: EdgeInsets.all(_getPadding(info)),
+            child: _buildContent(theme, info, compact: false),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildContent(ThemeData theme, ResponsiveInfo info,
+      {required bool compact}) {
+    return Column(
+      mainAxisAlignment:
+          compact ? MainAxisAlignment.start : MainAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildIconBadge(theme, info),
+        SizedBox(height: _getSpacing(info, small: 12, medium: 16, large: 20)),
+        Text(
+          service.title,
+          style: theme.textTheme.headlineSmall?.copyWith(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 0.5,
+            fontSize: _getFontSize(info, small: 18, medium: 22, large: 26),
+          ),
+          maxLines: compact ? 1 : 2,
+          overflow: TextOverflow.ellipsis,
+        ),
+        SizedBox(height: _getSpacing(info, small: 8, medium: 10, large: 12)),
+        Flexible(
+          child: SingleChildScrollView(
+            child: Text(
+              service.description,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: Colors.white.withAlpha((255 * 0.9).toInt()),
+                height: 1.5,
+                fontSize: _getFontSize(info, small: 12, medium: 14, large: 16),
+              ),
+              maxLines: compact ? 3 : null,
+              overflow: compact ? TextOverflow.ellipsis : null,
+            ),
+          ),
+        ),
+        SizedBox(height: _getSpacing(info, small: 12, medium: 14, large: 16)),
+        _buildFeatures(info, compact: compact),
+      ],
+    );
+  }
+
+  Widget _buildBackgroundImage(ThemeData theme) {
     if (!service.hasValidImage) {
-      developer
-          .log('⚠️ Pas d\'image valide, affichage du gradient de fallback');
       return _buildFallbackGradient(theme);
     }
 
-    final imageUrl = service.cleanedImageUrl!;
-    developer.log('🎨 Tentative d\'affichage de l\'image: $imageUrl');
-
-    // Utiliser SmartImage pour gérer automatiquement les assets et le réseau
     return SmartImage(
-      path: imageUrl,
+      path: service.cleanedImageUrl!,
       fit: BoxFit.cover,
       fallbackIcon: service.icon,
       fallbackColor: theme.colorScheme.primary,
-      loadingWidget: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircularProgressIndicator(
-              strokeWidth: 2,
-              color: theme.colorScheme.primary,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Chargement...',
-              style: TextStyle(
-                color: Colors.white.withAlpha((255 * 0.7).toInt()),
-                fontSize: 12,
-              ),
-            ),
+    );
+  }
+
+  Widget _buildOverlay() {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Colors.black.withAlpha((255 * 0.75).toInt()),
+            Colors.black.withAlpha((255 * 0.45).toInt()),
           ],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
         ),
       ),
     );
   }
 
-  /// Gradient de fallback quand pas d'image
   Widget _buildFallbackGradient(ThemeData theme) {
     return Container(
       decoration: BoxDecoration(
@@ -158,7 +181,6 @@ class ServicesCard extends ConsumerWidget {
           colors: [
             theme.colorScheme.primary.withAlpha((255 * 0.4).toInt()),
             theme.colorScheme.secondary.withAlpha((255 * 0.3).toInt()),
-            theme.colorScheme.tertiary.withAlpha((255 * 0.2).toInt()),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -174,10 +196,11 @@ class ServicesCard extends ConsumerWidget {
     );
   }
 
-  /// Badge d'icône avec effet lumineux
-  Widget _buildIconBadge(ThemeData theme) {
+  Widget _buildIconBadge(ThemeData theme, ResponsiveInfo info) {
+    final size = _getIconSize(info);
+
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(size * 0.4),
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         gradient: LinearGradient(
@@ -194,24 +217,22 @@ class ServicesCard extends ConsumerWidget {
           ),
         ],
       ),
-      child: Icon(
-        service.icon,
-        size: 32,
-        color: Colors.white,
-      ),
+      child: Icon(service.icon, size: size, color: Colors.white),
     );
   }
 
-  /// Construit la liste des features
-  Widget _buildFeatures(List<String> features) {
+  Widget _buildFeatures(ResponsiveInfo info, {required bool compact}) {
+    final maxFeatures = compact ? 3 : service.features.length;
+    final displayFeatures = service.features.take(maxFeatures).toList();
+
     return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: features.map((feature) {
+      spacing: _getSpacing(info, small: 6, medium: 8, large: 10),
+      runSpacing: _getSpacing(info, small: 6, medium: 8, large: 10),
+      children: displayFeatures.map((feature) {
         return Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 12,
-            vertical: 6,
+          padding: EdgeInsets.symmetric(
+            horizontal: _getPadding(info) * 0.6,
+            vertical: _getPadding(info) * 0.3,
           ),
           decoration: BoxDecoration(
             color: Colors.white.withAlpha((255 * 0.15).toInt()),
@@ -222,9 +243,9 @@ class ServicesCard extends ConsumerWidget {
           ),
           child: Text(
             feature,
-            style: const TextStyle(
+            style: TextStyle(
               color: Colors.white,
-              fontSize: 12,
+              fontSize: _getFontSize(info, small: 10, medium: 11, large: 12),
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -232,9 +253,59 @@ class ServicesCard extends ConsumerWidget {
       }).toList(),
     );
   }
+
+  // Helpers
+  double _getBorderRadius(ResponsiveInfo info) => info.isWatch
+      ? 12
+      : info.isMobile
+          ? 16
+          : info.isTablet
+              ? 20
+              : 24;
+
+  double _getPadding(ResponsiveInfo info) => info.isWatch
+      ? 12
+      : info.isMobile
+          ? 16
+          : info.isTablet
+              ? 20
+              : 24;
+
+  double _getSpacing(
+    ResponsiveInfo info, {
+    required double small,
+    required double medium,
+    required double large,
+  }) =>
+      info.isWatch || info.isMobile
+          ? small
+          : info.isTablet
+              ? medium
+              : large;
+
+  double _getFontSize(
+    ResponsiveInfo info, {
+    required double small,
+    required double medium,
+    required double large,
+  }) =>
+      info.isWatch || info.isMobile
+          ? small
+          : info.isTablet
+              ? medium
+              : large;
+
+  double _getIconSize(ResponsiveInfo info) => info.isWatch
+      ? 20
+      : info.isMobile
+          ? 24
+          : info.isTablet
+              ? 28
+              : 32;
 }
 
 /// Widget de debug pour tester l'affichage d'une image
+/*
 class ServiceImageDebug extends StatelessWidget {
   final Service service;
 
@@ -312,3 +383,4 @@ class ServiceImageDebug extends StatelessWidget {
     );
   }
 }
+*/

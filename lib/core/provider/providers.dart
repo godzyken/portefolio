@@ -125,10 +125,87 @@ final filterExperiencesProvider = Provider<List<Experience>>((ref) {
 });
 
 // List des Services proposer
-final servicesFutureProvider = FutureProvider<List<Service>>((ref) async {
-  final jsonStr = await ui.rootBundle.loadString('assets/data/services.json');
-  final List jsonList = jsonDecode(jsonStr);
-  return jsonList.map((json) => Service.fromJson(json)).toList();
+final servicesProvider = FutureProvider<List<Service>>((ref) async {
+  try {
+    debugPrint('📦 Chargement des services...');
+
+    final jsonStr = await ui.rootBundle.loadString('assets/data/services.json');
+    final List jsonList = jsonDecode(jsonStr);
+
+    final services = jsonList
+        .map((json) {
+          try {
+            return Service.fromJson(json);
+          } catch (e) {
+            debugPrint('⚠️ Erreur parsing service: $e');
+            return null;
+          }
+        })
+        .whereType<Service>()
+        .toList();
+
+    if (services.isEmpty) {
+      debugPrint('⚠️ JSON vide, utilisation des services par défaut');
+      return defaultServices;
+    }
+
+    // Trier par priorité
+    services.sort((a, b) => a.priority.compareTo(b.priority));
+
+    debugPrint('✅ ${services.length} services chargés');
+    return services;
+  } catch (e, stack) {
+    debugPrint('❌ Erreur chargement services: $e');
+    debugPrint('Stack: $stack');
+    return defaultServices;
+  }
+});
+
+/// Provider pour filtrer les services par catégorie
+final servicesFilterProvider =
+    NotifierProvider<ServiceFilterNotifier, ServiceCategory?>(
+  ServiceFilterNotifier.new,
+);
+
+/// Provider pour les services sélectionnés
+final selectedServicesProvider =
+    NotifierProvider<SelectedServicesNotifier, List<Service>>(
+  SelectedServicesNotifier.new,
+);
+
+/// Provider des services filtrés
+final filteredServicesProvider = Provider<List<Service>>((ref) {
+  final services = ref.watch(servicesProvider).asData?.value ?? [];
+  final filter = ref.watch(servicesFilterProvider);
+
+  if (filter == null) return services;
+
+  return services.where((s) => s.category == filter).toList();
+});
+
+/// Provider pour obtenir un service par ID
+final serviceByIdProvider = Provider.family<Service?, String>((ref, id) {
+  final services = ref.watch(servicesProvider).asData?.value ?? [];
+  try {
+    return services.firstWhere((s) => s.id == id);
+  } catch (_) {
+    return null;
+  }
+});
+
+/// Provider pour obtenir les catégories disponibles
+final availableCategoriesProvider = Provider<List<ServiceCategory>>((ref) {
+  final services = ref.watch(servicesProvider).asData?.value ?? [];
+  final categories = services.map((s) => s.category).toSet().toList();
+  categories.sort((a, b) => a.displayName.compareTo(b.displayName));
+  return categories;
+});
+
+/// Provider pour compter les services par catégorie
+final serviceCountByCategoryProvider =
+    Provider.family<int, ServiceCategory>((ref, category) {
+  final services = ref.watch(servicesProvider).asData?.value ?? [];
+  return services.where((s) => s.category == category).length;
 });
 
 // Liste des projets

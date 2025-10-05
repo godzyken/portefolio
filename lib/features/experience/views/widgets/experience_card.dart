@@ -141,8 +141,10 @@ class _ExperienceDetails extends ConsumerWidget {
         if (experience.poste.isNotEmpty)
           Positioned(
             right: -150, // marge à Droite
-            bottom: 18,
-            child: _BulletString(message: experience.poste),
+            bottom: 28,
+            child: SizedBox(
+              child: _BulletString(message: experience.poste),
+            ),
           ),
       ],
     );
