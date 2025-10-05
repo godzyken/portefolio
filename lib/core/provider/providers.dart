@@ -42,9 +42,8 @@ final currentLocationProvider =
         CurrentLocationNotifier.new);
 
 /// Notifie quand on veut forcer un refresh
-final routerNotifierProvider = Provider<ValueNotifier<void>>((ref) {
-  return ValueNotifier(null);
-});
+final routerNotifierProvider =
+    NotifierProvider<RouterNotifier, String>(RouterNotifier.new);
 
 /// Stream qui émet la location courante
 final routeLocationStreamProvider = StreamProvider<String>((ref) {

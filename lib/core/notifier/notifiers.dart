@@ -8,6 +8,7 @@ import '../../features/generator/data/location_data.dart';
 import '../../features/generator/services/location_service.dart';
 import '../../features/home/data/services_data.dart';
 import '../../features/projets/data/project_data.dart';
+import '../animations/page_transitions.dart';
 import '../exeptions/state/global_error_state.dart';
 import '../provider/providers.dart';
 
@@ -255,4 +256,46 @@ class UserLocationNotifier extends StreamNotifier<LocationData> {
 
     yield* locationService.getLocationStream();
   }
+}
+
+/// RouterNotifier gère la route précédente et la direction pour les transitions cube
+class RouterNotifier extends Notifier<String> {
+  late String _previousRoute;
+  late CubeDirection _direction;
+
+  final _listeners = <VoidCallback>[];
+
+  @override
+  String build() {
+    _previousRoute = '/';
+    _direction = CubeDirection.right;
+    return _previousRoute;
+  }
+
+  CubeDirection get direction => _direction;
+
+  /// Appelle à chaque navigation pour mettre à jour la direction
+  void update(String newRoute) {
+    final pages = ['/', '/experiences', '/projects', '/contact'];
+    final oldIndex = pages.indexOf(_previousRoute);
+    final newIndex = pages.indexOf(newRoute);
+
+    if (newIndex > oldIndex) {
+      _direction = CubeDirection.right;
+    } else if (newIndex < oldIndex) {
+      _direction = CubeDirection.left;
+    }
+
+    _previousRoute = newRoute;
+    state = _previousRoute; // notifie les listeners
+
+    // Notifie les listeners pour GoRouter
+    for (final listener in _listeners) {
+      listener();
+    }
+  }
+
+  /// API pour GoRouter
+  void addListener(VoidCallback listener) => _listeners.add(listener);
+  void removeListener(VoidCallback listener) => _listeners.remove(listener);
 }

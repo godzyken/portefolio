@@ -4,6 +4,7 @@ import 'package:portefolio/features/parametres/themes/theme/theme_data.dart';
 
 import 'core/affichage/navigator_key_provider.dart';
 import 'core/routes/router.dart';
+import 'core/service/bootstrap_service.dart';
 import 'features/generator/views/widgets/responsive_scope.dart';
 import 'features/home/views/screens/splash_screen.dart';
 import 'features/home/views/widgets/precache_wrapper.dart';
@@ -90,12 +91,15 @@ class MyRouterApp extends ConsumerWidget {
 // ÉTAPE 3 : Application complète
 // Version finale avec toutes les fonctionnalités
 // ====================
-void main() {
+Future<void> main() async {
   // Capturer les erreurs Flutter
   FlutterError.onError = (details) {
     debugPrint('Flutter Error: ${details.exceptionAsString()}');
     debugPrint('Stack trace: ${details.stack}');
   };
+
+  // ⚡ Bootstrap avant le runApp
+  final bootstrap = await BootstrapService.initialize();
 
   runApp(
     ProviderScope(
@@ -103,73 +107,85 @@ void main() {
         themeControllerProvider.overrideWith(ThemeController.new),
         navigatorKeyProvider.overrideWithValue(GlobalKey<NavigatorState>()),
       ],
-      child: const ResponsiveScope(child: MyFullApp()),
+      child: ResponsiveScope(
+          child: MyFullApp(
+        bootstrap: bootstrap,
+      )),
     ),
   );
 }
 
 class MyFullApp extends ConsumerWidget {
-  const MyFullApp({super.key});
+  final BootstrapService bootstrap;
+  const MyFullApp({super.key, required this.bootstrap});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeAsync = ref.watch(themeLoaderProvider);
-    final router = ref.watch(goRouterProvider);
+    final routerAsync = ref.watch(goRouterFutureProvider);
     final themeMode = ref.watch(themeControllerProvider);
     final themeData = themeMode.toThemeData();
 
     return themeAsync.when(
       data: (theme) {
-        return MaterialApp.router(
-          title: 'Portfolio',
-          theme: themeData,
-          darkTheme: themeData,
-          themeMode: themeMode.mode == AppThemeMode.dark
-              ? ThemeMode.dark
-              : ThemeMode.light,
-          routerConfig: router,
-          debugShowCheckedModeBanner: false,
-          builder: (context, child) {
-            // Ici on wrappe avec le système de précache
-            return PrecacheWrapper(
-              useParallelPrecache: true,
-              maxWaitDuration: Duration(seconds: 20),
-              child: child,
-            );
-          },
+        return routerAsync.when(
+          data: (router) => MaterialApp.router(
+            title: 'Portfolio',
+            theme: themeData,
+            darkTheme: themeData,
+            themeMode: themeMode.mode == AppThemeMode.dark
+                ? ThemeMode.dark
+                : ThemeMode.light,
+            routerConfig: router,
+            debugShowCheckedModeBanner: false,
+            builder: (context, child) {
+              // Ici on wrappe avec le système de précache
+              return PrecacheWrapper(
+                useParallelPrecache: true,
+                maxWaitDuration: Duration(seconds: 20),
+                child: child,
+              );
+            },
+          ),
+          loading: () => const SplashScreen(),
+          error: (err, stack) => ErrorScreen(err: err, stack: stack),
         );
       },
       loading: () => MaterialApp(
         home: const SplashScreen(),
         debugShowCheckedModeBanner: false,
       ),
-      error: (err, stack) {
-        debugPrint("Erreur de précache: $err");
-        debugPrint("Stack: $stack");
-        return Scaffold(
-          body: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.error, size: 48, color: Colors.red),
-                  const SizedBox(height: 16),
-                  Text(
-                    "Erreur de chargement",
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    err.toString(),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
+      error: (err, stack) => ErrorScreen(err: err, stack: stack),
+    );
+  }
+}
+
+class ErrorScreen extends StatelessWidget {
+  final Object err;
+  final StackTrace? stack;
+  const ErrorScreen({super.key, required this.err, this.stack});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error, size: 48, color: Colors.red),
+              const SizedBox(height: 16),
+              Text(
+                "Erreur de chargement",
+                style: Theme.of(context).textTheme.titleLarge,
               ),
-            ),
+              const SizedBox(height: 8),
+              Text(err.toString(), textAlign: TextAlign.center),
+            ],
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 }
