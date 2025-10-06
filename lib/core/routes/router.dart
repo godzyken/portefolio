@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:portefolio/core/animations/page_transitions.dart';
 
 import '../../features/contact/views/screens/contact_screen.dart';
 import '../../features/experience/views/screens/experiences_screen.dart';
@@ -33,11 +32,6 @@ final goRouterFutureProvider = FutureProvider<GoRouter>((ref) async {
     initialLocation: '/',
     routes: [
       ShellRoute(
-        pageBuilder: (context, state, child) => CustomTransitionPageBuilder(
-            type: TransitionType.cube,
-            direction: notifier.direction,
-            duration: const Duration(milliseconds: 600),
-            child: child),
         builder: (context, state, child) => MainScaffold(child: child),
         routes: [
           GoRoute(

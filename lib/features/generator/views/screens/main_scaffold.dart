@@ -16,22 +16,63 @@ class MainScaffold extends ConsumerWidget {
     final currentTab = AppTab.values[currentIndex];
     final config = currentTab.config(context, ref);
 
+    // ✅ Ajout : garder l’état de chaque page (Home, Projects, Contact)
     return Scaffold(
       appBar: AppBar(
         title: Text(config.title, overflow: TextOverflow.ellipsis),
         actions: config.actions,
       ),
       endDrawer: config.drawer,
-      body: child,
+
+      /// 🔥 On garde chaque page en mémoire, même lors des transitions
+      body: PageStorage(
+        bucket: PageStorageBucket(),
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 600),
+          switchInCurve: Curves.easeInOutCubic,
+          switchOutCurve: Curves.easeInOutCubic,
+          layoutBuilder: (currentChild, previousChildren) {
+            return Stack(
+              alignment: Alignment.center,
+              children: [
+                ...previousChildren,
+                if (currentChild != null) currentChild,
+              ],
+            );
+          },
+          transitionBuilder: (child, animation) {
+            // ✅ Utilisation du cube effect 3D ici
+            final rotate = Tween(begin: 1.0, end: 0.0).animate(animation);
+            return AnimatedBuilder(
+              animation: rotate,
+              builder: (context, widget) {
+                final angle = rotate.value * 3.1416 / 2;
+                final transform = Matrix4.identity()
+                  ..setEntry(3, 2, 0.0015)
+                  ..rotateY(angle);
+                return Transform(
+                  transform: transform,
+                  alignment: Alignment.centerLeft,
+                  child: widget,
+                );
+              },
+              child: child,
+            );
+          },
+          child: KeyedSubtree(
+            key: ValueKey<String>(GoRouterState.of(context).uri.toString()),
+            child: child,
+          ),
+        ),
+      ),
+
       bottomNavigationBar: NavigationBar(
         selectedIndex: currentIndex,
         onDestinationSelected: (index) {
           final tab = AppTab.values[index];
 
-          // Mettre à jour la location courante
+          // Met à jour la route et l’état courant
           ref.read(currentLocationProvider.notifier).setLocation(tab.path);
-
-          // Naviguer vers la route
           context.go(tab.path);
         },
         labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
@@ -46,9 +87,10 @@ class MainScaffold extends ConsumerWidget {
                 boxShadow: isActive
                     ? [
                         BoxShadow(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.primary.withAlpha((255 * 0.6).toInt()),
+                          color: Theme.of(context)
+                              .colorScheme
+                              .primary
+                              .withAlpha((255 * 0.6).toInt()),
                           blurRadius: 16,
                           spreadRadius: 2,
                         ),
