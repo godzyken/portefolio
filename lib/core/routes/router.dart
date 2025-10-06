@@ -37,7 +37,7 @@ final goRouterFutureProvider = FutureProvider<GoRouter>((ref) async {
             type: TransitionType.cube,
             direction: notifier.direction,
             duration: const Duration(milliseconds: 600),
-            child: const ExperiencesScreen()),
+            child: child),
         builder: (context, state, child) => MainScaffold(child: child),
         routes: [
           GoRoute(
