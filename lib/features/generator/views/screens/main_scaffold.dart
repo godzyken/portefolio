@@ -50,10 +50,13 @@ class MainScaffold extends ConsumerWidget {
                 final transform = Matrix4.identity()
                   ..setEntry(3, 2, 0.0015)
                   ..rotateY(angle);
-                return Transform(
-                  transform: transform,
-                  alignment: Alignment.centerLeft,
-                  child: widget,
+                return IgnorePointer(
+                  ignoring: animation.status != AnimationStatus.completed,
+                  child: Transform(
+                    transform: transform,
+                    alignment: Alignment.centerLeft,
+                    child: widget,
+                  ),
                 );
               },
               child: child,
