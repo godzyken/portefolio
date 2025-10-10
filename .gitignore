@@ -56,3 +56,6 @@ assets/.env
 .packages
 pubspec.lock
 **/Secrets.xcconfig
+
+# FVM Version Cache
+.fvm/

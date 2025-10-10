@@ -103,8 +103,9 @@ class _CombinedObserver extends NavigatorObserver {
   String _getPathFromRoute(Route route) {
     if (route.settings.name != null) return route.settings.name!;
     final args = route.settings.arguments;
-    if (args is Map && args.containsKey('location'))
+    if (args is Map && args.containsKey('location')) {
       return args['location'] as String;
+    }
     return route.toString();
   }
 }

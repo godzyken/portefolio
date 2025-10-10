@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -16,11 +19,15 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
+        jvmTarget = "11"
+    }
+
+
+    buildFeatures {
+        buildConfig = true
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.godzy.portefolio"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
@@ -31,7 +38,10 @@ android {
 
         // ─────── Charger local.properties ───────
         val props = Properties().apply {
-            load(rootProject.file("local.properties").inputStream())
+            val localPropsFile = rootProject.file("local.properties")
+            if (localPropsFile.exists()) {
+                load(FileInputStream(localPropsFile))
+            }
         }
 
         buildConfigField(
@@ -66,10 +76,11 @@ android {
 }
 
 dependencies {
-    implementation("androidx.core:core-ktx:1.13.1")
-    // autres deps…
+    implementation("androidx.core:core-ktx:1.17.0")
+    // autres dépendances si besoin
 }
 
+// ───── Flutter ─────
 flutter {
     source = "../.."
 }

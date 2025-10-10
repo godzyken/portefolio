@@ -10,15 +10,14 @@ enum CubeDirection { left, right }
 /// Page avec animation personnalisée (fade, slide ou cube)
 class CustomTransitionPageBuilder extends CustomTransitionPage<void> {
   CustomTransitionPageBuilder({
-    required Widget child,
     Duration duration = const Duration(milliseconds: 300),
     Curve curve = Curves.easeInOut,
     TransitionType type = TransitionType.fade,
     CubeDirection direction = CubeDirection.right,
+    required super.child,
   }) : super(
           transitionDuration: duration,
           reverseTransitionDuration: duration,
-          child: child,
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             switch (type) {
               case TransitionType.cube:
@@ -66,7 +65,6 @@ class CustomTransitionPageBuilder extends CustomTransitionPage<void> {
                 );
 
               case TransitionType.fade:
-              default:
                 return FadeTransition(
                   opacity: CurvedAnimation(parent: animation, curve: curve),
                   child: child,
