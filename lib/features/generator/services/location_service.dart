@@ -50,11 +50,11 @@ class _PlatformLocationService extends LocationService {
 
 /// Wrapper pour le service Web natif
 class _WebLocationServiceWrapper extends LocationService {
-  final _service = WebGeolocationService();
+  final _service = GeolocationService();
 
   @override
   Future<LocationPermissionStatus> checkPermission() async {
-    if (WebGeolocationService.isSupported()) {
+    if (GeolocationService.isSupported()) {
       return LocationPermissionStatus.whileInUse;
     }
     return LocationPermissionStatus.denied;
@@ -85,7 +85,7 @@ class _WebLocationServiceWrapper extends LocationService {
 
   @override
   Future<bool> isLocationEnabled() async {
-    return WebGeolocationService.isSupported();
+    return GeolocationService.isSupported();
   }
 }
 

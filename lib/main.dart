@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:portefolio/features/parametres/themes/theme/theme_data.dart';
 
 import 'core/affichage/navigator_key_provider.dart';
 import 'core/routes/router.dart';
 import 'core/service/bootstrap_service.dart';
-import 'features/generator/views/widgets/responsive_scope.dart';
+import 'features/generator/views/widgets/generator_widgets_extentions.dart';
 import 'features/home/views/screens/splash_screen.dart';
 import 'features/home/views/widgets/precache_wrapper.dart';
 import 'features/parametres/themes/controller/theme_controller.dart';
 import 'features/parametres/themes/provider/theme_repository_provider.dart';
+import 'features/parametres/themes/theme/theme_data.dart';
 
 // ====================
 // ÉTAPE 1 : Test minimal
@@ -42,13 +42,7 @@ class DebugScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Debug Portfolio")),
-      body: const Center(
-        child: Text(
-          "Étape 1 OK ✅\nFlutter fonctionne",
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 18),
-        ),
-      ),
+      body: const SafeArea(child: GeolocationTesterWidget()),
     );
   }
 }*/
