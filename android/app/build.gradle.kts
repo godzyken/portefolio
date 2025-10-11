@@ -14,12 +14,12 @@ android {
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
 
 
@@ -29,10 +29,10 @@ android {
 
     defaultConfig {
         applicationId = "com.godzy.portefolio"
+        minSdk = 25
+        targetSdk = 35
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
 
@@ -59,6 +59,8 @@ android {
             "DEST_MAIL",
             "\"${props["DEST_MAIL"] ?: ""}\""
         )
+        signingConfig = signingConfigs.getByName("debug")
+        proguardFiles(getDefaultProguardFile("proguard-android.txt"))
     }
 
     buildTypes {

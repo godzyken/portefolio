@@ -1,6 +1,6 @@
 #!/bin/sh
 # This is a generated file; do not edit or check into version control.
-export "FLUTTER_ROOT=D:\tools\fvm\versions\3.32.8"
+export "FLUTTER_ROOT=D:\tools\fvm\versions\3.35.2"
 export "FLUTTER_APPLICATION_PATH=D:\gitrepo\projects\portefolio"
 export "COCOAPODS_PARALLEL_CODE_SIGN=true"
 export "FLUTTER_BUILD_DIR=build"

@@ -35,10 +35,11 @@ class WebGeolocationService {
     try {
       web.window.navigator.geolocation.getCurrentPosition(
         (web.GeolocationPosition position) {
+          final coords = position.coords;
           final loc = LocationData(
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-            accuracy: position.coords.accuracy,
+            latitude: (coords.latitude).toDouble(),
+            longitude: (coords.longitude).toDouble(),
+            accuracy: (coords.accuracy).toDouble(),
             timestamp: DateTime.fromMillisecondsSinceEpoch(
               position.timestamp.toInt(),
             ),
@@ -85,10 +86,11 @@ class WebGeolocationService {
       _watchId = web.window.navigator.geolocation.watchPosition(
         (web.GeolocationPosition position) {
           if (_controller != null && !_controller!.isClosed) {
+            final coords = position.coords;
             final loc = LocationData(
-              latitude: position.coords.latitude,
-              longitude: position.coords.longitude,
-              accuracy: position.coords.accuracy,
+              latitude: (coords.latitude).toDouble(),
+              longitude: (coords.longitude).toDouble(),
+              accuracy: (coords.accuracy).toDouble(),
               timestamp: DateTime.fromMillisecondsSinceEpoch(
                 position.timestamp.toInt(),
               ),
