@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:portefolio/features/generator/services/web_geolocation_service.dart';
+import 'package:portefolio/features/generator/services/location_service.dart';
 
 import '../../data/location_data.dart';
 
@@ -14,7 +14,7 @@ class GeolocationTesterWidget extends StatefulWidget {
 }
 
 class _GeolocationTesterWidgetState extends State<GeolocationTesterWidget> {
-  final GeolocationService _geolocationService = GeolocationService();
+  final _geolocationService = LocationService.instance;
   LocationData? _currentPosition;
   String? _error;
   bool _isWatching = false;
@@ -24,12 +24,15 @@ class _GeolocationTesterWidgetState extends State<GeolocationTesterWidget> {
   void initState() {
     super.initState();
     // Vérifier si la géolocalisation est supportée au démarrage
-    if (!GeolocationService.isSupported()) {
-      setState(() {
-        _error =
-            'La géolocalisation n\'est pas supportée sur cette plateforme/navigateur.';
-      });
-    }
+    _geolocationService.isLocationEnabled().then((isEnabled) {
+      if (!isEnabled) {
+        // Cela couvre les cas où le GPS est désactivé ou si c'est un Stub.
+        setState(() {
+          _error =
+              'Le service de localisation est désactivé ou non supporté par la plateforme.';
+        });
+      }
+    });
   }
 
   Future<void> _getCurrentPosition() async {
@@ -38,7 +41,7 @@ class _GeolocationTesterWidgetState extends State<GeolocationTesterWidget> {
       _currentPosition = null;
     });
     try {
-      final position = await _geolocationService.getCurrentPosition();
+      final position = await _geolocationService.getCurrentLocation();
       setState(() {
         _currentPosition = position;
       });
@@ -50,7 +53,7 @@ class _GeolocationTesterWidgetState extends State<GeolocationTesterWidget> {
   }
 
   Future<void> _requestPermission() async {
-    final hasPermission = await _geolocationService.requestPermission();
+    final hasPermission = await _geolocationService.isLocationEnabled();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
@@ -75,7 +78,8 @@ class _GeolocationTesterWidgetState extends State<GeolocationTesterWidget> {
         _error = null;
         _isWatching = true;
       });
-      _positionStreamSubscription = _geolocationService.watchPosition().listen(
+      _positionStreamSubscription =
+          _geolocationService.getLocationStream().listen(
         (position) {
           setState(() {
             _currentPosition = position;

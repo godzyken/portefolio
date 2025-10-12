@@ -1,19 +1,32 @@
-import 'dart:js_interop';
+// Définition de l'interface
+abstract class IAnalyticsService {
+  void pageview(String path);
+  void event(String name, {Map<String, Object?>? params});
+}
 
-@JS('gtag')
-external void gtag(JSAny name, [JSAny? params]);
+// 🛑 IMPORTANT: Déclarez le nom de l'implémentation choisie comme abstraite/générique
+abstract class _AnalyticsServiceImpl implements IAnalyticsService {
+  factory _AnalyticsServiceImpl(String trackingId) =>
+      throw UnimplementedError();
+}
 
-class AnalyticsService {
-  final String trackingId;
+// Classe publique qui fait office de Factory/Router
+class AnalyticsService implements IAnalyticsService {
+  final IAnalyticsService _platformService;
 
-  AnalyticsService(this.trackingId);
-
-  void pageview(String path) {
-    // On passe directement des types Dart simples
-    gtag('page_view'.toJS, ({'page_path': path, 'page_title': path}).toJSBox);
+  factory AnalyticsService(String trackingId) {
+    // 💡 Le compilateur résout cette classe 'AnalyticsServiceImpl'
+    // vers l'implémentation Native ou Web automatiquement.
+    return AnalyticsService._internal(_AnalyticsServiceImpl(trackingId));
   }
 
-  void event(String name, {Map<String, Object?>? params}) {
-    gtag(name.toJS, (params ?? {}).toJSBox);
-  }
+  // Constructeur privé pour encapsulation
+  AnalyticsService._internal(this._platformService);
+
+  @override
+  void pageview(String path) => _platformService.pageview(path);
+
+  @override
+  void event(String name, {Map<String, Object?>? params}) =>
+      _platformService.event(name, params: params);
 }

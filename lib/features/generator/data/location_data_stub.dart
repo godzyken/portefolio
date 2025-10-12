@@ -23,16 +23,16 @@ enum LocationPermission {
   unableToDetermine,
 }
 
-enum LocationAccuracy {
-  lowest,
-  low,
-  medium,
-  high,
-  best,
-  bestForNavigation,
-}
+// enum LocationAccuracy {
+//   lowest,
+//   low,
+//   medium,
+//   high,
+//   best,
+//   bestForNavigation,
+// }
 
-class LocationSettings {
+/*class LocationSettings {
   final LocationAccuracy accuracy;
   final int distanceFilter;
 
@@ -40,9 +40,10 @@ class LocationSettings {
     required this.accuracy,
     required this.distanceFilter,
   });
-}
+}*/
 
 // Classe statique stub
+/*
 class Geolocator {
   static Future<LocationPermission> checkPermission() async {
     return LocationPermission.denied;
@@ -66,3 +67,4 @@ class Geolocator {
     return false;
   }
 }
+*/

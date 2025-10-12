@@ -49,6 +49,7 @@ dependencies:
   url_launcher: ^6.3.2
   cached_network_image: ^3.4.1
   shimmer: ^3.0.0
+  geolocator: ^14.0.2
 
 dev_dependencies:
   flutter_test:
@@ -58,7 +59,7 @@ dev_dependencies:
 
 dependency_overrides:
   # youtube_player_iframe_web: ^3.1.2
-  web: ^1.0.0
+  # web: ^0.5.1
 
 flutter:
   uses-material-design: true
@@ -81,7 +82,7 @@ flutter:
       fonts:
         - asset: assets/fonts/Noto_Sans/NotoSans-Italic-VariableFont_wdth-wght.ttf
 
-# 🔍 COMMANDES DE VÉRIFICATION :
+# 🔍 COMMANDES DE VÉRIFICATION (avec fvm) :
 # flutter pub get
 # flutter pub deps
 # flutter analyze
