@@ -120,36 +120,33 @@ class MyFullApp extends ConsumerWidget {
     final themeMode = ref.watch(themeControllerProvider);
     final themeData = themeMode.toThemeData();
 
-    return themeAsync.when(
-      data: (theme) {
-        return routerAsync.when(
-          data: (router) => MaterialApp.router(
-            title: 'Portfolio',
-            theme: themeData,
-            darkTheme: themeData,
-            themeMode: themeMode.mode == AppThemeMode.dark
-                ? ThemeMode.dark
-                : ThemeMode.light,
-            routerConfig: router,
-            debugShowCheckedModeBanner: false,
-            builder: (context, child) {
-              // Ici on wrappe avec le système de précache
-              return PrecacheWrapper(
-                useParallelPrecache: true,
-                maxWaitDuration: Duration(seconds: 20),
-                child: child,
-              );
-            },
+    return MaterialApp.router(
+      title: 'Portfolio',
+      theme: themeData,
+      darkTheme: themeData,
+      themeMode: themeMode.mode == AppThemeMode.dark
+          ? ThemeMode.dark
+          : ThemeMode.light,
+      debugShowCheckedModeBanner: false,
+      routerConfig: routerAsync.value,
+      builder: (context, child) {
+        Widget content = themeAsync.when(
+          data: (_) => routerAsync.when(
+            data: (_) => child!,
+            loading: () => const SplashScreen(),
+            error: (err, stack) => ErrorScreen(err: err, stack: stack),
           ),
-          loading: () => const SplashScreen(),
-          error: (err, stack) => ErrorScreen(err: err, stack: stack),
+          loading: () => const SplashScreen(), // Chargement du thème
+          error: (err, stack) => ErrorScreen(
+              err: err, stack: stack), // Erreur de chargement du thème
+        );
+
+        return PrecacheWrapper(
+          useParallelPrecache: true,
+          maxWaitDuration: const Duration(seconds: 20),
+          child: content,
         );
       },
-      loading: () => MaterialApp(
-        home: const SplashScreen(),
-        debugShowCheckedModeBanner: false,
-      ),
-      error: (err, stack) => ErrorScreen(err: err, stack: stack),
     );
   }
 }

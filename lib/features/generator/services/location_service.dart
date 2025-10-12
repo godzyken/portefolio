@@ -119,10 +119,11 @@ class _MobileLocationService extends LocationService {
       if (!await Geolocator.isLocationServiceEnabled()) {
         developer.log('GPS désactivé, position simulée renvoyée');
         return LocationData(
-            latitude: 0,
-            longitude: 0,
-            accuracy: 9999,
-            timestamp: DateTime.now());
+          latitude: 0,
+          longitude: 0,
+          accuracy: 9999,
+          timestamp: DateTime.now(),
+        );
       }
       final pos = await Geolocator.getCurrentPosition();
       return _toLocationData(pos);
@@ -139,12 +140,14 @@ class _MobileLocationService extends LocationService {
         accuracy: LocationAccuracy.high,
         distanceFilter: 10,
       ),
-    ).map((pos) => LocationData(
-          latitude: pos.latitude,
-          longitude: pos.longitude,
-          accuracy: pos.accuracy,
-          timestamp: pos.timestamp ?? DateTime.now(),
-        ));
+    ).map(
+      (pos) => LocationData(
+        latitude: pos.latitude,
+        longitude: pos.longitude,
+        accuracy: pos.accuracy,
+        timestamp: pos.timestamp ?? DateTime.now(),
+      ),
+    );
   }
 
   @override
@@ -160,8 +163,7 @@ class _MobileLocationService extends LocationService {
   LocationPermissionStatus _mapPermission(LocationPermission perm) {
     return switch (perm) {
       LocationPermission.denied ||
-      LocationPermission.deniedForever =>
-        LocationPermissionStatus.denied,
+      LocationPermission.deniedForever => LocationPermissionStatus.denied,
       LocationPermission.whileInUse => LocationPermissionStatus.whileInUse,
       LocationPermission.always => LocationPermissionStatus.always,
       LocationPermission.unableToDetermine =>
@@ -170,11 +172,11 @@ class _MobileLocationService extends LocationService {
   }
 
   LocationData _toLocationData(Position pos) => LocationData(
-        latitude: pos.latitude,
-        longitude: pos.longitude,
-        accuracy: pos.accuracy,
-        timestamp: pos.timestamp ?? DateTime.now(),
-      );
+    latitude: pos.latitude,
+    longitude: pos.longitude,
+    accuracy: pos.accuracy,
+    timestamp: pos.timestamp ?? DateTime.now(),
+  );
 }
 
 /// === Stub fallback (Desktop, autres) ===
