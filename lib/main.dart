@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import 'core/affichage/navigator_key_provider.dart';
 import 'core/routes/router.dart';
@@ -86,6 +87,8 @@ class MyRouterApp extends ConsumerWidget {
 // Version finale avec toutes les fonctionnalités
 // ====================
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
   // Capturer les erreurs Flutter
   FlutterError.onError = (details) {
     debugPrint('Flutter Error: ${details.exceptionAsString()}');
@@ -98,6 +101,7 @@ Future<void> main() async {
   runApp(
     ProviderScope(
       overrides: [
+        sharedPreferencesProvider.overrideWithValue(bootstrap.prefs),
         themeControllerProvider.overrideWith(ThemeController.new),
         navigatorKeyProvider.overrideWithValue(GlobalKey<NavigatorState>()),
       ],
@@ -120,6 +124,19 @@ class MyFullApp extends ConsumerWidget {
     final themeMode = ref.watch(themeControllerProvider);
     final themeData = themeMode.toThemeData();
 
+    final GoRouter? router = routerAsync.value;
+    if (router == null) {
+      // Nous ne pouvons pas utiliser MaterialApp.router si le routeur est null.
+      // Affichons une SplashScreen simple pour éviter le crash.
+      // Nous utilisons ici un MaterialApp/Scaffold de fallback minimaliste.
+      return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: themeData,
+        darkTheme: themeData,
+        home: const SplashScreen(),
+      );
+    }
+
     return MaterialApp.router(
       title: 'Portfolio',
       theme: themeData,
@@ -128,14 +145,10 @@ class MyFullApp extends ConsumerWidget {
           ? ThemeMode.dark
           : ThemeMode.light,
       debugShowCheckedModeBanner: false,
-      routerConfig: routerAsync.value,
+      routerConfig: router,
       builder: (context, child) {
         Widget content = themeAsync.when(
-          data: (_) => routerAsync.when(
-            data: (_) => child!,
-            loading: () => const SplashScreen(),
-            error: (err, stack) => ErrorScreen(err: err, stack: stack),
-          ),
+          data: (_) => child!,
           loading: () => const SplashScreen(), // Chargement du thème
           error: (err, stack) => ErrorScreen(
               err: err, stack: stack), // Erreur de chargement du thème

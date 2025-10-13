@@ -28,22 +28,11 @@ class _PlatformLocationService extends LocationService {
     if (kIsWeb ||
         defaultTargetPlatform == TargetPlatform.iOS ||
         defaultTargetPlatform == TargetPlatform.android) {
-      // Use Geolocator for Web, iOS, and Android
-      // Note: Geolocator supports Web, but requires configuration.
-      // If you want a fixed position fallback for all non-mobile, use the check below.
-
-      // Option 1: Use Geolocator (or its wrapper) for Web/Mobile
-      // return _MobileLocationService();
-
-      // Option 2: Use the existing logic (Simulated for non-web/non-mobile)
-      if (kIsWeb) {
-        // Use Geolocator for Web
-        return _GeolocatorLocationService();
-      }
-      return _SimulatedLocationService(); // Fallback for Mobile/Desktop as per original logic
+      // Use Geolocator for Web
+      return _GeolocatorLocationService();
     }
 
-    // Fallback for Desktop/Other (Stub/Simulated)
+    // 🖥️ Fallback for Desktop/Other (Stub/Simulated)
     return _StubLocationService();
   }
 

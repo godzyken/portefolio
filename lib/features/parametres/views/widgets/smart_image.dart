@@ -96,40 +96,50 @@ class SmartImage extends StatelessWidget {
     final theme = Theme.of(context);
     final color = fallbackColor ?? theme.colorScheme.primary;
 
-    return Container(
-      width: width,
-      height: height,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            color.withAlpha((255 * 0.3).toInt()),
-            color.withAlpha((255 * 0.1).toInt()),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      ),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+    return RepaintBoundary(
+      child: SizedBox(
+        width: width,
+        height: height,
+        child: Stack(
+          alignment: Alignment.center,
           children: [
-            Icon(
-              fallbackIcon ?? Icons.broken_image_outlined,
-              size: (width != null && height != null)
-                  ? (width! < height! ? width! * 0.3 : height! * 0.3)
-                  : 48,
-              color: color.withAlpha((255 * 0.5).toInt()),
-            ),
-            if (width != null && width! > 100)
-              Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: Text(
-                  'Image indisponible',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: color.withAlpha((255 * 0.7).toInt()),
-                  ),
-                ),
+            // Couche 1: Le fond avec sa propre opacité
+            Positioned.fill(
+              child: Container(
+                color: color.withAlpha((255 * 0.1).toInt()),
               ),
+            ),
+            // Couche 2: Le contenu (icône et texte)
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Opacity(
+                    opacity: 0.5,
+                    child: Icon(
+                      fallbackIcon ?? Icons.broken_image_outlined,
+                      size: (width != null && height != null)
+                          ? (width! < height! ? width! * 0.3 : height! * 0.3)
+                          : 48,
+                      color: color, // Couleur opaque
+                    ),
+                  ),
+                  if (width != null && width! > 100)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: Opacity(
+                        opacity: 0.7,
+                        child: Text(
+                          'Image indisponible',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: color, // Couleur opaque
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
