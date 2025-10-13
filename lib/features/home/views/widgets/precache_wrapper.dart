@@ -55,7 +55,7 @@ class _PrecacheWrapperState extends ConsumerState<PrecacheWrapper> {
     // Choisir le bon provider selon la configuration
     final precacheProvider = widget.useParallelPrecache
         ? precacheAllAssetsParallelProvider
-        : precacheAllAssetsProvider;
+        : precacheAllAssetsProvider(context);
 
     final precacheAsync = ref.watch(precacheProvider);
 

@@ -24,11 +24,25 @@ class _PlatformLocationService extends LocationService {
   _PlatformLocationService() : _impl = _createService();
 
   static LocationService _createService() {
-    // Check if we are running on a platform where geolocator is typically used (mobile/web)
+    // 💡 Option de débogage/simulation :
+    // Utilisez un mode simulé si vous avez besoin de tester la logique
+    // de l'application sans dépendre d'une position réelle.
+    const bool isSimulationMode =
+        false; // À remplacer par un ValueNotifier ou un KDebugMode si besoin
+
+    if (isSimulationMode) {
+      return _SimulatedLocationService();
+    }
+
+    // 🎯 Utiliser Geolocator pour toutes les plateformes prises en charge
+    // par Flutter (Web, Android, iOS, Windows, Mac, Linux).
+    // On assume que geolocator gère les cas d'utilisation Web.
     if (kIsWeb ||
         defaultTargetPlatform == TargetPlatform.iOS ||
-        defaultTargetPlatform == TargetPlatform.android) {
-      // Use Geolocator for Web
+        defaultTargetPlatform == TargetPlatform.android ||
+        defaultTargetPlatform == TargetPlatform.linux ||
+        defaultTargetPlatform == TargetPlatform.macOS ||
+        defaultTargetPlatform == TargetPlatform.windows) {
       return _GeolocatorLocationService();
     }
 
@@ -85,15 +99,13 @@ class _GeolocatorLocationService extends LocationService {
     try {
       if (!await Geolocator.isLocationServiceEnabled()) {
         developer.log('GPS désactivé, position simulée renvoyée');
-        return LocationData(
-          latitude: 0,
-          longitude: 0,
-          accuracy: 9999,
-          timestamp: DateTime.now(),
-        );
+        return null;
       }
       final pos = await Geolocator.getCurrentPosition();
       return _toLocationData(pos);
+    } on PermissionDeniedException catch (e) {
+      developer.log('❌ Permission refusée: $e');
+      return null;
     } catch (e) {
       developer.log('❌ Erreur getCurrentLocation: $e');
       return null;
@@ -107,14 +119,7 @@ class _GeolocatorLocationService extends LocationService {
         accuracy: LocationAccuracy.high,
         distanceFilter: 10,
       ),
-    ).map(
-      (pos) => LocationData(
-        latitude: pos.latitude,
-        longitude: pos.longitude,
-        accuracy: pos.accuracy,
-        timestamp: pos.timestamp ?? DateTime.now(),
-      ),
-    );
+    ).map(_toLocationData);
   }
 
   @override

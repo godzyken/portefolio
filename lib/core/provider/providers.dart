@@ -126,7 +126,7 @@ final filterExperiencesProvider = Provider<List<Experience>>((ref) {
 // List des Services proposer
 final servicesProvider = FutureProvider<List<Service>>((ref) async {
   try {
-    debugPrint('📦 Chargement des services...');
+    developer.log('📦 Chargement des services...');
 
     final jsonStr = await ui.rootBundle.loadString('assets/data/services.json');
     final List jsonList = jsonDecode(jsonStr);
@@ -136,7 +136,7 @@ final servicesProvider = FutureProvider<List<Service>>((ref) async {
           try {
             return Service.fromJson(json);
           } catch (e) {
-            debugPrint('⚠️ Erreur parsing service: $e');
+            developer.log('⚠️ Erreur parsing service: $e');
             return null;
           }
         })
@@ -144,18 +144,18 @@ final servicesProvider = FutureProvider<List<Service>>((ref) async {
         .toList();
 
     if (services.isEmpty) {
-      debugPrint('⚠️ JSON vide, utilisation des services par défaut');
+      developer.log('⚠️ JSON vide, utilisation des services par défaut');
       return defaultServices;
     }
 
     // Trier par priorité
     services.sort((a, b) => a.priority.compareTo(b.priority));
 
-    debugPrint('✅ ${services.length} services chargés');
+    developer.log('✅ ${services.length} services chargés');
     return services;
   } catch (e, stack) {
-    debugPrint('❌ Erreur chargement services: $e');
-    debugPrint('Stack: $stack');
+    developer.log('❌ Erreur chargement services: $e');
+    developer.log('Stack: $stack');
     return defaultServices;
   }
 });
@@ -343,105 +343,92 @@ final appImagesProvider = FutureProvider<List<String>>((ref) async {
   return [...assetImages, ...networkImages];
 });
 
-/// Provider qui précache toutes les images de l'app
-final precacheAllAssetsProvider = FutureProvider<void>((ref) async {
-  final context = ref.read(navigatorKeyProvider).currentContext;
-  if (context == null) {
-    debugPrint('❌ Context is null, cannot precache');
-    return;
-  }
+// (Remplacez votre ancien _precacheAllAssetsProvider par celui-ci)
+
+/// Provider qui précache toutes les ressources nécessaires au démarrage de l'app.
+/// Il est conçu pour être appelé depuis l'UI avec un BuildContext valide via `.family`.
+final precacheAllAssetsProvider =
+    FutureProvider.family<void, BuildContext>((ref, context) async {
+  developer.log('✅ Contexte reçu. Démarrage du pré-chargement global...');
 
   try {
-    debugPrint('🎨 Début du précache des assets...');
+    // --- ÉTAPE 1: Chargement en parallèle des données et des polices ---
+    // Ces tâches ne dépendent pas les unes des autres et peuvent être lancées en même temps.
+    developer.log('➡️ [1/3] Chargement des données (JSON) et des polices...');
+    await Future.wait([
+      // Tâches de chargement des données JSON
+      ref.read(projectsFutureProvider.future),
+      ref.read(experiencesFutureProvider.future),
+      ref.read(servicesProvider.future),
 
-    /// 1. Fonts
-    debugPrint('📝 Chargement des fonts...');
-    await loadCustomFont(
-      'assets/fonts/Noto_Sans/NotoSans-Italic-VariableFont_wdth-wght.ttf',
-      'NotoSansItalic',
-    );
-    await loadCustomFont(
-      'assets/fonts/Noto_Sans/NotoSans-VariableFont_wdth-wght.ttf',
-      'NotoSans',
-    );
-    debugPrint('✅ Fonts chargées');
+      // Tâches de chargement des polices
+      loadCustomFont(
+        'assets/fonts/Noto_Sans/NotoSans-Italic-VariableFont_wdth-wght.ttf',
+        'NotoSansItalic',
+      ),
+      loadCustomFont(
+        'assets/fonts/Noto_Sans/NotoSans-VariableFont_wdth-wght.ttf',
+        'NotoSans',
+      ),
+    ]);
+    developer.log('✅ [1/3] Données et polices chargées.');
 
-    /// 2. Images
-    debugPrint('🖼️ Chargement des images...');
+    // --- ÉTAPE 2: Pré-chargement des images ---
+    // Cette étape dépend du contexte et est donc exécutée après.
+    developer.log('➡️ [2/3] Pré-chargement des images...');
     final images = await ref.read(appImagesProvider.future);
-    debugPrint('📊 Total d\'images à précacher: ${images.length}');
+    developer.log('📊 Total d\'images à précacher: ${images.length}');
 
-    int successCount = 0;
-    int errorCount = 0;
-
-    // Séparer les images locales et réseau
     final localImages = images.where((url) => !url.startsWith('http')).toList();
     final networkImages =
         images.where((url) => url.startsWith('http')).toList();
 
-    // Précacher les images locales en priorité (plus rapide)
-    for (final url in localImages) {
-      if (!context.mounted) break;
+    int successCount = 0;
+    int errorCount = 0;
 
+    // Précacher les images locales d'abord (rapide et fiable)
+    for (final url in localImages) {
+      if (!context.mounted)
+        break; // Sécurité : arrêter si le widget est démonté
       try {
         await precacheImage(AssetImage(url), context);
         successCount++;
-        debugPrint(
-            '✅ Asset précaché ($successCount/${images.length}): ${url.split('/').last}');
       } catch (e) {
         errorCount++;
-        debugPrint(
-            '⚠️ Erreur asset ($errorCount): ${url.split('/').last} → $e');
+        developer.log('⚠️ Erreur précache asset: ${url.split('/').last} -> $e');
       }
     }
+    developer.log('🏁 Assets locaux traités.');
 
-    // Précacher les images réseau avec timeout et retry
+    // Ensuite, précacher les images réseau avec la logique de retry et timeout
     for (final url in networkImages) {
-      if (!context.mounted) break;
-
+      if (!context.mounted) break; // Sécurité
       final success = await _precacheNetworkImageWithRetry(
         url,
         context,
         maxRetries: 2,
         timeout: const Duration(seconds: 10),
       );
-
       if (success) {
         successCount++;
-        debugPrint(
-            '✅ Network précaché ($successCount/${images.length}): ${Uri.parse(url).host}');
       } else {
         errorCount++;
-        debugPrint('⚠️ Échec network ($errorCount): ${Uri.parse(url).host}');
       }
     }
+    developer.log('🏁 Images réseau traitées.');
 
-    for (final url in images) {
-      try {
-        final imageProvider = url.startsWith('http')
-            ? NetworkImage(url)
-            : AssetImage(url) as ImageProvider;
-
-        if (context.mounted) {
-          await precacheImage(imageProvider, context);
-          successCount++;
-          debugPrint(
-              '✅ Image précachée ($successCount/${images.length}): ${url.split('/').last}');
-        }
-      } catch (e) {
-        errorCount++;
-        debugPrint(
-            '⚠️ Erreur de précache ($errorCount): ${url.split('/').last} → $e');
-        // Continue même en cas d'erreur
-      }
-    }
-
-    debugPrint(
-        '🎉 Précache terminé: $successCount succès, $errorCount erreurs');
+    // --- ÉTAPE 3: Fin ---
+    developer.log(
+        '🎉 [3/3] Pré-chargement terminé: $successCount succès, $errorCount erreurs sur ${images.length} images.');
   } catch (e, stack) {
-    debugPrint('❌ Erreur globale de précache: $e');
-    debugPrint('Stack: $stack');
-    // On ne throw pas pour ne pas bloquer l'app
+    developer.log(
+      '❌ Erreur critique durant le pré-chargement global: $e',
+      error: e,
+      stackTrace: stack,
+    );
+    // Il est crucial de relancer l'erreur pour que le .when() de l'UI puisse
+    // passer à l'état "error" et afficher l'écran d'erreur.
+    rethrow;
   }
 });
 
@@ -462,7 +449,7 @@ Future<bool> _precacheNetworkImageWithRetry(
       await precacheImage(imageProvider, context).timeout(
         timeout,
         onTimeout: () {
-          debugPrint(
+          developer.log(
               '⏱️ Timeout pour: $url (tentative ${attempt + 1}/$maxRetries)');
           throw TimeoutException('Image loading timeout', timeout);
         },
@@ -471,7 +458,7 @@ Future<bool> _precacheNetworkImageWithRetry(
       return true; // Succès
     } catch (e) {
       if (attempt == maxRetries) {
-        debugPrint('❌ Échec définitif après $maxRetries tentatives: $url');
+        developer.log('❌ Échec définitif après $maxRetries tentatives: $url');
         return false;
       }
 
@@ -488,7 +475,7 @@ final precacheCriticalAssetsProvider = FutureProvider<void>((ref) async {
   final context = ref.read(navigatorKeyProvider).currentContext;
   if (context == null) return;
 
-  debugPrint('🚀 Précache rapide des assets critiques...');
+  developer.log('🚀 Précache rapide des assets critiques...');
 
   try {
     // Seulement le logo et les fonts
@@ -504,24 +491,37 @@ final precacheCriticalAssetsProvider = FutureProvider<void>((ref) async {
       );
     }
 
-    debugPrint('✅ Assets critiques chargés');
+    developer.log('✅ Assets critiques chargés');
   } catch (e) {
-    debugPrint('⚠️ Erreur précache critique: $e');
+    developer.log('⚠️ Erreur précache critique: $e');
   }
 });
 
 /// Version optimisée qui précache en parallèle (plus rapide mais plus de charge)
 final precacheAllAssetsParallelProvider = FutureProvider<void>((ref) async {
+  // On attend un tout petit peu pour laisser le temps à l'UI de s'initialiser
+  await Future.delayed(const Duration(milliseconds: 50));
+
   final context = ref.read(navigatorKeyProvider).currentContext;
   if (context == null) {
-    debugPrint('❌ Context is null, cannot precache');
+    developer.log('❌ Context is null, cannot precache');
     return;
   }
 
   try {
-    debugPrint('🎨 Début du précache parallèle des assets...');
+    developer.log('➡️ [1/4] 🎨 Début du précache parallèle des assets...');
 
-    /// 1. Fonts
+    /// Étape 1 : Chargement des données JSON
+    developer.log('➡️ [2/4] Attente des données (projets, expériences)...');
+    await Future.wait([
+      ref.read(projectsFutureProvider.future),
+      ref.read(experiencesFutureProvider.future),
+      ref.read(servicesProvider.future),
+    ]);
+    developer.log('✅ [2/4] Données chargées.');
+
+    /// Étape 2 : Chargement des polices
+    developer.log('➡️ [3/4] Attente des polices...');
     await Future.wait([
       loadCustomFont(
         'assets/fonts/Noto_Sans/NotoSans-Italic-VariableFont_wdth-wght.ttf',
@@ -532,11 +532,12 @@ final precacheAllAssetsParallelProvider = FutureProvider<void>((ref) async {
         'NotoSans',
       ),
     ]);
-    debugPrint('✅ Fonts chargées');
+    developer.log('✅ [3/4] Polices chargées');
 
-    /// 2. Images
+    /// Étape 3 : Pré-chargement des images
+    developer.log('➡️ [4/4] Attente du pré-chargement des images...');
     final images = await ref.read(appImagesProvider.future);
-    debugPrint('📊 Total d\'images à précacher: ${images.length}');
+    developer.log('📊 Total d\'images à précacher: ${images.length}');
 
     // Précacher en parallèle avec limite de concurrence
     final results = await _precacheImagesInBatches(
@@ -544,15 +545,16 @@ final precacheAllAssetsParallelProvider = FutureProvider<void>((ref) async {
       context,
       batchSize: 5, // 5 images à la fois max
     );
+    developer.log('✅ [4/4] Images pré-chargées.');
 
     final successCount = results.where((r) => r).length;
     final errorCount = results.where((r) => !r).length;
 
-    debugPrint(
+    developer.log(
         '🎉 Précache parallèle terminé: $successCount succès, $errorCount erreurs');
   } catch (e, stack) {
-    debugPrint('❌ Erreur globale de précache parallèle: $e');
-    debugPrint('Stack: $stack');
+    developer.log('❌ Erreur globale de précache parallèle: $e');
+    developer.log('Stack: $stack');
   }
 });
 
@@ -586,7 +588,7 @@ Future<List<bool>> _precacheImagesInBatches(
             return true;
           }
         } catch (e) {
-          debugPrint('⚠️ Erreur batch: ${url.split('/').last} → $e');
+          developer.log('⚠️ Erreur batch: ${url.split('/').last} → $e');
           return false;
         }
       }),

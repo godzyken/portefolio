@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:developer' as developer;
 
-import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../features/parametres/themes/services/theme_repository.dart';
@@ -20,23 +19,8 @@ class BootstrapService {
     final theme = await repo.loadTheme();
 
     // ⚡ Démarrer les gros chargements sans bloquer l'UI
-    unawaited(_warmupAsyncTasks());
+    developer.log('✅ BootstrapService terminé.');
 
     return BootstrapService(theme: theme, prefs: prefs);
-  }
-
-  static Future<void> _warmupAsyncTasks() async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    try {
-      await Future.wait([
-        // Lancement parallèle en tâche de fond
-        rootBundle.loadString('assets/data/projects.json'),
-        rootBundle.loadString('assets/data/experiences.json'),
-        rootBundle.loadString('assets/data/services.json'),
-      ]);
-      developer.log('✅ Bootstrap warmup terminé');
-    } catch (e) {
-      developer.log('⚠️ Warmup async erreur: $e');
-    }
   }
 }

@@ -124,6 +124,7 @@ class MyFullApp extends ConsumerWidget {
     final themeMode = ref.watch(themeControllerProvider);
     final themeData = themeMode.toThemeData();
 
+    // Récupérer le routeur une fois qu'il est prêt
     final GoRouter? router = routerAsync.value;
     if (router == null) {
       // Nous ne pouvons pas utiliser MaterialApp.router si le routeur est null.
@@ -137,6 +138,7 @@ class MyFullApp extends ConsumerWidget {
       );
     }
 
+    // Le routeur est prêt, on peut utiliser MaterialApp.router
     return MaterialApp.router(
       title: 'Portfolio',
       theme: themeData,
