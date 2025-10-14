@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -22,7 +23,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     _controller = AnimationController(
       duration: const Duration(milliseconds: 1500),
       vsync: this,
-    )..repeat(reverse: true);
+    );
 
     _fadeAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
@@ -31,6 +32,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     _scaleAnimation = Tween<double>(begin: 0.95, end: 1.05).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
+
+    // On attend que la première frame soit construite avant de lancer l'animation en boucle.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        // On vérifie que le widget est toujours là
+        _controller.repeat(reverse: true);
+      }
+    });
   }
 
   @override
@@ -116,8 +125,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                 const SizedBox(height: 40),
 
                 // Titre
-                FadeTransition(
-                  opacity: _fadeAnimation,
+                // 3. REFACTO: Remplacement de FadeTransition
+                AnimatedBuilder(
+                  animation: _fadeAnimation,
+                  builder: (context, child) =>
+                      Opacity(opacity: _fadeAnimation.value, child: child),
                   child: const Text(
                     'Godzyken',
                     style: TextStyle(
@@ -132,8 +144,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                 const SizedBox(height: 12),
 
                 // Sous-titre
-                FadeTransition(
-                  opacity: _fadeAnimation,
+                AnimatedBuilder(
+                  animation: _fadeAnimation,
+                  builder: (context, child) =>
+                      Opacity(opacity: _fadeAnimation.value, child: child),
                   child: Text(
                     'Portfolio',
                     style: TextStyle(
@@ -147,17 +161,20 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                 const SizedBox(height: 60),
 
                 // Indicateur de chargement custom
-                AnimatedBuilder(
-                  animation: _controller,
-                  builder: (context, child) {
-                    return CustomPaint(
-                      size: const Size(60, 60),
-                      painter: _LoadingPainter(
-                        progress: _controller.value,
-                        color: const Color(0xFF00D9FF),
-                      ),
-                    );
-                  },
+                // 4. OPTIMISATION: Isoler le CustomPainter, qui se redessine constamment.
+                RepaintBoundary(
+                  child: AnimatedBuilder(
+                    animation: _controller,
+                    builder: (context, child) {
+                      return CustomPaint(
+                        size: const Size(60, 60),
+                        painter: _LoadingPainter(
+                          progress: _controller.value,
+                          color: const Color(0xFF00D9FF),
+                        ),
+                      );
+                    },
+                  ),
                 ),
 
                 const SizedBox(height: 24),
@@ -182,17 +199,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
             bottom: 40,
             left: 0,
             right: 0,
-            child: FadeTransition(
-              opacity: _fadeAnimation,
-              child: Text(
-                'v1.0.0',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.white.withAlpha((255 * 0.3).toInt()),
-                ),
-              ),
-            ),
+            child: const _AppVersionText(), // Widget séparé pour la clarté
           ),
         ],
       ),
@@ -200,52 +207,95 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   }
 }
 
-/// Custom painter pour l'indicateur de chargement
+/// Widget pour afficher la version de l'app de manière dynamique
+class _AppVersionText extends StatelessWidget {
+  const _AppVersionText();
+
+  Future<String> _getAppVersion() async {
+    try {
+      final packageInfo = await PackageInfo.fromPlatform();
+      return 'v${packageInfo.version}';
+    } catch (e) {
+      return 'v1.0.0'; // Fallback
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<String>(
+      future: _getAppVersion(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) return const SizedBox.shrink();
+        return Text(
+          snapshot.data!,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 12,
+            color: Colors.white.withAlpha((255 * 0.3).toInt()),
+          ),
+        );
+      },
+    );
+  }
+}
+
+/// Custom painter pour l'indicateur de chargement (légèrement optimisé)
 class _LoadingPainter extends CustomPainter {
   final double progress;
   final Color color;
 
-  _LoadingPainter({required this.progress, required this.color});
+  // Pré-calculer les objets Paint pour éviter de les recréer dans la méthode paint()
+  final Paint _backgroundPaint;
+  final Paint _progressPaint;
+  final Paint _pointPaint;
+  final Paint _glowPaint;
+
+  _LoadingPainter({required this.progress, required this.color})
+      : _backgroundPaint = Paint()
+          ..color = color.withAlpha((255 * 0.3).toInt())
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 3,
+        _progressPaint = Paint()
+          ..color = color
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 4
+          ..strokeCap = StrokeCap.round,
+        _pointPaint = Paint()
+          ..color = color
+          ..style = PaintingStyle.fill,
+        _glowPaint = Paint()
+          ..color = color.withAlpha((255 * 0.3).toInt())
+          ..style = PaintingStyle.fill;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = color.withAlpha((255 * 0.3).toInt())
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 3;
-
     final center = Offset(size.width / 2, size.height / 2);
     final radius = size.width / 2;
 
     // Cercle de fond
-    canvas.drawCircle(center, radius, paint);
+    canvas.drawCircle(center, radius, _backgroundPaint);
 
     // Arc de progression
-    paint.color = color;
-    paint.strokeWidth = 4;
-    paint.strokeCap = StrokeCap.round;
-
     final sweepAngle = 2 * math.pi * progress;
     canvas.drawArc(
       Rect.fromCircle(center: center, radius: radius),
-      -math.pi / 2,
+      -math.pi / 2, // Démarrer en haut
       sweepAngle,
       false,
-      paint,
+      _progressPaint,
     );
 
     // Point lumineux
     final angle = -math.pi / 2 + sweepAngle;
-    final pointX = center.dx + radius * math.cos(angle);
-    final pointY = center.dy + radius * math.sin(angle);
-
-    paint.style = PaintingStyle.fill;
-    paint.color = color;
-    canvas.drawCircle(Offset(pointX, pointY), 6, paint);
+    final pointOffset = Offset(
+      center.dx + radius * math.cos(angle),
+      center.dy + radius * math.sin(angle),
+    );
 
     // Glow du point
-    paint.color = color.withAlpha((255 * 0.3).toInt());
-    canvas.drawCircle(Offset(pointX, pointY), 10, paint);
+    canvas.drawCircle(pointOffset, 10, _glowPaint);
+    // Point lui-même
+    canvas.drawCircle(pointOffset, 6, _pointPaint);
   }
 
   @override
