@@ -1,6 +1,7 @@
+import 'dart:developer' as developer;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import 'core/affichage/navigator_key_provider.dart';
 import 'core/routes/router.dart';
@@ -97,6 +98,8 @@ Future<void> main() async {
 
   // ⚡ Bootstrap avant le runApp
   final bootstrap = await BootstrapService.initialize();
+  developer.log(
+      '✅ Bootstrap terminé, prefs loaded: ${bootstrap.prefs.getKeys().length}');
 
   runApp(
     ProviderScope(
@@ -120,23 +123,9 @@ class MyFullApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeAsync = ref.watch(themeLoaderProvider);
-    final routerAsync = ref.watch(goRouterFutureProvider);
+    final router = ref.watch(goRouterProvider);
     final themeMode = ref.watch(themeControllerProvider);
     final themeData = themeMode.toThemeData();
-
-    // Récupérer le routeur une fois qu'il est prêt
-    final GoRouter? router = routerAsync.value;
-    if (router == null) {
-      // Nous ne pouvons pas utiliser MaterialApp.router si le routeur est null.
-      // Affichons une SplashScreen simple pour éviter le crash.
-      // Nous utilisons ici un MaterialApp/Scaffold de fallback minimaliste.
-      return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: themeData,
-        darkTheme: themeData,
-        home: const SplashScreen(),
-      );
-    }
 
     // Le routeur est prêt, on peut utiliser MaterialApp.router
     return MaterialApp.router(

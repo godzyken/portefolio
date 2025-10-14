@@ -9,7 +9,6 @@ import 'package:flutter/services.dart' as ui;
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:portefolio/core/service/analytics_service.dart';
 import 'package:portefolio/features/generator/data/location_data.dart';
 import 'package:portefolio/features/generator/notifiers/hover_map_notifier.dart';
 
@@ -23,29 +22,29 @@ import '../exeptions/state/global_error_state.dart';
 import '../logging/app_logger.dart';
 import '../notifier/notifiers.dart';
 
-/// Titre dynamique de l’AppBar
+/// 🔹 Titre dynamique de l’AppBar
 final appBarTitleProvider =
     NotifierProvider<AppBarTitleNotifier, String>(AppBarTitleNotifier.new);
 
-/// Actions dynamiques de l’AppBar
+/// 🔹 Actions dynamiques de l’AppBar
 final appBarActionsProvider =
     NotifierProvider<AppBarActionsNotifier, List<Widget>>(
         AppBarActionsNotifier.new);
 
-/// Drawer dynamique
+/// 🔹 Drawer dynamique
 final appBarDrawerProvider =
     NotifierProvider<AppBarDrawerNotifier, Widget?>(AppBarDrawerNotifier.new);
 
-/// Location route actuelle
+/// 🔹 Location route actuelle
 final currentLocationProvider =
     NotifierProvider<CurrentLocationNotifier, String>(
         CurrentLocationNotifier.new);
 
-/// Notifie quand on veut forcer un refresh
+/// 🔹 Notifie quand on veut forcer un refresh
 final routerNotifierProvider =
     NotifierProvider<RouterNotifier, String>(RouterNotifier.new);
 
-/// Stream qui émet la location courante
+/// 🔹 Stream qui émet la location courante
 final routeLocationStreamProvider = StreamProvider<String>((ref) {
   final controller = StreamController<String>.broadcast();
 
@@ -62,41 +61,41 @@ final routeLocationStreamProvider = StreamProvider<String>((ref) {
   return controller.stream;
 });
 
-/// Tab position actuelle
+/// 🔹 Tab position actuelle
 final currentTabProvider = Provider<AppTab>((ref) {
   final asyncLoc = ref.watch(routeLocationStreamProvider);
   final location = asyncLoc.asData?.value ?? '/';
   return AppTab.fromLocation(location);
 });
 
-/// Index actuelle
+/// 🔹 Index actuelle
 final currentIndexProvider = Provider<int>((ref) {
   return ref.watch(currentTabProvider).index;
 });
 
-// Exemple : état de chargement du PDF
+/// 🔹 Exemple : état de chargement du PDF
 final isGeneratingProvider =
     NotifierProvider<IsGeneratingNotifier, bool>(IsGeneratingNotifier.new);
 
-// Etat de la page courante
+/// 🔹 Etat de la page courante
 final isPageViewProvider =
     NotifierProvider<IsPageViewNotifier, bool>(IsPageViewNotifier.new);
 
-// Etat de detection du survol d'un élément
+/// 🔹 Etat de detection du survol d'un élément
 final hoverMapProvider = NotifierProvider<HoverMapNotifier, Map<String, bool>>(
   HoverMapNotifier.new,
 );
 
-// Etat du lecteur YoutubeVideoIframe
+/// 🔹 Etat du lecteur YoutubeVideoIframe
 final playingVideoProvider =
     NotifierProvider<PlayingVideoNotifier, String?>(PlayingVideoNotifier.new);
 
-// Liste des projets sélectionnés
+/// 🔹 Liste des projets sélectionnés
 final selectedProjectsProvider =
     NotifierProvider<SelectedProjectsNotifier, List<ProjectInfo>>(
         SelectedProjectsNotifier.new);
 
-// Listes des expériences
+/// 🔹 Listes des expériences
 final experiencesProvider =
     NotifierProvider<ExperiencesNotifier, List<Experience>>(
         ExperiencesNotifier.new);
@@ -108,7 +107,7 @@ final experiencesFutureProvider = FutureProvider<List<Experience>>((ref) async {
   return jsonList.map((json) => Experience.fromJson(json)).toList();
 });
 
-// Filtre des expériences
+/// 🔹 Filtre des expériences
 final experienceFilterProvider =
     NotifierProvider<ExperienceFilterNotifier, String?>(
         ExperienceFilterNotifier.new);
@@ -123,7 +122,7 @@ final filterExperiencesProvider = Provider<List<Experience>>((ref) {
   return all.where((exp) => exp.tags.contains(filter)).toList();
 });
 
-// List des Services proposer
+/// 🔹 List des Services proposer
 final servicesProvider = FutureProvider<List<Service>>((ref) async {
   try {
     developer.log('📦 Chargement des services...');
@@ -160,19 +159,19 @@ final servicesProvider = FutureProvider<List<Service>>((ref) async {
   }
 });
 
-/// Provider pour filtrer les services par catégorie
+/// 🔹 Provider pour filtrer les services par catégorie
 final servicesFilterProvider =
     NotifierProvider<ServiceFilterNotifier, ServiceCategory?>(
   ServiceFilterNotifier.new,
 );
 
-/// Provider pour les services sélectionnés
+/// 🔹 Provider pour les services sélectionnés
 final selectedServicesProvider =
     NotifierProvider<SelectedServicesNotifier, List<Service>>(
   SelectedServicesNotifier.new,
 );
 
-/// Provider des services filtrés
+/// 🔹 Provider des services filtrés
 final filteredServicesProvider = Provider<List<Service>>((ref) {
   final services = ref.watch(servicesProvider).asData?.value ?? [];
   final filter = ref.watch(servicesFilterProvider);
@@ -182,7 +181,7 @@ final filteredServicesProvider = Provider<List<Service>>((ref) {
   return services.where((s) => s.category == filter).toList();
 });
 
-/// Provider pour obtenir un service par ID
+/// 🔹 Provider pour obtenir un service par ID
 final serviceByIdProvider = Provider.family<Service?, String>((ref, id) {
   final services = ref.watch(servicesProvider).asData?.value ?? [];
   try {
@@ -192,7 +191,7 @@ final serviceByIdProvider = Provider.family<Service?, String>((ref, id) {
   }
 });
 
-/// Provider pour obtenir les catégories disponibles
+/// 🔹 Provider pour obtenir les catégories disponibles
 final availableCategoriesProvider = Provider<List<ServiceCategory>>((ref) {
   final services = ref.watch(servicesProvider).asData?.value ?? [];
   final categories = services.map((s) => s.category).toSet().toList();
@@ -200,26 +199,26 @@ final availableCategoriesProvider = Provider<List<ServiceCategory>>((ref) {
   return categories;
 });
 
-/// Provider pour compter les services par catégorie
+/// 🔹 Provider pour compter les services par catégorie
 final serviceCountByCategoryProvider =
     Provider.family<int, ServiceCategory>((ref, category) {
   final services = ref.watch(servicesProvider).asData?.value ?? [];
   return services.where((s) => s.category == category).length;
 });
 
-// Liste des projets
+/// 🔹 Liste des projets
 final projectsFutureProvider = FutureProvider<List<ProjectInfo>>((ref) async {
   final jsonStr = await ui.rootBundle.loadString('assets/data/projects.json');
   final List<dynamic> jsonList = jsonDecode(jsonStr);
   return jsonList.map((json) => ProjectInfo.fromJson(json)).toList();
 });
 
-// Génerateur de PDF
+/// 🔹 Génerateur de PDF
 final pdfExportProvider = Provider<PdfExportService>((ref) {
   return PdfExportService();
 });
 
-// Etat du badge WakaTime
+/// 🔹 Etat du badge WakaTime
 final wakatimeBadgeProvider = Provider.family<String?, String>((
   ref,
   projectName,
@@ -227,7 +226,7 @@ final wakatimeBadgeProvider = Provider.family<String?, String>((
   return wakatimeBadges[projectName];
 });
 
-// Etat de la geolocalisation
+/// 🔹 Etat de la geolocalisation
 final positionProvider = StreamProvider<List<LatLng>>((ref) {
   final positionAsync = ref.watch(userLocationProvider);
 
@@ -297,12 +296,6 @@ final mapConfigProvider = Provider<MapOptions Function(LatLng)>((ref) {
   };
 });
 
-const _gaTrackingId = 'G-WQRTDMK3';
-
-final analyticsProvider = Provider<AnalyticsService>((ref) {
-  return AnalyticsService(_gaTrackingId);
-});
-
 Future<List<String>> loadAssetsFromManifest({String? filter}) async {
   final manifestContent = await ui.rootBundle.loadString('AssetManifest.json');
   final Map<String, dynamic> manifestMap = json.decode(manifestContent);
@@ -323,7 +316,7 @@ Future<void> loadCustomFont(String assetPath, String family) async {
   await fontLoader.load();
 }
 
-/// Liste globale des images
+/// 🔹 Liste globale des images
 final appImagesProvider = FutureProvider<List<String>>((ref) async {
   // 1. Charger toutes les images dans assets/images/
   final assetImages = await loadAssetsFromManifest(filter: 'assets/images/');
@@ -342,8 +335,6 @@ final appImagesProvider = FutureProvider<List<String>>((ref) async {
 
   return [...assetImages, ...networkImages];
 });
-
-// (Remplacez votre ancien _precacheAllAssetsProvider par celui-ci)
 
 /// Provider qui précache toutes les ressources nécessaires au démarrage de l'app.
 /// Il est conçu pour être appelé depuis l'UI avec un BuildContext valide via `.family`.
@@ -432,7 +423,7 @@ final precacheAllAssetsProvider =
   }
 });
 
-/// Fonction helper pour précacher une image réseau avec retry et timeout
+/// 🔹 Fonction helper pour précacher une image réseau avec retry et timeout
 Future<bool> _precacheNetworkImageWithRetry(
   String url,
   BuildContext context, {
@@ -470,7 +461,7 @@ Future<bool> _precacheNetworkImageWithRetry(
   return false;
 }
 
-/// Version alternative qui précache seulement les assets critiques
+/// 🔹 Version alternative qui précache seulement les assets critiques
 final precacheCriticalAssetsProvider = FutureProvider<void>((ref) async {
   final context = ref.read(navigatorKeyProvider).currentContext;
   if (context == null) return;
@@ -497,10 +488,10 @@ final precacheCriticalAssetsProvider = FutureProvider<void>((ref) async {
   }
 });
 
-/// Version optimisée qui précache en parallèle (plus rapide mais plus de charge)
+/// 🔹 Version optimisée qui précache en parallèle (plus rapide mais plus de charge)
 final precacheAllAssetsParallelProvider = FutureProvider<void>((ref) async {
   // On attend un tout petit peu pour laisser le temps à l'UI de s'initialiser
-  await Future.delayed(const Duration(milliseconds: 50));
+  await Future.delayed(const Duration(milliseconds: 200));
 
   final context = ref.read(navigatorKeyProvider).currentContext;
   if (context == null) {
@@ -558,7 +549,7 @@ final precacheAllAssetsParallelProvider = FutureProvider<void>((ref) async {
   }
 });
 
-/// Précache les images par lots pour éviter de surcharger le réseau
+/// 🔹 Précache les images par lots pour éviter de surcharger le réseau
 Future<List<bool>> _precacheImagesInBatches(
   List<String> images,
   BuildContext context, {
@@ -637,7 +628,7 @@ final isGpsEnabledProvider = FutureProvider<bool>((ref) async {
   return await LocationService.instance.isLocationEnabled();
 });
 
-/// Fournit un logger spécifique à une catégorie (ex: HomeScreen, ExperiencesScreen)
+/// 🔹 Fournit un logger spécifique à une catégorie (ex: HomeScreen, ExperiencesScreen)
 final loggerProvider = Provider.family<AppLogger, String>((ref, category) {
   return AppLogger(category);
 });
