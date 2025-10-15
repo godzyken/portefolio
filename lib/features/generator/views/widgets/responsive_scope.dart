@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -13,6 +15,8 @@ class ResponsiveScope extends ConsumerStatefulWidget {
 
 class _ResponsiveScopeState extends ConsumerState<ResponsiveScope>
     with WidgetsBindingObserver {
+  Timer? _resizeTimer;
+
   @override
   void initState() {
     super.initState();
@@ -24,11 +28,14 @@ class _ResponsiveScopeState extends ConsumerState<ResponsiveScope>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _resizeTimer?.cancel();
     super.dispose();
   }
 
   @override
   void didChangeMetrics() {
+    // Déclenche seulement après un léger délai pour éviter les rebuilds multiples
+    _resizeTimer?.cancel();
     _safeUpdateSize();
   }
 
@@ -40,8 +47,15 @@ class _ResponsiveScopeState extends ConsumerState<ResponsiveScope>
   void _safeUpdateSize() {
     if (!mounted) return;
     final mq = MediaQuery.maybeOf(context);
-    if (mq != null && mq.size != Size.zero) {
-      ref.watch(screenSizeProvider.notifier).setSize(mq.size);
+    if (mq == null || mq.size == Size.zero) return;
+
+    final notifier = ref.read(screenSizeProvider.notifier);
+    final currentSize = notifier.state;
+    final newSize = mq.size;
+
+    // Mise à jour uniquement si la taille change réellement
+    if (currentSize != newSize) {
+      notifier.setSize(newSize);
     }
   }
 }

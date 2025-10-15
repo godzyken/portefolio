@@ -1,4 +1,5 @@
 class Experience {
+  final String id;
   final String entreprise;
   final String logo;
   final String image;
@@ -14,6 +15,7 @@ class Experience {
   final String poste;
 
   Experience({
+    required this.id,
     required this.entreprise,
     required this.logo,
     required this.image,
@@ -32,6 +34,7 @@ class Experience {
   factory Experience.fromJson(Map<String, dynamic> json) {
     return Experience(
       // ✅ Protection contre null avec valeurs par défaut
+      id: json['exp_id']?.toString() ?? '',
       entreprise: json['entreprise']?.toString() ?? '',
       logo: json['logo']?.toString() ?? '',
       image: json['image']?.toString() ?? '',
@@ -64,18 +67,19 @@ class Experience {
   }
 
   Map<String, dynamic> toJson() => {
-    'entreprise': entreprise,
-    'logo': logo,
-    'image': image,
-    'contexte': contexte,
-    'objectifs': objectifs,
-    'missions': missions,
-    'code': code,
-    'tags': tags,
-    'stack': stack,
-    'periode': periode,
-    'lienProjet': lienProjet,
-    'resultats': resultats,
-    'poste': poste,
-  };
+        'id': id,
+        'entreprise': entreprise,
+        'logo': logo,
+        'image': image,
+        'contexte': contexte,
+        'objectifs': objectifs,
+        'missions': missions,
+        'code': code,
+        'tags': tags,
+        'stack': stack,
+        'periode': periode,
+        'lienProjet': lienProjet,
+        'resultats': resultats,
+        'poste': poste,
+      };
 }

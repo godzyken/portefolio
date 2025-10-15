@@ -12,7 +12,8 @@ import 'falling_tag.dart';
 class InteractivePot extends ConsumerStatefulWidget {
   final List<Experience> experiences;
   final Map<String, GlobalKey> cardKeys;
-  final Function(Experience exp, Offset target, {bool flyUp}) flyCard;
+  final Function(Experience exp, Offset target, BuildContext cardContext,
+      {bool flyUp}) flyCard;
   final Function(List<Experience> cards)? onCardsArrivedInPot;
   final VoidCallback? onPotCleared;
 
@@ -21,7 +22,7 @@ class InteractivePot extends ConsumerStatefulWidget {
     required this.experiences,
     required this.cardKeys,
     required this.flyCard,
-    this.onCardsArrivedInPot, // 🔥 Nouveau
+    this.onCardsArrivedInPot,
     this.onPotCleared,
   });
 
@@ -130,9 +131,18 @@ class _InteractivePotState extends ConsumerState<InteractivePot>
     final cardNotifier = ref.read(cardFlightProvider.notifier);
     final info = ref.read(responsiveInfoProvider);
 
+    // Taille du pot responsive
+    final potSize = info.isMobile
+        ? 120.0
+        : info.isTablet
+            ? 140.0
+            : 160.0;
+    final chipStackWidth = potSize;
+    final chipStackHeight = potSize;
+
     return Positioned(
-      bottom: 0,
-      right: 30,
+      bottom: info.isPortrait ? 20 : 10,
+      right: info.isPortrait ? 30 : 10,
       child: DragTarget<String>(
         onAcceptWithDetails: (details) {
           final tag = details.data;
@@ -140,23 +150,23 @@ class _InteractivePotState extends ConsumerState<InteractivePot>
           debugPrint('[Pot] received tag: $tag');
           _triggerFeedback();
 
-          if (!ref.read(activeTagsProvider).contains(tag)) {
-            tagsNotifier.setTags([...ref.read(activeTagsProvider), tag]);
+          if (!activeTags.contains(tag)) {
+            tagsNotifier.setTags([...activeTags, tag]);
 
             _onCoinDrop(tag);
 
             final cardsToFly =
                 widget.experiences.where((e) => e.tags.contains(tag)).toList();
 
-            const cardWidth = 120.0;
-            const cardHeight = 160.0;
+            final cardWidth = info.cardWidth;
+            final cardHeight = cardWidth * info.cardHeightRatio;
             final target = Offset(
               info.size.width / 2 - cardWidth / 2,
               info.size.height / 2 - cardHeight / 2,
             );
 
             for (var exp in cardsToFly) {
-              widget.flyCard(exp, target, flyUp: true);
+              widget.flyCard(exp, target, context, flyUp: true);
             }
 
             cardNotifier.flyCardsUp(
@@ -168,7 +178,8 @@ class _InteractivePotState extends ConsumerState<InteractivePot>
 
             // 🔥 animation de chute dans le pot
             final startPos = details.offset;
-            final endPos = Offset(info.size.width - 80, info.size.height - 80);
+            final endPos = Offset(info.size.width - potSize / 2 - 20,
+                info.size.height - potSize / 2 - 20);
             _fallTag(tag, startPos, endPos);
           }
         },
@@ -178,8 +189,8 @@ class _InteractivePotState extends ConsumerState<InteractivePot>
             scale: _scale,
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
-              width: 160,
-              height: 160,
+              width: potSize,
+              height: potSize,
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
@@ -206,15 +217,15 @@ class _InteractivePotState extends ConsumerState<InteractivePot>
                       ),
                     ),
                   SizedBox(
-                    width: 100,
-                    height: 100,
+                    width: chipStackWidth,
+                    height: chipStackHeight,
                     child: Stack(
                       clipBehavior: Clip.none,
                       children: [
                         for (int i = 0; i < activeTags.length; i++)
                           Positioned(
-                            left: (i * 8).toDouble(), // décalage horizontal
-                            top: (i * 6).toDouble(), // décalage vertical
+                            left: (i * 6).toDouble(), // décalage horizontal
+                            top: (i * 4).toDouble(), // décalage vertical
                             child: _buildTagChip(
                               activeTags[i],
                               opacity: 0.9 - i * 0.1,
@@ -237,20 +248,25 @@ class _InteractivePotState extends ConsumerState<InteractivePot>
                           _fallingTags.clear();
                         });
 
+                        final cardWidth = info.cardWidth;
+                        final cardHeight = cardWidth * info.cardHeightRatio;
+
                         for (var e in widget.experiences) {
-                          final ctx =
-                              widget.cardKeys[e.entreprise]?.currentContext;
+                          final ctx = widget.cardKeys[e.id]?.currentContext;
                           if (ctx != null &&
                               ctx.findRenderObject() is RenderBox) {
                             final rb = ctx.findRenderObject() as RenderBox;
-                            final target = rb.localToGlobal(Offset.zero);
-                            widget.flyCard(e, target, flyUp: false);
+                            final target = rb.localToGlobal(Offset(
+                              info.size.width * 0.15 - cardWidth / 2,
+                              info.size.height / 2 - cardHeight / 2,
+                            ));
+                            widget.flyCard(e, target, context, flyUp: false);
                           }
                         }
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
-                      ),
+                          backgroundColor: Colors.red,
+                          minimumSize: Size(potSize * 0.8, 36)),
                       child: const Text("Vider le pot"),
                     ),
                 ],

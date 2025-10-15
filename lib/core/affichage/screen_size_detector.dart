@@ -52,47 +52,41 @@ final screenSizeProvider =
 /// Fournit un objet `ResponsiveInfo` complet
 final responsiveInfoProvider = Provider<ResponsiveInfo>((ref) {
   final size = ref.watch(screenSizeProvider);
-  final orientation = size.width > 0
-      ? (size.width >= size.height
-          ? Orientation.landscape
-          : Orientation.portrait)
-      : Orientation.portrait;
+  final orientation =
+      size.width >= size.height ? Orientation.landscape : Orientation.portrait;
 
-  final w = size.width;
+  final shortestSide = size.shortestSide;
 
   late DeviceType type;
   late GridConfig grid;
 
-  if (w < Breakpoints.watch) {
+  if (shortestSide < Breakpoints.watch) {
     type = DeviceType.watch;
     grid = const GridConfig(1, 1.6);
-  } else if (w < Breakpoints.mobile) {
+  } else if (shortestSide < Breakpoints.mobile) {
     type = DeviceType.mobile;
     grid = GridConfig(1, orientation == Orientation.portrait ? 1.4 : 1.1);
-  } else if (w < Breakpoints.smallTablet) {
+  } else if (shortestSide < Breakpoints.smallTablet) {
     type = DeviceType.mobile;
-    grid = const GridConfig(2, 1.2);
-  } else if (w < Breakpoints.tablet) {
+    grid = GridConfig(2, orientation == Orientation.portrait ? 1.2 : 1.0);
+  } else if (shortestSide < Breakpoints.tablet) {
     type = DeviceType.tablet;
-    grid = GridConfig(orientation == Orientation.portrait ? 2 : 3, 1.0);
-  } else if (w < Breakpoints.desktop) {
+    grid = GridConfig(orientation == Orientation.portrait ? 2 : 3, 0.7);
+  } else if (shortestSide < Breakpoints.desktop) {
     type = DeviceType.desktop;
-    grid = const GridConfig(3, 0.9);
-  } else if (w < Breakpoints.largeDesktop) {
-    type = DeviceType.largeDesktop;
-    grid = GridConfig(orientation == Orientation.portrait ? 3 : 4, 0.9);
+    grid = GridConfig(orientation == Orientation.portrait ? 3 : 4, 0.5);
   } else {
     type = DeviceType.largeDesktop;
-    grid = GridConfig(orientation == Orientation.portrait ? 4 : 6, 0.85);
+    grid = GridConfig(orientation == Orientation.portrait ? 4 : 6, 0.45);
   }
 
-  final cardWidth = w / grid.columns - 16; // padding/marge
+  final cardWidth = size.width / grid.columns - 16; // padding/marge
   final cardHeightRatio = switch (type) {
     DeviceType.watch => 1.6,
-    DeviceType.mobile => 0.85,
-    DeviceType.tablet => 0.7,
-    DeviceType.desktop => 0.5,
-    DeviceType.largeDesktop => 0.6,
+    DeviceType.mobile => orientation == Orientation.portrait ? 0.85 : 0.6,
+    DeviceType.tablet => orientation == Orientation.portrait ? 0.7 : 0.5,
+    DeviceType.desktop => orientation == Orientation.portrait ? 0.5 : 0.4,
+    DeviceType.largeDesktop => orientation == Orientation.portrait ? 0.6 : 0.35,
   };
 
   return ResponsiveInfo(

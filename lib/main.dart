@@ -3,7 +3,6 @@ import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'core/affichage/navigator_key_provider.dart';
 import 'core/routes/router.dart';
 import 'core/service/bootstrap_service.dart';
 import 'features/generator/views/widgets/generator_widgets_extentions.dart';
@@ -106,7 +105,6 @@ Future<void> main() async {
       overrides: [
         sharedPreferencesProvider.overrideWithValue(bootstrap.prefs),
         themeControllerProvider.overrideWith(ThemeController.new),
-        navigatorKeyProvider.overrideWithValue(GlobalKey<NavigatorState>()),
       ],
       child: ResponsiveScope(
           child: MyFullApp(

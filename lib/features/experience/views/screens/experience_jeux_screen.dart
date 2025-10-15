@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../constants/enum_global.dart';
@@ -25,14 +26,29 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
   @override
   void initState() {
     super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
     for (var exp in widget.experiences) {
-      _cardKeys[exp.entreprise] = GlobalKey();
+      _cardKeys[exp.id] = GlobalKey();
     }
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+  }
+
+  @override
+  void dispose() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+    super.dispose();
   }
 
   /// Fonction pour animer une carte vers un target
-  void _flyCard(Experience exp, Offset target, {bool flyUp = true}) {
-    final key = _cardKeys[exp.entreprise];
+  void _flyCard(Experience exp, Offset target, BuildContext cardContext,
+      {bool flyUp = true}) {
+    final key = _cardKeys[exp.id];
     if (key == null) return;
     final renderBox = key.currentContext?.findRenderObject() as RenderBox?;
     if (renderBox == null) return;
@@ -46,10 +62,14 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
           flyUp ? CardFlightState.flyingUp : CardFlightState.inPile,
         );
 
+    // Chaque overlay a son propre key unique
+    final overlayKey = GlobalKey();
+
     late OverlayEntry entry;
 
     entry = OverlayEntry(
       builder: (_) => AnimatedCardOverlay(
+        key: overlayKey,
         start: start,
         end: target,
         size: size,
@@ -158,10 +178,13 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
         )
         .toList();
 
+    final width =
+        info.isLandscape ? info.size.width * 0.2 : info.size.width * 0.35;
+
     return Align(
       alignment: Alignment.centerLeft,
       child: SizedBox(
-        width: info.size.width * 0.35,
+        width: width,
         child: Stack(
           children: pile.asMap().entries.map((entry) {
             final exp = entry.value;
@@ -191,7 +214,10 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
                   child: SizedBox(
                     width: 120,
                     height: 160,
-                    child: _cardClone(exp),
+                    child: Card(
+                      key: ValueKey(exp.id), // ✅ safe
+                      child: _cardClone(exp),
+                    ),
                   ),
                 ),
               ),
@@ -204,6 +230,11 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
 
   /// Zone centrale pour déposer la carte
   Widget _buildCardTarget(ResponsiveInfo info) {
+    final width =
+        info.isLandscape ? info.size.width * 0.4 : info.size.width * 0.5;
+    final height =
+        info.isLandscape ? info.size.height * 0.7 : info.size.height * 0.6;
+
     return DragTarget<Experience>(
       onAcceptWithDetails: (details) {
         setState(() {
@@ -218,8 +249,8 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
             alignment: Alignment.center,
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 400),
-              width: 400,
-              height: 500,
+              width: width,
+              height: height,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -294,8 +325,8 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
         return Align(
           alignment: Alignment.center,
           child: Container(
-            width: info.size.width * 0.5,
-            height: info.size.height * 0.6,
+            width: width,
+            height: height,
             alignment: Alignment.center,
             decoration: BoxDecoration(
               border: Border.all(color: Colors.grey.withAlpha(128)),
@@ -375,38 +406,8 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
   //   );
   // }
 
-  Widget _buildPortraitLayout(ResponsiveInfo info) {
-    return Stack(
-      children: [
-        // Tapis de fond
-        Positioned.fill(
-          child: Image.asset(
-            'assets/images/tapis-poker.png',
-            fit: BoxFit.cover,
-          ),
-        ),
-        _buildCardPile(info),
-        _buildCardTarget(info),
-        InteractivePot(
-          experiences: widget.experiences,
-          cardKeys: _cardKeys,
-          flyCard: _flyCard,
-          onCardsArrivedInPot: _onCardsArrivedInPot,
-          onPotCleared: _onPotCleared,
-        ),
-        ..._buildScatteredChips(),
-
-        // 🪙 Compétences collées en bas
-        Align(
-          alignment: Alignment.bottomCenter,
-          child: SizedBox(
-            height: info.size.height * 0.2,
-            child: const CompetencesPilesByNiveau(),
-          ),
-        ),
-      ],
-    );
-  }
+  Widget _buildPortraitLayout(ResponsiveInfo info) =>
+      _buildLandscapeLayout(info);
 
   Widget _buildLandscapeLayout(ResponsiveInfo info) {
     return Stack(
@@ -461,7 +462,39 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
   @override
   Widget build(BuildContext context) {
     final info = ref.watch(responsiveInfoProvider);
+    // Conditions : smartphone et mode portrait
+    final bool isSmartphone = info.size.shortestSide < 600;
+    final bool isLandscape = info.isLandscape;
 
+    if (isSmartphone && !isLandscape) {
+      return Scaffold(
+        backgroundColor: Colors.black,
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.screen_rotation,
+                    size: 80, color: Colors.yellow),
+                const SizedBox(height: 24),
+                Text(
+                  isSmartphone
+                      ? "🔄 Tourne ton appareil en mode paysage\npour accéder au jeu !"
+                      : "📺 L’écran est trop petit pour le mode jeu.\nEssaie sur un appareil plus grand.",
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
     return Scaffold(
       body: info.isLandscape
           ? _buildLandscapeLayout(info)

@@ -22,9 +22,14 @@ class HomeScreen extends ConsumerWidget {
           primaryColor: theme.colorScheme.primary,
           secondaryColor: theme.colorScheme.secondary,
           starCount: 150,
-          child: info.isPortrait
-              ? _buildPortraitLayout(context, info, services, theme)
-              : _buildLandscapeLayout(context, info, services, theme),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              bool isPortrait = info.isPortrait;
+              return isPortrait
+                  ? _buildPortraitLayout(context, info, services, theme)
+                  : _buildLandscapeLayout(context, info, services, theme);
+            },
+          ),
         ),
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, st) => Center(
@@ -47,25 +52,28 @@ class HomeScreen extends ConsumerWidget {
     List<Service> services,
     ThemeData theme,
   ) {
-    return Column(
-      children: [
-        const SizedBox(height: 32),
-        _buildHeader(context, info, theme, isPortrait: true),
-        const SizedBox(height: 24),
-        Expanded(
-          child: PageView.builder(
-            controller: PageController(viewportFraction: 0.88),
-            itemCount: services.length,
-            itemBuilder: (_, index) => Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: ServicesCard(service: services[index]),
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          const SizedBox(height: 32),
+          _buildHeader(context, info, theme, isPortrait: true),
+          const SizedBox(height: 24),
+          SizedBox(
+            height: info.size.height * 0.55,
+            child: PageView.builder(
+              controller: PageController(viewportFraction: 0.85),
+              itemCount: services.length,
+              itemBuilder: (_, index) => Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: ServicesCard(service: services[index]),
+              ),
             ),
           ),
-        ),
-        const SizedBox(height: 16),
-        _buildPaginationDots(services.length, theme),
-        const SizedBox(height: 16),
-      ],
+          const SizedBox(height: 16),
+          _buildPaginationDots(services.length, theme),
+          const SizedBox(height: 16),
+        ],
+      ),
     );
   }
 
@@ -75,47 +83,45 @@ class HomeScreen extends ConsumerWidget {
     List<Service> services,
     ThemeData theme,
   ) {
-    return Row(
-      children: [
-        Flexible(
-          flex: 3,
-          child: Padding(
-            padding: const EdgeInsets.all(32),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+      child: Row(
+        children: [
+          Flexible(
+            flex: 3,
             child: _buildHeader(context, info, theme, isPortrait: false),
           ),
-        ),
-        Flexible(
-          flex: 7,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(24),
-                child: Text(
+          Flexible(
+            flex: 7,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
                   "Mes Services",
                   style: theme.textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-              ),
-              Expanded(
-                child: PageView.builder(
-                  scrollDirection: Axis.vertical,
-                  controller: PageController(viewportFraction: 0.88),
-                  itemCount: services.length,
-                  itemBuilder: (_, index) => Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 8,
+                const SizedBox(height: 16),
+                Expanded(
+                  child: PageView.builder(
+                    scrollDirection: Axis.vertical,
+                    controller: PageController(viewportFraction: 0.85),
+                    itemCount: services.length,
+                    itemBuilder: (_, index) => Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 8,
+                      ),
+                      child: ServicesCard(service: services[index]),
                     ),
-                    child: ServicesCard(service: services[index]),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -125,6 +131,9 @@ class HomeScreen extends ConsumerWidget {
     ThemeData theme, {
     required bool isPortrait,
   }) {
+    double imageSize =
+        isPortrait ? info.size.width * 0.35 : info.size.height * 0.3;
+
     return Column(
       mainAxisAlignment:
           isPortrait ? MainAxisAlignment.start : MainAxisAlignment.center,
@@ -136,7 +145,7 @@ class HomeScreen extends ConsumerWidget {
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: theme.colorScheme.primary.withAlpha((255 * 0.3).toInt()),
+                color: theme.colorScheme.primary.withAlpha(80),
                 blurRadius: 30,
                 spreadRadius: 5,
               ),
@@ -145,10 +154,8 @@ class HomeScreen extends ConsumerWidget {
           child: ClipOval(
             child: Image.asset(
               'assets/images/logo_godzyken.png',
-              width:
-                  isPortrait ? info.size.width * 0.35 : info.size.height * 0.3,
-              height:
-                  isPortrait ? info.size.width * 0.35 : info.size.height * 0.3,
+              width: imageSize,
+              height: imageSize,
               fit: BoxFit.cover,
             ),
           ),
@@ -183,10 +190,7 @@ class HomeScreen extends ConsumerWidget {
           Text(
             "Expert en Flutter, Angular et solutions cloud.\nCréation d'applications performantes et élégantes.",
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .onSurface
-                      .withAlpha((255 * 0.7).toInt()),
+                  color: Theme.of(context).colorScheme.onSurface.withAlpha(180),
                   height: 1.6,
                 ),
             textAlign: TextAlign.left,
@@ -207,7 +211,7 @@ class HomeScreen extends ConsumerWidget {
           height: 8,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: theme.colorScheme.primary.withAlpha((255 * 0.3).toInt()),
+            color: theme.colorScheme.primary.withAlpha(80),
           ),
         ),
       ),
