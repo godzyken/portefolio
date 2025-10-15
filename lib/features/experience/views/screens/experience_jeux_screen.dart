@@ -209,7 +209,7 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
                     width: 120,
                     height: 160,
                     child: Card(
-                      key: _cardKeys[exp.id], // ✅ Utiliser l'ID
+                      key: ValueKey('card_${exp.id}'), // ✅ Utiliser l'ID
                       child: _cardClone(exp),
                     ),
                   ),

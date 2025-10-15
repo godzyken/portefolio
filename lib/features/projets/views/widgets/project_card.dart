@@ -185,6 +185,14 @@ class ProjectCard extends ConsumerWidget {
               )
             else
               const SizedBox.shrink(),
+
+            const SizedBox(height: 6),
+
+            // --- WakaTime badge ---
+            if (_hasProgrammingTag())
+              WakaTimeDetailedBadge(projectName: project.title),
+
+            const SizedBox(height: 12),
             if (_hasProgrammingTag())
               CodeHighlightList(items: project.points, tag: '->')
             else

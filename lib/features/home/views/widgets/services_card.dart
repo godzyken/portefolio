@@ -112,36 +112,39 @@ class ServicesCard extends ConsumerWidget {
           compact ? MainAxisAlignment.start : MainAxisAlignment.end,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildIconBadge(theme, info),
-        SizedBox(height: _getSpacing(info, small: 12, medium: 16, large: 20)),
-        Text(
-          service.title,
-          style: theme.textTheme.headlineSmall?.copyWith(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 0.5,
-            fontSize: _getFontSize(info, small: 18, medium: 22, large: 26),
-          ),
-          maxLines: compact ? 1 : 2,
-          overflow: TextOverflow.ellipsis,
+        Row(
+          children: [
+            _buildIconBadge(theme, info),
+            SizedBox(
+                height: _getSpacing(info, small: 16, medium: 16, large: 20)),
+            Text(
+              service.title,
+              style: theme.textTheme.headlineSmall?.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 0.5,
+                fontSize: _getFontSize(info, small: 16, medium: 22, large: 26),
+              ),
+              maxLines: compact ? 1 : 2,
+              overflow: TextOverflow.fade,
+            ),
+          ],
         ),
         SizedBox(height: _getSpacing(info, small: 8, medium: 10, large: 12)),
-        Flexible(
-          child: SingleChildScrollView(
-            child: Text(
-              service.description,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: Colors.white.withValues(alpha: 0.9),
-                height: 1.5,
-                fontSize: _getFontSize(info, small: 12, medium: 14, large: 16),
-              ),
-              maxLines: compact ? 3 : null,
-              overflow: compact ? TextOverflow.ellipsis : null,
-            ),
+        Text(
+          service.description,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: Colors.white.withValues(alpha: 0.9),
+            height: 1.5,
+            fontSize: _getFontSize(info, small: 12, medium: 14, large: 16),
           ),
+          maxLines: compact ? 3 : null,
+          overflow: compact ? TextOverflow.ellipsis : null,
         ),
         SizedBox(height: _getSpacing(info, small: 12, medium: 14, large: 16)),
-        _buildFeatures(info, compact: compact),
+        Flexible(
+          child: _buildFeatures(info, compact: compact),
+        )
       ],
     );
   }
