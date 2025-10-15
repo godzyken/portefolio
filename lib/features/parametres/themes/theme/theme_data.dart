@@ -89,7 +89,7 @@ class BasicTheme {
       cardTheme: CardThemeData(
         elevation: isDark ? 4 : 2,
         color: isDark ? const Color(0xFF1A1A1A) : colorScheme.surface,
-        surfaceTintColor: primaryColor.withAlpha((255 * 0.05).toInt()),
+        surfaceTintColor: primaryColor.withValues(alpha: 0.05),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
@@ -100,7 +100,7 @@ class BasicTheme {
         backgroundColor: isDark ? const Color(0xFF0A0A0A) : Colors.white,
         elevation: 8,
         height: 70,
-        indicatorColor: primaryColor.withAlpha((255 * 0.15).toInt()),
+        indicatorColor: primaryColor.withValues(alpha: 0.15),
         indicatorShape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
@@ -113,7 +113,7 @@ class BasicTheme {
             );
           }
           return TextStyle(
-            color: colorScheme.onSurface.withAlpha((255 * 0.6).toInt()),
+            color: colorScheme.onSurface.withValues(alpha: 0.6),
             fontSize: 12,
           );
         }),
@@ -122,13 +122,13 @@ class BasicTheme {
             return IconThemeData(color: primaryColor, size: 28);
           }
           return IconThemeData(
-            color: colorScheme.onSurface.withAlpha((255 * 0.6).toInt()),
+            color: colorScheme.onSurface.withValues(alpha: 0.6),
             size: 24,
           );
         }),
         overlayColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.pressed)) {
-            return primaryColor.withAlpha((255 * 0.12).toInt());
+            return primaryColor.withValues(alpha: 0.12);
           }
           return null;
         }),
@@ -172,8 +172,8 @@ class BasicTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: isDark
-            ? Colors.white.withAlpha((255 * 0.05).toInt())
-            : Colors.grey.withAlpha((255 * 0.1).toInt()),
+            ? Colors.white.withValues(alpha: 0.05)
+            : Colors.grey.withValues(alpha: 0.1),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
@@ -188,14 +188,14 @@ class BasicTheme {
 
       // Dividers subtils
       dividerTheme: DividerThemeData(
-        color: colorScheme.onSurface.withAlpha((255 * 0.1).toInt()),
+        color: colorScheme.onSurface.withValues(alpha: 0.1),
         thickness: 1,
         space: 1,
       ),
 
       // Icônes
       iconTheme: IconThemeData(
-        color: colorScheme.onSurface.withAlpha((255 * 0.7).toInt()),
+        color: colorScheme.onSurface.withValues(alpha: 0.7),
         size: 24,
       ),
 
@@ -254,8 +254,8 @@ class BasicTheme {
           isDark ? const Color(0xFF0A0A0A) : colorScheme.surface,
 
       // Splash et highlight
-      splashColor: primaryColor.withAlpha((255 * 0.12).toInt()),
-      highlightColor: primaryColor.withAlpha((255 * 0.08).toInt()),
+      splashColor: primaryColor.withValues(alpha: 0.12),
+      highlightColor: primaryColor.withValues(alpha: 0.08),
     );
   }
 

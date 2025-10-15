@@ -131,7 +131,7 @@ class ServicesCard extends ConsumerWidget {
             child: Text(
               service.description,
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: Colors.white.withAlpha((255 * 0.9).toInt()),
+                color: Colors.white.withValues(alpha: 0.9),
                 height: 1.5,
                 fontSize: _getFontSize(info, small: 12, medium: 14, large: 16),
               ),
@@ -164,8 +164,8 @@ class ServicesCard extends ConsumerWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            Colors.black.withAlpha((255 * 0.75).toInt()),
-            Colors.black.withAlpha((255 * 0.45).toInt()),
+            Colors.black.withValues(alpha: 0.75),
+            Colors.black.withValues(alpha: 0.45),
           ],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
@@ -179,8 +179,8 @@ class ServicesCard extends ConsumerWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            theme.colorScheme.primary.withAlpha((255 * 0.4).toInt()),
-            theme.colorScheme.secondary.withAlpha((255 * 0.3).toInt()),
+            theme.colorScheme.primary.withValues(alpha: 0.4),
+            theme.colorScheme.secondary.withValues(alpha: 0.3),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -190,7 +190,7 @@ class ServicesCard extends ConsumerWidget {
         child: Icon(
           service.icon,
           size: 120,
-          color: Colors.white.withAlpha((255 * 0.15).toInt()),
+          color: Colors.white.withValues(alpha: 0.15),
         ),
       ),
     );
@@ -211,7 +211,7 @@ class ServicesCard extends ConsumerWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: theme.colorScheme.primary.withAlpha((255 * 0.5).toInt()),
+            color: theme.colorScheme.primary.withValues(alpha: 0.5),
             blurRadius: 20,
             spreadRadius: 2,
           ),
@@ -235,10 +235,10 @@ class ServicesCard extends ConsumerWidget {
             vertical: _getPadding(info) * 0.3,
           ),
           decoration: BoxDecoration(
-            color: Colors.white.withAlpha((255 * 0.15).toInt()),
+            color: Colors.white.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: Colors.white.withAlpha((255 * 0.3).toInt()),
+              color: Colors.white.withValues(alpha: 0.3),
             ),
           ),
           child: Text(

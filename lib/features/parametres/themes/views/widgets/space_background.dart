@@ -133,7 +133,7 @@ class SpacePainter extends CustomPainter {
         secondaryColor,
         colorMix,
       )!
-          .withAlpha((255 * currentOpacity).toInt());
+          .withValues(alpha: currentOpacity);
 
       // Dessiner l'étoile avec glow
       final paint = Paint()
@@ -144,7 +144,7 @@ class SpacePainter extends CustomPainter {
 
       // Point central plus brillant
       final centerPaint = Paint()
-        ..color = Colors.white.withAlpha((255 * currentOpacity * 0.8).toInt());
+        ..color = Colors.white.withValues(alpha: (currentOpacity * 0.8));
       canvas.drawCircle(Offset(x, y), star.size * 0.3, centerPaint);
     }
 
@@ -157,7 +157,7 @@ class SpacePainter extends CustomPainter {
     final nebula1 = Paint()
       ..shader = RadialGradient(
         colors: [
-          primaryColor.withAlpha((255 * 0.05).toInt()),
+          primaryColor.withValues(alpha: 0.05),
           Colors.transparent,
         ],
       ).createShader(Rect.fromCircle(
@@ -176,7 +176,7 @@ class SpacePainter extends CustomPainter {
     final nebula2 = Paint()
       ..shader = RadialGradient(
         colors: [
-          secondaryColor.withAlpha((255 * 0.05).toInt()),
+          secondaryColor.withValues(alpha: 0.05),
           Colors.transparent,
         ],
       ).createShader(Rect.fromCircle(

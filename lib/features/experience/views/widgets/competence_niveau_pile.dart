@@ -99,7 +99,7 @@ class _CompetenceNiveauPileState extends State<CompetenceNiveauPile> {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
-                  color: Colors.black.withAlpha((255 * 0.7).toInt()),
+                  color: Colors.black.withValues(alpha: 0.7),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Text(

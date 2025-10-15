@@ -194,7 +194,7 @@ class ProjectCard extends ConsumerWidget {
                   return Container(
                     padding: const EdgeInsets.all(4),
                     decoration: BoxDecoration(
-                      color: Colors.blueGrey.withAlpha((255 * 0.2).toInt()),
+                      color: Colors.blueGrey.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(

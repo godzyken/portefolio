@@ -39,15 +39,15 @@ class HoverCard extends ConsumerWidget {
         margin: margin,
         transform: isHovered
             ? (Matrix4.identity()
-                ..translateByVector3(Vector3(0.0, -6.0, 0.0))
-                ..scaleByVector3(Vector3.all(1.02)))
+              ..translateByVector3(Vector3(0.0, -6.0, 0.0))
+              ..scaleByVector3(Vector3.all(1.02)))
             : Matrix4.identity(),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: shadowColor.withAlpha(
-                isHovered ? (255 * 0.30).toInt() : (255 * 0.10).toInt(),
+              color: shadowColor.withValues(
+                alpha: isHovered ? 0.30 : 0.10,
               ),
               blurRadius: isHovered ? shadowBlur : 10,
               offset: const Offset(0, 8),

@@ -64,7 +64,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                     center: Alignment.center,
                     radius: 1.0 + (_controller.value * 0.2),
                     colors: [
-                      const Color(0xFF00D9FF).withAlpha((255 * 0.15).toInt()),
+                      const Color(0xFF00D9FF).withValues(alpha: 0.15),
                       const Color(0xFF0A0A0A),
                     ],
                   ),
@@ -94,7 +94,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                             boxShadow: [
                               BoxShadow(
                                 color: const Color(0xFF00D9FF)
-                                    .withAlpha((255 * 0.4).toInt()),
+                                    .withValues(alpha: 0.4),
                                 blurRadius: 40,
                                 spreadRadius: 10,
                               ),
@@ -152,7 +152,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                     'Portfolio',
                     style: TextStyle(
                       fontSize: 16,
-                      color: Colors.white.withAlpha((255 * 0.6).toInt()),
+                      color: Colors.white.withValues(alpha: 0.6),
                       letterSpacing: 1,
                     ),
                   ),
@@ -186,7 +186,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                     'Chargement des ressources...',
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors.white.withAlpha((255 * 0.5).toInt()),
+                      color: Colors.white.withValues(alpha: 0.5),
                     ),
                   ),
                 ),
@@ -231,7 +231,7 @@ class _AppVersionText extends StatelessWidget {
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 12,
-            color: Colors.white.withAlpha((255 * 0.3).toInt()),
+            color: Colors.white.withValues(alpha: 0.3),
           ),
         );
       },
@@ -252,7 +252,7 @@ class _LoadingPainter extends CustomPainter {
 
   _LoadingPainter({required this.progress, required this.color})
       : _backgroundPaint = Paint()
-          ..color = color.withAlpha((255 * 0.3).toInt())
+          ..color = color.withValues(alpha: 0.3)
           ..style = PaintingStyle.stroke
           ..strokeWidth = 3,
         _progressPaint = Paint()
@@ -264,7 +264,7 @@ class _LoadingPainter extends CustomPainter {
           ..color = color
           ..style = PaintingStyle.fill,
         _glowPaint = Paint()
-          ..color = color.withAlpha((255 * 0.3).toInt())
+          ..color = color.withValues(alpha: 0.3)
           ..style = PaintingStyle.fill;
 
   @override

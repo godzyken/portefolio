@@ -97,7 +97,7 @@ class _CheeseThemePickerState extends ConsumerState<CheeseThemePicker>
                               color: Theme.of(context)
                                   .colorScheme
                                   .onSurface
-                                  .withAlpha((255 * 0.7).toInt()),
+                                  .withValues(alpha: 0.7),
                             ),
                           ),
                         ),

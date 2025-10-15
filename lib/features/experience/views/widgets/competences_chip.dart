@@ -1,3 +1,5 @@
+import 'dart:developer' as developer;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -28,6 +30,7 @@ class _CompetenceChipState extends ConsumerState<CompetenceChip> {
         (comp) => comp.nom.toLowerCase() == widget.competenceName.toLowerCase(),
       );
     } catch (e) {
+      developer.log('Erreur lors de la récupération de la compétence : $e');
       return null;
     }
   }
@@ -70,13 +73,13 @@ class _CompetenceChipState extends ConsumerState<CompetenceChip> {
             radius: 1.2,
             colors: [
               // Effet de brillance en haut à gauche
-              comp.couleur.withAlpha(
-                (255 * widget.opacity * 1.3).clamp(0, 255).toInt(),
+              comp.couleur.withValues(
+                alpha: (255 * widget.opacity * 1.3).clamp(0, 255),
               ),
-              comp.couleur.withAlpha((255 * widget.opacity).toInt()),
+              comp.couleur.withValues(alpha: (255 * widget.opacity)),
               // Ombre en bas à droite
-              comp.couleur.withAlpha(
-                (255 * widget.opacity * 0.7).clamp(0, 255).toInt(),
+              comp.couleur.withValues(
+                alpha: (255 * widget.opacity * 0.7).clamp(0, 255),
               ),
             ],
           ),
@@ -89,21 +92,21 @@ class _CompetenceChipState extends ConsumerState<CompetenceChip> {
           boxShadow: [
             // Ombre principale
             BoxShadow(
-              color: Colors.black.withAlpha((255 * 0.3).toInt()),
+              color: Colors.black.withValues(alpha: 0.3),
               blurRadius: dragging ? 8 : 6,
               offset: Offset(0, dragging ? 4 : 3),
             ),
             // Effet lumineux si actif
             if (isActive && !dragging)
               BoxShadow(
-                color: comp.couleur.withAlpha((255 * 0.6).toInt()),
+                color: comp.couleur.withValues(alpha: 0.6),
                 blurRadius: 15,
                 spreadRadius: 3,
               ),
             // Reflet interne
             if (!dragging)
               BoxShadow(
-                color: Colors.white.withAlpha((255 * 0.2).toInt()),
+                color: Colors.white.withValues(alpha: 0.2),
                 blurRadius: 2,
                 offset: const Offset(-1, -1),
                 spreadRadius: -2,
@@ -128,7 +131,7 @@ class _CompetenceChipState extends ConsumerState<CompetenceChip> {
                       fontSize: 14,
                       shadows: [
                         Shadow(
-                          color: Colors.black.withAlpha((255 * 0.5).toInt()),
+                          color: Colors.black.withValues(alpha: 0.5),
                           offset: const Offset(1, 1),
                           blurRadius: 2,
                         ),
@@ -143,7 +146,7 @@ class _CompetenceChipState extends ConsumerState<CompetenceChip> {
                       fontSize: 8,
                       shadows: [
                         Shadow(
-                          color: Colors.black.withAlpha((255 * 0.5).toInt()),
+                          color: Colors.black.withValues(alpha: 0.5),
                           offset: const Offset(0.5, 0.5),
                           blurRadius: 1,
                         ),
@@ -169,8 +172,8 @@ class _CompetenceChipState extends ConsumerState<CompetenceChip> {
                     shape: BoxShape.circle,
                     gradient: RadialGradient(
                       colors: [
-                        Colors.white.withAlpha((255 * 0.4).toInt()),
-                        Colors.white.withAlpha((255 * 0.0).toInt()),
+                        Colors.white.withValues(alpha: 0.4),
+                        Colors.white.withValues(alpha: 0.0),
                       ],
                     ),
                   ),
@@ -273,7 +276,7 @@ class _CompetenceChipState extends ConsumerState<CompetenceChip> {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(
-                color: Colors.white.withAlpha((255 * (0.4 - i * 0.1)).toInt()),
+                color: Colors.white.withValues(alpha: (255 * (0.4 - i * 0.1))),
                 width: 1,
               ),
             ),

@@ -43,7 +43,7 @@ class AnimatedThemeSwitcherButton extends ConsumerWidget {
       duration: const Duration(milliseconds: 300),
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: color.withAlpha((255 * 0.1).toInt()),
+        color: color.withValues(alpha: 0.1),
         border: Border.all(color: color, width: 2),
       ),
       child: IconButton(

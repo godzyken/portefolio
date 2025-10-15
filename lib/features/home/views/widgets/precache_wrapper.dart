@@ -95,7 +95,7 @@ class _PrecacheWrapperState extends ConsumerState<PrecacheWrapper> {
                     'Certaines ressources n\'ont pas pu être chargées.\n'
                     'L\'application continuera avec les ressources disponibles.',
                     style: TextStyle(
-                      color: Colors.white.withAlpha((255 * 0.6).toInt()),
+                      color: Colors.white.withValues(alpha: 0.6),
                       fontSize: 12,
                     ),
                     textAlign: TextAlign.center,

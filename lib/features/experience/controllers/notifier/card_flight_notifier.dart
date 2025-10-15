@@ -8,17 +8,17 @@ class CardFlightNotifier extends Notifier<Map<String, CardFlightState>> {
     return {};
   }
 
-  /// Mettre à jour l'état d'une carte
-  void setStateForCard(String entreprise, CardFlightState newState) {
-    state = {...state, entreprise: newState};
+  /// ✅ Mettre à jour l'état d'une carte (utilise maintenant l'ID)
+  void setStateForCard(String cardId, CardFlightState newState) {
+    state = {...state, cardId: newState};
   }
 
-  /// Récupérer l'état d'une carte (utile dans les Widgets)
+  /// ✅ Récupérer l'état d'une carte
   CardFlightState getState(String id) {
     return state[id] ?? CardFlightState.inPile;
   }
 
-  /// Marquer toutes les cartes liées à un tag comme "flyingUp"
+  /// ✅ Marquer plusieurs cartes comme "flyingUp"
   void flyCardUp(List<String> cardIds) {
     final newState = {...state};
     for (var id in cardIds) {
@@ -27,16 +27,16 @@ class CardFlightNotifier extends Notifier<Map<String, CardFlightState>> {
     state = newState;
   }
 
-  /// Lancer l'animation de plusieurs cartes vers le haut
-  void flyCardsUp(List<String> entreprises) {
+  /// ✅ Lancer l'animation de plusieurs cartes vers le haut
+  void flyCardsUp(List<String> cardIds) {
     final newState = Map<String, CardFlightState>.from(state);
-    for (var e in entreprises) {
-      newState[e] = CardFlightState.flyingUp;
+    for (var id in cardIds) {
+      newState[id] = CardFlightState.flyingUp;
     }
     state = newState;
   }
 
-  /// Faire revenir toutes les cartes vers la pile
+  /// ✅ Faire revenir toutes les cartes vers la pile
   void resetCards(List<String> cardIds) {
     final newState = {...state};
     for (var id in cardIds) {
@@ -54,13 +54,9 @@ class CardFlightNotifier extends Notifier<Map<String, CardFlightState>> {
     });
   }
 
-  /// 🔹 Nouvelle méthode pour réinitialiser toutes les cartes
+  /// ✅ Réinitialiser toutes les cartes
   void resetAllCards() {
-    final newState = <String, CardFlightState>{};
-    for (var key in state.keys) {
-      newState[key] = CardFlightState.inPile;
-    }
-    state = newState;
+    state = {};
   }
 }
 
@@ -75,7 +71,9 @@ class ActiveTagsNotifier extends Notifier<List<String>> {
   }
 
   void addTag(String newTag) {
-    state = [...state, newTag];
+    if (!state.contains(newTag)) {
+      state = [...state, newTag];
+    }
   }
 
   void removeTag(String tagToRemove) {
@@ -84,5 +82,9 @@ class ActiveTagsNotifier extends Notifier<List<String>> {
 
   void clearTags() {
     state = [];
+  }
+
+  bool hasTag(String tag) {
+    return state.contains(tag);
   }
 }

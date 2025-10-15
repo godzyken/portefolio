@@ -115,7 +115,7 @@ class _SigDiscoveryMapState extends ConsumerState<SigDiscoveryMap>
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: Colors.orange.withAlpha((255 * 0.9).toInt()),
+              color: Colors.orange.withValues(alpha: 0.9),
               borderRadius: BorderRadius.circular(8),
             ),
             child: const Row(
@@ -146,11 +146,11 @@ class _SigDiscoveryMapState extends ConsumerState<SigDiscoveryMap>
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: Colors.green.withAlpha((255 * 0.9).toInt()),
+          color: Colors.green.withValues(alpha: 0.9),
           borderRadius: BorderRadius.circular(8),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withAlpha((255 * 0.2).toInt()),
+              color: Colors.black.withValues(alpha: 0.2),
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),

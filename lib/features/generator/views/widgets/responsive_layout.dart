@@ -172,8 +172,8 @@ class _AnimatedImage extends ConsumerWidget {
                     color: Colors.white,
                   ),
                 ),
-                backgroundColor: Colors.green.shade700.withAlpha(
-                  (255 * 0.8).toInt(),
+                backgroundColor: Colors.green.shade700.withValues(
+                  alpha: 0.8,
                 ),
                 visualDensity: VisualDensity.compact,
               ),
@@ -263,7 +263,7 @@ class _TextContent extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                     color: isDesktop
-                        ? Colors.indigo.withAlpha((255 * 0.05).toInt())
+                        ? Colors.indigo.withValues(alpha: 0.05)
                         : Colors.white10,
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -301,7 +301,7 @@ class _TextContent extends StatelessWidget {
                         vertical: 2,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.grey.withAlpha((255 * 0.2).toInt()),
+                        color: Colors.grey.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(

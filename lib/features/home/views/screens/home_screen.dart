@@ -145,7 +145,7 @@ class HomeScreen extends ConsumerWidget {
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: theme.colorScheme.primary.withAlpha(80),
+                color: theme.colorScheme.primary.withValues(alpha: 0.3),
                 blurRadius: 30,
                 spreadRadius: 5,
               ),
@@ -190,7 +190,10 @@ class HomeScreen extends ConsumerWidget {
           Text(
             "Expert en Flutter, Angular et solutions cloud.\nCréation d'applications performantes et élégantes.",
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withAlpha(180),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onSurface
+                      .withValues(alpha: 0.7),
                   height: 1.6,
                 ),
             textAlign: TextAlign.left,
@@ -211,7 +214,7 @@ class HomeScreen extends ConsumerWidget {
           height: 8,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: theme.colorScheme.primary.withAlpha(80),
+            color: theme.colorScheme.primary.withValues(alpha: 0.3),
           ),
         ),
       ),

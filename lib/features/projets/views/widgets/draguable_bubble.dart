@@ -172,15 +172,14 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
         borderRadius: spec.borderRadius,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(
-                isDragging ? (255 * 0.5).toInt() : (255 * 0.3).toInt()),
+            color: Colors.black.withValues(alpha: isDragging ? 0.5 : 0.3),
             blurRadius: isDragging ? 40 : 25,
             spreadRadius: isDragging ? 8 : 3,
             offset: Offset(0, isDragging ? 20 : 12),
           ),
           if (widget.isSelected)
             BoxShadow(
-              color: spec.accentColor.withAlpha(153),
+              color: spec.accentColor.withValues(alpha: 0.6),
               blurRadius: 25,
               spreadRadius: 5,
             ),
@@ -200,8 +199,8 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
                 end: Alignment.bottomRight,
                 colors: [
                   spec.bodyColor,
-                  spec.bodyColor.withAlpha(217),
-                  spec.bodyColor.withAlpha(179),
+                  spec.bodyColor.withValues(alpha: 0.85),
+                  spec.bodyColor.withValues(alpha: 0.7),
                 ],
                 stops: const [0.0, 0.5, 1.0],
               ),
@@ -215,7 +214,7 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
                   begin: Alignment.topLeft,
                   end: Alignment.center,
                   colors: [
-                    Colors.white.withAlpha((255 * 0.15).toInt()),
+                    Colors.white.withValues(alpha: 0.15),
                     Colors.transparent,
                   ],
                 ),
@@ -260,7 +259,7 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.green.withAlpha((255 * 0.6).toInt()),
+                            color: Colors.green.withValues(alpha: 0.6),
                             blurRadius: 12,
                             spreadRadius: 3,
                           ),
@@ -298,7 +297,7 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
           child: Icon(
             spec.icon,
             size: screenWidth * 0.25,
-            color: Colors.white.withAlpha((255 * 0.2).toInt()),
+            color: Colors.white.withValues(alpha: 0.2),
           ),
         ),
       );
@@ -477,7 +476,7 @@ class DeviceSpec {
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withAlpha((255 * 0.5).toInt()),
+                  color: Colors.black.withValues(alpha: 0.5),
                   blurRadius: 4,
                   offset: const Offset(2, 0),
                 ),
@@ -492,7 +491,7 @@ class DeviceSpec {
             width: 16,
             height: 16,
             decoration: BoxDecoration(
-              color: Colors.green.shade700.withAlpha((255 * 0.3).toInt()),
+              color: Colors.green.shade700.withValues(alpha: 0.3),
               shape: BoxShape.circle,
               border: Border.all(color: Colors.green.shade800, width: 2),
             ),
@@ -552,7 +551,7 @@ class DeviceSpec {
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withAlpha((255 * 0.3).toInt()),
+                  color: Colors.black.withValues(alpha: 0.3),
                   blurRadius: 2,
                 ),
               ],
@@ -574,7 +573,7 @@ class DeviceSpec {
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withAlpha((255 * 0.3).toInt()),
+                  color: Colors.black.withValues(alpha: 0.3),
                   blurRadius: 2,
                 ),
               ],
@@ -592,7 +591,7 @@ class DeviceSpec {
               borderRadius: BorderRadius.circular(4),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withAlpha((255 * 0.5).toInt()),
+                  color: Colors.black.withValues(alpha: 0.5),
                   blurRadius: 4,
                   offset: const Offset(0, 2),
                 ),
@@ -611,7 +610,7 @@ class DeviceSpec {
               borderRadius: BorderRadius.circular(3),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withAlpha((255 * 0.5).toInt()),
+                  color: Colors.black.withValues(alpha: 0.5),
                   blurRadius: 4,
                   offset: const Offset(0, 2),
                 ),

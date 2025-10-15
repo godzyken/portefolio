@@ -54,7 +54,7 @@ class _ThemeSelectorState extends ConsumerState<ThemeSelector> {
                 duration: const Duration(milliseconds: 200),
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: theme.primaryColor.withAlpha((255 * 0.1).toInt()),
+                  color: theme.primaryColor.withValues(alpha: 0.1),
                   border: Border.all(
                     color: isSelected ? theme.primaryColor : Colors.grey,
                     width: 2,

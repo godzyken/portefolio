@@ -93,7 +93,7 @@ class MainScaffold extends ConsumerWidget {
                           color: Theme.of(context)
                               .colorScheme
                               .primary
-                              .withAlpha((255 * 0.6).toInt()),
+                              .withValues(alpha: 0.6),
                           blurRadius: 16,
                           spreadRadius: 2,
                         ),

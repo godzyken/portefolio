@@ -55,7 +55,7 @@ class _ThemePreviewScreenState extends ConsumerState<ThemePreviewScreen> {
                   ),
                   decoration: BoxDecoration(
                     color: isSelected
-                        ? theme.primaryColor.withAlpha((255 * 0.1).toInt())
+                        ? theme.primaryColor.withValues(alpha: 0.1)
                         : null,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
@@ -74,8 +74,8 @@ class _ThemePreviewScreenState extends ConsumerState<ThemePreviewScreen> {
                         boxShadow: isSelected
                             ? [
                                 BoxShadow(
-                                  color: theme.primaryColor
-                                      .withAlpha((255 * 0.4).toInt()),
+                                  color:
+                                      theme.primaryColor.withValues(alpha: 0.4),
                                   blurRadius: 12,
                                   spreadRadius: 2,
                                 )
@@ -290,8 +290,7 @@ class _ThemePreviewScreenState extends ConsumerState<ThemePreviewScreen> {
                 ),
                 Chip(
                   label: const Text('React'),
-                  backgroundColor:
-                      theme.primaryColor.withAlpha((255 * 0.2).toInt()),
+                  backgroundColor: theme.primaryColor.withValues(alpha: 0.2),
                 ),
                 Chip(
                   label: const Text('Node.js'),

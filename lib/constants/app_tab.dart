@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../core/debug/assets_debugger.dart';
 import '../core/provider/providers.dart';
 import '../features/experience/views/widgets/experience_filter_chips.dart';
 import '../features/parametres/themes/views/widgets/theme_selector.dart';
@@ -38,7 +37,7 @@ enum AppTab {
       case AppTab.home:
         return AppBarConfig(title: "Godzyken Portefolio", actions: [
           // Bouton de debug (à retirer en production)
-          IconButton(
+/*          IconButton(
             icon: const Icon(Icons.bug_report),
             tooltip: 'Debug Assets',
             onPressed: () {
@@ -47,7 +46,7 @@ enum AppTab {
                 MaterialPageRoute(builder: (_) => const AssetsDebugger()),
               );
             },
-          ),
+          ),*/
           IconButton(
             icon: const Icon(Icons.palette_outlined),
             tooltip: 'Personnaliser le thème',
@@ -116,8 +115,10 @@ enum AppTab {
                       },
                       selectedColor: Theme.of(context).colorScheme.onPrimary,
                       color: Theme.of(context).colorScheme.primary,
-                      fillColor:
-                          Theme.of(context).colorScheme.primary.withAlpha(50),
+                      fillColor: Theme.of(context)
+                          .colorScheme
+                          .primary
+                          .withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(8),
                       children: const [
                         Text("⇆", style: TextStyle(fontSize: 12)), // Swipe

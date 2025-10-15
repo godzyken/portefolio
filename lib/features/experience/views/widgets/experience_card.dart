@@ -392,20 +392,20 @@ class _BulletString extends ConsumerWidget {
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      primaryColor.withAlpha((255 * 0.08).toInt()),
-                      primaryColor.withAlpha((255 * 0.03).toInt()),
+                      primaryColor.withValues(alpha: 0.08),
+                      primaryColor.withValues(alpha: 0.03),
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                    color: primaryColor.withAlpha((255 * 0.15).toInt()),
+                    color: primaryColor.withValues(alpha: 0.15),
                     width: 1.5,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withAlpha((255 * 0.15).toInt()),
+                      color: Colors.black.withValues(alpha: 0.15),
                       blurRadius: 6,
                       offset: const Offset(0, 3),
                     ),
@@ -426,7 +426,7 @@ class _BulletString extends ConsumerWidget {
                           gradient: LinearGradient(
                             colors: [
                               primaryColor,
-                              primaryColor.withAlpha((255 * 0.08).toInt()),
+                              primaryColor.withValues(alpha: 0.08),
                             ],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
@@ -449,9 +449,7 @@ class _BulletString extends ConsumerWidget {
                                 vertical: 2,
                               ),
                               decoration: BoxDecoration(
-                                color: primaryColor.withAlpha(
-                                  (255 * 0.1).toInt(),
-                                ),
+                                color: primaryColor.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Text(
@@ -491,7 +489,7 @@ class _BulletString extends ConsumerWidget {
           // --- Petit triangle ---
           CustomPaint(
             painter: _TrianglePainter(
-              color: primaryColor.withAlpha((255 * 0.15).toInt()),
+              color: primaryColor.withValues(alpha: 0.15),
             ),
             size: const Size(16, 8),
           ),
@@ -508,7 +506,7 @@ class _TrianglePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()..color = color.withAlpha((255 * 0.15).toInt());
+    final paint = Paint()..color = color.withValues(alpha: 0.15);
     final path = Path()
       ..moveTo(0, 0)
       ..lineTo(size.width / 2, size.height)

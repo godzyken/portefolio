@@ -194,13 +194,13 @@ class _InteractivePotState extends ConsumerState<InteractivePot>
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.black.withAlpha(120),
+                color: Colors.black.withValues(alpha: 120),
                 border:
                     glow ? Border.all(color: Colors.yellow, width: 4) : null,
                 boxShadow: [
                   if (glow)
                     BoxShadow(
-                      color: Colors.yellow.withAlpha(150),
+                      color: Colors.yellow.withValues(alpha: 150),
                       blurRadius: 25,
                     ),
                 ],

@@ -106,7 +106,7 @@ class SmartImage extends StatelessWidget {
             // Couche 1: Le fond avec sa propre opacité
             Positioned.fill(
               child: Container(
-                color: color.withAlpha((255 * 0.1).toInt()),
+                color: color.withValues(alpha: 0.1),
               ),
             ),
             // Couche 2: Le contenu (icône et texte)

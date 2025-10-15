@@ -17,7 +17,7 @@ class CodeHighlightList extends StatelessWidget {
         color: Colors.black87,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: Colors.greenAccent.withAlpha((255 * 0.6).toInt()),
+          color: Colors.greenAccent.withValues(alpha: 0.6),
         ),
       ),
       child: Column(

@@ -31,8 +31,8 @@ class _ProjectsScreenState extends ConsumerState<ProjectsScreen> {
         // --- Contenu principal ---
         Positioned.fill(
           child: Container(
-            color: Colors.black.withAlpha(
-              (255 * 0.4).toInt(),
+            color: Colors.black.withValues(
+              alpha: 0.4,
             ), // voile pour lisibilité
             child: projectsAsync.when(
               data: (projects) =>
