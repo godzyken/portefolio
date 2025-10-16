@@ -21,6 +21,7 @@ import '../affichage/navigator_key_provider.dart';
 import '../exeptions/state/global_error_state.dart';
 import '../logging/app_logger.dart';
 import '../notifier/notifiers.dart';
+import '../service/bootstrap_service.dart';
 
 /// 🔹 Titre dynamique de l’AppBar
 final appBarTitleProvider =
@@ -34,6 +35,11 @@ final appBarActionsProvider =
 /// 🔹 Drawer dynamique
 final appBarDrawerProvider =
     NotifierProvider<AppBarDrawerNotifier, Widget?>(AppBarDrawerNotifier.new);
+
+/// 🔹 Bootstrap service
+final bootstrapFutureProvider = FutureProvider((ref) async {
+  return await BootstrapService.initialize();
+});
 
 /// 🔹 Location route actuelle
 final currentLocationProvider =

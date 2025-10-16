@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:portefolio/features/projets/providers/projects_wakatime_service_provider.dart';
 
 import '../../../../core/logging/app_logger.dart';
 import '../../../../core/provider/providers.dart';
@@ -15,7 +16,7 @@ class ProjectsScreen extends ConsumerStatefulWidget {
 class _ProjectsScreenState extends ConsumerState<ProjectsScreen> {
   @override
   Widget build(BuildContext context) {
-    final projectsAsync = ref.watch(projectsFutureProvider);
+    final projectsAsync = ref.watch(enrichedProjectsProvider);
     final selected = ref.watch(selectedProjectsProvider);
 
     return Stack(

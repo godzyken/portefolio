@@ -9,7 +9,8 @@ import '../../projets/data/project_data.dart';
 /// Provider pour la clé API WakaTime (stockée localement)
 final wakaTimeApiKeyProvider = FutureProvider<String?>((ref) async {
   final prefs = ref.read(sharedPreferencesProvider);
-  return prefs.getString('wakatime_api_key');
+  const apiKey = String.fromEnvironment('WAKATIME_API_KEY');
+  return prefs.getString(apiKey);
 });
 
 /// Provider pour le service WakaTime
@@ -67,18 +68,46 @@ final enrichedProjectsProvider = FutureProvider<List<ProjectInfo>>((ref) async {
     wakaTimeProjectDurationsProvider('last_7_days').future,
   );
 
+  if (wakaDurations.isEmpty) {
+    return jsonProjects;
+  }
+
   // 3. Créer une map des projets WakaTime par nom
+  final durationMap = <String, Duration>{};
+  for (var durationEntry in wakaDurations) {
+    durationMap[durationEntry.name.toLowerCase()] =
+        Duration(seconds: durationEntry.totalSeconds.round());
+  }
   final wakaProjectMap = {for (var p in wakaProjects) p.name.toLowerCase(): p};
 
   // 4. Enrichir chaque projet JSON avec les données WakaTime
-  return jsonProjects.map((project) {
+  final enrichedList = jsonProjects.map((project) {
     final projectNameLower = project.title.toLowerCase();
-    final wakaProject = wakaProjectMap[projectNameLower];
+    Duration? timeSpent;
+
+    // Chercher une correspondance dans la map des durées.
+    // Cette logique peut être aussi simple ou complexe que nécessaire.
+    // Ici, on cherche une correspondance exacte ou partielle.
+    for (var entry in durationMap.entries) {
+      final wakaName = entry.key;
+      if (wakaName.contains(projectNameLower) ||
+          projectNameLower.contains(wakaName)) {
+        timeSpent = entry.value;
+        break; // On a trouvé une correspondance, on arrête la boucle.
+      }
+    }
+
+    // Si on a trouvé une durée, on crée une copie enrichie du projet.
+    if (timeSpent != null) {
+      return project.copyWith(timeSpent: timeSpent);
+    }
 
     // Si le projet existe dans WakaTime, on pourrait ajouter des métadonnées
     // Pour l'instant, on retourne tel quel
     return project;
   }).toList();
+
+  return enrichedList;
 });
 
 /// Provider pour vérifier si un projet est tracké sur WakaTime

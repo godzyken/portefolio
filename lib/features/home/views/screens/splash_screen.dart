@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+import '../../../../core/provider/precache_providers.dart';
+import '../../../../core/routes/router.dart';
+
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
 
@@ -50,6 +53,17 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
+    final precacheAsync = ref.watch(precacheAllAssetsProvider(context));
+
+    // 🔹 Une fois terminé, on redirige vers la Home
+    precacheAsync.whenData((_) async {
+      await Future.delayed(const Duration(milliseconds: 800));
+      if (mounted) {
+        final router = ref.read(goRouterProvider);
+        router.go('/home'); // 🔁 adapte selon ton route name
+      }
+    });
+
     return Scaffold(
       backgroundColor: const Color(0xFF0A0A0A),
       body: Stack(

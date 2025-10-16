@@ -86,7 +86,7 @@
   },
   {
     "id": "projet_5",
-    "title": "Portfolio",
+    "title": "Portefolio",
     "points": [
       "🔗 Présentation de mes projets personnels",
       "🌐 Site statique avec sections : projets, contact, à propos",
@@ -95,8 +95,7 @@
       "📂 Hébergement via GitHub Pages"
     ],
     "image": [
-      "https://wakatime.com/badge/user/d44d9645-f329-4729-a92d-c1c4ce039e23/project/204ffc91-4509-4e44-ae6b-5463463db5a3.svg",
-      "https://wakatime.com/badge/user/d44d9645-f329-4729-a92d-c1c4ce039e23/project/1c23907d-1768-4fa8-a9f5-fadd331cf5d9.svg"
+      "assets/images/logo_godzyken.png"
     ],
     "platform": ["Web", "Desktop", "Mobile"],
     "tags": ["Flutter", "GitHub", "FlutterFlow"]

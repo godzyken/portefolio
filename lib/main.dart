@@ -1,6 +1,7 @@
 import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/routes/router.dart';
@@ -88,6 +89,10 @@ class MyRouterApp extends ConsumerWidget {
 // ====================
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  debugProfileBuildsEnabled = true;
+  debugProfilePaintsEnabled = true;
+  debugProfileLayoutsEnabled = true;
 
   // Capturer les erreurs Flutter
   FlutterError.onError = (details) {

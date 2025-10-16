@@ -8,6 +8,7 @@ class ProjectInfo {
   final String? lienProjet;
   final List<String>? platform;
   final List<String>? tags;
+  final Duration? timeSpent;
 
   ProjectInfo({
     required this.id,
@@ -17,6 +18,7 @@ class ProjectInfo {
     this.lienProjet,
     this.platform,
     this.tags,
+    this.timeSpent,
   });
 
   // Getter qui retourne les images nettoyées
@@ -40,6 +42,28 @@ class ProjectInfo {
       }
       return img;
     }).toList();
+  }
+
+  ProjectInfo copyWith({
+    String? id,
+    String? title,
+    List<String>? points,
+    List<String>? image,
+    String? lienProjet,
+    List<String>? platform,
+    List<String>? tags,
+    Duration? timeSpent,
+  }) {
+    return ProjectInfo(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      points: points ?? this.points,
+      image: image ?? this.image,
+      lienProjet: lienProjet ?? this.lienProjet,
+      platform: platform ?? this.platform,
+      tags: tags ?? this.tags,
+      timeSpent: timeSpent ?? this.timeSpent,
+    );
   }
 
   factory ProjectInfo.fromJson(Map<String, dynamic> json) {

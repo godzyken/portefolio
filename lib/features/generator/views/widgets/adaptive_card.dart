@@ -18,6 +18,7 @@ class AdaptiveCard extends ConsumerWidget {
   final List<Widget>? trailingActions;
   final Widget Function(BuildContext, Size)? imageBuilder;
   final Widget Function(BuildContext, Size)? videoBuilder;
+  final Widget Function(BuildContext, Size)? badgeBuilder;
 
   const AdaptiveCard({
     super.key,
@@ -28,6 +29,7 @@ class AdaptiveCard extends ConsumerWidget {
     this.trailingActions,
     this.imageBuilder,
     this.videoBuilder,
+    this.badgeBuilder,
   });
 
   @override
@@ -71,6 +73,7 @@ class AdaptiveCard extends ConsumerWidget {
                 imagePath: imagePath,
                 imageBuilder: imageBuilder,
                 videoBuilder: videoBuilder,
+                badgeBuilder: badgeBuilder,
                 trailingActions: trailingActions,
                 constraints: constraints,
               ),

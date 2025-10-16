@@ -15,6 +15,7 @@ class ResponsiveLayout extends ConsumerWidget {
   final List<Widget>? trailingActions;
   final Widget Function(BuildContext, Size)? imageBuilder;
   final Widget Function(BuildContext, Size)? videoBuilder;
+  final Widget Function(BuildContext, Size)? badgeBuilder;
   final BoxConstraints constraints;
 
   const ResponsiveLayout({
@@ -24,6 +25,7 @@ class ResponsiveLayout extends ConsumerWidget {
     required this.imagePath,
     required this.imageBuilder,
     required this.videoBuilder,
+    required this.badgeBuilder,
     required this.trailingActions,
     required this.constraints,
   });
@@ -41,6 +43,7 @@ class ResponsiveLayout extends ConsumerWidget {
           imagePath: imagePath,
           imageBuilder: imageBuilder,
           videoBuilder: videoBuilder,
+          badgeBuilder: badgeBuilder,
           size: Size(info.size.width, info.size.width / 1.2),
         );
 
@@ -117,6 +120,7 @@ class _AnimatedImage extends ConsumerWidget {
   final String? imagePath;
   final Widget Function(BuildContext, Size)? imageBuilder;
   final Widget Function(BuildContext, Size)? videoBuilder;
+  final Widget Function(BuildContext, Size)? badgeBuilder;
   final Size size;
 
   const _AnimatedImage({
@@ -125,6 +129,7 @@ class _AnimatedImage extends ConsumerWidget {
     required this.imagePath,
     required this.imageBuilder,
     required this.videoBuilder,
+    required this.badgeBuilder,
     required this.size,
   });
 

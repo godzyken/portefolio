@@ -9,6 +9,7 @@ import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 import '../../../../core/provider/providers.dart';
 import '../../data/project_data.dart';
+import '../../providers/projects_wakatime_service_provider.dart';
 
 class ProjectCard extends ConsumerWidget {
   final ProjectInfo project;
@@ -76,6 +77,10 @@ class ProjectCard extends ConsumerWidget {
               ),
             );
           },
+          badgeBuilder: (context, size) => Padding(
+            padding: const EdgeInsets.all(8),
+            child: WakaTimeDetailedBadge(projectName: project.title),
+          ),
         ),
       ),
     );
@@ -121,13 +126,31 @@ class ProjectCard extends ConsumerWidget {
   ) {
     final youtubeId = extractYoutubeId(project.lienProjet ?? '');
     final info = ref.watch(responsiveInfoProvider);
+    final isTracked = ref.watch(isProjectTrackedProvider(project.title));
 
     return AlertDialog(
-      title: Text(
-        project.title,
-        style: Theme.of(
-          context,
-        ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+      title: Row(
+        children: [
+          Expanded(
+            child: Text(
+              project.title,
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge
+                  ?.copyWith(fontWeight: FontWeight.bold),
+            ),
+          ),
+          // 🔹 Badge WakaTime dans le dialogue
+          if (isTracked)
+            Padding(
+              padding: const EdgeInsets.only(left: 8),
+              child: WakaTimeBadge(
+                projectName: project.title,
+                showTimeSpent: true,
+                showTrackingIndicator: true,
+              ),
+            ),
+        ],
       ),
       content: SingleChildScrollView(
         child: Column(
