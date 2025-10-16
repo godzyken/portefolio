@@ -4,6 +4,7 @@ import 'package:portefolio/features/projets/providers/projects_wakatime_service_
 
 import '../../../../core/logging/app_logger.dart';
 import '../../../../core/provider/providers.dart';
+import '../../providers/projet_providers.dart';
 import '../widgets/project_grid_view.dart';
 
 class ProjectsScreen extends ConsumerStatefulWidget {

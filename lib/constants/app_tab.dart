@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../core/provider/json_data_provider.dart';
 import '../core/provider/providers.dart';
 import '../features/experience/views/widgets/experience_filter_chips.dart';
 import '../features/parametres/themes/views/widgets/theme_selector.dart';
 import '../features/projets/data/project_data.dart';
+import '../features/projets/providers/projet_providers.dart';
 
 class AppBarConfig {
   final String title;
@@ -59,7 +61,7 @@ enum AppTab {
         ]);
 
       case AppTab.experiences:
-        final expAsync = ref.watch(experiencesFutureProvider);
+        final expAsync = ref.watch(experiencesProvider);
         final isPageView = ref.watch(isPageViewProvider);
 
         return AppBarConfig(
@@ -132,7 +134,7 @@ enum AppTab {
 
       case AppTab.projects:
         final projects = ref
-            .read(projectsFutureProvider)
+            .read(projectsProvider)
             .maybeWhen(data: (list) => list, orElse: () => <ProjectInfo>[]);
 
         return AppBarConfig(

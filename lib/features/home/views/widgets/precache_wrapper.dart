@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/provider/providers.dart';
+import '../../../../core/provider/precache_providers.dart';
 import '../screens/splash_screen.dart';
 
 /// Widget qui gère le précache des assets avec options
@@ -54,7 +54,7 @@ class _PrecacheWrapperState extends ConsumerState<PrecacheWrapper> {
 
     // Choisir le bon provider selon la configuration
     final precacheProvider = widget.useParallelPrecache
-        ? precacheAllAssetsParallelProvider
+        ? precacheAllAssetsParallelProvider(context)
         : precacheAllAssetsProvider(context);
 
     final precacheAsync = ref.watch(precacheProvider);
@@ -143,7 +143,7 @@ class FastPrecacheWrapper extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final precacheAsync = ref.watch(precacheCriticalAssetsProvider);
+    final precacheAsync = ref.watch(precacheAllAssetsParallelProvider(context));
 
     return precacheAsync.when(
       data: (_) => child ?? const SizedBox.shrink(),

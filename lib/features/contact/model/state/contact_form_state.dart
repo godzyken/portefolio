@@ -21,11 +21,12 @@ class ContactFormState {
     String? message,
     SubmitStatus? status,
     String? error,
-  }) => ContactFormState(
-    name: name ?? this.name,
-    email: email ?? this.email,
-    message: message ?? this.message,
-    status: status ?? this.status,
-    error: error,
-  );
+  }) =>
+      ContactFormState(
+        name: name ?? this.name,
+        email: email ?? this.email,
+        message: message ?? this.message,
+        status: status ?? this.status,
+        error: error,
+      );
 }

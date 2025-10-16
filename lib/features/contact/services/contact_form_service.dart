@@ -14,10 +14,10 @@ class WhatsAppService {
   final String phone;
 
   WhatsAppService(this.phone)
-    : assert(
-        RegExp(r'^[1-9]\d{6,14}$').hasMatch(phone),
-        'Numéro international invalide',
-      );
+      : assert(
+          RegExp(r'^[1-9]\d{6,14}$').hasMatch(phone),
+          'Numéro international invalide',
+        );
 
   Future<void> send(String name, String email, String msg) async {
     final url = Uri.parse(

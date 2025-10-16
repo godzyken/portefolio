@@ -5,6 +5,8 @@ import 'package:portefolio/core/provider/providers.dart';
 import 'package:portefolio/features/experience/views/screens/experience_screens_extentions.dart';
 
 import '../../../../core/logging/app_logger.dart';
+import '../../../../core/provider/experience_providers.dart';
+import '../../../../core/provider/json_data_provider.dart';
 import '../widgets/experience_widgets_extentions.dart';
 
 class ExperiencesScreen extends ConsumerStatefulWidget {
@@ -17,7 +19,7 @@ class ExperiencesScreen extends ConsumerStatefulWidget {
 class _ExperiencesScreenState extends ConsumerState<ExperiencesScreen> {
   @override
   Widget build(BuildContext context) {
-    final experiencesAsync = ref.watch(experiencesFutureProvider);
+    final experiencesAsync = ref.watch(experiencesProvider);
     final isPageView = ref.watch(isPageViewProvider);
     final info = ref.watch(responsiveInfoProvider);
 

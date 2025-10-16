@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/provider/providers.dart';
+import '../../../projets/providers/projet_providers.dart';
 
 class PdfScreen extends ConsumerWidget {
   const PdfScreen({super.key});

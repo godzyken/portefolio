@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/features/home/data/services_data.dart';
 
 import '../../../../core/affichage/screen_size_detector.dart';
-import '../../../../core/provider/providers.dart';
+import '../../../../core/provider/json_data_provider.dart';
 import '../../../home/views/widgets/services_card.dart';
 import '../../../parametres/themes/views/widgets/space_background.dart';
 
@@ -12,7 +12,7 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final servicesAsync = ref.watch(servicesProvider);
+    final servicesAsync = ref.watch(servicesJsonProvider);
     final info = ref.watch(responsiveInfoProvider);
     final theme = Theme.of(context);
 

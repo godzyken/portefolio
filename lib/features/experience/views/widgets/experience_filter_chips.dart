@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/provider/providers.dart';
+import '../../../../core/provider/experience_providers.dart';
 
 class ExperienceFilterChips extends ConsumerStatefulWidget {
   const ExperienceFilterChips({super.key, required this.tags});

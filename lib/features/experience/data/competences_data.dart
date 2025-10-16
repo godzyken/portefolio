@@ -231,6 +231,5 @@ final Map<String, Color> tagColors = {
 };
 
 // Export des tags pour compatibilité
-final List<String> allTags = competences
-    .map((c) => c.nom.toLowerCase())
-    .toList();
+final List<String> allTags =
+    competences.map((c) => c.nom.toLowerCase()).toList();

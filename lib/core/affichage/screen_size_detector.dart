@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:portefolio/core/notifier/notifiers.dart';
 
+import '../notifier/screen_notifiers.dart';
 import 'grid_config.dart';
 
 /// 📐 Breakpoints centralisés

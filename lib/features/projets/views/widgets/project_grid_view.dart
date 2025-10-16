@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/project_data.dart';
-import '../../providers/project_positions_provider.dart';
+import '../../providers/projet_providers.dart';
 import 'draguable_bubble.dart';
 
 class ProjectGridView extends ConsumerStatefulWidget {

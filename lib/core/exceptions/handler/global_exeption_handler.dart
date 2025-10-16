@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:portefolio/core/provider/providers.dart';
 
+import '../../provider/error_providers.dart';
 import '../state/global_error_state.dart';
 
 // Déclare un container global accessible partout

@@ -2,18 +2,13 @@ import 'package:flutter/material.dart';
 
 @immutable
 class AppImages {
-  final List<String> projects;
-  final List<String> experiences;
-  final List<String> services;
-  final List<String> network;
+  final List<String> local; // Images locales (assets)
+  final List<String> network; // Images réseau (URLs)
 
   const AppImages({
-    required this.projects,
-    required this.experiences,
-    required this.services,
+    required this.local,
     required this.network,
   });
 
-  List<String> get all =>
-      [...projects, ...experiences, ...services, ...network];
+  List<String> get all => [...local, ...network];
 }

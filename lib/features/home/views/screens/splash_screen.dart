@@ -60,7 +60,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       await Future.delayed(const Duration(milliseconds: 800));
       if (mounted) {
         final router = ref.read(goRouterProvider);
-        router.go('/home'); // 🔁 adapte selon ton route name
+        router.go('/'); // 🔁 adapte selon ton route name
       }
     });
 

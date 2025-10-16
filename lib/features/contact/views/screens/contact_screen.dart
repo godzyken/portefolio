@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/provider/providers.dart';
+import '../../../../core/provider/app_providers.dart';
 import '../../model/state/contact_form_state.dart';
 import '../../providers/contact_form_provider.dart';
 

@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:portefolio/features/generator/data/location_data.dart';
 
+import '../../../../core/provider/location_providers.dart';
 import '../../../../core/provider/providers.dart';
 
 class SigDiscoveryMap extends ConsumerStatefulWidget {

@@ -2,7 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/features/parametres/themes/provider/theme_repository_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../core/provider/providers.dart';
+import '../../../core/provider/json_data_provider.dart';
 import '../../generator/services/wakatime_service.dart';
 import '../../projets/data/project_data.dart';
 
@@ -60,7 +60,7 @@ final wakaTimeProjectDurationsProvider =
 /// Provider combiné: fusionne projects.json avec données WakaTime
 final enrichedProjectsProvider = FutureProvider<List<ProjectInfo>>((ref) async {
   // 1. Charger les projets depuis le JSON
-  final jsonProjects = await ref.watch(projectsFutureProvider.future);
+  final jsonProjects = await ref.watch(projectsProvider.future);
 
   // 2. Récupérer les données WakaTime
   final wakaProjects = await ref.watch(wakaTimeProjectsProvider.future);

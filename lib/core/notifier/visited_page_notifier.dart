@@ -15,8 +15,3 @@ class VisitedPagesNotifier extends Notifier<Set<String>> {
     return requiredPages.every(state.contains);
   }
 }
-
-final visitedPagesProvider =
-    NotifierProvider<VisitedPagesNotifier, Set<String>>(
-  VisitedPagesNotifier.new,
-);
