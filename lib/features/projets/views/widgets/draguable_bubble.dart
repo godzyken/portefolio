@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/features/parametres/views/widgets/smart_image.dart';
 import 'package:portefolio/features/projets/views/widgets/project_card.dart';
-import 'package:vector_math/vector_math_64.dart' show Vector3;
 
 import '../../data/project_data.dart';
 
@@ -126,12 +125,7 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
                 math.cos(_floatCtrl.value * math.pi * 2) * floatAmplitude;
 
             return Transform(
-              transform: Matrix4.identity()
-                ..setEntry(3, 2, 0.0008) // Perspective
-                ..rotateX(rotX + floatX)
-                ..rotateY(rotY + floatY)
-                ..rotateZ(rotZ * (isDragging ? 1.5 : 1.0))
-                ..multiply(_applyScale(1.0)),
+              transform: _build3DTransform(floatX, floatY),
               alignment: Alignment.center,
               child: Transform.rotate(
                 angle: widget.rotationAngle,
@@ -149,11 +143,18 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
     );
   }
 
-  Matrix4 _applyScale(double scale) {
-    const bool is3DEnhanced = true;
-    final m = Matrix4.identity();
-    // Effet 3D : légère distorsion entre X et Y
-    m.scaleByVector3(Vector3(scale, scale * 0.95, 1.0));
+  Matrix4 _build3DTransform(double floatX, double floatY) {
+    final perspective = 0.0012; // + de profondeur mais sans distorsion
+    final tiltX = rotX + floatX * 1.2;
+    final tiltY = rotY + floatY * 1.2;
+    final zRotation = rotZ * (isDragging ? 1.4 : 1.0);
+
+    final m = Matrix4.identity()
+      ..setEntry(3, 2, perspective)
+      ..rotateX(tiltX)
+      ..rotateY(tiltY)
+      ..rotateZ(zRotation);
+
     return m;
   }
 
@@ -172,10 +173,10 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
         borderRadius: spec.borderRadius,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: isDragging ? 0.5 : 0.3),
+            color: Colors.black.withValues(alpha: isDragging ? 0.6 : 0.4),
             blurRadius: isDragging ? 40 : 25,
             spreadRadius: isDragging ? 8 : 3,
-            offset: Offset(0, isDragging ? 20 : 12),
+            offset: Offset(-rotY, isDragging ? 20 : 12),
           ),
           if (widget.isSelected)
             BoxShadow(
