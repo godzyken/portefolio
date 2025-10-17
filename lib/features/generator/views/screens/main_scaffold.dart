@@ -42,52 +42,49 @@ class MainScaffold extends ConsumerWidget {
       body: Stack(
         children: [
           // Le contenu de la page prend tout l'espace
-          Positioned.fill(
-            child: PageStorage(
-              bucket: PageStorageBucket(),
-              // ... Votre AnimatedSwitcher reste ici, c'est parfait
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 600),
-                // ... toute votre logique AnimatedSwitcher
-                transitionBuilder: (child, animation) {
-                  final rotate = Tween(begin: 1.0, end: 0.0).animate(animation);
-                  return AnimatedBuilder(
-                    animation: rotate,
-                    builder: (context, widget) {
-                      final angle = rotate.value * 3.1416 / 2;
-                      final transform = Matrix4.identity()
-                        ..setEntry(3, 2, 0.0015)
-                        ..rotateY(angle);
-                      return IgnorePointer(
-                        ignoring: animation.status != AnimationStatus.completed,
-                        child: Transform(
-                          transform: transform,
-                          alignment: Alignment.centerLeft,
-                          child: widget,
-                        ),
-                      );
-                    },
-                    child: child,
-                  );
-                },
-                child: KeyedSubtree(
-                  key: ValueKey<String>(
-                      GoRouterState.of(context).uri.toString()),
+          PageStorage(
+            bucket: PageStorageBucket(),
+            // ... Votre AnimatedSwitcher reste ici, c'est parfait
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 600),
+              // ... toute votre logique AnimatedSwitcher
+              transitionBuilder: (child, animation) {
+                final rotate = Tween(begin: 1.0, end: 0.0).animate(animation);
+                return AnimatedBuilder(
+                  animation: rotate,
+                  builder: (context, widget) {
+                    final angle = rotate.value * 3.1416 / 2;
+                    final transform = Matrix4.identity()
+                      ..setEntry(3, 2, 0.0015)
+                      ..rotateY(angle);
+                    return IgnorePointer(
+                      ignoring: animation.status != AnimationStatus.completed,
+                      child: Transform(
+                        transform: transform,
+                        alignment: Alignment.centerLeft,
+                        child: widget,
+                      ),
+                    );
+                  },
                   child: child,
-                ),
+                );
+              },
+              child: KeyedSubtree(
+                key: ValueKey<String>(GoRouterState.of(context).uri.toString()),
+                child: child,
               ),
             ),
           ),
-
           // LE MENU FLOTTANT AU-DESSUS DU CONTENU
-          Positioned(
-            bottom: 20,
-            left: 20,
-            child: BubbleNavigationMenu(
-              // L'action du bouton central est de naviguer vers Home
-              activeIcon: currentTab.icon,
-              menuPosition: Alignment.bottomRight,
-              items: bubbleItems,
+          Align(
+            alignment: Alignment.bottomLeft,
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: BubbleNavigationMenu(
+                activeIcon: currentTab.icon,
+                menuPosition: Alignment.bottomLeft,
+                items: bubbleItems,
+              ),
             ),
           ),
         ],
