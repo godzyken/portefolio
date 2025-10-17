@@ -9,11 +9,13 @@ import '../../data/competences_data.dart';
 class CompetenceChip extends ConsumerStatefulWidget {
   final String competenceName;
   final double opacity;
+  final double size;
 
   const CompetenceChip({
     super.key,
     required this.competenceName,
     this.opacity = 1.0,
+    this.size = 80.0,
   });
 
   @override
@@ -41,8 +43,8 @@ class _CompetenceChipState extends ConsumerState<CompetenceChip> {
     if (comp == null) {
       // Fallback si la compétence n'est pas trouvée
       return Container(
-        width: 80,
-        height: 80,
+        width: widget.size,
+        height: widget.size,
         decoration: const BoxDecoration(
           shape: BoxShape.circle,
           color: Colors.grey,
@@ -64,8 +66,8 @@ class _CompetenceChipState extends ConsumerState<CompetenceChip> {
     Widget chipContent({bool dragging = false}) {
       return AnimatedContainer(
         duration: const Duration(milliseconds: 250),
-        width: 80,
-        height: 80,
+        width: widget.size,
+        height: widget.size,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           gradient: RadialGradient(
@@ -87,29 +89,31 @@ class _CompetenceChipState extends ConsumerState<CompetenceChip> {
             color: isActive
                 ? Colors.yellowAccent
                 : (_hovering ? Colors.white : Colors.grey[600]!),
-            width: isActive ? 4 : 3,
+            width: isActive ? (widget.size * 0.05) : (widget.size * 0.0375),
           ),
           boxShadow: [
             // Ombre principale
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.3),
-              blurRadius: dragging ? 8 : 6,
-              offset: Offset(0, dragging ? 4 : 3),
+              blurRadius:
+                  dragging ? (widget.size * 0.1) : (widget.size * 0.075),
+              offset: Offset(
+                  0, dragging ? (widget.size * 0.05) : (widget.size * 0.0375)),
             ),
             // Effet lumineux si actif
             if (isActive && !dragging)
               BoxShadow(
                 color: comp.couleur.withValues(alpha: 0.6),
-                blurRadius: 15,
-                spreadRadius: 3,
+                blurRadius: widget.size * 0.1875,
+                spreadRadius: widget.size * 0.0375,
               ),
             // Reflet interne
             if (!dragging)
               BoxShadow(
                 color: Colors.white.withValues(alpha: 0.2),
-                blurRadius: 2,
+                blurRadius: widget.size * 0.025,
                 offset: const Offset(-1, -1),
-                spreadRadius: -2,
+                spreadRadius: widget.size * -0.025,
               ),
           ],
         ),
@@ -128,7 +132,7 @@ class _CompetenceChipState extends ConsumerState<CompetenceChip> {
                     style: TextStyle(
                       color: isActive ? Colors.black : Colors.white,
                       fontWeight: FontWeight.bold,
-                      fontSize: 14,
+                      fontSize: widget.size * 0.175,
                       shadows: [
                         Shadow(
                           color: Colors.black.withValues(alpha: 0.5),
@@ -143,7 +147,7 @@ class _CompetenceChipState extends ConsumerState<CompetenceChip> {
                     style: TextStyle(
                       color: isActive ? Colors.black87 : Colors.white70,
                       fontWeight: FontWeight.w600,
-                      fontSize: 8,
+                      fontSize: widget.size * 0.1,
                       shadows: [
                         Shadow(
                           color: Colors.black.withValues(alpha: 0.5),
@@ -163,11 +167,11 @@ class _CompetenceChipState extends ConsumerState<CompetenceChip> {
             // Reflet brillant
             if (!dragging)
               Positioned(
-                top: 8,
-                left: 8,
+                top: widget.size * 0.1,
+                left: widget.size * 0.1,
                 child: Container(
-                  width: 20,
-                  height: 20,
+                  width: widget.size * 0.25,
+                  height: widget.size * 0.25,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     gradient: RadialGradient(
@@ -182,11 +186,11 @@ class _CompetenceChipState extends ConsumerState<CompetenceChip> {
 
             // Indicateur de niveau (petit badge)
             Positioned(
-              bottom: 5,
-              right: 5,
+              bottom: widget.size * 0.0625,
+              right: widget.size * 0.0625,
               child: Container(
-                width: 16,
-                height: 16,
+                width: widget.size * 0.2,
+                height: widget.size * 0.2,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: _getNiveauBadgeColor(comp.niveau),
@@ -195,9 +199,9 @@ class _CompetenceChipState extends ConsumerState<CompetenceChip> {
                 child: Center(
                   child: Text(
                     _getNiveauIcon(comp.niveau),
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Colors.white,
-                      fontSize: 8,
+                      fontSize: widget.size * 0.1,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -267,7 +271,7 @@ class _CompetenceChipState extends ConsumerState<CompetenceChip> {
     };
 
     for (int i = 0; i < nbCircles; i++) {
-      final size = 65.0 - (i * 10.0);
+      final size = (widget.size * 0.8125) - (i * (widget.size * 0.125));
       circles.add(
         Center(
           child: Container(

@@ -168,13 +168,23 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
         )
         .toList();
 
-    final width =
-        info.isLandscape ? info.size.width * 0.2 : info.size.width * 0.35;
+    // ✅ LOGIQUE DE TAILLE MAXIMALE
+    // 1. Définir une taille maximale souhaitée pour la largeur des cartes.
+    const double maxCardWidth = 80;
+
+    // ✅ ÉTAPE 2: RENDRE LES CARTES PROPORTIONNELLES
+    final proportionalCardWidth = info.size.width * 0.11;
+
+    // 3. Utiliser la plus petite des deux valeurs.
+    //    - Sur un grand écran, proportionalCardWidth > 140, donc cardWidth = 140.
+    //    - Sur un petit écran, proportionalCardWidth < 140, donc cardWidth = proportionalCardWidth.
+    final cardWidth = min(proportionalCardWidth, maxCardWidth);
+    final cardHeight = cardWidth * 1.33; // Le ratio est conservé
 
     return Align(
       alignment: Alignment.centerLeft,
       child: SizedBox(
-        width: width,
+        width: info.size.width * 0.2,
         child: Stack(
           children: pile.asMap().entries.map((entry) {
             final exp = entry.value;
@@ -182,8 +192,8 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
                 (entry.key % 2 == 0 ? 1 : -1) * (5 + entry.key).toDouble();
 
             return Positioned(
-              top: 20.0 * entry.key,
-              left: 0,
+              top: (cardHeight * 0.15) * entry.key,
+              left: 1,
               child: Transform.rotate(
                 angle: angle * pi / 180,
                 child: Draggable<Experience>(
@@ -191,14 +201,14 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
                   feedback: Material(
                     color: Colors.transparent,
                     child: SizedBox(
-                      width: 120,
-                      height: 160,
+                      width: cardWidth,
+                      height: cardHeight,
                       child: _cardClone(exp),
                     ),
                   ),
                   childWhenDragging: SizedBox(
-                    width: 120,
-                    height: 160,
+                    width: cardWidth,
+                    height: cardHeight,
                     // ✅ FIX 5: Utiliser Opacity correctement
                     child: Opacity(
                       opacity: 0.3,
@@ -206,8 +216,8 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
                     ),
                   ),
                   child: SizedBox(
-                    width: 120,
-                    height: 160,
+                    width: cardWidth,
+                    height: cardHeight,
                     child: Card(
                       key: ValueKey('card_${exp.id}'), // ✅ Utiliser l'ID
                       child: _cardClone(exp),
@@ -227,6 +237,12 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
         info.isLandscape ? info.size.width * 0.4 : info.size.width * 0.5;
     final height =
         info.isLandscape ? info.size.height * 0.7 : info.size.height * 0.6;
+
+    // ✅ LOGIQUE DE TAILLE MAXIMALE APPLIQUÉE ICI AUSSI
+    const double maxCardWidth = 120.0; // Un peu plus petit pour le pot
+    final proportionalCardWidth = info.size.width * 0.10;
+    final cardWidth = min(proportionalCardWidth, maxCardWidth);
+    final cardHeight = cardWidth * 1.33;
 
     return DragTarget<Experience>(
       onAcceptWithDetails: (details) {
@@ -297,8 +313,8 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
                         child: SizedBox(
-                          width: 120,
-                          height: 160,
+                          width: cardWidth,
+                          height: cardHeight,
                           child: _cardClone(exp),
                         ),
                       );
@@ -336,29 +352,36 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
     );
   }
 
-  List<Widget> _buildScatteredChips() {
-    return const [
-      Positioned(
-        top: 120,
-        right: 80,
-        child: CompetenceChip(competenceName: 'full-stack'),
-      ),
-      Positioned(
-        top: 200,
-        right: 100,
-        child: CompetenceChip(competenceName: 'qualite'),
-      ),
-      Positioned(
-        bottom: 250,
-        right: 80,
-        child: CompetenceChip(competenceName: 'Relation Client'),
-      ),
-      Positioned(
-        bottom: 180,
-        right: 140,
-        child: CompetenceChip(competenceName: 'Logistique'),
-      ),
+  List<Widget> _buildScatteredChips(ResponsiveInfo info) {
+    // ✅ LOGIQUE DE TAILLE MAXIMALE
+    // 1. Définir une taille maximale souhaitée pour les jetons.
+    const double maxChipSize = 80.0;
+
+    // 2. Calculer la taille proportionnelle comme avant.
+    final proportionalChipSize = info.size.height * 0.15;
+
+    // 3. Utiliser la plus petite des deux valeurs.
+    final chipSize = min(proportionalChipSize, maxChipSize);
+
+    // Définir les positions en pourcentage de la largeur/hauteur pour qu'elles s'adaptent.
+    // Format: [top%, right%, competenceName]
+    final positions = [
+      [0.15, 0.10, 'full-stack'], // 15% du haut, 10% de la droite
+      [0.16, 0.15, 'qualite'],
+      [0.60, 0.12, 'Relation Client'],
+      [0.75, 0.20, 'Logistique'],
     ];
+
+    return positions.map((pos) {
+      return Positioned(
+        top: info.size.height * (pos[0] as double),
+        right: info.size.width * (pos[1] as double),
+        child: CompetenceChip(
+          competenceName: pos[2] as String,
+          size: chipSize,
+        ),
+      );
+    }).toList();
   }
 
   Widget _buildLayout(ResponsiveInfo info) {
@@ -377,7 +400,21 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
               child: Row(
                 children: [
                   Expanded(flex: 2, child: _buildCardPile(info)),
-                  Expanded(flex: 3, child: _buildCardTarget(info)),
+                  Expanded(
+                      flex: 3,
+                      child: Column(
+                        children: [
+                          Expanded(flex: 7, child: _buildCardTarget(info)),
+                          const SizedBox(height: 10),
+                          Expanded(
+                            flex: 3,
+                            child: SizedBox(
+                              height: info.size.height * 0.2,
+                              child: const CompetencesPilesByNiveau(),
+                            ),
+                          ),
+                        ],
+                      )),
                   Expanded(
                     flex: 2,
                     child: Stack(
@@ -389,16 +426,12 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
                           onCardsArrivedInPot: _onCardsArrivedInPot,
                           onPotCleared: _onPotCleared,
                         ),
-                        ..._buildScatteredChips(),
+                        ..._buildScatteredChips(info),
                       ],
                     ),
                   ),
                 ],
               ),
-            ),
-            SizedBox(
-              height: info.size.height * 0.2,
-              child: const CompetencesPilesByNiveau(),
             ),
           ],
         ),
