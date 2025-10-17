@@ -25,7 +25,6 @@ class MainScaffold extends ConsumerWidget {
 
     // Créer la liste des items pour le menu, en excluant 'Home'
     final bubbleItems = AppTab.values
-        .where((tab) => tab != AppTab.home) // Exclure l'onglet Home
         .map((tab) => BubbleMenuItem(
               icon: tab.icon,
               label: tab.label,
