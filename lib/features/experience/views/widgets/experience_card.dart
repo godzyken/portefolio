@@ -28,6 +28,7 @@ class ExperienceCard extends ConsumerWidget {
       id: experience.entreprise,
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
+        onTap: () => _showDetails(context),
         child: AdaptiveCard(
           title: experience.entreprise,
           bulletPoints: [

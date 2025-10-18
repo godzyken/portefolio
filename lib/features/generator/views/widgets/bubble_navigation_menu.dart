@@ -8,12 +8,14 @@ class BubbleNavigationMenu extends StatefulWidget {
   final List<BubbleMenuItem> items;
   final IconData activeIcon;
   final Alignment menuPosition;
+  final bool isMobile;
 
   const BubbleNavigationMenu({
     super.key,
     required this.items,
     required this.activeIcon,
-    this.menuPosition = Alignment.bottomRight,
+    this.menuPosition = Alignment.topLeft,
+    this.isMobile = false,
   });
 
   @override
@@ -53,13 +55,27 @@ class _BubbleNavigationMenuState extends State<BubbleNavigationMenu>
     });
   }
 
+  void _closeMenu() {
+    if (_isOpen) {
+      _toggleMenu(forceClose: true);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    const double menuSize = 180.0;
+    const double menuSize = 200.0;
 
+    // Sur mobile, on ne répond qu'au tap
+    // Sur desktop, on répond au hover + tap
+    return widget.isMobile
+        ? _buildMobileMenu(menuSize)
+        : _buildDesktopMenu(menuSize);
+  }
+
+  Widget _buildMobileMenu(double menuSize) {
     return GestureDetector(
       onTap: () {
-        if (_isOpen) _toggleMenu(forceClose: true);
+        _toggleMenu();
       },
       child: SizedBox.square(
         dimension: menuSize,
@@ -70,7 +86,7 @@ class _BubbleNavigationMenuState extends State<BubbleNavigationMenu>
             if (_isOpen)
               Positioned.fill(
                 child: GestureDetector(
-                  onTap: () => _toggleMenu(forceClose: true),
+                  onTap: _closeMenu,
                   child: Container(
                     color: Colors.black.withValues(alpha: 0.1),
                   ),
@@ -78,18 +94,57 @@ class _BubbleNavigationMenuState extends State<BubbleNavigationMenu>
               ),
 
             // Menu Flow
-            MouseRegion(
-              onEnter: (_) => _toggleMenu(forceClose: false),
-              onExit: (_) {
-                if (_isOpen) {
-                  Future.delayed(const Duration(milliseconds: 500), () {
-                    if (mounted && _isOpen) {
-                      _toggleMenu(forceClose: true);
-                    }
-                  });
-                }
-              },
-              child: Flow(
+            Flow(
+              clipBehavior: Clip.none,
+              delegate: _BubbleMenuFlowDelegate(
+                animation: _controller,
+                position: widget.menuPosition,
+              ),
+              children: [
+                _buildCentralButton(),
+                ...widget.items.map((item) => _buildBubble(item)),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDesktopMenu(double menuSize) {
+    return MouseRegion(
+      onEnter: (_) {
+        if (!_isOpen) {
+          _toggleMenu(forceClose: false);
+        }
+      },
+      onExit: (_) {
+        Future.delayed(const Duration(milliseconds: 300), () {
+          if (mounted && _isOpen) {
+            _toggleMenu(forceClose: true);
+          }
+        });
+      },
+      child: GestureDetector(
+        onTap: _toggleMenu,
+        child: SizedBox.square(
+          dimension: menuSize,
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              // Bouclier transparent - couche dessous
+              if (_isOpen)
+                Positioned.fill(
+                  child: GestureDetector(
+                    onTap: _closeMenu,
+                    child: Container(
+                      color: Colors.black.withValues(alpha: 0.1),
+                    ),
+                  ),
+                ),
+
+              // Menu Flow
+              Flow(
                 clipBehavior: Clip.none,
                 delegate: _BubbleMenuFlowDelegate(
                   animation: _controller,
@@ -100,8 +155,8 @@ class _BubbleNavigationMenuState extends State<BubbleNavigationMenu>
                   ...widget.items.map((item) => _buildBubble(item)),
                 ],
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -111,7 +166,7 @@ class _BubbleNavigationMenuState extends State<BubbleNavigationMenu>
     return FloatingActionButton(
       elevation: _isOpen ? 8.0 : 2.0,
       backgroundColor: Theme.of(context).colorScheme.primary.withValues(
-            alpha: _isOpen ? 1.0 : 0.4, // Transparent au repos
+            alpha: _isOpen ? 1.0 : 0.4,
           ),
       onPressed: _toggleMenu,
       child: AnimatedRotation(
@@ -208,7 +263,7 @@ class _BubbleMenuFlowDelegate extends FlowDelegate {
 
   @override
   Size getSize(BoxConstraints constraints) {
-    return const Size(180, 180);
+    return const Size(200, 200);
   }
 
   @override
