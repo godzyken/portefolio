@@ -25,63 +25,103 @@ class CompetenceChip extends ConsumerStatefulWidget {
 class _CompetenceChipState extends ConsumerState<CompetenceChip> {
   bool _hovering = false;
 
-  // Récupérer la compétence depuis les données
-  Competence? get competence {
+  // 🔧 Trouver la compétence de manière safe
+  Competence? _getCompetence() {
     try {
       return competences.firstWhere(
         (comp) => comp.nom.toLowerCase() == widget.competenceName.toLowerCase(),
       );
     } catch (e) {
-      developer.log('Erreur lors de la récupération de la compétence : $e');
-      return null;
+      // ✅ Si pas trouvé, créer une compétence par défaut
+      developer.log('⚠️ Compétence non trouvée: ${widget.competenceName}');
+      return Competence(
+        nom: widget.competenceName,
+        niveau: NiveauCompetence.fonctionnel,
+        couleur: Colors.grey,
+        valeur: 5,
+        entreprises: [],
+        description: 'Compétence custom',
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final comp = competence;
+    final comp = _getCompetence();
     if (comp == null) {
-      // Fallback si la compétence n'est pas trouvée
-      return Container(
-        width: widget.size,
-        height: widget.size,
-        decoration: const BoxDecoration(
-          shape: BoxShape.circle,
-          color: Colors.grey,
-        ),
-        child: Center(
-          child: Text(
-            widget.competenceName,
-            style: const TextStyle(color: Colors.white, fontSize: 10),
-            textAlign: TextAlign.center,
-          ),
-        ),
-      );
+      return _buildFallback();
     }
 
     final activeTags = ref.watch(activeTagsProvider);
     final isActive = activeTags.contains(widget.competenceName);
 
-    // Contenu visuel du jeton
-    Widget chipContent({bool dragging = false}) {
-      return AnimatedContainer(
-        duration: const Duration(milliseconds: 250),
-        width: widget.size,
-        height: widget.size,
+    return Tooltip(
+      message: _buildTooltipMessage(comp),
+      preferBelow: false,
+      verticalOffset: 20,
+      decoration: BoxDecoration(
+        color: Colors.black87,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      textStyle: const TextStyle(color: Colors.white, fontSize: 12),
+      child: MouseRegion(
+        onEnter: (_) => setState(() => _hovering = true),
+        onExit: (_) => setState(() => _hovering = false),
+        child: Draggable<String>(
+          data: widget.competenceName,
+          feedback: Material(
+            color: Colors.transparent,
+            child: _buildChipContent(comp, isActive, dragging: true),
+          ),
+          childWhenDragging: Opacity(
+            opacity: 0.4,
+            child: Transform.scale(
+              scale: 0.9,
+              child: _buildChipContent(comp, isActive),
+            ),
+          ),
+          child: GestureDetector(
+            onTap: () {
+              final notifier = ref.read(activeTagsProvider.notifier);
+              if (isActive) {
+                notifier.setTags(activeTags
+                    .where((t) => t != widget.competenceName)
+                    .toList());
+              } else {
+                notifier.setTags([...activeTags, widget.competenceName]);
+              }
+            },
+            child: AnimatedScale(
+              scale: _hovering ? 1.05 : 1.0,
+              duration: const Duration(milliseconds: 200),
+              child: _buildChipContent(comp, isActive),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildChipContent(Competence comp, bool isActive,
+      {bool dragging = false}) {
+    return SizedBox(
+      width: widget.size,
+      height: widget.size,
+      // 🔧 Utiliser ValueKey au lieu de GlobalKey
+      key: ValueKey('competence_${widget.competenceName}_${comp.nom}'),
+      child: Container(
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           gradient: RadialGradient(
             center: const Alignment(-0.3, -0.3),
             radius: 1.2,
             colors: [
-              // Effet de brillance en haut à gauche
               comp.couleur.withValues(
-                alpha: (255 * widget.opacity * 1.3).clamp(0, 255),
+                alpha: (255 * widget.opacity * 1.3).clamp(0, 255) / 255,
               ),
-              comp.couleur.withValues(alpha: (255 * widget.opacity)),
-              // Ombre en bas à droite
+              comp.couleur.withValues(alpha: widget.opacity),
               comp.couleur.withValues(
-                alpha: (255 * widget.opacity * 0.7).clamp(0, 255),
+                alpha: (255 * widget.opacity * 0.7).clamp(0, 255) / 255,
               ),
             ],
           ),
@@ -92,7 +132,6 @@ class _CompetenceChipState extends ConsumerState<CompetenceChip> {
             width: isActive ? (widget.size * 0.05) : (widget.size * 0.0375),
           ),
           boxShadow: [
-            // Ombre principale
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.3),
               blurRadius:
@@ -100,14 +139,12 @@ class _CompetenceChipState extends ConsumerState<CompetenceChip> {
               offset: Offset(
                   0, dragging ? (widget.size * 0.05) : (widget.size * 0.0375)),
             ),
-            // Effet lumineux si actif
             if (isActive && !dragging)
               BoxShadow(
                 color: comp.couleur.withValues(alpha: 0.6),
                 blurRadius: widget.size * 0.1875,
                 spreadRadius: widget.size * 0.0375,
               ),
-            // Reflet interne
             if (!dragging)
               BoxShadow(
                 color: Colors.white.withValues(alpha: 0.2),
@@ -119,10 +156,7 @@ class _CompetenceChipState extends ConsumerState<CompetenceChip> {
         ),
         child: Stack(
           children: [
-            // Cercles concentriques selon le niveau
             _buildConcentricCircles(comp.niveau),
-
-            // Valeur du jeton au centre
             Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -163,8 +197,6 @@ class _CompetenceChipState extends ConsumerState<CompetenceChip> {
                 ],
               ),
             ),
-
-            // Reflet brillant
             if (!dragging)
               Positioned(
                 top: widget.size * 0.1,
@@ -183,8 +215,6 @@ class _CompetenceChipState extends ConsumerState<CompetenceChip> {
                   ),
                 ),
               ),
-
-            // Indicateur de niveau (petit badge)
             Positioned(
               bottom: widget.size * 0.0625,
               right: widget.size * 0.0625,
@@ -210,59 +240,31 @@ class _CompetenceChipState extends ConsumerState<CompetenceChip> {
             ),
           ],
         ),
-      );
-    }
-
-    // Widget avec tooltip
-    return Tooltip(
-      message: _buildTooltipMessage(comp),
-      preferBelow: false,
-      verticalOffset: 20,
-      decoration: BoxDecoration(
-        color: Colors.black87,
-        borderRadius: BorderRadius.circular(8),
       ),
-      textStyle: const TextStyle(color: Colors.white, fontSize: 12),
-      child: MouseRegion(
-        onEnter: (_) => setState(() => _hovering = true),
-        onExit: (_) => setState(() => _hovering = false),
-        child: Draggable<String>(
-          data: widget.competenceName,
-          feedback: Material(
-            color: Colors.transparent,
-            child: chipContent(dragging: true),
-          ),
-          childWhenDragging: Opacity(
-            opacity: 0.4,
-            child: Transform.scale(scale: 0.9, child: chipContent()),
-          ),
-          child: GestureDetector(
-            onTap: () {
-              final notifier = ref.read(activeTagsProvider.notifier);
-              if (isActive) {
-                notifier.setTags(activeTags
-                    .where((t) => t != widget.competenceName)
-                    .toList());
-              } else {
-                notifier.setTags([...activeTags, widget.competenceName]);
-              }
-            },
-            child: AnimatedScale(
-              scale: _hovering ? 1.05 : 1.0,
-              duration: const Duration(milliseconds: 200),
-              child: chipContent(),
-            ),
-          ),
+    );
+  }
+
+  Widget _buildFallback() {
+    return Container(
+      width: widget.size,
+      height: widget.size,
+      key: ValueKey('fallback_${widget.competenceName}'),
+      decoration: const BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.grey,
+      ),
+      child: Center(
+        child: Text(
+          widget.competenceName,
+          style: const TextStyle(color: Colors.white, fontSize: 10),
+          textAlign: TextAlign.center,
         ),
       ),
     );
   }
 
-  // Cercles concentriques selon le niveau
   Widget _buildConcentricCircles(NiveauCompetence niveau) {
     final circles = <Widget>[];
-
-    // Nombre de cercles selon le niveau
     final nbCircles = switch (niveau) {
       NiveauCompetence.expert => 4,
       NiveauCompetence.confirme => 3,
@@ -280,7 +282,7 @@ class _CompetenceChipState extends ConsumerState<CompetenceChip> {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(
-                color: Colors.white.withValues(alpha: (255 * (0.4 - i * 0.1))),
+                color: Colors.white.withValues(alpha: (0.4 - i * 0.1)),
                 width: 1,
               ),
             ),
@@ -292,7 +294,6 @@ class _CompetenceChipState extends ConsumerState<CompetenceChip> {
     return Stack(children: circles);
   }
 
-  // Message du tooltip
   String _buildTooltipMessage(Competence comp) {
     final niveau = switch (comp.niveau) {
       NiveauCompetence.expert => 'Expert',
@@ -307,7 +308,6 @@ class _CompetenceChipState extends ConsumerState<CompetenceChip> {
         'Expériences: ${comp.entreprises.join(', ')}';
   }
 
-  // Couleur du badge de niveau
   Color _getNiveauBadgeColor(NiveauCompetence niveau) {
     return switch (niveau) {
       NiveauCompetence.expert => Colors.amber,
@@ -317,7 +317,6 @@ class _CompetenceChipState extends ConsumerState<CompetenceChip> {
     };
   }
 
-  // Icône du niveau
   String _getNiveauIcon(NiveauCompetence niveau) {
     return switch (niveau) {
       NiveauCompetence.expert => '★',
