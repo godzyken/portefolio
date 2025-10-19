@@ -20,7 +20,7 @@ class ExperienceJeuxScreen extends ConsumerStatefulWidget {
 
 class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
   // ✅ FIX 1: Utiliser l'ID unique au lieu de l'entreprise
-  final Map<String, GlobalKey> _cardKeys = {};
+  late final Map<String, GlobalKey> _cardKeys = {};
   Experience? activeExperience;
   final List<Experience> _potCards = [];
 
@@ -33,11 +33,36 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
     ]);
 
     // ✅ FIX 2: S'assurer que chaque key est unique avec l'ID
+    _initializeCardKeys();
+
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+  }
+
+  void _initializeCardKeys() {
+    _cardKeys.clear();
     for (var exp in widget.experiences) {
       _cardKeys[exp.id] = GlobalKey(debugLabel: 'card_${exp.id}');
     }
+  }
 
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+  @override
+  void didUpdateWidget(ExperienceJeuxScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // Si la liste des expériences change, réinitialiser les keys
+    if (oldWidget.experiences.length != widget.experiences.length ||
+        !_isSameExperienceList(oldWidget.experiences, widget.experiences)) {
+      _initializeCardKeys();
+    }
+  }
+
+  /// Vérifier si deux listes d'expériences sont identiques
+  bool _isSameExperienceList(List<Experience> list1, List<Experience> list2) {
+    if (list1.length != list2.length) return false;
+    for (int i = 0; i < list1.length; i++) {
+      if (list1[i].id != list2[i].id) return false;
+    }
+    return true;
   }
 
   @override
@@ -366,18 +391,21 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
     // Définir les positions en pourcentage de la largeur/hauteur pour qu'elles s'adaptent.
     // Format: [top%, right%, competenceName]
     final positions = [
-      [0.15, 0.10, 'full-stack'], // 15% du haut, 10% de la droite
-      [0.16, 0.15, 'qualite'],
+      [0.15, 0.10, 'Flutter'], // 15% du haut, 10% de la droite
+      [0.16, 0.15, 'Qualite'],
       [0.60, 0.12, 'Relation Client'],
       [0.75, 0.20, 'Logistique'],
     ];
 
     return positions.map((pos) {
+      final competenceName = pos[2] as String;
+
       return Positioned(
         top: info.size.height * (pos[0] as double),
         right: info.size.width * (pos[1] as double),
+        key: ValueKey('scattered_chip_${competenceName}_${pos[0]}_${pos[1]}'),
         child: CompetenceChip(
-          competenceName: pos[2] as String,
+          competenceName: competenceName,
           size: chipSize,
         ),
       );

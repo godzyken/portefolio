@@ -181,7 +181,8 @@ class ProjectCard extends ConsumerWidget {
                           controller: controller,
                           aspectRatio: 16 / 9,
                           enableFullScreenOnVerticalDrag: true,
-                          key: ValueKey(youtubeId),
+                          key: ValueKey(
+                              'youtube_${youtubeId}_${DateTime.now().millisecondsSinceEpoch}'),
                         ),
                       );
                     },

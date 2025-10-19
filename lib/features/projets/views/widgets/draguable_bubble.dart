@@ -344,6 +344,8 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
               child: SizedBox(
                 width: dialogMaxWidth,
                 height: dialogMaxHeight,
+                key: ValueKey(
+                    'project_card_${widget.project.id}_${DateTime.now().millisecondsSinceEpoch}'),
                 child: ProjectCard(
                   project: widget.project,
                   width: dialogMaxWidth,
