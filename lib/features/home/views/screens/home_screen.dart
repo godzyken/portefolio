@@ -1,46 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:portefolio/features/home/data/services_data.dart';
-
-import '../../../../core/affichage/screen_size_detector.dart';
-import '../../../../core/provider/json_data_provider.dart';
-import '../../../home/views/widgets/services_card.dart';
-import '../../../parametres/themes/views/widgets/space_background.dart';
+import 'package:go_router/go_router.dart';
+import 'package:portefolio/core/affichage/screen_size_detector.dart';
+import 'package:portefolio/features/parametres/themes/views/widgets/space_background.dart';
+import 'package:portefolio/features/parametres/views/widgets/smart_image.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final servicesAsync = ref.watch(servicesJsonProvider);
     final info = ref.watch(responsiveInfoProvider);
     final theme = Theme.of(context);
 
-    return SafeArea(
-      child: servicesAsync.when(
-        data: (services) => SpaceBackground(
-          primaryColor: theme.colorScheme.primary,
-          secondaryColor: theme.colorScheme.secondary,
-          starCount: 150,
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              bool isPortrait = info.isPortrait;
-              return isPortrait
-                  ? _buildPortraitLayout(context, info, services, theme)
-                  : _buildLandscapeLayout(context, info, services, theme);
-            },
-          ),
-        ),
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, st) => Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.error_outline, size: 64, color: Colors.red),
-              const SizedBox(height: 16),
-              Text('Erreur: $e'),
-            ],
-          ),
+    return SpaceBackground(
+      primaryColor: theme.colorScheme.primary,
+      secondaryColor: theme.colorScheme.secondary,
+      starCount: 150,
+      child: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final isPortrait = info.isPortrait;
+            final isMobile = info.isMobile;
+
+            return SingleChildScrollView(
+              child: isPortrait
+                  ? _buildPortraitLayout(context, info, theme, isMobile)
+                  : _buildLandscapeLayout(context, info, theme),
+            );
+          },
         ),
       ),
     );
@@ -49,29 +37,34 @@ class HomeScreen extends ConsumerWidget {
   Widget _buildPortraitLayout(
     BuildContext context,
     ResponsiveInfo info,
-    List<Service> services,
     ThemeData theme,
+    bool isMobile,
   ) {
-    return SingleChildScrollView(
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: isMobile ? 24 : 48,
+        vertical: 32,
+      ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          // Image de profil
+          _buildProfileImage(context, info, theme),
+
           const SizedBox(height: 32),
-          _buildHeader(context, info, theme, isPortrait: true),
-          const SizedBox(height: 24),
-          SizedBox(
-            height: info.size.height * 0.55,
-            child: PageView.builder(
-              controller: PageController(viewportFraction: 0.85),
-              itemCount: services.length,
-              itemBuilder: (_, index) => Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: ServicesCard(service: services[index]),
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          _buildPaginationDots(services.length, theme),
-          const SizedBox(height: 16),
+
+          // Texte de présentation
+          _buildPresentationText(context, theme, isMobile),
+
+          const SizedBox(height: 40),
+
+          // Boutons d'action
+          _buildActionButtons(context, theme, isMobile),
+
+          const SizedBox(height: 48),
+
+          // Section compétences rapides
+          _buildQuickSkills(context, theme, isMobile),
         ],
       ),
     );
@@ -80,43 +73,33 @@ class HomeScreen extends ConsumerWidget {
   Widget _buildLandscapeLayout(
     BuildContext context,
     ResponsiveInfo info,
-    List<Service> services,
     ThemeData theme,
   ) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+      padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 48),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          // Image à gauche
           Flexible(
-            flex: 3,
-            child: _buildHeader(context, info, theme, isPortrait: false),
+            flex: 4,
+            child: _buildProfileImage(context, info, theme),
           ),
+
+          const SizedBox(width: 64),
+
+          // Contenu à droite
           Flexible(
-            flex: 7,
+            flex: 6,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  "Mes Services",
-                  style: theme.textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Expanded(
-                  child: PageView.builder(
-                    scrollDirection: Axis.vertical,
-                    controller: PageController(viewportFraction: 0.85),
-                    itemCount: services.length,
-                    itemBuilder: (_, index) => Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 8,
-                      ),
-                      child: ServicesCard(service: services[index]),
-                    ),
-                  ),
-                ),
+                _buildPresentationText(context, theme, false),
+                const SizedBox(height: 40),
+                _buildActionButtons(context, theme, false),
+                const SizedBox(height: 48),
+                _buildQuickSkills(context, theme, false),
               ],
             ),
           ),
@@ -125,99 +108,243 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildHeader(
+  Widget _buildProfileImage(
     BuildContext context,
     ResponsiveInfo info,
-    ThemeData theme, {
-    required bool isPortrait,
-  }) {
-    double imageSize =
-        isPortrait ? info.size.width * 0.35 : info.size.height * 0.3;
+    ThemeData theme,
+  ) {
+    final imageSize = info.isMobile
+        ? info.size.width * 0.7
+        : info.isPortrait
+            ? info.size.width * 0.5
+            : info.size.height * 0.7;
 
-    return Column(
-      mainAxisAlignment:
-          isPortrait ? MainAxisAlignment.start : MainAxisAlignment.center,
-      crossAxisAlignment:
-          isPortrait ? CrossAxisAlignment.center : CrossAxisAlignment.start,
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                color: theme.colorScheme.primary.withValues(alpha: 0.3),
-                blurRadius: 30,
-                spreadRadius: 5,
-              ),
-            ],
-          ),
-          child: ClipOval(
-            child: Image.asset(
-              'assets/images/logo_godzyken.png',
-              width: imageSize,
-              height: imageSize,
-              fit: BoxFit.cover,
+    return Hero(
+      tag: 'profile_image',
+      child: Container(
+        width: imageSize,
+        height: imageSize,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: theme.colorScheme.primary.withValues(alpha: 0.4),
+              blurRadius: 40,
+              spreadRadius: 10,
             ),
+            BoxShadow(
+              color: theme.colorScheme.secondary.withValues(alpha: 0.3),
+              blurRadius: 60,
+              spreadRadius: 15,
+            ),
+          ],
+        ),
+        child: ClipOval(
+          child: SmartImage(
+            path: 'assets/images/me_portrait_2.webp',
+            fit: BoxFit.cover,
+            fallbackIcon: Icons.person,
+            fallbackColor: theme.colorScheme.primary,
           ),
         ),
-        const SizedBox(height: 24),
+      ),
+    );
+  }
+
+  Widget _buildPresentationText(
+    BuildContext context,
+    ThemeData theme,
+    bool isMobile,
+  ) {
+    return Column(
+      crossAxisAlignment:
+          isMobile ? CrossAxisAlignment.center : CrossAxisAlignment.start,
+      children: [
+        // Nom
         Text(
-          'Godzyken',
-          style: theme.textTheme.headlineLarge?.copyWith(
+          'Emryck Doré',
+          style: theme.textTheme.displayLarge?.copyWith(
             fontWeight: FontWeight.bold,
             letterSpacing: 2,
+            fontSize: isMobile ? 42 : 64,
+            foreground: Paint()
+              ..shader = LinearGradient(
+                colors: [
+                  theme.colorScheme.primary,
+                  theme.colorScheme.secondary,
+                ],
+              ).createShader(const Rect.fromLTWH(0, 0, 400, 100)),
           ),
-          textAlign: isPortrait ? TextAlign.center : TextAlign.left,
+          textAlign: isMobile ? TextAlign.center : TextAlign.left,
         ),
-        const SizedBox(height: 8),
+
+        const SizedBox(height: 16),
+
+        // Titre
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           decoration: BoxDecoration(
-            color: theme.colorScheme.primaryContainer,
-            borderRadius: BorderRadius.circular(20),
+            gradient: LinearGradient(
+              colors: [
+                theme.colorScheme.primary.withValues(alpha: 0.2),
+                theme.colorScheme.secondary.withValues(alpha: 0.2),
+              ],
+            ),
+            borderRadius: BorderRadius.circular(30),
+            border: Border.all(
+              color: theme.colorScheme.primary.withValues(alpha: 0.5),
+              width: 2,
+            ),
           ),
           child: Text(
-            "Développement Mobile & Web",
-            style: theme.textTheme.bodyLarge?.copyWith(
-              color: theme.colorScheme.onPrimaryContainer,
-              fontWeight: FontWeight.w500,
+            'Développeur Flutter & Architecte Logiciel',
+            style: theme.textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.w600,
+              color: theme.colorScheme.onSurface,
             ),
-            textAlign: isPortrait ? TextAlign.center : TextAlign.left,
+            textAlign: isMobile ? TextAlign.center : TextAlign.left,
           ),
         ),
-        if (!isPortrait) ...[
-          const SizedBox(height: 24),
-          Text(
-            "Expert en Flutter, Angular et solutions cloud.\nCréation d'applications performantes et élégantes.",
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .onSurface
-                      .withValues(alpha: 0.7),
-                  height: 1.6,
-                ),
-            textAlign: TextAlign.left,
+
+        const SizedBox(height: 32),
+
+        // Description
+        Text(
+          'Expert en développement mobile cross-platform et solutions digitales. '
+          'Spécialisé dans la création d\'applications Flutter performantes, '
+          'l\'architecture logicielle et la transformation digitale des entreprises.',
+          style: theme.textTheme.bodyLarge?.copyWith(
+            fontSize: isMobile ? 16 : 18,
+            height: 1.8,
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
           ),
-        ],
+          textAlign: isMobile ? TextAlign.center : TextAlign.left,
+        ),
       ],
     );
   }
 
-  Widget _buildPaginationDots(int count, ThemeData theme) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(
-        count,
-        (index) => Container(
-          margin: const EdgeInsets.symmetric(horizontal: 4),
-          width: 8,
-          height: 8,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: theme.colorScheme.primary.withValues(alpha: 0.3),
+  Widget _buildActionButtons(
+    BuildContext context,
+    ThemeData theme,
+    bool isMobile,
+  ) {
+    return Wrap(
+      spacing: 16,
+      runSpacing: 16,
+      alignment: isMobile ? WrapAlignment.center : WrapAlignment.start,
+      children: [
+        // Bouton Projets
+        ElevatedButton.icon(
+          onPressed: () => context.go('/projects'),
+          icon: const Icon(Icons.work_outline),
+          label: const Text('Voir mes projets'),
+          style: ElevatedButton.styleFrom(
+            padding: EdgeInsets.symmetric(
+              horizontal: isMobile ? 24 : 32,
+              vertical: isMobile ? 16 : 20,
+            ),
+            backgroundColor: theme.colorScheme.primary,
+            foregroundColor: Colors.white,
+            elevation: 8,
+            shadowColor: theme.colorScheme.primary.withValues(alpha: 0.5),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
           ),
         ),
-      ),
+
+        // Bouton Contact
+        OutlinedButton.icon(
+          onPressed: () => context.go('/contact'),
+          icon: const Icon(Icons.mail_outline),
+          label: const Text('Me contacter'),
+          style: OutlinedButton.styleFrom(
+            padding: EdgeInsets.symmetric(
+              horizontal: isMobile ? 24 : 32,
+              vertical: isMobile ? 16 : 20,
+            ),
+            side: BorderSide(
+              color: theme.colorScheme.primary,
+              width: 2,
+            ),
+            foregroundColor: theme.colorScheme.primary,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildQuickSkills(
+    BuildContext context,
+    ThemeData theme,
+    bool isMobile,
+  ) {
+    final skills = [
+      {'icon': Icons.phone_android, 'label': 'Flutter', 'color': Colors.blue},
+      {'icon': Icons.web, 'label': 'Angular', 'color': Colors.red},
+      {'icon': Icons.cloud, 'label': 'Firebase', 'color': Colors.orange},
+      {
+        'icon': Icons.architecture,
+        'label': 'Architecture',
+        'color': Colors.purple
+      },
+    ];
+
+    return Column(
+      crossAxisAlignment:
+          isMobile ? CrossAxisAlignment.center : CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Expertises',
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 16),
+        Wrap(
+          spacing: 12,
+          runSpacing: 12,
+          alignment: isMobile ? WrapAlignment.center : WrapAlignment.start,
+          children: skills.map((skill) {
+            return Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 12,
+              ),
+              decoration: BoxDecoration(
+                color: (skill['color'] as Color).withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: (skill['color'] as Color).withValues(alpha: 0.3),
+                  width: 1.5,
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    skill['icon'] as IconData,
+                    color: skill['color'] as Color,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    skill['label'] as String,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: skill['color'] as Color,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }).toList(),
+        ),
+      ],
     );
   }
 }
