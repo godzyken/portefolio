@@ -1,8 +1,9 @@
 [
   {
     "id": "projet_1",
-    "title": "E-commerce ",
+    "title": "2RouesVertes",
     "points": [
+      "🚲 Création d’une boutique en ligne spécialisée dans la vente de vélos à assistance électrique",
       "📦 Déploiement de PrestaShop 1.2.5 et Magento 1.3.2.4",
       "🔧 Stack LAMP : Apache 2.2, PHP 5.2.10, MySQL 5.0",
       "🌐 Hébergement mutualisé OVH avec gestion SSL manuelle",
@@ -110,7 +111,23 @@
     "title": "Portefolio",
     "points": [
       "🔗 Présentation de mes projets personnels",
-      "🌐 Site statique avec sections : projets, contact, à propos",
+      "🌐 Site statique avec sections : projets, expérience, contact",
+      "🎨 Design responsive pour mobile, tablette et desktop",
+      "🧰 Utilisation de HTML, CSS, JS pour l’interface",
+      "📂 Hébergement via GitHub Pages"
+    ],
+    "image": [
+      "assets/images/logo_godzyken.png"
+    ],
+    "platform": ["Web", "Desktop", "Mobile"],
+    "tags": ["Flutter", "GitHub", "FlutterFlow"]
+  },
+  {
+    "id": "projet_7",
+    "title": "WorkShop Epsi-wis 2025-2026",
+    "points": [
+      "🔗 Présentation de mes projets personnels",
+      "🌐 Site statique avec sections : projets, expérience, contact",
       "🎨 Design responsive pour mobile, tablette et desktop",
       "🧰 Utilisation de HTML, CSS, JS pour l’interface",
       "📂 Hébergement via GitHub Pages"

@@ -354,9 +354,8 @@ class _AboutSectionState extends ConsumerState<AboutSection>
         'number': '10+',
         'label': 'Années\nd\'expérience'
       },
-      {'icon': Icons.apps, 'number': '8', 'label': 'Applications\nréalisés'},
-      {'icon': Icons.web, 'number': '7', 'label': 'Web Sites\nréalisés'},
-      {'icon': Icons.star, 'number': '100%', 'label': 'Satisfaction\nclient'},
+      {'icon': Icons.apps, 'number': '10+', 'label': 'Projets\nréalisés'},
+      {'icon': Icons.star, 'number': '97%', 'label': 'Satisfaction\nclient'},
     ];
 
     return Wrap(
