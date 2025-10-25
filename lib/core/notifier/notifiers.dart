@@ -16,9 +16,16 @@ class IsGeneratingNotifier extends Notifier<bool> {
 
 class IsPageViewNotifier extends Notifier<bool> {
   @override
-  bool build() => true;
+  bool build() => false;
 
+  /// 🔄 Bascule entre les deux modes
   void toggle() => state = !state;
+
+  /// ✅ Force le mode Slide
+  void enablePageView() => state = true;
+
+  /// ✅ Force le mode Timeline
+  void disablePageView() => state = false;
 }
 
 class PlayingVideoNotifier extends Notifier<String?> {

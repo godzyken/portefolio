@@ -1,5 +1,6 @@
 import 'dart:developer' as developer;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -89,6 +90,12 @@ class MyRouterApp extends ConsumerWidget {
 // ====================
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // ✅ Patch pour le bug du MouseTracker au démarrage web
+  if (kIsWeb) {
+    // Ajoute une légère attente avant de lancer ton app
+    await Future.delayed(const Duration(milliseconds: 100));
+  }
 
   debugProfileBuildsEnabled = true;
   debugProfilePaintsEnabled = true;

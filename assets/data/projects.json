@@ -23,6 +23,27 @@
   },
   {
     "id": "projet_2",
+    "title": "APVM Pièces & Accessoires",
+    "points": [
+      "🏍️ Création d’une boutique en ligne spécialisée dans la vente de pièces détachées moto et accessoires",
+      "🛒 Développement complet sous PrestaShop avec module de facturation automatisé",
+      "⚙️ Mise en place d’un moteur de recherche par marque, modèle et année (type Oscaro)",
+      "💾 Intégration du catalogue fournisseur (import automatique depuis source partenaire)",
+      "💳 Intégration du paiement en ligne sécurisé (Prestashop Checkout / PayPal)",
+      "📈 Optimisation SEO et configuration de l’hébergement OVH",
+      "🎨 Collaboration avec un designer pour la création du logo professionnel (style dessin au crayon)",
+      "🔧 Formation du client à la gestion du back-office (produits, factures, comptes clients)"
+    ],
+    "image": [
+      "assets/images/logos/wemoto_logo.jpg",
+      "https://www.motorbikespecs.net/images/BMW/G_310_R_16/G_310_R_16_1.jpg",
+      "assets/images/piece_moto.jpg"
+    ],
+    "platform": ["Desktop", "Tablet"],
+    "tags": ["E-commerce", "PrestaShop", "Facturation", "Moto", "Catalogue Dynamique"]
+  },
+  {
+    "id": "projet_3",
     "title": "Flutter",
     "points": [
       "🧭 Directeur du service de transformation digitale",
@@ -45,7 +66,7 @@
     "tags": ["Flutter", "Firebase", "IoT", "VR", "Management", "UX/UI", "Digitalisation"]
   },
   {
-    "id": "projet_3",
+    "id": "projet_4",
     "title": "Angular & Ionic",
     "points": [
       "👨‍💻 Architecte & Lead Developer sur des applications mobiles et web hybrides",
@@ -66,7 +87,7 @@
     "tags": ["UX/UI", "Digitalisation"]
   },
   {
-    "id": "projet_4",
+    "id": "projet_5",
     "title": "Chef de Projet Digital",
     "subtitle": "Transformation numérique & pilotage d’innovations",
     "points": [
@@ -85,7 +106,7 @@
     "tags": ["Flutter", "Firebase", "IoT", "VR", "Management", "UX/UI", "Digitalisation"]
   },
   {
-    "id": "projet_5",
+    "id": "projet_6",
     "title": "Portefolio",
     "points": [
       "🔗 Présentation de mes projets personnels",

@@ -103,6 +103,8 @@ final appImagesProvider = FutureProvider<AppImages>((ref) async {
     'https://www.pyreweb.com/files/medias/images/Wordpress-Security-Issues-1.jpg',
     'https://www.reacteur.com/content/uploads/2018/05/magento-logo.png',
     'https://pro.packlink.fr/wp-content/uploads/2021/12/services-g0e8be1220_640-1.jpg',
+    'https://www.motorbikespecs.net/images/BMW/G_310_R_16/G_310_R_16_1.jpg',
+    'https://images.wemoto.com/full/BRAKE_DISC_SIFAM/wemoto-10093400.jpg',
   ];
 
   return AppImages(

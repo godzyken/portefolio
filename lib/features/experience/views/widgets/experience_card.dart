@@ -10,6 +10,7 @@ import 'package:portefolio/features/generator/views/widgets/generator_widgets_ex
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../constants/tech_logos.dart';
+import '../../../parametres/views/widgets/smart_image.dart';
 
 class ExperienceCard extends ConsumerWidget {
   final Experience experience;
@@ -46,8 +47,8 @@ class ExperienceCard extends ConsumerWidget {
             if (experience.logo.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(bottom: 8),
-                child: Image.asset(
-                  experience.logo,
+                child: SmartImage(
+                  path: experience.logo,
                   height: 52,
                   fit: BoxFit.contain,
                 ),
@@ -93,10 +94,10 @@ class ExperienceCard extends ConsumerWidget {
         scale: scale,
         child: ClipRRect(
           borderRadius: BorderRadius.circular(16),
-          child: Image.asset(
-            experience.image,
+          child: SmartImage(
+            path: experience.image,
             width: size.width,
-            height: 180,
+            height: size.height,
             fit: BoxFit.cover,
           ),
         ),
@@ -140,9 +141,9 @@ class _ExperienceDetails extends ConsumerWidget {
         ),
         // Bulle flottante au-dessus
         if (experience.poste.isNotEmpty)
-          Positioned(
-            right: -150, // marge à Droite
-            bottom: 28,
+          Positioned.fill(
+            right: 15.0, // marge à Droite
+            top: -58.0,
             child: SizedBox(
               child: _BulletString(message: experience.poste),
             ),
@@ -252,7 +253,11 @@ class _Header extends StatelessWidget {
         if (experience.image.isNotEmpty)
           ClipRRect(
             borderRadius: BorderRadius.circular(16),
-            child: Image.asset(experience.image, height: 70, width: 70),
+            child: SmartImage(
+                path: experience.image,
+                height: 70,
+                width: 70,
+                fit: BoxFit.cover),
           ),
         if (experience.image.isNotEmpty) const SizedBox(width: 16),
         Expanded(
@@ -553,7 +558,7 @@ class _ExperienceStack extends StatelessWidget {
               Tooltip(
                 message: '${t['type'].toString().toUpperCase()} - ${t['name']}',
                 child: t['logo'] != null
-                    ? Image.asset(t['logo']!, width: 32, height: 32)
+                    ? SmartImage(path: t['logo']!, width: 32, height: 32)
                     : Chip(label: Text(t['name']!)),
               ),
               if (t['logo'] != null)

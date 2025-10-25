@@ -33,6 +33,8 @@ class ScreenSizeNotifier extends Notifier<Size> {
 
   /// Mettre à jour la taille
   void setSize(Size newSize) {
-    state = newSize;
+    if (state != newSize) {
+      state = newSize;
+    }
   }
 }

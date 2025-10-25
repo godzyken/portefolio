@@ -92,8 +92,7 @@ class AboutSection extends ConsumerWidget {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(24),
           child: SmartImage(
-            path:
-                'http://localhost:10004/wp-content/uploads/2025/10/acdc1610-eccb-4a59-8d8e-85896343cbbd.webp',
+            path: 'assets/images/me_portrait_2.webp',
             fit: BoxFit.cover,
             fallbackIcon: Icons.person,
             fallbackColor: theme.colorScheme.primary,

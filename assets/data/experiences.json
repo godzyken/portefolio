@@ -1,6 +1,6 @@
 [
   {
-    "id": "exp_20",
+    "id": "exp_22",
     "entreprise": "Armatis Bordeaux",
     "logo": "assets/images/armatis-logo.png",
     "image": "assets/images/conseiller-service-client.png",
@@ -26,7 +26,7 @@
     "poste": "Conseiller Clientèle"
   },
   {
-    "id": "exp_19",
+    "id": "exp_21",
     "entreprise": "UTS31",
     "logo": "assets/images/uts31-logo.png",
     "image": "assets/images/livreur-amazon.png",
@@ -52,7 +52,7 @@
     "poste": "Chauffeur Livreur - Express"
   },
   {
-    "id": "exp_18",
+    "id": "exp_20",
     "entreprise": "Groupe Keym",
     "logo": "assets/images/keym.png",
     "image": "assets/images/keym-frame.png",
@@ -76,7 +76,7 @@
     "poste": "Conseiller Flutter architecture"
   },
   {
-    "id": "exp_17",
+    "id": "exp_19",
     "entreprise": "Apside",
     "logo": "assets/images/apside-logo.png",
     "image": "assets/images/medimail3.jpg",
@@ -112,7 +112,7 @@
     "poste": "Ingénieur d'études et développement"
   },
   {
-    "id": "exp_16",
+    "id": "exp_18",
     "entreprise": "EGOTE+RMC Rénovation et Services",
     "logo": "assets/images/egote-foto.png",
     "image": "assets/images/egote-foto.png",
@@ -149,7 +149,7 @@
     "poste": "Responsable du secteur informatique"
   },
   {
-    "id": "exp_15",
+    "id": "exp_17",
     "entreprise": "Urbalyon",
     "logo": "assets/images/urbalyon-logo.png",
     "image": "assets/images/sig-lyon.png",
@@ -185,7 +185,7 @@
     "poste": "Developpeur Fullstack"
   },
   {
-    "id": "exp_14",
+    "id": "exp_16",
     "entreprise": "Jean Claude Aubry",
     "logo": "assets/images/aubry-logo.png",
     "image": "assets/images/aubry-facade.jpg",
@@ -223,7 +223,7 @@
     "poste": "Développeur Fullstack"
   },
   {
-    "id": "exp_13",
+    "id": "exp_15",
     "entreprise": "Wayma Group - StartUp Nursery",
     "logo": "assets/images/wayma-logo.png",
     "image": "assets/images/startup-nursery-1.png",
@@ -259,7 +259,7 @@
     "poste": "Développer Fullstack"
   },
   {
-    "id": "exp_12",
+    "id": "exp_14",
     "entreprise": "TME",
     "logo": "assets/images/tme-logo.png",
     "image": "assets/images/tme-livreur.png",
@@ -295,7 +295,7 @@
     "poste": "Chauffeur Livreur Monteur"
   },
   {
-    "id": "exp_11",
+    "id": "exp_13",
     "entreprise": "SunPower",
     "logo": "assets/images/sunpower.png",
     "image": "assets/images/sunpower-1.png",
@@ -328,7 +328,7 @@
     "poste": "Opérateur de production"
   },
   {
-    "id": "exp_10",
+    "id": "exp_12",
     "entreprise": "Zodiac Pool Care (saison 2)",
     "logo": "assets/images/zodiac-logo.png",
     "image": "assets/images/rv-4200.png",
@@ -362,7 +362,7 @@
     "poste": "Agent de Fabrication"
   },
   {
-    "id": "exp_09",
+    "id": "exp_11",
     "entreprise": "Dédienne Aerospace",
     "logo": "assets/images/dedienne-logo.png",
     "image": "assets/images/transporteur-moteur.jpg",
@@ -398,7 +398,43 @@
     "poste": "Technicien polyvalent usinage, contrôle et industrialisation (aéronautique)"
   },
   {
-    "id": "exp_08",
+    "id": "exp_10",
+    "entreprise": "APVM Pièces & Accessoires",
+    "logo": "assets/images/logos/wemoto_logo.jpg",
+    "image": "https://www.motorbikespecs.net/images/BMW/G_310_R_16/G_310_R_16_1.jpg",
+    "contexte": "Lancement d’une boutique e-commerce dédiée à la vente de pièces détachées moto et accessoires.",
+    "objectifs": [
+      "Proposer un site professionnel avec catalogue dynamique par marque, modèle et année.",
+      "Automatiser la facturation et le paiement client.",
+      "Faciliter la gestion des commandes et du stock via le back-office PrestaShop."
+    ],
+    "missions": [
+      "Installation, configuration et personnalisation complète de PrestaShop.",
+      "Création du moteur de recherche multi-critères (marque, modèle, année).",
+      "Intégration du catalogue fournisseur et import automatisé des références.",
+      "Mise en place du module de paiement en ligne et facturation PDF.",
+      "Optimisation du référencement et hébergement sur OVH.",
+      "Collaboration avec un designer pour le logo et la charte visuelle."
+    ],
+    "code": "// Exemple de connexion PrestaShop à la base MySQL\n$db = new PDO('mysql:host=localhost;dbname=apvm_shop', 'user', 'pass');",
+    "tags": ["E-commerce", "PrestaShop", "PHP", "MySQL", "Facturation", "Moto"],
+    "stack": {
+      "frontend": ["Smarty", "HTML", "CSS", "JavaScript", "jQuery"],
+      "backend": ["PHP", "Prestashop Core", "MySQL"],
+      "devops": ["FTP/SSH", "OVH Hosting"]
+    },
+    "periode": "Décembre 2012 - Janvier 2013",
+    "lienProjet": "https://www.wemoto.fr/",
+    "resultats": [
+      "Je n'ai pas mise en ligne la version actuelle du site, mais j'ai travaillé sur la version sous Prestashop.",
+      "Automatisation de la facturation client et du suivi de commandes.",
+      "Catalogue dynamique de pièces moto avec import fournisseur.",
+      "Identité visuelle professionnelle alignée sur l’univers motard."
+    ],
+    "poste": "Développeur Web Freelance"
+  },
+  {
+    "id": "exp_09",
     "entreprise": "Thales",
     "logo": "assets/images/thales-logo.jpg",
     "image": "assets/images/salle-blanche.jpg",
@@ -433,7 +469,7 @@
     "poste": "Opérateur test et qualité en électronique (aéronautique/défense)"
   },
   {
-    "id": "exp_07",
+    "id": "exp_08",
     "entreprise": "Zodiac Pool Care (Saison 1)",
     "logo": "assets/images/zodiac-logo.png",
     "image": "assets/images/rv-4200.png",

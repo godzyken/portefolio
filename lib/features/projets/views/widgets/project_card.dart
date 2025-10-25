@@ -89,7 +89,7 @@ class ProjectCard extends ConsumerWidget {
   Widget _buildImage(Size size) {
     final displayW = size.width;
     final displayH =
-        size.height * 0.45; // par exemple image prend 45% hauteur du card
+        size.height * 0.50; // par exemple image prend 50% hauteur du card
     if ((project.cleanedImages?.length ?? 0) > 1) {
       return PageView(
         children: project.cleanedImages!

@@ -49,13 +49,14 @@ class _ResponsiveScopeState extends ConsumerState<ResponsiveScope>
     final mq = MediaQuery.maybeOf(context);
     if (mq == null || mq.size == Size.zero) return;
 
-    final notifier = ref.read(screenSizeProvider.notifier);
-    final currentSize = notifier.state;
     final newSize = mq.size;
-
-    // Mise à jour uniquement si la taille change réellement
+    final currentSize = ref.read(screenSizeProvider);
     if (currentSize != newSize) {
-      notifier.setSize(newSize);
+      Future.microtask(() {
+        if (mounted) {
+          ref.read(screenSizeProvider.notifier).setSize(newSize);
+        }
+      });
     }
   }
 }
