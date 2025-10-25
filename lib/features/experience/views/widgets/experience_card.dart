@@ -122,6 +122,7 @@ class _ExperienceDetails extends ConsumerWidget {
     return Stack(
       clipBehavior: Clip.none,
       children: [
+        // Contenu principal
         if (experience.tags.isNotEmpty && experience.tags.contains('SIG'))
           const Align(
             alignment: Alignment.bottomCenter,
@@ -134,10 +135,24 @@ class _ExperienceDetails extends ConsumerWidget {
           padding: EdgeInsets.only(
             left: 24,
             right: 24,
-            top: 32,
+            top: 48,
             bottom: MediaQuery.of(context).viewInsets.bottom + 24,
           ),
           child: isWide ? _buildWide(theme) : _buildNarrow(theme),
+        ),
+        // ✅ BOUTON FERMER (en haut à droite)
+        Positioned(
+          top: 8,
+          right: 8,
+          child: IconButton(
+            icon: const Icon(Icons.close),
+            tooltip: 'Fermer',
+            style: IconButton.styleFrom(
+              backgroundColor: theme.colorScheme.surface.withValues(alpha: 0.9),
+              foregroundColor: theme.colorScheme.onSurface,
+            ),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
         ),
         // Bulle flottante au-dessus
         if (experience.poste.isNotEmpty)

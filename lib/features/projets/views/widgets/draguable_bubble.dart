@@ -31,33 +31,17 @@ class DraggableBubble extends ConsumerStatefulWidget {
 class _DraggableBubbleState extends ConsumerState<DraggableBubble>
     with TickerProviderStateMixin {
   late Offset offset;
-  late AnimationController _floatCtrl;
   late AnimationController _expandCtrl;
   late Animation<double> _expandAnim;
 
   bool isDragging = false;
+  bool isHovered = false;
   bool isExpanded = false;
-
-  late double rotX;
-  late double rotY;
-  late double rotZ;
-  late double floatAmplitude;
 
   @override
   void initState() {
     super.initState();
     offset = widget.initialOffset;
-
-    final random = math.Random(widget.project.id.hashCode);
-    rotX = (random.nextDouble() - 0.5) * 0.25;
-    rotY = (random.nextDouble() - 0.5) * 0.35;
-    rotZ = (random.nextDouble() - 0.5) * 0.15;
-    floatAmplitude = 0.04 + random.nextDouble() * 0.03;
-
-    _floatCtrl = AnimationController(
-      vsync: this,
-      duration: Duration(milliseconds: 2500 + random.nextInt(1500)),
-    )..repeat(reverse: true);
 
     _expandCtrl = AnimationController(
       vsync: this,
@@ -72,7 +56,6 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
 
   @override
   void dispose() {
-    _floatCtrl.dispose();
     _expandCtrl.dispose();
     super.dispose();
   }
@@ -103,59 +86,78 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
     return Positioned(
       left: offset.dx,
       top: offset.dy,
-      child: GestureDetector(
-        onTap: canExpand ? _toggleExpand : null,
-        onPanStart: (_) => setState(() => isDragging = true),
-        onPanEnd: (_) => setState(() => isDragging = false),
-        onPanUpdate: (details) {
-          final newOffset = offset + details.delta;
-          final clamped = Offset(
-            newOffset.dx.clamp(0.0, info.size.width - currentSize.width),
-            newOffset.dy.clamp(0.0, info.size.height - currentSize.height),
-          );
-          setState(() => offset = clamped);
-          widget.onPositionChanged(clamped);
-        },
-        child: AnimatedBuilder(
-          animation: Listenable.merge([_floatCtrl, _expandAnim]),
-          builder: (context, child) {
-            final floatX =
-                math.sin(_floatCtrl.value * math.pi * 2) * floatAmplitude;
-            final floatY =
-                math.cos(_floatCtrl.value * math.pi * 2) * floatAmplitude;
+      child: MouseRegion(
+        onEnter: (_) => setState(() => isHovered = true),
+        onExit: (_) => setState(() => isHovered = false),
+        child: GestureDetector(
+          onTap: canExpand ? _toggleExpand : _showProjectDialog,
+          onPanStart: (_) => setState(() => isDragging = true),
+          onPanEnd: (_) => setState(() => isDragging = false),
+          onPanUpdate: (details) {
+            final newOffset = offset + details.delta;
+            final clamped = Offset(
+              newOffset.dx.clamp(0.0, info.size.width - currentSize.width),
+              newOffset.dy.clamp(0.0, info.size.height - currentSize.height),
+            );
+            setState(() => offset = clamped);
+            widget.onPositionChanged(clamped);
+          },
+          child: AnimatedBuilder(
+            animation: _expandAnim,
+            builder: (context, child) {
+              // ✅ Pas d'animation flottante automatique
+              // ✅ Animation uniquement au hover et drag
+              final hoverScale = isHovered && !isDragging ? 1.08 : 1.0;
+              final dragScale = isDragging ? 1.15 : 1.0;
+              final finalScale =
+                  (hoverScale * dragScale) * (1.0 + _expandAnim.value * 1.2);
 
-            return Transform(
-              transform: _build3DTransform(floatX, floatY),
-              alignment: Alignment.center,
-              child: Transform.rotate(
-                angle: widget.rotationAngle,
-                child: AnimatedScale(
-                  scale: isDragging ? 1.1 : (1.0 + _expandAnim.value * 1.2),
-                  duration: const Duration(milliseconds: 150),
-                  curve: Curves.easeOut,
+              return Transform.scale(
+                scale: finalScale,
+                child: Transform.rotate(
+                  angle: widget.rotationAngle,
                   child: _buildDevice(deviceSpec, canExpand),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
       ),
     );
   }
 
-  Matrix4 _build3DTransform(double floatX, double floatY) {
-    final perspective = 0.0012; // + de profondeur mais sans distorsion
-    final tiltX = rotX + floatX * 1.2;
-    final tiltY = rotY + floatY * 1.2;
-    final zRotation = rotZ * (isDragging ? 1.4 : 1.0);
+  // ✅ Afficher le dialog au clic sur mobile
+  void _showProjectDialog() {
+    final info = ref.read(responsiveInfoProvider);
+    final deviceSpec = _getDeviceSpec();
+    final screenWidth = deviceSpec.size.width - 2 * deviceSpec.bezelSize;
+    final screenHeight = deviceSpec.size.height - 2 * deviceSpec.bezelSize;
 
-    final m = Matrix4.identity()
-      ..setEntry(3, 2, perspective)
-      ..rotateX(tiltX)
-      ..rotateY(tiltY)
-      ..rotateZ(zRotation);
+    final dialogMaxWidth = math.min(info.size.width * 0.92, screenWidth * 2.4);
+    final dialogMaxHeight =
+        math.min(info.size.height * 0.86, screenHeight * 2.4);
 
-    return m;
+    showDialog(
+      context: context,
+      builder: (_) => Dialog(
+        insetPadding: const EdgeInsets.all(16),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxWidth: dialogMaxWidth,
+            maxHeight: dialogMaxHeight,
+          ),
+          child: SizedBox(
+            width: dialogMaxWidth,
+            height: dialogMaxHeight,
+            child: ProjectCard(
+              project: widget.project,
+              width: dialogMaxWidth,
+              height: dialogMaxHeight,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildDevice(DeviceSpec spec, bool canExpand) {
@@ -176,13 +178,19 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
             color: Colors.black.withValues(alpha: isDragging ? 0.6 : 0.4),
             blurRadius: isDragging ? 40 : 25,
             spreadRadius: isDragging ? 8 : 3,
-            offset: Offset(-rotY, isDragging ? 20 : 12),
+            offset: Offset(0, isDragging ? 20 : 12),
           ),
           if (widget.isSelected)
             BoxShadow(
               color: spec.accentColor.withValues(alpha: 0.6),
               blurRadius: 25,
               spreadRadius: 5,
+            ),
+          if (isHovered && !widget.isSelected)
+            BoxShadow(
+              color: spec.accentColor.withValues(alpha: 0.3),
+              blurRadius: 20,
+              spreadRadius: 3,
             ),
         ],
       ),

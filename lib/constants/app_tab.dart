@@ -113,7 +113,18 @@ enum AppTab {
                           const BoxConstraints(minHeight: 30, minWidth: 40),
                       isSelected: <bool>[isPageView, !isPageView],
                       onPressed: (index) {
-                        ref.read(isPageViewProvider.notifier).toggle();
+                        // ✅ Logique corrigée
+                        if (index == 0) {
+                          // Clic sur Swipe
+                          ref
+                              .read(isPageViewProvider.notifier)
+                              .enablePageView();
+                        } else {
+                          // Clic sur Timeline
+                          ref
+                              .read(isPageViewProvider.notifier)
+                              .disablePageView();
+                        }
                       },
                       selectedColor: Theme.of(context).colorScheme.onPrimary,
                       color: Theme.of(context).colorScheme.primary,
@@ -123,8 +134,14 @@ enum AppTab {
                           .withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(8),
                       children: const [
-                        Text("⇆", style: TextStyle(fontSize: 12)), // Swipe
-                        Text("⏱", style: TextStyle(fontSize: 12)), // Timeline
+                        Tooltip(
+                          message: 'Mode Swipe (glisser)',
+                          child: Text("⇆", style: TextStyle(fontSize: 12)),
+                        ),
+                        Tooltip(
+                          message: 'Mode Timeline',
+                          child: Text("⏱", style: TextStyle(fontSize: 12)),
+                        ),
                       ],
                     ),
                   ],

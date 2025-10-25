@@ -11,11 +11,42 @@ import '../../../../core/provider/experience_providers.dart';
 import '../../../../core/provider/json_data_provider.dart';
 import '../widgets/experience_widgets_extentions.dart';
 
-class ExperiencesScreen extends ConsumerWidget {
+class ExperiencesScreen extends ConsumerStatefulWidget {
   const ExperiencesScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ExperiencesScreen> createState() => _ExperiencesScreenState();
+}
+
+class _ExperiencesScreenState extends ConsumerState<ExperiencesScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Restaurer l'orientation normale au montage
+    if (!kIsWeb) {
+      SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+        DeviceOrientation.landscapeLeft,
+        DeviceOrientation.landscapeRight,
+      ]);
+    }
+  }
+
+  @override
+  void dispose() {
+    // Nettoyer à la destruction
+    if (!kIsWeb) {
+      SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+      ]);
+    }
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final experiencesAsync = ref.watch(experiencesProvider);
     final isPageView = ref.watch(isPageViewProvider);
     final info = ref.watch(responsiveInfoProvider);
@@ -28,38 +59,27 @@ class ExperiencesScreen extends ConsumerWidget {
           return const Center(child: Text('Aucune expérience pour ce filtre.'));
         }
 
-        final canPlayGame = info.size.width >= 800 && info.size.height >= 700;
+        // ✅ Vérifier dynamiquement si le jeu peut être affiché
+        final canPlayGame = info.size.width >= 800 &&
+            info.size.height >= 700 &&
+            info.isLandscape;
 
-        // ✅ Gestion orientation uniquement sur mobile natif
-        if (!kIsWeb) {
-          if (canPlayGame) {
-            SystemChrome.setPreferredOrientations([
-              DeviceOrientation.landscapeLeft,
-              DeviceOrientation.landscapeRight,
-            ]);
-          } else {
-            SystemChrome.setPreferredOrientations([
-              DeviceOrientation.portraitUp,
-              DeviceOrientation.portraitDown,
-            ]);
-          }
-        }
-
-        // ✅ Logique d'affichage 100% déclarative
-        if (isPageView || info.isMobile) {
+        // ✅ Mode Slide (toujours disponible)
+        if (isPageView) {
           return ExperienceSlideScreen(experiences: filteredExperiences);
         }
 
-        if (canPlayGame && !isPageView) {
+        // ✅ Mode Jeu (si les conditions sont remplies)
+        if (canPlayGame) {
           return ExperienceJeuxScreen(experiences: filteredExperiences);
         }
 
-        // 🟢 Toujours disponible : Timeline
+        // 🟢 Fallback : Timeline (toujours disponible)
         return ExperienceTimelineWrapper(experiences: filteredExperiences);
       },
       error: (e, st) {
         ref.read(loggerProvider("ExperienceScreen")).log(
-              "Erreur lors du chargement des services",
+              "Erreur lors du chargement des expériences",
               level: LogLevel.error,
               error: e,
               stackTrace: st,
