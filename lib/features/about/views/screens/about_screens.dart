@@ -4,23 +4,59 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/features/parametres/views/widgets/smart_image.dart';
 
-class AboutSection extends ConsumerWidget {
+class AboutSection extends ConsumerStatefulWidget {
   const AboutSection({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AboutSection> createState() => _AboutSectionState();
+}
+
+class _AboutSectionState extends ConsumerState<AboutSection>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _fadeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    );
+    _fadeAnimation = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeInOut,
+    );
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final info = ref.watch(responsiveInfoProvider);
     final theme = Theme.of(context);
     final isWide = info.size.width > 800;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 48),
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 1200),
-          child: isWide
-              ? _buildWideLayout(context, theme, info)
-              : _buildNarrowLayout(context, theme, info),
+    return FadeTransition(
+      opacity: _fadeAnimation,
+      child: Container(
+        width: double.infinity,
+        padding: EdgeInsets.symmetric(
+          horizontal: info.isMobile ? 24 : 48,
+          vertical: info.isMobile ? 48 : 72,
+        ),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 1400),
+            child: isWide
+                ? _buildWideLayout(context, theme, info)
+                : _buildNarrowLayout(context, theme, info),
+          ),
         ),
       ),
     );
@@ -39,9 +75,7 @@ class AboutSection extends ConsumerWidget {
           flex: 4,
           child: _buildProfileImage(context, theme, info),
         ),
-
-        const SizedBox(width: 48),
-
+        const SizedBox(width: 64),
         // Contenu à droite
         Flexible(
           flex: 6,
@@ -60,7 +94,7 @@ class AboutSection extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         _buildProfileImage(context, theme, info),
-        const SizedBox(height: 32),
+        const SizedBox(height: 40),
         _buildContent(context, theme, true),
       ],
     );
@@ -71,34 +105,56 @@ class AboutSection extends ConsumerWidget {
     ThemeData theme,
     ResponsiveInfo info,
   ) {
-    final imageSize =
-        info.isMobile ? info.size.width * 0.7 : info.size.width * 0.3;
+    final imageSize = info.isMobile
+        ? info.size.width * 0.65
+        : info.isTablet
+            ? info.size.width * 0.35
+            : 320.0;
 
-    return Hero(
-      tag: 'profile_image',
-      child: Container(
-        width: imageSize,
-        height: imageSize,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(24),
-          boxShadow: [
-            BoxShadow(
-              color: theme.colorScheme.primary.withValues(alpha: 0.3),
-              blurRadius: 30,
-              spreadRadius: 5,
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0.0, end: 1.0),
+      duration: const Duration(milliseconds: 1200),
+      curve: Curves.elasticOut,
+      builder: (context, value, child) {
+        return Transform.scale(
+          scale: value,
+          child: Hero(
+            tag: 'profile_image',
+            child: Container(
+              width: imageSize,
+              height: imageSize,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(32),
+                gradient: LinearGradient(
+                  colors: [
+                    theme.colorScheme.primary.withValues(alpha: 0.3),
+                    theme.colorScheme.secondary.withValues(alpha: 0.3),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: theme.colorScheme.primary.withValues(alpha: 0.3),
+                    blurRadius: 40,
+                    spreadRadius: 10,
+                  ),
+                ],
+              ),
+              padding: const EdgeInsets.all(8),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(24),
+                child: SmartImage(
+                  path: 'assets/images/me_portrait_2.webp',
+                  fit: BoxFit.cover,
+                  fallbackIcon: Icons.person,
+                  fallbackColor: theme.colorScheme.primary,
+                ),
+              ),
             ),
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(24),
-          child: SmartImage(
-            path: 'assets/images/me_portrait_2.webp',
-            fit: BoxFit.cover,
-            fallbackIcon: Icons.person,
-            fallbackColor: theme.colorScheme.primary,
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -112,44 +168,101 @@ class AboutSection extends ConsumerWidget {
           isCentered ? CrossAxisAlignment.center : CrossAxisAlignment.start,
       children: [
         // Titre
-        Text(
-          "Godzyken",
-          style: GoogleFonts.montserrat(
-            fontSize: 36,
-            fontWeight: FontWeight.bold,
-            color: theme.colorScheme.primary,
+        _buildAnimatedText(
+          delay: 200,
+          child: Text(
+            "Godzyken",
+            style: GoogleFonts.montserrat(
+              fontSize: 42,
+              fontWeight: FontWeight.bold,
+              foreground: Paint()
+                ..shader = LinearGradient(
+                  colors: [
+                    theme.colorScheme.primary,
+                    theme.colorScheme.secondary,
+                  ],
+                ).createShader(const Rect.fromLTWH(0, 0, 400, 70)),
+            ),
+            textAlign: isCentered ? TextAlign.center : TextAlign.left,
           ),
-          textAlign: isCentered ? TextAlign.center : TextAlign.left,
         ),
+        const SizedBox(height: 16),
 
-        const SizedBox(height: 12),
-
-        // Sous-titre
-        Text(
-          "Développeur Flutter freelance",
-          style: GoogleFonts.openSans(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-            color: theme.colorScheme.secondary,
+        // Badge rôle
+        _buildAnimatedText(
+          delay: 400,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  theme.colorScheme.primary.withValues(alpha: 0.15),
+                  theme.colorScheme.secondary.withValues(alpha: 0.15),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(30),
+              border: Border.all(
+                color: theme.colorScheme.primary.withValues(alpha: 0.3),
+                width: 2,
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.code,
+                  color: theme.colorScheme.primary,
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  "Développeur Flutter freelance",
+                  style: GoogleFonts.openSans(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+              ],
+            ),
           ),
-          textAlign: isCentered ? TextAlign.center : TextAlign.left,
         ),
-
-        const SizedBox(height: 24),
-
-        // Description détaillée
-        _buildDescription(context, theme, isCentered),
-
         const SizedBox(height: 32),
+
+        // Description
+        _buildAnimatedText(
+          delay: 600,
+          child: _buildDescription(context, theme, isCentered),
+        ),
+        const SizedBox(height: 40),
 
         // Statistiques
-        _buildStats(context, theme, isCentered),
-
-        const SizedBox(height: 32),
-
-        // Bouton d'action
-        _buildActionButton(context, theme),
+        _buildAnimatedText(
+          delay: 800,
+          child: _buildStats(context, theme, isCentered),
+        ),
       ],
+    );
+  }
+
+  Widget _buildAnimatedText({
+    required int delay,
+    required Widget child,
+  }) {
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0.0, end: 1.0),
+      duration: const Duration(milliseconds: 800),
+      curve: Curves.easeOut,
+      builder: (context, value, child) {
+        return Transform.translate(
+          offset: Offset(0, 30 * (1 - value)),
+          child: Opacity(
+            opacity: value,
+            child: child,
+          ),
+        );
+      },
+      child: child,
     );
   }
 
@@ -162,37 +275,71 @@ class AboutSection extends ConsumerWidget {
       crossAxisAlignment:
           isCentered ? CrossAxisAlignment.center : CrossAxisAlignment.start,
       children: [
-        Text(
+        _buildParagraph(
+          context,
+          theme,
+          isCentered,
           "Je conçois des applications Flutter sur mesure pour aider les entreprises à digitaliser leurs processus métiers.",
-          textAlign: isCentered ? TextAlign.center : TextAlign.start,
-          style: GoogleFonts.openSans(
-            fontSize: 16,
-            height: 1.6,
-            color: theme.colorScheme.onSurface,
-            fontWeight: FontWeight.w500,
-          ),
+          isFirst: true,
         ),
         const SizedBox(height: 16),
-        Text(
+        _buildParagraph(
+          context,
+          theme,
+          isCentered,
           "Chaque année, je développe un projet complet — de l'idée à la mise en production — pour transformer des besoins réels en solutions performantes et durables.",
-          textAlign: isCentered ? TextAlign.center : TextAlign.start,
-          style: GoogleFonts.openSans(
-            fontSize: 16,
-            height: 1.6,
-            color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
-          ),
+          isFirst: false,
         ),
         const SizedBox(height: 16),
-        Text(
+        _buildParagraph(
+          context,
+          theme,
+          isCentered,
           "Travaillant seul, je maîtrise chaque aspect du développement (UX, architecture, intégration, déploiement) afin d'offrir des outils clairs, efficaces et alignés sur les objectifs de mes clients.",
-          textAlign: isCentered ? TextAlign.center : TextAlign.start,
-          style: GoogleFonts.openSans(
-            fontSize: 16,
-            height: 1.6,
-            color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
-          ),
+          isFirst: false,
         ),
       ],
+    );
+  }
+
+  Widget _buildParagraph(
+    BuildContext context,
+    ThemeData theme,
+    bool isCentered,
+    String text, {
+    required bool isFirst,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: theme.colorScheme.primary.withValues(alpha: 0.1),
+        ),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            isFirst ? Icons.stars : Icons.arrow_right_rounded,
+            color: theme.colorScheme.primary,
+            size: 20,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              text,
+              textAlign: isCentered ? TextAlign.center : TextAlign.start,
+              style: GoogleFonts.openSans(
+                fontSize: 15,
+                height: 1.6,
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.9),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -202,32 +349,50 @@ class AboutSection extends ConsumerWidget {
     bool isCentered,
   ) {
     final stats = [
-      {'number': '10+', 'label': 'Années d\'expérience'},
-      {'number': '50+', 'label': 'Projets réalisés'},
-      {'number': '100%', 'label': 'Satisfaction client'},
+      {
+        'icon': Icons.work_history,
+        'number': '10+',
+        'label': 'Années\nd\'expérience'
+      },
+      {'icon': Icons.apps, 'number': '50+', 'label': 'Projets\nréalisés'},
+      {'icon': Icons.star, 'number': '100%', 'label': 'Satisfaction\nclient'},
     ];
 
     return Wrap(
-      spacing: 24,
-      runSpacing: 24,
+      spacing: 16,
+      runSpacing: 16,
       alignment: isCentered ? WrapAlignment.center : WrapAlignment.start,
       children: stats.map((stat) {
         return Container(
+          width: 140,
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: theme.colorScheme.primary.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(16),
+            gradient: LinearGradient(
+              colors: [
+                theme.colorScheme.primary.withValues(alpha: 0.1),
+                theme.colorScheme.secondary.withValues(alpha: 0.05),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: theme.colorScheme.primary.withValues(alpha: 0.3),
+              color: theme.colorScheme.primary.withValues(alpha: 0.2),
               width: 2,
             ),
           ),
           child: Column(
             children: [
+              Icon(
+                stat['icon'] as IconData,
+                color: theme.colorScheme.primary,
+                size: 32,
+              ),
+              const SizedBox(height: 12),
               Text(
                 stat['number'] as String,
                 style: GoogleFonts.montserrat(
-                  fontSize: 32,
+                  fontSize: 28,
                   fontWeight: FontWeight.bold,
                   color: theme.colorScheme.primary,
                 ),
@@ -236,7 +401,7 @@ class AboutSection extends ConsumerWidget {
               Text(
                 stat['label'] as String,
                 style: GoogleFonts.openSans(
-                  fontSize: 14,
+                  fontSize: 12,
                   color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                 ),
                 textAlign: TextAlign.center,
@@ -245,30 +410,6 @@ class AboutSection extends ConsumerWidget {
           ),
         );
       }).toList(),
-    );
-  }
-
-  Widget _buildActionButton(
-    BuildContext context,
-    ThemeData theme,
-  ) {
-    return ElevatedButton.icon(
-      onPressed: () {
-        // Navigation vers les projets
-        Navigator.of(context).pushNamed('/projects');
-      },
-      icon: const Icon(Icons.arrow_forward_rounded),
-      label: const Text("Découvrir mes projets"),
-      style: ElevatedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 20),
-        backgroundColor: theme.colorScheme.primary,
-        foregroundColor: Colors.white,
-        elevation: 8,
-        shadowColor: theme.colorScheme.primary.withValues(alpha: 0.5),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-      ),
     );
   }
 }
