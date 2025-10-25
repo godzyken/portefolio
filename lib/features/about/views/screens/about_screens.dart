@@ -171,7 +171,7 @@ class _AboutSectionState extends ConsumerState<AboutSection>
         _buildAnimatedText(
           delay: 200,
           child: Text(
-            "Godzyken",
+            "Emryck Doré",
             style: GoogleFonts.montserrat(
               fontSize: 42,
               fontWeight: FontWeight.bold,
@@ -216,7 +216,7 @@ class _AboutSectionState extends ConsumerState<AboutSection>
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  "Développeur Flutter freelance",
+                  "Développeur Flutter Freelance",
                   style: GoogleFonts.openSans(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -354,7 +354,8 @@ class _AboutSectionState extends ConsumerState<AboutSection>
         'number': '10+',
         'label': 'Années\nd\'expérience'
       },
-      {'icon': Icons.apps, 'number': '50+', 'label': 'Projets\nréalisés'},
+      {'icon': Icons.apps, 'number': '8', 'label': 'Applications\nréalisés'},
+      {'icon': Icons.web, 'number': '7', 'label': 'Web Sites\nréalisés'},
       {'icon': Icons.star, 'number': '100%', 'label': 'Satisfaction\nclient'},
     ];
 
