@@ -100,7 +100,7 @@ Future<void> main() async {
     await Future.delayed(const Duration(milliseconds: 100));
   }
 
-  setUrlStrategy(HashUrlStrategy());
+  setUrlStrategy(const HashUrlStrategy());
 
   debugProfileBuildsEnabled = true;
   debugProfilePaintsEnabled = true;
