@@ -2,12 +2,13 @@ import 'dart:developer' as developer;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/provider/config_env_provider.dart';
 import '../services/emailjs_service.dart';
 
 final emailJsProvider = Provider<EmailJsService>((ref) {
-  const serviceId = String.fromEnvironment('EMAILJS_SERVICE_ID');
-  const templateId = String.fromEnvironment('EMAILJS_TEMPLATE_ID');
-  const publicKey = String.fromEnvironment('EMAILJS_PUBLIC_KEY');
+  final serviceId = ref.watch(emailJsServiceIdProvider);
+  final templateId = ref.watch(emailJsTemplateIdProvider);
+  final publicKey = ref.watch(emailJsPublicKeyProvider);
 
   if ([serviceId, templateId, publicKey].any((v) => v.isEmpty)) {
     throw Exception('Variables EmailJS manquantes dans .env');

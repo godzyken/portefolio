@@ -3,6 +3,7 @@ import 'dart:developer' as developer;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../core/provider/config_env_provider.dart';
 import '../../../core/service/native_config.dart';
 
 Future<String> initializeService() async {
@@ -14,7 +15,7 @@ class WhatsAppService {
 
   WhatsAppService(this.phone)
       : assert(
-          RegExp(r'^[1-9]\d{6,14}$').hasMatch(phone),
+          phone.isNotEmpty && RegExp(r'^[1-9]\d{6,14}$').hasMatch(phone),
           'Numéro international invalide',
         );
 
@@ -31,10 +32,12 @@ class WhatsAppService {
 }
 
 final whatsappServiceProvider = Provider<WhatsAppService>((ref) {
-  const phone = String.fromEnvironment('WHATSAPP_PHONE');
-  if (phone == null || !RegExp(r'^[1-9]\d{6,14}$').hasMatch(phone)) {
-    developer.log("⚠️ Numéro WhatsApp invalide ou manquant dans .env");
-    return WhatsAppService("33600000000"); // fallback neutre
+  try {
+    final phone = ref.watch(whatsappPhoneProvider);
+    return WhatsAppService(phone);
+  } catch (e) {
+    developer.log('⚠️ WhatsApp non configuré: $e');
+    // Fallback neutre pour éviter les crashes
+    return WhatsAppService('33600000000');
   }
-  return WhatsAppService(phone);
 });

@@ -1,16 +1,32 @@
+import 'dart:developer' as developer;
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/features/parametres/themes/provider/theme_repository_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../core/provider/config_env_provider.dart';
 import '../../../core/provider/json_data_provider.dart';
 import '../../generator/services/wakatime_service.dart';
 import '../../projets/data/project_data.dart';
 
 /// Provider pour la clé API WakaTime (stockée localement)
 final wakaTimeApiKeyProvider = FutureProvider<String?>((ref) async {
+  // 1. Vérifier SharedPreferences (utilisateur a configuré)
   final prefs = ref.read(sharedPreferencesProvider);
-  const apiKey = String.fromEnvironment('WAKATIME_API_KEY');
-  return prefs.getString(apiKey);
+  final storedKey = prefs.getString('wakatime_api_key');
+
+  if (storedKey != null && storedKey.isNotEmpty) {
+    return storedKey;
+  }
+
+  // 2. Fallback sur les variables d'environnement
+  try {
+    final envKey = ref.watch(wakaTimeApiKeyConfigProvider);
+    return envKey;
+  } catch (e) {
+    developer.log('ℹ️ WakaTime non configuré (optionnel)');
+    return null;
+  }
 });
 
 /// Provider pour le service WakaTime

@@ -12,6 +12,11 @@ permissions:
   pages: write
   id-token: write
 
+# Évite les déploiements concurrents
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -30,13 +35,48 @@ jobs:
       - name: Install Flutter dependencies
         run: flutter pub get
 
-      - name: Build Flutter web
-        env:
-          MAPS_API_KEY: ${{ secrets.MAPS_API_KEY }}
-        run: flutter build web --release --base-href="/portefolio/" --pwa-strategy=none --dart-define=MAPS_API_KEY=${MAPS_API_KEY} --dart-define=CV_ONEDRIVE_URL=${CV_ONEDRIVE_URL}
+      # ✅ Validation des secrets (optionnel mais recommandé)
+      - name: Validate environment variables
+        run: |
+          echo "Checking required secrets..."
+          test -n "${{ secrets.EMAILJS_SERVICE_ID }}" || echo "⚠️ EMAILJS_SERVICE_ID missing"
+          test -n "${{ secrets.EMAILJS_TEMPLATE_ID }}" || echo "⚠️ EMAILJS_TEMPLATE_ID missing"
+          test -n "${{ secrets.EMAILJS_PUBLIC_KEY }}" || echo "⚠️ EMAILJS_PUBLIC_KEY missing"
+          test -n "${{ secrets.WHATSAPP_PHONE }}" || echo "⚠️ WHATSAPP_PHONE missing"
+          test -n "${{ secrets.CV_ONEDRIVE_URL }}" || echo "⚠️ CV_ONEDRIVE_URL missing"
+          test -n "${{ secrets.MAPS_API_KEY }}" && echo "✅ MAPS_API_KEY configured" || echo "ℹ️ MAPS_API_KEY optional"
+          test -n "${{ secrets.WAKATIME_API_KEY }}" && echo "✅ WAKATIME_API_KEY configured" || echo "ℹ️ WAKATIME_API_KEY optional"
 
+      # ✅ Build avec TOUTES les variables d'environnement
+      - name: Build Flutter web
+        run: |
+          flutter build web \
+            --release \
+            --base-href="/portefolio/" \
+            --pwa-strategy=none \
+            --dart-define=EMAILJS_SERVICE_ID="${{ secrets.EMAILJS_SERVICE_ID }}" \
+            --dart-define=EMAILJS_TEMPLATE_ID="${{ secrets.EMAILJS_TEMPLATE_ID }}" \
+            --dart-define=EMAILJS_PUBLIC_KEY="${{ secrets.EMAILJS_PUBLIC_KEY }}" \
+            --dart-define=WHATSAPP_PHONE="${{ secrets.WHATSAPP_PHONE }}" \
+            --dart-define=CV_ONEDRIVE_URL="${{ secrets.CV_ONEDRIVE_URL }}" \
+            --dart-define=MAPS_API_KEY="${{ secrets.MAPS_API_KEY }}" \
+            --dart-define=WAKATIME_API_KEY="${{ secrets.WAKATIME_API_KEY }}"
+
+      # Cache busting
       - name: Append build version (cache busting)
-        run: sed -i "s/flutter_bootstrap.js/flutter_bootstrap.js?v=$(date +%s)/" build/web/index.html
+        run: |
+          BUILD_VERSION=$(date +%s)
+          sed -i "s/flutter_bootstrap.js/flutter_bootstrap.js?v=${BUILD_VERSION}/" build/web/index.html
+          sed -i "s/main.dart.js/main.dart.js?v=${BUILD_VERSION}/" build/web/index.html
+          echo "Build version: ${BUILD_VERSION}"
+
+      # Optimisation : compression des assets
+      - name: Compress assets (optional)
+        run: |
+          if command -v gzip &> /dev/null; then
+            find build/web -type f \( -name '*.js' -o -name '*.css' -o -name '*.html' \) -exec gzip -k -9 {} \;
+            echo "✅ Assets compressed"
+          fi
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
@@ -48,7 +88,16 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+      # Post-déploiement : notification (optionnel)
+      - name: Deployment success
+        if: success()
+        run: |
+          echo "✅ Deployment successful!"
+          echo "🌐 URL: ${{ steps.deployment.outputs.page_url }}"
