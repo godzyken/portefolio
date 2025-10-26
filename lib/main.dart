@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'core/provider/config_env_provider.dart';
 import 'core/routes/router.dart';
 import 'core/service/bootstrap_service.dart';
+import 'core/service/config_env.dart';
 import 'features/generator/views/widgets/generator_widgets_extentions.dart';
 import 'features/home/views/screens/splash_screen.dart';
 import 'features/home/views/widgets/precache_wrapper.dart';
@@ -111,9 +113,34 @@ Future<void> main() async {
   final bootstrap = await BootstrapService.initialize();
   developer.log(
       '✅ Bootstrap terminé, prefs loaded: ${bootstrap.prefs.getKeys().length}');
+  // 🧠 Étape 1 : Crée un container Riverpod "manuel"
+  final container = ProviderContainer();
 
-  runApp(
-    ProviderScope(
+  // 🧩 Étape 2 : Lis et valide la configuration d'environnement
+  final validation = container.read(envConfigValidationProvider);
+
+  if (!validation.isValid) {
+    developer.log('⚠️ Erreurs de configuration:');
+    for (final e in validation.errors) {
+      developer.log('  - $e');
+    }
+  }
+  if (validation.hasWarnings) {
+    developer.log('⚠️ Warnings:');
+    for (final w in validation.warnings) {
+      developer.log('  - $w');
+    }
+  } else {
+    developer.log('✅ Configuration d’environnement OK');
+  }
+
+  // (Optionnel) Initialiser la façade statique Env
+  Env.init(container);
+
+  // 🚀 Étape 3 : Lancer l’application en réutilisant le container
+  runApp(UncontrolledProviderScope(
+    container: container,
+    child: ProviderScope(
       overrides: [
         sharedPreferencesProvider.overrideWithValue(bootstrap.prefs),
         themeControllerProvider.overrideWith(ThemeController.new),
@@ -123,7 +150,7 @@ Future<void> main() async {
         bootstrap: bootstrap,
       )),
     ),
-  );
+  ));
 }
 
 class MyFullApp extends ConsumerWidget {

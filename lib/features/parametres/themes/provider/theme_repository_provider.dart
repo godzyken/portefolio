@@ -5,7 +5,7 @@ import '../services/theme_repository.dart';
 import '../theme/theme_data.dart';
 
 final sharedPreferencesProvider =
-    Provider<SharedPreferences>((ref) => throw UnimplementedError());
+    Provider<SharedPreferences>((ref) => FakeSharedPreferences());
 
 final themeRepositoryProvider = Provider<ThemeRepository>((ref) {
   final prefs = ref.watch(sharedPreferencesProvider);

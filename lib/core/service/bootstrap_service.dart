@@ -13,7 +13,15 @@ class BootstrapService {
   BootstrapService({required this.theme, required this.prefs});
 
   static Future<BootstrapService> initialize() async {
-    final prefs = await SharedPreferences.getInstance();
+    SharedPreferences prefs;
+
+    try {
+      prefs = await SharedPreferences.getInstance();
+    } catch (e) {
+      developer
+          .log('⚠️ SharedPreferences non disponible, fallback mémoire: $e');
+      prefs = FakeSharedPreferences() as SharedPreferences; // cast temporaire
+    }
 
     final repo = ThemeRepository(prefs: prefs);
     final theme = await repo.loadTheme();
