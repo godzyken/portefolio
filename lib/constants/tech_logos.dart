@@ -23,7 +23,8 @@ final Map<String, String> techLogos = {
   'ci/cd': 'assets/images/logos/ci-cd-logo.png',
   'git': 'assets/images/logos/git-logo.png',
   'wiz': 'assets/images/logos/wiz-logo.png',
-  'api': 'assets/images/api-img.png',
+  'security': 'assets/images/logos/security-logos.png',
+  'api': 'assets/images/api-img.png'
 };
 
 final wakatimeBadges = <String, String>{

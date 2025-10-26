@@ -137,5 +137,22 @@
     ],
     "platform": ["Web", "Desktop", "Mobile"],
     "tags": ["Flutter", "GitHub", "FlutterFlow"]
+  },
+  {
+    "id": "projet_8",
+    "title": "Accompagnement digital – Clip musical d’artiste indépendant",
+    "points": [
+      "🎤 Enregistrement et accompagnement vocal de l’artiste sur les instrumentaux.",
+      "🎧 Utilisation de Logic Pro sur macOS pour la prise de son, le mixage et la post-production.",
+      "🎬 Coordination avec l’équipe vidéo pour assurer la cohérence audio/visuelle du clip.",
+      "💰 Financement et gestion des campagnes sponsorisées sur Facebook pour la diffusion.",
+      "📢 Partenariat avec des pages à forte audience comme 'Rap de France' pour maximiser la visibilité.",
+      "🎯 Objectif : valoriser l’artiste et renforcer sa présence numérique grâce à une stratégie de diffusion ciblée."
+    ],
+    "image": [
+      "https://youtu.be/7hjJeGOZEgI"
+    ],
+    "platform": ["Web", "Mobile", "Logic Pro"],
+    "tags": ["Facebook", "Youtube", "Spotify"]
   }
 ]
