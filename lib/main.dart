@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
 
 import 'core/provider/config_env_provider.dart';
 import 'core/routes/router.dart';
@@ -98,6 +99,8 @@ Future<void> main() async {
     // Ajoute une légère attente avant de lancer ton app
     await Future.delayed(const Duration(milliseconds: 100));
   }
+
+  setUrlStrategy(HashUrlStrategy());
 
   debugProfileBuildsEnabled = true;
   debugProfilePaintsEnabled = true;
