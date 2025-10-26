@@ -1,6 +1,5 @@
 import 'dart:developer' as developer;
 
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../services/cv_download_service.dart';
@@ -12,12 +11,10 @@ final cvDownloadServiceProvider = Provider<CvDownloadService>((ref) {
 
 /// Provider pour l'URL du CV depuis .env
 final cvUrlProvider = Provider<String?>((ref) {
-  developer.log("dotenv.env ==> ${dotenv.env['CV_ONEDRIVE_URL']}");
-
-  final url = dotenv.env['CV_ONEDRIVE_URL'] ?? '';
+  const url = String.fromEnvironment('CV_ONEDRIVE_URL');
 
   if (url.isEmpty) {
-    throw Exception('Variables CV_ONEDRIVE_URL manquantes dans .env');
+    throw Exception('Variables CV_ONEDRIVE_URL manquantes dans .env ::: $url');
   }
 
   developer.log("OneDrive config:");
