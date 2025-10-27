@@ -1,3 +1,6 @@
+import 'dart:developer' as developer;
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/calendar/v3.dart' as calendar;
@@ -6,6 +9,7 @@ import 'package:http/http.dart' as http;
 // Définir les scopes nécessaires
 const List<String> scopes = [
   calendar.CalendarApi.calendarScope,
+  calendar.CalendarApi.calendarEventsScope,
 ];
 
 class GoogleCalendarNotifier extends AsyncNotifier<calendar.CalendarApi?> {
@@ -25,14 +29,20 @@ class GoogleCalendarNotifier extends AsyncNotifier<calendar.CalendarApi?> {
 
       // Sur certaines versions / plateformes, initialize() est requis.
       // On l'appelle si disponible (safe to call).
-      try {
-        await signIn.initialize();
-      } catch (_) {
-        // ignore: certains backend/platform ne nécessitent pas initialize
-      }
+
+      await signIn.initialize(
+        clientId:
+            kIsWeb ? 'VOTRE_WEB_CLIENT_ID.apps.googleusercontent.com' : null,
+        hostedDomain: 'YOUR_HOSTED_DOMAIN',
+      );
+
+      GoogleSignInAccount? account =
+          await signIn.attemptLightweightAuthentication();
 
       // Lancer l'authentification interactive (doit être démarrée depuis une interaction utilisateur)
-      final account = await signIn.authenticate();
+      account ??= await signIn.authenticate(
+        scopeHint: scopes,
+      );
 
       if (account.id.isEmpty) {
         throw Exception('Authentification annulée ou aucun compte sélectionné');
@@ -49,9 +59,19 @@ class GoogleCalendarNotifier extends AsyncNotifier<calendar.CalendarApi?> {
       final client = GoogleHttpClient(headers);
       final api = calendar.CalendarApi(client);
 
+      try {
+        await api.calendarList.list();
+        developer.log('✅ API Calendar accessible');
+      } catch (e) {
+        developer.log('❌ Erreur test API: $e');
+        throw Exception('Impossible d\'accéder à l\'API Calendar: $e');
+      }
+
       // Stocke l'API en état réussi
       state = AsyncValue.data(api);
     } catch (e, st) {
+      developer.log('Erreur dans signInAndInit: ${e.toString()}',
+          error: e, stackTrace: st);
       state = AsyncValue.error(e, st);
     }
   }
@@ -60,7 +80,10 @@ class GoogleCalendarNotifier extends AsyncNotifier<calendar.CalendarApi?> {
   Future<void> signOut() async {
     try {
       await GoogleSignIn.instance.signOut();
-    } catch (_) {}
+      developer.log('✅ Déconnexion réussie');
+    } catch (e) {
+      developer.log('⚠️ Erreur déconnexion: $e');
+    }
     state = const AsyncValue.data(null);
   }
 }
@@ -75,5 +98,11 @@ class GoogleHttpClient extends http.BaseClient {
   Future<http.StreamedResponse> send(http.BaseRequest request) {
     request.headers.addAll(_headers);
     return _inner.send(request);
+  }
+
+  @override
+  void close() {
+    _inner.close();
+    super.close();
   }
 }

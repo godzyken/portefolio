@@ -1,3 +1,5 @@
+import 'dart:developer' as developer;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:googleapis/calendar/v3.dart' as calendar;
@@ -85,10 +87,24 @@ class ContactConversionOption extends ConsumerWidget {
             Icons.calendar_today,
             'Connecter Google Calendar',
             () async {
-              // Lancement de l'auth (doit être déclenché par un clic utilisateur)
-              await ref
-                  .read(googleCalendarNotifierProvider.notifier)
-                  .signInAndInit();
+              developer.log('🔐 Tentative de connexion...');
+
+              _showLoadingSnackBar(context, 'Connexion en cours...');
+
+              try {
+                await ref
+                    .read(googleCalendarNotifierProvider.notifier)
+                    .signInAndInit();
+
+                if (context.mounted) {
+                  _showSuccessSnackBar(context, 'Connecté avec succès !');
+                }
+              } catch (e) {
+                developer.log('❌ Erreur: $e');
+                if (context.mounted) {
+                  _showErrorSnackBar(context, e.toString());
+                }
+              }
             },
           );
         }
@@ -98,52 +114,7 @@ class ContactConversionOption extends ConsumerWidget {
           theme,
           Icons.calendar_today,
           'Réserver un créneau',
-          () async {
-            try {
-              final date = await showDatePicker(
-                context: context,
-                initialDate: DateTime.now().add(const Duration(days: 1)),
-                firstDate: DateTime.now(),
-                lastDate: DateTime.now().add(const Duration(days: 365)),
-              );
-              if (date == null) return;
-              if (!context.mounted) return;
-              final time = await showTimePicker(
-                context: context,
-                initialTime: const TimeOfDay(hour: 10, minute: 0),
-              );
-              if (time == null) return;
-
-              final start = DateTime(
-                  date.year, date.month, date.day, time.hour, time.minute);
-              final end = start.add(const Duration(hours: 1));
-
-              final event = calendar.Event()
-                ..summary = 'Discussion avec Emryck alias Ryo Saeba'
-                ..description =
-                    'Café virtuel ou réel pour parler de votre projet'
-                ..start =
-                    calendar.EventDateTime(dateTime: start, timeZone: 'UTC')
-                ..end = calendar.EventDateTime(dateTime: end, timeZone: 'UTC');
-
-              final createdEvent =
-                  await calendarApi.events.insert(event, 'primary');
-
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                      content:
-                          Text('Événement créé : ${createdEvent.summary}')),
-                );
-              }
-            } catch (e) {
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Erreur lors de la création : $e')),
-                );
-              }
-            }
-          },
+          () => _createCalendarEvent(context, ref, calendarApi),
         );
       },
       loading: () => _buildActionChip(
@@ -160,6 +131,79 @@ class ContactConversionOption extends ConsumerWidget {
         },
       ),
     );
+  }
+
+  /// Créer un événement calendar
+  Future<void> _createCalendarEvent(
+    BuildContext context,
+    WidgetRef ref,
+    calendar.CalendarApi api,
+  ) async {
+    try {
+      // Sélection date
+      final date = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now().add(const Duration(days: 1)),
+        firstDate: DateTime.now(),
+        lastDate: DateTime.now().add(const Duration(days: 365)),
+        helpText: 'Choisir une date',
+        cancelText: 'Annuler',
+        confirmText: 'Suivant',
+      );
+
+      if (date == null || !context.mounted) return;
+
+      // Sélection heure
+      final time = await showTimePicker(
+        context: context,
+        initialTime: const TimeOfDay(hour: 10, minute: 0),
+        helpText: 'Choisir une heure',
+        cancelText: 'Annuler',
+        confirmText: 'Créer',
+      );
+
+      if (time == null || !context.mounted) return;
+
+      // Créer l'événement
+      final start = DateTime(
+        date.year,
+        date.month,
+        date.day,
+        time.hour,
+        time.minute,
+      );
+      final end = start.add(const Duration(hours: 1));
+
+      developer.log('📅 Création événement: ${start.toIso8601String()}');
+
+      final event = calendar.Event()
+        ..summary = 'Discussion avec Emryck Doré'
+        ..description = 'Café virtuel pour parler de votre projet'
+        ..start = calendar.EventDateTime(
+          dateTime: start,
+          timeZone: 'Europe/Paris',
+        )
+        ..end = calendar.EventDateTime(
+          dateTime: end,
+          timeZone: 'Europe/Paris',
+        );
+
+      await api.events.insert(event, 'primary');
+
+      developer.log('✅ Événement créé');
+
+      if (context.mounted) {
+        _showSuccessSnackBar(
+          context,
+          'Événement créé le ${_formatDate(start)} à ${time.format(context)}',
+        );
+      }
+    } catch (e) {
+      developer.log('❌ Erreur création: $e');
+      if (context.mounted) {
+        _showErrorSnackBar(context, 'Impossible de créer l\'événement');
+      }
+    }
   }
 
   /// Chip pour CV avec Riverpod safe
@@ -201,5 +245,77 @@ class ContactConversionOption extends ConsumerWidget {
       labelStyle:
           theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
     );
+  }
+
+  /// Helpers pour les SnackBars
+  void _showLoadingSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Text(message),
+          ],
+        ),
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
+
+  void _showSuccessSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.check_circle, color: Colors.white),
+            const SizedBox(width: 16),
+            Expanded(child: Text(message)),
+          ],
+        ),
+        backgroundColor: Colors.green,
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
+
+  void _showErrorSnackBar(BuildContext context, String error) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.error, color: Colors.white),
+            const SizedBox(width: 16),
+            Expanded(child: Text('Erreur: $error')),
+          ],
+        ),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+
+  String _formatDate(DateTime date) {
+    final months = [
+      'janvier',
+      'février',
+      'mars',
+      'avril',
+      'mai',
+      'juin',
+      'juillet',
+      'août',
+      'septembre',
+      'octobre',
+      'novembre',
+      'décembre'
+    ];
+    return '${date.day} ${months[date.month - 1]} ${date.year}';
   }
 }
