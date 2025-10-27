@@ -123,20 +123,40 @@
     "tags": ["Flutter", "GitHub", "FlutterFlow"]
   },
   {
-    "id": "projet_7",
-    "title": "WorkShop Epsi-wis 2025-2026",
+    "id": "projet_ultron",
+    "title": "Réseau Éducatif Résilient - Projet Workshop Ultron",
     "points": [
-      "🔗 Présentation de mes projets personnels",
-      "🌐 Site statique avec sections : projets, expérience, contact",
-      "🎨 Design responsive pour mobile, tablette et desktop",
-      "🧰 Utilisation de HTML, CSS, JS pour l’interface",
-      "📂 Hébergement via GitHub Pages"
+      "🛰️ Projet Workshop EPSI-WIS 2025 – Campus Montpellier",
+      "🌐 Contexte : après l’avènement d’Ultron, l’internet mondial est corrompu, rendant impossible toute communication centralisée.",
+      "🎯 Objectif : reconstruire un réseau éducatif décentralisé et résilient permettant d’échanger localement des informations liées à l’éducation.",
+      "🏫 Concept : chaque ville possède un campus équipé d’une antenne locale (ESP8266) capable d’échanger des données via un réseau LAN indépendant.",
+      "📱 Le mobile de l’étudiant devient un vecteur d’information : il transporte les données entre campus et propage le savoir de manière asynchrone.",
+      "💡 Architecture : Raspberry Pi comme serveur local, ESP8266 pour l’antenne/edge device, routeur Wi-Fi pour la connectivité, et application Flutter multiplateforme pour l’accès utilisateur.",
+      "🔁 Synchronisation : échanges et réplications locales des données sans dépendance à Internet (propagation via appareils mobiles).",
+      "🧑‍🤝‍🧑 Travail d’équipe : conception du concept, maquette du réseau et prototypage de l’application mobile résiliente.",
+      "🚀 Impact : continuité pédagogique et transmission du savoir dans un monde post-connecté."
     ],
+    "techDetails": {
+      "infrastructure": "Chaque campus héberge une antenne locale composée d’un Raspberry Pi et d’un module ESP8266 pour créer un point d’accès Wi-Fi éducatif.",
+      "communication": "Les mobiles se connectent à l’antenne via Wi-Fi direct et échangent des fichiers JSON via un protocole REST local.",
+      "synchronisation": "Les données sont stockées en cache (SQLite ou Hive) et synchronisées automatiquement dès qu’un mobile visite un nouveau campus.",
+      "sécurité": "Les échanges sont signés et chiffrés localement (AES-256) afin d’éviter la corruption ou l’injection de données.",
+      "application": "Développée avec Flutter, l’application offre une interface responsive et offline-first. Elle permet de consulter, sauvegarder et transférer les ressources éducatives.",
+      "matériel": ["Raspberry Pi 4", "ESP8266 NodeMCU", "Routeur Wi-Fi portable", "Smartphone Android/iOS"]
+    },
     "image": [
-      "assets/images/logo_godzyken.png"
+      "assets/images/WorkShop/1.png",
+      "assets/images/WorkShop/2.png",
+      "assets/images/WorkShop/3.png",
+      "assets/images/WorkShop/4.png",
+      "assets/images/WorkShop/5.png",
+      "assets/images/WorkShop/6.png",
+      "assets/images/WorkShop/7.png",
+      "assets/images/WorkShop/esp_1.jpg",
+      "assets/images/WorkShop/esp_2.jpg"
     ],
-    "platform": ["Web", "Desktop", "Mobile"],
-    "tags": ["Flutter", "GitHub", "FlutterFlow"]
+    "platform": ["Mobile", "Web", "IoT"],
+    "tags": ["Flutter", "Raspberry Pi", "ESP8266", "LAN", "Offline Sync", "Education", "IoT"]
   },
   {
     "id": "projet_8",

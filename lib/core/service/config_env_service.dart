@@ -87,7 +87,7 @@ EnvConfigService(
   emailJsTemplateId: ${emailJsTemplateId.isNotEmpty ? '***' : 'MISSING'},
   emailJsPublicKey: ${emailJsPublicKey.isNotEmpty ? '***' : 'MISSING'},
   whatsappPhone: ${whatsappPhone.isNotEmpty ? '***' : 'MISSING'},
-  oneDriveUrl: ${oneDriveUrl.isNotEmpty ? oneDriveUrl.substring(0, 30) + '...' : 'MISSING'},
+  oneDriveUrl: ${oneDriveUrl.isNotEmpty ? '${oneDriveUrl.substring(0, 30)}...' : 'MISSING'},
   wakaTimeApiKey: ${wakaTimeApiKey != null ? '***' : 'null'},
 )''';
 }

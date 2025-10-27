@@ -9,6 +9,8 @@ class ProjectInfo {
   final List<String>? platform;
   final List<String>? tags;
   final Duration? timeSpent;
+  final Map<String, dynamic>? techDetails;
+  final List<String>? results;
 
   ProjectInfo({
     required this.id,
@@ -19,6 +21,8 @@ class ProjectInfo {
     this.platform,
     this.tags,
     this.timeSpent,
+    this.techDetails,
+    this.results,
   });
 
   // Getter qui retourne les images nettoyées
@@ -53,6 +57,8 @@ class ProjectInfo {
     List<String>? platform,
     List<String>? tags,
     Duration? timeSpent,
+    Map<String, dynamic>? techDetails,
+    List<String>? results,
   }) {
     return ProjectInfo(
       id: id ?? this.id,
@@ -63,6 +69,8 @@ class ProjectInfo {
       platform: platform ?? this.platform,
       tags: tags ?? this.tags,
       timeSpent: timeSpent ?? this.timeSpent,
+      techDetails: techDetails ?? this.techDetails,
+      results: results ?? this.results,
     );
   }
 
@@ -76,6 +84,11 @@ class ProjectInfo {
       platform:
           json['platform'] != null ? List<String>.from(json['platform']) : null,
       tags: json['tags'] != null ? List<String>.from(json['tags']) : null,
+      techDetails: json['techDetails'] != null
+          ? Map<String, dynamic>.from(json['techDetails'])
+          : null,
+      results:
+          json['results'] != null ? List<String>.from(json['results']) : null,
     );
   }
 }

@@ -251,8 +251,9 @@ class _EmailField extends ConsumerWidget {
       onChanged: onChanged,
       validator: (val) {
         if (val == null || val.isEmpty) return 'Requis';
-        if (!RegExp(r'^[\w\.-]+@[\w\.-]+\.\w+$').hasMatch(val))
+        if (!RegExp(r'^[\w\.-]+@[\w\.-]+\.\w+$').hasMatch(val)) {
           return 'Email invalide';
+        }
         return null;
       },
     );

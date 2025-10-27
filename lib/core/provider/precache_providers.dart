@@ -148,7 +148,7 @@ Future<List<bool>> _precacheImagesInBatches(
 
     final batchResults = await Future.wait(batch.map((path) async {
       try {
-        final provider = path.contains('http')
+        final provider = path.contains('https')
             ? NetworkImage(path)
             : AssetImage(path) as ImageProvider;
         await precacheImage(provider, context).timeout(timeout, onTimeout: () {

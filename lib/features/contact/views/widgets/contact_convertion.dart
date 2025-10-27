@@ -212,7 +212,7 @@ class ContactConversionOption extends ConsumerWidget {
     final cvUrlAsync = ref.watch(cvUrlProvider);
     final isAvailableAsync = ref.watch(isCvAvailableProvider);
 
-    if (cvUrlAsync == null || isAvailableAsync != true) {
+    if (cvUrlAsync.isEmpty || isAvailableAsync != true) {
       return _buildActionChip(
         theme,
         Icons.hourglass_empty,

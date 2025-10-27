@@ -4,6 +4,7 @@ export 'code_high_light_list.dart';
 export 'fade_slide_animation.dart';
 export 'hover_card.dart';
 export 'immersive_detail_screen.dart';
+export 'immersive_experience_detail.dart';
 export 'location_permission_dialog.dart';
 export 'minimal_card.dart';
 export 'responsive_layout.dart';

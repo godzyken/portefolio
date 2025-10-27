@@ -54,15 +54,17 @@ class _GeolocationTesterWidgetState extends State<GeolocationTesterWidget> {
 
   Future<void> _requestPermission() async {
     final hasPermission = await _geolocationService.isLocationEnabled();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          hasPermission
-              ? 'Permission accordée (ou déjà obtenue).'
-              : 'Permission refusée ou erreur.',
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            hasPermission
+                ? 'Permission accordée (ou déjà obtenue).'
+                : 'Permission refusée ou erreur.',
+          ),
         ),
-      ),
-    );
+      );
+    }
   }
 
   void _toggleWatchPosition() {

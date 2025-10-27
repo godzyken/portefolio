@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:portefolio/features/experience/views/widgets/experience_widgets_extentions.dart';
+import 'package:portefolio/features/parametres/views/widgets/smart_image.dart';
 import 'package:timelines_plus/timelines_plus.dart';
 
 import '../../../../core/affichage/screen_size_detector.dart';
+import '../../../generator/views/widgets/generator_widgets_extentions.dart';
 import '../../data/experiences_data.dart';
-import 'experience_card.dart';
 
 final fadeCtrlProvider = Provider<AnimationController>((_) {
   throw UnimplementedError();
@@ -48,10 +50,11 @@ class ExperienceTimeline extends ConsumerWidget {
               ),
             ),
             contentsBuilder: (context, index) => GestureDetector(
-              onTap: () => _showExperienceModal(context, experiences[index]),
+              onTap: () =>
+                  _showExperienceModal(context, experiences[index], info),
               child: ClipOval(
-                child: Image.asset(
-                  experiences[index].logo,
+                child: SmartImage(
+                  path: experiences[index].logo,
                   width: 48,
                   height: 48,
                   fit: BoxFit.contain,
@@ -67,7 +70,8 @@ class ExperienceTimeline extends ConsumerWidget {
     );
   }
 
-  void _showExperienceModal(BuildContext context, Experience experience) {
+  void _showExperienceModal(
+      BuildContext context, Experience experience, ResponsiveInfo info) {
     showModalBottomSheet(
       context: context,
       useSafeArea: true,
@@ -76,16 +80,32 @@ class ExperienceTimeline extends ConsumerWidget {
         builder: (context, orientation) {
           final initialSize = orientation == Orientation.portrait ? 0.5 : 0.7;
           return DraggableScrollableSheet(
-            expand: false,
-            initialChildSize: initialSize,
-            minChildSize: 0.5,
-            maxChildSize: 0.95,
-            builder: (context, scrollController) => SingleChildScrollView(
-              controller: scrollController,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-              child: ExperienceCard(experience: experience),
-            ),
-          );
+              expand: false,
+              initialChildSize: initialSize,
+              minChildSize: 0.5,
+              maxChildSize: 0.95,
+              builder: (context, scrollController) {
+                final screenHeight = info.size.height;
+                return SingleChildScrollView(
+                    controller: scrollController,
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minHeight: screenHeight * initialSize,
+                        maxHeight: screenHeight * 0.95,
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 16),
+                        child: PokerExperienceCard(
+                            experience: experience,
+                            onTap: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                      builder: (_) => ImmersiveExperienceDetail(
+                                          experience: experience)),
+                                )),
+                      ),
+                    ));
+              });
         },
       ),
     );

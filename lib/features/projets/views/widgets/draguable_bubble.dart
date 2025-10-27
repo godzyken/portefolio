@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
+import 'package:portefolio/features/generator/views/widgets/generator_widgets_extentions.dart';
 import 'package:portefolio/features/parametres/views/widgets/smart_image.dart';
 import 'package:portefolio/features/projets/views/widgets/project_card.dart';
 
@@ -237,10 +238,8 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
                     child: SizedBox(
                       width: screenWidth,
                       height: screenHeight,
-                      child: ProjectCard(
+                      child: MinimalCard(
                         project: widget.project,
-                        width: screenWidth,
-                        height: screenHeight,
                       ),
                     ),
                   )
@@ -354,11 +353,7 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
                 height: dialogMaxHeight,
                 key: ValueKey(
                     'project_card_${widget.project.id}_${DateTime.now().millisecondsSinceEpoch}'),
-                child: ProjectCard(
-                  project: widget.project,
-                  width: dialogMaxWidth,
-                  height: dialogMaxHeight,
-                ),
+                child: MinimalCard(project: widget.project),
               ),
             ),
           ),

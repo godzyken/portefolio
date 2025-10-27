@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:portefolio/features/generator/views/widgets/immersive_experience_detail.dart';
+import 'package:portefolio/features/parametres/views/widgets/smart_image.dart';
 
 import '../../../../constants/enum_global.dart';
 import '../../../../core/affichage/screen_size_detector.dart';
@@ -164,7 +166,7 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
                 child: ClipRRect(
                   borderRadius:
                       const BorderRadius.vertical(top: Radius.circular(12)),
-                  child: Image.asset(exp.image, fit: BoxFit.cover),
+                  child: SmartImage(path: exp.image, fit: BoxFit.cover),
                 ),
               ),
             Padding(
@@ -294,9 +296,14 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
                 ],
               ),
               child: RepaintBoundary(
-                child: ExperienceCard(
+                child: PokerExperienceCard(
                   experience: activeExperience!,
-                  pageOffset: 0,
+                  isCenter: true,
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                        builder: (_) => ImmersiveExperienceDetail(
+                            experience: activeExperience!)),
+                  ),
                 ),
               ),
             ),
@@ -416,8 +423,8 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
     return Stack(
       children: [
         Positioned.fill(
-          child: Image.asset(
-            'assets/images/tapis-poker.png',
+          child: SmartImage(
+            path: 'assets/images/tapis-poker.png',
             fit: BoxFit.cover,
           ),
         ),

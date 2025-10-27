@@ -77,6 +77,7 @@ flutter:
     - assets/images/3.0x/
     - assets/images/4.0x/
     - assets/images/logos/
+    - assets/images/WorkShop/
     - assets/data/
     - assets/fonts/Noto_Sans/
     - assets/fonts/Noto_Sans/static/

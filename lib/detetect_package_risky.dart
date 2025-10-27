@@ -47,7 +47,7 @@ void main() async {
     }
 
     if (risky.isNotEmpty) {
-      developer.log('Package: $name ($version) [${kind}]');
+      developer.log('Package: $name ($version) [$kind]');
       for (var r in risky) {
         developer.log('  - $r');
       }

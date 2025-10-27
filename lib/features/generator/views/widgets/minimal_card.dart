@@ -4,20 +4,15 @@ import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/features/parametres/views/widgets/smart_image.dart';
 import 'package:vector_math/vector_math_64.dart' show Vector3;
 
+import '../../../projets/data/project_data.dart';
 import 'immersive_detail_screen.dart';
 
 class MinimalCard extends ConsumerStatefulWidget {
-  final String title;
-  final List<String> bulletPoints;
-  final List<String>? images;
-  final IconData? fallbackIcon;
+  final ProjectInfo project; // ✅ on passe directement un ProjectInfo
 
   const MinimalCard({
     super.key,
-    required this.title,
-    required this.bulletPoints,
-    this.images,
-    this.fallbackIcon,
+    required this.project,
   });
 
   @override
@@ -31,6 +26,7 @@ class _MinimalCardState extends ConsumerState<MinimalCard> {
   Widget build(BuildContext context) {
     final info = ref.watch(responsiveInfoProvider);
     final theme = Theme.of(context);
+    final project = widget.project;
 
     return MouseRegion(
       onEnter: (_) => setState(() => _isHovered = true),
@@ -64,7 +60,7 @@ class _MinimalCardState extends ConsumerState<MinimalCard> {
                   scale: _isHovered ? 1.1 : 1.0,
                   duration: const Duration(milliseconds: 400),
                   curve: Curves.easeOut,
-                  child: _buildBackground(theme),
+                  child: _buildBackground(theme, project),
                 ),
 
                 // Overlay gradient
@@ -81,7 +77,7 @@ class _MinimalCardState extends ConsumerState<MinimalCard> {
                   ),
                 ),
 
-                // Titre en bas
+                // Titre
                 Positioned(
                   left: 16,
                   right: 16,
@@ -103,14 +99,14 @@ class _MinimalCardState extends ConsumerState<MinimalCard> {
                       ],
                     ),
                     child: Text(
-                      widget.title,
+                      project.title,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ),
 
-                // Icône d'action
+                // Icône plein écran
                 Positioned(
                   top: 12,
                   right: 12,
@@ -138,17 +134,17 @@ class _MinimalCardState extends ConsumerState<MinimalCard> {
     );
   }
 
-  Widget _buildBackground(ThemeData theme) {
-    if (widget.images != null && widget.images!.isNotEmpty) {
+  Widget _buildBackground(ThemeData theme, ProjectInfo project) {
+    if (project.image != null && project.cleanedImages!.isNotEmpty) {
       return SmartImage(
-        path: widget.images!.first,
+        path: project.cleanedImages!.first,
         fit: BoxFit.cover,
-        fallbackIcon: widget.fallbackIcon,
+        fallbackIcon: Icons.workspace_premium,
         fallbackColor: theme.colorScheme.primary,
       );
     }
 
-    // Fallback avec gradient
+    // Fallback
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -162,7 +158,7 @@ class _MinimalCardState extends ConsumerState<MinimalCard> {
       ),
       child: Center(
         child: Icon(
-          widget.fallbackIcon ?? Icons.image,
+          Icons.image,
           size: 64,
           color: Colors.white.withValues(alpha: 0.3),
         ),
@@ -179,9 +175,7 @@ class _MinimalCardState extends ConsumerState<MinimalCard> {
           return FadeTransition(
             opacity: animation,
             child: ImmersiveDetailScreen(
-              title: widget.title,
-              bulletPoints: widget.bulletPoints,
-              images: widget.images,
+              project: widget.project, // ✅ on passe l’objet complet
             ),
           );
         },

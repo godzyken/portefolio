@@ -124,9 +124,15 @@ class _ExperienceSlideScreenState extends ConsumerState<ExperienceSlideScreen>
                         child: FadeSlideAnimation(
                           offset: const Offset(0, 0.1),
                           delay: Duration(milliseconds: index * 100),
-                          child: ExperienceCard(
+                          child: PokerExperienceCard(
                             experience: widget.experiences[index],
-                            pageOffset: value,
+                            isCenter: value == 0 ? true : false,
+                            onTap: () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => ImmersiveExperienceDetail(
+                                    experience: widget.experiences[index]),
+                              ),
+                            ),
                           ),
                         ),
                       ),

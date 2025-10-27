@@ -3,19 +3,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/features/parametres/views/widgets/smart_image.dart';
 
+import '../../../projets/data/project_data.dart';
 import 'particle_background.dart';
 
 class ImmersiveDetailScreen extends ConsumerStatefulWidget {
-  final String title;
-  final List<String> bulletPoints;
-  final List<String>? images;
+  final ProjectInfo project;
   final VoidCallback? onClose;
 
   const ImmersiveDetailScreen({
     super.key,
-    required this.title,
-    required this.bulletPoints,
-    this.images,
+    required this.project,
     this.onClose,
   });
 
@@ -39,9 +36,7 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
 
     _scrollController = ScrollController()
       ..addListener(() {
-        setState(() {
-          _scrollOffset = _scrollController.offset;
-        });
+        setState(() => _scrollOffset = _scrollController.offset);
       });
 
     _controller = AnimationController(
@@ -64,19 +59,18 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
 
     _controller.forward();
 
-    // Rotation automatique des images
-    if (widget.images != null && widget.images!.length > 1) {
+    // Rotation automatique d’images
+    if (widget.project.image != null && widget.project.image!.length > 1) {
       Future.delayed(const Duration(seconds: 5), _rotateImage);
     }
   }
 
   void _rotateImage() {
-    if (!mounted || widget.images == null) return;
-
+    if (!mounted || widget.project.image == null) return;
     setState(() {
-      _currentImageIndex = (_currentImageIndex + 1) % widget.images!.length;
+      _currentImageIndex =
+          (_currentImageIndex + 1) % widget.project.image!.length;
     });
-
     Future.delayed(const Duration(seconds: 5), _rotateImage);
   }
 
@@ -91,17 +85,17 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
   Widget build(BuildContext context) {
     final info = ref.watch(responsiveInfoProvider);
     final theme = Theme.of(context);
-    final randomImage = _getRandomImage();
+    final randomImage = _getCurrentImage();
 
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Stack(
         children: [
-          // Background avec image aléatoire et effet parallaxe
+          // 🖼️ Background immersif
           if (randomImage != null)
             Positioned.fill(
               child: Transform.translate(
-                offset: Offset(0, _scrollOffset * 0.5), // Effet parallaxe
+                offset: Offset(0, _scrollOffset * 0.5),
                 child: AnimatedSwitcher(
                   duration: const Duration(milliseconds: 1000),
                   child: SmartImage(
@@ -113,7 +107,7 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
               ),
             ),
 
-          // Overlay sombre pour lisibilité
+          // 🔲 Overlay sombre
           Positioned.fill(
             child: Container(
               decoration: BoxDecoration(
@@ -130,7 +124,7 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
             ),
           ),
 
-          // Particules animées
+          // ✨ Particules animées
           const Positioned.fill(
             child: ParticleBackground(
               particleCount: 40,
@@ -140,7 +134,7 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
             ),
           ),
 
-          // Contenu
+          // 🧱 Contenu principal
           FadeTransition(
             opacity: _fadeAnimation,
             child: SlideTransition(
@@ -152,18 +146,26 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Titre avec effet glassmorphism
                       _buildTitle(theme, info),
-
                       SizedBox(height: info.isMobile ? 32 : 48),
-
-                      // Contenu principal
-                      _buildContent(theme, info),
-
-                      SizedBox(height: info.isMobile ? 24 : 32),
-
-                      // Image si disponible
-                      if (randomImage != null) _buildImagePreview(info),
+                      _buildSection(
+                          "📜 Description", widget.project.points, theme, info),
+                      if (widget.project.techDetails != null &&
+                          widget.project.techDetails!.isNotEmpty) ...[
+                        SizedBox(height: 32),
+                        _buildTechDetails(
+                            widget.project.techDetails!, theme, info),
+                      ],
+                      if (widget.project.results != null &&
+                          widget.project.results!.isNotEmpty) ...[
+                        SizedBox(height: 32),
+                        _buildSection("🏁 Résultats & livrables",
+                            widget.project.results!, theme, info),
+                      ],
+                      if (randomImage != null) ...[
+                        SizedBox(height: 48),
+                        _buildImageCarousel(info),
+                      ],
                     ],
                   ),
                 ),
@@ -171,7 +173,7 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
             ),
           ),
 
-          // Bouton fermer
+          // ❌ Bouton fermer
           Positioned(
             top: 16,
             right: 16,
@@ -192,19 +194,12 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
               ),
             ),
           ),
-
-          // Indicateurs d'images
-          if (widget.images != null && widget.images!.length > 1)
-            Positioned(
-              bottom: 24,
-              left: 0,
-              right: 0,
-              child: _buildImageIndicators(),
-            ),
         ],
       ),
     );
   }
+
+  // ---------------- Widgets de contenu ---------------- //
 
   Widget _buildTitle(ThemeData theme, ResponsiveInfo info) {
     return Container(
@@ -212,215 +207,136 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.1),
-          width: 2,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.3),
-            blurRadius: 20,
-            spreadRadius: 5,
-          ),
-        ],
+        border:
+            Border.all(color: Colors.white.withValues(alpha: 0.1), width: 2),
       ),
       child: Text(
-        widget.title,
+        widget.project.title,
         style: theme.textTheme.displayMedium?.copyWith(
           color: Colors.white,
           fontWeight: FontWeight.bold,
           fontSize: info.isMobile ? 28 : 48,
-          height: 1.2,
         ),
       ),
     );
   }
 
-  Widget _buildContent(ThemeData theme, ResponsiveInfo info) {
-    return Container(
-      padding: EdgeInsets.all(info.isMobile ? 20 : 32),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.03),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.08),
+  Widget _buildSection(
+      String title, List<String> points, ThemeData theme, ResponsiveInfo info) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: theme.textTheme.titleLarge?.copyWith(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: info.isMobile ? 20 : 24,
+          ),
         ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: widget.bulletPoints.asMap().entries.map((entry) {
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 16),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  margin: const EdgeInsets.only(top: 8, right: 16),
-                  width: 8,
-                  height: 8,
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.primary,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: theme.colorScheme.primary.withValues(alpha: 0.5),
-                        blurRadius: 8,
-                        spreadRadius: 2,
+        const SizedBox(height: 16),
+        Container(
+          padding: EdgeInsets.all(info.isMobile ? 20 : 32),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.03),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: points.map((text) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Text(
+                  text,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    color: Colors.white.withValues(alpha: 0.9),
+                    fontSize: info.isMobile ? 16 : 18,
+                    height: 1.6,
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTechDetails(
+      Map<String, dynamic> details, ThemeData theme, ResponsiveInfo info) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "⚙️ Détails techniques",
+          style: theme.textTheme.titleLarge?.copyWith(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: info.isMobile ? 20 : 24,
+          ),
+        ),
+        const SizedBox(height: 16),
+        Container(
+          padding: EdgeInsets.all(info.isMobile ? 20 : 32),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.03),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: details.entries.map((entry) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: "• ${entry.key}: ",
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: info.isMobile ? 16 : 18,
+                        ),
+                      ),
+                      TextSpan(
+                        text: "${entry.value}",
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          color: Colors.white.withValues(alpha: 0.85),
+                          fontSize: info.isMobile ? 16 : 18,
+                        ),
                       ),
                     ],
                   ),
                 ),
-                Expanded(
-                  child: Text(
-                    entry.value,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: Colors.white.withValues(alpha: 0.9),
-                      fontSize: info.isMobile ? 16 : 18,
-                      height: 1.6,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
-        }).toList(),
-      ),
-    );
-  }
-
-  Widget _buildImagePreview(ResponsiveInfo info) {
-    final randomImage = _getRandomImage();
-    if (randomImage == null) return const SizedBox.shrink();
-
-    return Container(
-      height: info.isMobile ? 250 : 400,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.5),
-            blurRadius: 30,
-            spreadRadius: 10,
-          ),
-        ],
-      ),
-      child: Stack(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 1000),
-              transitionBuilder: (child, animation) {
-                return FadeTransition(
-                  opacity: animation,
-                  child: SlideTransition(
-                    position: Tween<Offset>(
-                      begin: const Offset(0.2, 0),
-                      end: Offset.zero,
-                    ).animate(animation),
-                    child: child,
-                  ),
-                );
-              },
-              child: SmartImage(
-                key: ValueKey(randomImage),
-                path: randomImage,
-                fit: BoxFit.cover,
-                width: double.infinity,
-                height: double.infinity,
-              ),
-            ),
-          ),
-
-          // Contrôles du carrousel
-          if (widget.images != null && widget.images!.length > 1) ...[
-            // Bouton précédent
-            Positioned(
-              left: 16,
-              top: 0,
-              bottom: 0,
-              child: Center(
-                child: IconButton(
-                  icon: const Icon(Icons.chevron_left, size: 32),
-                  style: IconButton.styleFrom(
-                    backgroundColor: Colors.black.withValues(alpha: 0.5),
-                    foregroundColor: Colors.white,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _currentImageIndex =
-                          (_currentImageIndex - 1) % widget.images!.length;
-                      if (_currentImageIndex < 0) {
-                        _currentImageIndex = widget.images!.length - 1;
-                      }
-                    });
-                  },
-                ),
-              ),
-            ),
-
-            // Bouton suivant
-            Positioned(
-              right: 16,
-              top: 0,
-              bottom: 0,
-              child: Center(
-                child: IconButton(
-                  icon: const Icon(Icons.chevron_right, size: 32),
-                  style: IconButton.styleFrom(
-                    backgroundColor: Colors.black.withValues(alpha: 0.5),
-                    foregroundColor: Colors.white,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _currentImageIndex =
-                          (_currentImageIndex + 1) % widget.images!.length;
-                    });
-                  },
-                ),
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildImageIndicators() {
-    if (widget.images == null || widget.images!.length <= 1) {
-      return const SizedBox.shrink();
-    }
-
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(
-        widget.images!.length,
-        (index) => AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          margin: const EdgeInsets.symmetric(horizontal: 4),
-          width: index == _currentImageIndex ? 24 : 8,
-          height: 8,
-          decoration: BoxDecoration(
-            color: index == _currentImageIndex
-                ? Colors.white
-                : Colors.white.withValues(alpha: 0.3),
-            borderRadius: BorderRadius.circular(4),
+              );
+            }).toList(),
           ),
         ),
+      ],
+    );
+  }
+
+  Widget _buildImageCarousel(ResponsiveInfo info) {
+    final image = _getCurrentImage();
+    if (image == null) return const SizedBox.shrink();
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(20),
+      child: SmartImage(
+        key: ValueKey(image),
+        path: image,
+        fit: BoxFit.cover,
+        width: info.isMobile ? info.size.shortestSide : info.size.longestSide,
+        height: info.isMobile ? info.size.shortestSide : info.size.longestSide,
       ),
     );
   }
 
-  String? _getRandomImage() {
-    if (widget.images == null || widget.images!.isEmpty) {
-      return null;
-    }
-
-    if (widget.images!.length == 1) {
-      return widget.images!.first;
-    }
-
-    // Utiliser l'index actuel plutôt qu'un random pour une rotation contrôlée
-    return widget.images![_currentImageIndex];
+  String? _getCurrentImage() {
+    final images = widget.project.cleanedImages ?? widget.project.image;
+    if (images == null || images.isEmpty) return null;
+    return images[_currentImageIndex % images.length];
   }
 }
