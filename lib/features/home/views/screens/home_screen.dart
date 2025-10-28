@@ -5,8 +5,7 @@ import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/features/parametres/themes/views/widgets/space_background.dart';
 import 'package:portefolio/features/parametres/views/widgets/smart_image.dart';
 
-import '../../data/services_data.dart';
-import '../widgets/services_card.dart';
+import '../widgets/extentions_widgets.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -72,7 +71,7 @@ class HomeScreen extends ConsumerWidget {
           const SizedBox(height: 64),
 
           // 🔥 Section Services
-          _buildServicesSection(context, theme, info),
+          ServicesSection(),
         ],
       ),
     );
@@ -117,95 +116,9 @@ class HomeScreen extends ConsumerWidget {
           ),
           // 🔥Section Services
           const SizedBox(height: 80),
-          _buildServicesSection(context, theme, info),
+          ServicesSection(),
         ],
       ),
-    );
-  }
-
-  // 🔥 NOUVELLE MÉTHODE : Affichage des services
-  Widget _buildServicesSection(
-    BuildContext context,
-    ThemeData theme,
-    ResponsiveInfo info,
-  ) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Titre de section
-        Center(
-          child: Column(
-            children: [
-              Text(
-                'Mes Services',
-                style: theme.textTheme.displaySmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  fontSize: info.isMobile ? 28 : 40,
-                  foreground: Paint()
-                    ..shader = LinearGradient(
-                      colors: [
-                        theme.colorScheme.primary,
-                        theme.colorScheme.secondary,
-                      ],
-                    ).createShader(const Rect.fromLTWH(0, 0, 300, 70)),
-                ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                'Solutions digitales pour votre entreprise',
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
-                  fontSize: info.isMobile ? 14 : 16,
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        const SizedBox(height: 40),
-
-        // Grille de services
-        LayoutBuilder(
-          builder: (context, constraints) {
-            // Adapter le nombre de colonnes selon la largeur
-            int crossAxisCount;
-            if (info.isMobile) {
-              crossAxisCount = 1;
-            } else if (info.isTablet) {
-              crossAxisCount = 2;
-            } else {
-              crossAxisCount = constraints.maxWidth > 1400 ? 4 : 3;
-            }
-
-            return GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: crossAxisCount,
-                childAspectRatio: info.isMobile ? 1.2 : 0.85,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-              ),
-              itemCount: defaultServices.length,
-              itemBuilder: (context, index) {
-                final service = defaultServices[index];
-                return ServicesCard(
-                  service: service,
-                  onTap: () {
-                    // Tu peux ajouter une navigation ou un dialog ici
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Service : ${service.title}'),
-                        duration: const Duration(seconds: 2),
-                      ),
-                    );
-                  },
-                );
-              },
-            );
-          },
-        ),
-      ],
     );
   }
 
