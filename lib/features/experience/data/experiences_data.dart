@@ -1,4 +1,4 @@
-import 'package:googleapis/mybusinessverifications/v1.dart';
+import '../../generator/data/location_data.dart';
 
 class Experience {
   final String id;
@@ -54,7 +54,7 @@ class Experience {
       lienProjet: json['lienProjet']?.toString() ?? '',
       youtubeVideoId: json['youtubeVideoId']?.toString() ?? '',
       location: json['location'] != null
-          ? LocationData.fromJson(json['location'])
+          ? LocationData.fromJson(json['location'] as Map<String, dynamic>)
           : null,
       resultats: (json['resultats'] as List?)?.cast<String>() ?? [],
       poste: json['poste']?.toString() ?? '',
@@ -90,7 +90,7 @@ class Experience {
         'periode': periode,
         'lienProjet': lienProjet,
         'youtubeVideoId': youtubeVideoId,
-        'location': location?.toJson(),
+        'location': location,
         'resultats': resultats,
         'poste': poste,
       };

@@ -44,6 +44,10 @@
     },
     "periode": "Septembre 2023 - Avril 2024",
     "lienProjet": "",
+    "location": {
+      "latitude": 43.42463918988115,
+      "longitude": 3.713308200649097
+    },
     "resultats": [
       "Taux de livraison à temps de 99 % sur plus de 2 000 colis livrés",
       "Aucune perte ou incident signalé sur les livraisons durant la période",
@@ -178,8 +182,8 @@
     "periode": "Novembre 2020 – Janvier 2021",
     "lienProjet": "https://habitat.urbalyon.org/#c=indicator&i=gip_ops.emmen_recent_aide_logt&s=2022&selcodgeo=69091&view=map13",
     "location": {
-      "latitude": 45.7640,
-      "longitude": 4.8357
+      "latitude": 45.76128871111033,
+      "longitude": 4.853772909678859
     },
     "resultats": [
       "Application soumise en appel d'offres",
@@ -255,6 +259,10 @@
     },
     "periode": "Janvier 2019 – Mars 2019",
     "lienProjet": "https://specialist-wanted.com/",
+    "location": {
+      "latitude": 43.61042958510021,
+      "longitude": 3.9170689568655113
+    },
     "resultats": [
       "UX améliorée sur 5 projets (score Lighthouse +15 pts)",
       "Réduction du temps de réponse API de 30% grâce au module de cache",
@@ -564,6 +572,7 @@
     },
     "periode": "Juillet 2010 - Décembre 2010",
     "lienProjet": "",
+    "youtubeVideoId": "gbalqHfDWCM",
     "resultats": [
       "Zéro erreur de picking sur plusieurs centaines de commandes",
       "Respect des cadences horaires imposées",
@@ -611,6 +620,10 @@
     },
     "periode": "Decembre 2007 - Août 2009",
     "lienProjet": "",
+    "location": {
+      "latitude": 43.58678580502106,
+      "longitude": 3.9348605649151613
+    },
     "resultats": [
       "Taux de satisfaction client de 98%",
       "Respect de 100% des créneaux de livraison"

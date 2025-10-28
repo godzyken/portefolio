@@ -20,15 +20,10 @@ class SigDiscoveryMap extends ConsumerStatefulWidget {
 class _SigDiscoveryMapState extends ConsumerState<SigDiscoveryMap>
     with SingleTickerProviderStateMixin {
   late final AnimationController _pulseController;
-  late bool _ready = false;
 
   @override
   void initState() {
     super.initState();
-
-    WidgetsBinding.instance.endOfFrame.then((_) {
-      if (mounted) setState(() => _ready = true);
-    });
 
     _pulseController = AnimationController(
       vsync: this,
@@ -64,7 +59,6 @@ class _SigDiscoveryMapState extends ConsumerState<SigDiscoveryMap>
 
   /// Carte statique pour le Web (position fixe : Paris)
   Widget _buildStaticMap() {
-    const parisPos = LatLng(48.8566, 2.3522);
     final mapController = MapController();
     final experiencesAsync = ref.watch(experiencesProvider);
 
@@ -75,12 +69,15 @@ class _SigDiscoveryMapState extends ConsumerState<SigDiscoveryMap>
               orElse: () => throw Exception(
                   "L'expérience 'SIG' est introuvable dans experiences.json"));
 
-          if (sigExperience.location!.name!.isEmpty) {
+          if (sigExperience.location == null) {
             return _buildError(Exception(
                 "Aucune donnée de localisation pour l'expérience SIG."));
           }
 
-          final positionProjet = LatLng(0.0, 0.0);
+          final positionProjet = LatLng(
+            sigExperience.location!.latitude,
+            sigExperience.location!.longitude,
+          );
 
           return Stack(
             children: [
@@ -294,33 +291,78 @@ class _SigDiscoveryMapState extends ConsumerState<SigDiscoveryMap>
         ),
       );
 
-  Widget _buildError(Object e) => Container(
-        color: Colors.red.shade50,
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.error_outline, size: 48, color: Colors.red.shade400),
-              const SizedBox(height: 16),
-              Text(
-                "Erreur de géolocalisation",
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.red.shade700),
+  Widget _buildError(Object e) {
+    final isPermissionError = e.toString().contains('permission') ||
+        e.toString().contains('Permission');
+    final isGpsError = e.toString().contains('localisation est désactivé');
+
+    return Container(
+      color: Colors.red.shade50,
+      padding: const EdgeInsets.all(24),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(isGpsError ? Icons.gps_off : Icons.error_outline,
+                size: 64, color: Colors.red.shade400),
+            const SizedBox(height: 24),
+            Text(
+              isPermissionError
+                  ? "Accès à la localisation refusé"
+                  : isGpsError
+                      ? "GPS désactivé"
+                      : "Erreur de géolocalisation",
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
               ),
-              const SizedBox(height: 8),
-              Text("$e",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.red.shade600)),
-              const SizedBox(height: 16),
-              ElevatedButton.icon(
-                onPressed: () => ref.invalidate(userLocationProvider),
-                icon: const Icon(Icons.refresh),
-                label: const Text('Réessayer'),
-              ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              "$e",
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.grey.shade700),
+            ),
+            const SizedBox(height: 24),
+            Wrap(
+              spacing: 12,
+              runSpacing: 12,
+              alignment: WrapAlignment.center,
+              children: [
+                if (isPermissionError)
+                  ElevatedButton.icon(
+                    onPressed: () async {
+                      await ref.read(userLocationProvider.notifier).refresh();
+                    },
+                    icon: const Icon(Icons.settings),
+                    label: const Text('Ouvrir paramètres'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orange,
+                      foregroundColor: Colors.white,
+                    ),
+                  ),
+                if (isGpsError)
+                  ElevatedButton.icon(
+                    onPressed: () async {
+                      await ref.read(userLocationProvider.notifier).refresh();
+                    },
+                    icon: const Icon(Icons.location_on),
+                    label: const Text('Activer GPS'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                    ),
+                  ),
+                ElevatedButton.icon(
+                  onPressed: () => ref.invalidate(userLocationProvider),
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('Réessayer'),
+                ),
+              ],
+            ),
+          ],
         ),
-      );
+      ),
+    );
+  }
 }

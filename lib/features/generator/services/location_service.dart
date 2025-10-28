@@ -30,9 +30,7 @@ class _PlatformLocationService extends LocationService {
     const bool isSimulationMode =
         false; // À remplacer par un ValueNotifier ou un KDebugMode si besoin
 
-    if (isSimulationMode) {
-      return _SimulatedLocationService();
-    }
+    if (isSimulationMode) return _SimulatedLocationService();
 
     // 🎯 Utiliser Geolocator pour toutes les plateformes prises en charge
     // par Flutter (Web, Android, iOS, Windows, Mac, Linux).

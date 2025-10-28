@@ -54,11 +54,14 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
     final info = ref.watch(responsiveInfoProvider);
     final theme = Theme.of(context);
 
+    final bool hasVideo = widget.experience.youtubeVideoId?.isNotEmpty ?? false;
+    final bool shouldShowVideo = hasVideo && widget.isCenter;
+
     return MouseRegion(
       onEnter: (_) => setState(() => _isHovered = true),
       onExit: (_) => setState(() => _isHovered = false),
       child: GestureDetector(
-        onTap: widget.onTap,
+        onTap: shouldShowVideo ? null : widget.onTap,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeOut,
@@ -122,21 +125,22 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
                           child: _buildPosteBadge(theme),
                         ),
 
-                      // Nom de l'entreprise (en bas)
-                      Positioned(
-                        bottom: 16,
-                        left: 16,
-                        right: 16,
-                        child: _buildEntrepriseLabel(theme),
-                      ),
-
-                      // Indicateur "Tap to expand"
-                      if (widget.isCenter)
+                      // Logique d'affichage conditionnelle pour le bas de la carte
+                      // Si on montre la vidéo, le bouton "Tap pour détails" apparaît.
+                      // Sinon, c'est le label de l'entreprise qui s'affiche.
+                      if (shouldShowVideo && widget.isCenter)
                         Positioned(
-                          bottom: 60,
-                          left: 0,
+                          bottom: 16,
+                          left: 0, // Centré horizontalement
                           right: 0,
                           child: _buildTapIndicator(theme),
+                        )
+                      else
+                        Positioned(
+                          bottom: 16,
+                          left: 16,
+                          right: 16,
+                          child: _buildEntrepriseLabel(theme),
                         ),
                     ],
                   ),
@@ -316,35 +320,45 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
           final bounceValue = (1 - (value - 0.5).abs() * 2);
           return Transform.translate(
             offset: Offset(0, -10 * bounceValue),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(30),
-                border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.4),
-                  width: 1,
-                ),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.touch_app,
-                    size: 18,
-                    color: Colors.white,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Tap pour les détails',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                    onTap: widget.onTap,
+                    borderRadius: BorderRadius.circular(30),
+                    splashColor:
+                        theme.colorScheme.primary.withValues(alpha: 0.3),
+                    highlightColor:
+                        theme.colorScheme.primary.withValues(alpha: 0.2),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(30),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.4),
+                          width: 1,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.touch_app,
+                            size: 18,
+                            color: Colors.white,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Tap pour les détails',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ))),
           );
         },
       ),
