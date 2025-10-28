@@ -67,13 +67,16 @@ class ProjectCard extends ConsumerWidget {
               ? (ctx, size) => _buildImage(size)
               : null,
           videoBuilder: (context, size) {
-            if (project.lienProjet == null) return const SizedBox.shrink();
+            if (project.youtubeVideoId == null &&
+                project.youtubeVideoId!.isEmpty) {
+              return _buildImage(size);
+            }
             return FadeSlideAnimation(
               duration: const Duration(milliseconds: 600),
               offset: const Offset(0, 0.1),
               child: YoutubeVideoPlayerIframe(
-                videoUrl: project.lienProjet!,
-                cardId: project.title,
+                youtubeVideoId: project.youtubeVideoId!,
+                cardId: project.id,
               ),
             );
           },

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:portefolio/core/provider/json_data_provider.dart';
 import 'package:portefolio/features/generator/data/location_data.dart';
 
 import '../../../../core/provider/location_providers.dart';
@@ -65,79 +66,99 @@ class _SigDiscoveryMapState extends ConsumerState<SigDiscoveryMap>
   Widget _buildStaticMap() {
     const parisPos = LatLng(48.8566, 2.3522);
     final mapController = MapController();
+    final experiencesAsync = ref.watch(experiencesProvider);
 
-    return Stack(
-      children: [
-        FlutterMap(
-          mapController: mapController,
-          options: MapOptions(
-            initialCenter: parisPos,
-            initialZoom: 13.0,
-            minZoom: 3.0,
-            maxZoom: 18.0,
-            interactionOptions: const InteractionOptions(
-              flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
-            ),
-          ),
-          children: [
-            TileLayer(
-              urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-              subdomains: const ['a', 'b', 'c'],
-              userAgentPackageName: 'com.godzyken.portfolio',
-            ),
-            MarkerLayer(
-              markers: [
-                Marker(
-                  point: parisPos,
-                  width: 40,
-                  height: 40,
-                  child: const Icon(
-                    Icons.location_city,
-                    color: Colors.blue,
-                    size: 40,
+    return experiencesAsync.when(
+        data: (experiences) {
+          final sigExperience = experiences.firstWhere(
+              (exp) => exp.tags.contains('SIG'),
+              orElse: () => throw Exception(
+                  "L'expérience 'SIG' est introuvable dans experiences.json"));
+
+          if (sigExperience.location!.name!.isEmpty) {
+            return _buildError(Exception(
+                "Aucune donnée de localisation pour l'expérience SIG."));
+          }
+
+          final positionProjet = LatLng(0.0, 0.0);
+
+          return Stack(
+            children: [
+              FlutterMap(
+                mapController: mapController,
+                options: MapOptions(
+                  initialCenter: positionProjet,
+                  initialZoom: 13.0,
+                  minZoom: 3.0,
+                  maxZoom: 18.0,
+                  interactionOptions: const InteractionOptions(
+                    flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
                   ),
                 ),
-              ],
-            ),
-            RichAttributionWidget(
-              popupInitialDisplayDuration: const Duration(seconds: 3),
-              showFlutterMapAttribution: false,
-              attributions: [
-                TextSourceAttribution('© OpenStreetMap'),
-                const TextSourceAttribution('Mode démo Web'),
-              ],
-            ),
-          ],
-        ),
-        // Badge "Mode Démo"
-        Positioned(
-          top: 16,
-          left: 16,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: Colors.orange.withValues(alpha: 0.9),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: const Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.info_outline, size: 16, color: Colors.white),
-                SizedBox(width: 4),
-                Text(
-                  'Mode Démo (Web)',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
+                children: [
+                  TileLayer(
+                    urlTemplate:
+                        'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    subdomains: const ['a', 'b', 'c'],
+                    userAgentPackageName: 'com.godzyken.portfolio',
+                  ),
+                  MarkerLayer(
+                    markers: [
+                      Marker(
+                        point: positionProjet,
+                        width: 40,
+                        height: 40,
+                        child: const Icon(
+                          Icons.location_city,
+                          color: Colors.blue,
+                          size: 40,
+                        ),
+                      ),
+                    ],
+                  ),
+                  RichAttributionWidget(
+                    popupInitialDisplayDuration: const Duration(seconds: 3),
+                    showFlutterMapAttribution: false,
+                    attributions: [
+                      TextSourceAttribution('© OpenStreetMap'),
+                      const TextSourceAttribution('Mode démo Web'),
+                    ],
+                  ),
+                ],
+              ),
+              // Badge "Mode Démo"
+              Positioned(
+                top: 16,
+                left: 16,
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.withValues(alpha: 0.9),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.info_outline, size: 16, color: Colors.white),
+                      SizedBox(width: 4),
+                      Text(
+                        'Mode Démo (Web)',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
+              ),
+            ],
+          );
+        },
+        error: (e, st) => _buildError(e),
+        loading: () => _buildLoading());
   }
 
   Widget _buildDemoBadge() {

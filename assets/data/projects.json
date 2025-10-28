@@ -16,8 +16,8 @@
     "image": [
       "assets/images/vitrine.png",
       "https://pro.packlink.fr/wp-content/uploads/2021/12/services-g0e8be1220_640-1.jpg",
-      "https://www.reacteur.com/content/uploads/2018/05/magento-logo.png",
-      "https://www.pyreweb.com/files/medias/images/Wordpress-Security-Issues-1.jpg"
+      "http://www.ludovicpassamonti.com/media/02/02/1215423486.png",
+      "https://assets.setmore.com/website/v2/images/integrations-listing/wordpress/wordpress-plugin-crop@2x.webp"
     ],
     "platform" : ["Web", "Desktop"],
     "tags": ["FileZila", "Web", "Php", "Magento", "Prestashop", "Boutique", "Stock"]
@@ -170,8 +170,9 @@
       "🎯 Objectif : valoriser l’artiste et renforcer sa présence numérique grâce à une stratégie de diffusion ciblée."
     ],
     "image": [
-      "https://youtu.be/7hjJeGOZEgI"
+      "assets/images/projets/vignette_clip_artiste.jpg"
     ],
+    "youtubeVideoId": "7hjJeGOZEgI",
     "platform": ["Web", "Mobile", "Logic Pro"],
     "tags": ["Facebook", "Youtube", "Spotify"]
   }

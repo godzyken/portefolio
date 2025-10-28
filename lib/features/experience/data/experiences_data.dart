@@ -1,3 +1,5 @@
+import 'package:googleapis/mybusinessverifications/v1.dart';
+
 class Experience {
   final String id;
   final String entreprise;
@@ -11,6 +13,8 @@ class Experience {
   final Map<String, List<String>> stack;
   final String periode;
   final String lienProjet;
+  final String? youtubeVideoId;
+  final LocationData? location;
   final List<String> resultats;
   final String poste;
 
@@ -29,6 +33,8 @@ class Experience {
     required this.lienProjet,
     required this.resultats,
     required this.poste,
+    this.youtubeVideoId,
+    this.location,
   });
 
   factory Experience.fromJson(Map<String, dynamic> json) {
@@ -46,6 +52,10 @@ class Experience {
       stack: _parseStack(json['stack']),
       periode: json['periode']?.toString() ?? '',
       lienProjet: json['lienProjet']?.toString() ?? '',
+      youtubeVideoId: json['youtubeVideoId']?.toString() ?? '',
+      location: json['location'] != null
+          ? LocationData.fromJson(json['location'])
+          : null,
       resultats: (json['resultats'] as List?)?.cast<String>() ?? [],
       poste: json['poste']?.toString() ?? '',
     );
@@ -79,6 +89,8 @@ class Experience {
         'stack': stack,
         'periode': periode,
         'lienProjet': lienProjet,
+        'youtubeVideoId': youtubeVideoId,
+        'location': location?.toJson(),
         'resultats': resultats,
         'poste': poste,
       };

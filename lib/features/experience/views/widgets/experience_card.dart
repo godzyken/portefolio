@@ -55,12 +55,15 @@ class ExperienceCard extends ConsumerWidget {
               ),
           ],
           videoBuilder: (context, size) {
-            if (experience.lienProjet.isEmpty) return const SizedBox.shrink();
+            if (experience.youtubeVideoId == null &&
+                experience.youtubeVideoId!.isEmpty) {
+              return _buildImage(context, size);
+            }
             return FadeSlideAnimation(
               duration: const Duration(milliseconds: 600),
               offset: const Offset(0, 0.1),
               child: YoutubeVideoPlayerIframe(
-                videoUrl: experience.lienProjet,
+                youtubeVideoId: experience.youtubeVideoId!,
                 cardId: experience.entreprise,
               ),
             );

@@ -5,6 +5,7 @@ class ProjectInfo {
   final String title;
   final List<String> points;
   final List<String>? image;
+  final String? youtubeVideoId;
   final String? lienProjet;
   final List<String>? platform;
   final List<String>? tags;
@@ -17,6 +18,7 @@ class ProjectInfo {
     required this.title,
     required this.points,
     this.image,
+    this.youtubeVideoId,
     this.lienProjet,
     this.platform,
     this.tags,
@@ -53,6 +55,7 @@ class ProjectInfo {
     String? title,
     List<String>? points,
     List<String>? image,
+    String? youtubeVideoId,
     String? lienProjet,
     List<String>? platform,
     List<String>? tags,
@@ -65,6 +68,7 @@ class ProjectInfo {
       title: title ?? this.title,
       points: points ?? this.points,
       image: image ?? this.image,
+      youtubeVideoId: youtubeVideoId ?? this.youtubeVideoId,
       lienProjet: lienProjet ?? this.lienProjet,
       platform: platform ?? this.platform,
       tags: tags ?? this.tags,
@@ -80,6 +84,7 @@ class ProjectInfo {
       title: json['title'],
       points: List<String>.from(json['points']),
       image: json['image'] != null ? List<String>.from(json['image']) : null,
+      youtubeVideoId: json['youtubeVideoId'],
       lienProjet: json['lienProjet'],
       platform:
           json['platform'] != null ? List<String>.from(json['platform']) : null,

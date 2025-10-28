@@ -68,6 +68,7 @@
     },
     "periode": "Janvier 2023 - Juillet 2023",
     "lienProjet": "https://www.youtube.com/shorts/h7k462fwrBE?feature=share",
+    "youtubeVideoId": "h7k462fwrBE",
     "resultats": [
       "Expérience utilisateur fluide grâce à une gestion centralisée des permissions",
       "Réduction du temps de latence de l’application de 30 %",
@@ -176,6 +177,10 @@
     },
     "periode": "Novembre 2020 – Janvier 2021",
     "lienProjet": "https://habitat.urbalyon.org/#c=indicator&i=gip_ops.emmen_recent_aide_logt&s=2022&selcodgeo=69091&view=map13",
+    "location": {
+      "latitude": 45.7640,
+      "longitude": 4.8357
+    },
     "resultats": [
       "Application soumise en appel d'offres",
       "Chargement des couches cartographiques 30% plus rapide",
@@ -532,7 +537,8 @@
       "devops": ["FTP/SSH"]
     },
     "periode": "descembre 2010 - Fevrier 2011",
-    "lienProjet": "https://youtu.be/7_4wMUCyrh0",
+    "lienProjet": "assets/images/vignette_clip_articles_1.jpg",
+    "youtubeVideoId": "7_4wMUCyrh0",
     "resultats": [
       "Créer une boutique en ligne, installer PrestaShop",
       "Deployer sur OVH",

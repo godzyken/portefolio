@@ -20,7 +20,8 @@ class PokerExperienceCard extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<PokerExperienceCard> createState() => _PokerExperienceCardState();
+  ConsumerState<PokerExperienceCard> createState() =>
+      _PokerExperienceCardState();
 }
 
 class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
@@ -61,8 +62,7 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeOut,
-          transform: Matrix4.identity()
-            ..scale(_isHovered ? 1.03 : 1.0),
+          transform: Matrix4.identity()..scale(_isHovered ? 1.03 : 1.0),
           child: AnimatedBuilder(
             animation: _glowAnimation,
             builder: (context, child) {
@@ -71,25 +71,25 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: widget.isCenter
                       ? [
-                    BoxShadow(
-                      color: theme.colorScheme.primary
-                          .withValues(alpha: _glowAnimation.value * 0.6),
-                      blurRadius: 30 * _glowAnimation.value,
-                      spreadRadius: 5 * _glowAnimation.value,
-                    ),
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.3),
-                      blurRadius: 20,
-                      offset: const Offset(0, 10),
-                    ),
-                  ]
+                          BoxShadow(
+                            color: theme.colorScheme.primary
+                                .withValues(alpha: _glowAnimation.value * 0.6),
+                            blurRadius: 30 * _glowAnimation.value,
+                            spreadRadius: 5 * _glowAnimation.value,
+                          ),
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.3),
+                            blurRadius: 20,
+                            offset: const Offset(0, 10),
+                          ),
+                        ]
                       : [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.2),
-                      blurRadius: _isHovered ? 15 : 10,
-                      offset: Offset(0, _isHovered ? 8 : 5),
-                    ),
-                  ],
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.2),
+                            blurRadius: _isHovered ? 15 : 10,
+                            offset: Offset(0, _isHovered ? 8 : 5),
+                          ),
+                        ],
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(20),
@@ -152,7 +152,7 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
   Widget _buildMediaContent(ResponsiveInfo info) {
     // Détermine le type de média à afficher
     final hasSIG = widget.experience.tags.contains('SIG');
-    final hasVideo = widget.experience.lienProjet.isNotEmpty;
+    final hasVideo = widget.experience.youtubeVideoId!.isNotEmpty;
     final hasImage = widget.experience.image.isNotEmpty;
 
     if (hasSIG) {
@@ -161,7 +161,7 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
     } else if (hasVideo && widget.isCenter) {
       // Afficher la vidéo YouTube uniquement si la carte est au centre
       return YoutubeVideoPlayerIframe(
-        videoUrl: widget.experience.lienProjet,
+        youtubeVideoId: widget.experience.youtubeVideoId!,
         cardId: widget.experience.id,
       );
     } else if (hasImage) {
@@ -185,16 +185,16 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
         child: Center(
           child: widget.experience.logo.isNotEmpty
               ? SmartImage(
-            path: widget.experience.logo,
-            width: 120,
-            height: 120,
-            fit: BoxFit.contain,
-          )
+                  path: widget.experience.logo,
+                  width: 120,
+                  height: 120,
+                  fit: BoxFit.contain,
+                )
               : Icon(
-            Icons.business,
-            size: 80,
-            color: Colors.white.withValues(alpha: 0.3),
-          ),
+                  Icons.business,
+                  size: 80,
+                  color: Colors.white.withValues(alpha: 0.3),
+                ),
         ),
       );
     }

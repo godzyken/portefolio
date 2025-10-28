@@ -44,9 +44,9 @@ final precacheAllAssetsProvider =
 
     unawaited(Future(() async {
       try {
-        final imageProvider = path.startsWith('http')
+        final imageProvider = (path.startsWith('http')
             ? NetworkImage(path)
-            : AssetImage(path) as ImageProvider;
+            : AssetImage(path)) as ImageProvider;
         await precacheImage(imageProvider, context)
             .timeout(const Duration(seconds: 5), onTimeout: () {
           developer.log('⏰ Timeout précache : $path');
@@ -148,9 +148,9 @@ Future<List<bool>> _precacheImagesInBatches(
 
     final batchResults = await Future.wait(batch.map((path) async {
       try {
-        final provider = path.contains('https')
+        final provider = (path.contains('http')
             ? NetworkImage(path)
-            : AssetImage(path) as ImageProvider;
+            : AssetImage(path)) as ImageProvider;
         await precacheImage(provider, context).timeout(timeout, onTimeout: () {
           developer.log('⏰ Timeout précache : $path');
           return;
