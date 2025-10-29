@@ -28,12 +28,22 @@ class IsPageViewNotifier extends Notifier<bool> {
   void disablePageView() => state = false;
 }
 
+class GlobalVideoVisibilityNotifier extends Notifier<bool> {
+  @override
+  bool build() => true; // Visible par défaut
+
+  void hide() => state = false;
+  void show() => state = true;
+  void toggle() => state = !state;
+}
+
 class PlayingVideoNotifier extends Notifier<String?> {
   @override
   String? build() => null;
 
   void play(String id) => state = id;
   void stop() => state = null;
+  bool isPlaying(String id) => state == id;
 }
 
 class FollowUserNotifier extends Notifier<bool> {

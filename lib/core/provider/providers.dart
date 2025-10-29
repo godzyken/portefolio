@@ -67,6 +67,11 @@ final hoverMapProvider = NotifierProvider<HoverMapNotifier, Map<String, bool>>(
   HoverMapNotifier.new,
 );
 
+/// Provider pour la visibilité globale des vidéos
+final globalVideoVisibilityProvider =
+    NotifierProvider<GlobalVideoVisibilityNotifier, bool>(
+        GlobalVideoVisibilityNotifier.new);
+
 /// 🔹 Etat du lecteur YoutubeVideoIframe
 final playingVideoProvider =
     NotifierProvider<PlayingVideoNotifier, String?>(PlayingVideoNotifier.new);

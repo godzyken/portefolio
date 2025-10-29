@@ -5,6 +5,8 @@ import 'package:portefolio/features/experience/data/experiences_data.dart';
 import 'package:portefolio/features/generator/views/widgets/generator_widgets_extentions.dart';
 import 'package:portefolio/features/parametres/views/widgets/smart_image.dart';
 
+import '../../../../core/provider/providers.dart';
+
 /// Carte minimaliste pour le jeu de poker
 /// Affiche uniquement le média (image/vidéo/map) et le poste
 class PokerExperienceCard extends ConsumerStatefulWidget {
@@ -57,6 +59,8 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
     final bool hasVideo = widget.experience.youtubeVideoId?.isNotEmpty ?? false;
     final bool shouldShowVideo = hasVideo && widget.isCenter;
 
+    final isVideoVisible = ref.watch(globalVideoVisibilityProvider);
+
     return MouseRegion(
       onEnter: (_) => setState(() => _isHovered = true),
       onExit: (_) => setState(() => _isHovered = false),
@@ -100,18 +104,23 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
                     fit: StackFit.expand,
                     children: [
                       // Média principal
-                      _buildMediaContent(info),
+                      IgnorePointer(
+                        ignoring: !isVideoVisible && shouldShowVideo,
+                        child: _buildMediaContent(info),
+                      ),
 
                       // Overlay gradient
-                      Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Colors.transparent,
-                              Colors.black.withValues(alpha: 0.7),
-                            ],
+                      IgnorePointer(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.transparent,
+                                Colors.black.withValues(alpha: 0.7),
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -125,13 +134,20 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
                           child: _buildPosteBadge(theme),
                         ),
 
-                      // Logique d'affichage conditionnelle pour le bas de la carte
-                      // Si on montre la vidéo, le bouton "Tap pour détails" apparaît.
-                      // Sinon, c'est le label de l'entreprise qui s'affiche.
+                      // Badge du poste (en haut)
+                      if (widget.experience.poste.isNotEmpty)
+                        Positioned(
+                          top: 16,
+                          left: 16,
+                          right: 16,
+                          child: _buildPosteBadge(theme),
+                        ),
+
+                      // Bouton "Tap pour détails" ou label entreprise
                       if (shouldShowVideo && widget.isCenter)
                         Positioned(
                           bottom: 16,
-                          left: 0, // Centré horizontalement
+                          left: 0,
                           right: 0,
                           child: _buildTapIndicator(theme),
                         )
@@ -159,11 +175,41 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
     final hasVideo = widget.experience.youtubeVideoId!.isNotEmpty;
     final hasImage = widget.experience.image.isNotEmpty;
 
+    final isVideoVisible = ref.watch(globalVideoVisibilityProvider);
+    final isVideoPlaying = ref.watch(playingVideoProvider);
+
     if (hasSIG) {
       // Afficher la carte SIG
       return const SigDiscoveryMap();
     } else if (hasVideo && widget.isCenter) {
       // Afficher la vidéo YouTube uniquement si la carte est au centre
+
+      if (isVideoVisible && isVideoPlaying == widget.experience.id) {
+        return hasImage
+            ? SmartImage(
+                path: widget.experience.image,
+                fit: BoxFit.cover,
+                fallbackIcon: Icons.business,
+              )
+            : Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.indigo.shade900,
+                      Colors.purple.shade900,
+                    ],
+                  ),
+                ),
+                child: Center(
+                  child: Icon(
+                    Icons.play_circle_outline,
+                    size: 80,
+                    color: Colors.white.withValues(alpha: 0.5),
+                  ),
+                ),
+              );
+      }
+
       return YoutubeVideoPlayerIframe(
         youtubeVideoId: widget.experience.youtubeVideoId!,
         cardId: widget.experience.id,
@@ -323,7 +369,38 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
             child: Material(
                 color: Colors.transparent,
                 child: InkWell(
-                    onTap: widget.onTap,
+                    onTap: () async {
+                      print('🎯 TAP DÉTECTÉ !'); // ✅ DEBUG
+                      ref.read(globalVideoVisibilityProvider.notifier).hide();
+                      ref.read(playingVideoProvider.notifier).stop();
+
+                      await context.showDialogWithVideoHidden(
+                        ref: ref,
+                        dialog: AlertDialog(
+                          title: Text(widget.experience.poste),
+                          content: SingleChildScrollView(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(widget.experience.entreprise,
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold)),
+                                const SizedBox(height: 8),
+                                Text('Periode : ${widget.experience.periode}'),
+                              ],
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text('Fermer'),
+                            ),
+                          ],
+                        ),
+                      );
+
+                      ref.read(globalVideoVisibilityProvider.notifier).show();
+                    },
                     borderRadius: BorderRadius.circular(30),
                     splashColor:
                         theme.colorScheme.primary.withValues(alpha: 0.3),

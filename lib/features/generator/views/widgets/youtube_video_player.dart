@@ -35,6 +35,7 @@ class _YoutubeVideoPlayerIframeState
         showControls: true,
         showFullscreenButton: true,
         strictRelatedVideos: true,
+        pointerEvents: PointerEvents.auto,
       ),
     );
   }
@@ -56,21 +57,77 @@ class _YoutubeVideoPlayerIframeState
       }
     });
 
-    return GestureDetector(
-      onTap: () {
-        final playingId = ref.read(playingVideoProvider);
-        final notifier = ref.read(playingVideoProvider.notifier);
-        if (playingId == widget.cardId) {
-          notifier.stop();
-        } else {
-          notifier.play(widget.cardId);
-        }
-      },
-      child: YoutubePlayer(
-        controller: _controller,
-        aspectRatio: 16 / 9,
-        key: ValueKey(widget.youtubeVideoId),
-      ),
-    );
+    final isVideoVisible = ref.watch(globalVideoVisibilityProvider);
+
+    if (!isVideoVisible) {
+      return const SizedBox.shrink();
+    }
+
+    return AbsorbPointer(
+        absorbing: !isVideoVisible,
+        child: GestureDetector(
+          onTap: () {
+            final notifier = ref.read(playingVideoProvider.notifier);
+            if (notifier.isPlaying(widget.cardId)) {
+              notifier.stop();
+            } else {
+              notifier.play(widget.cardId);
+            }
+          },
+          child: YoutubePlayer(
+            controller: _controller,
+            aspectRatio: 16 / 9,
+            key: ValueKey(widget.youtubeVideoId),
+          ),
+        ));
+  }
+}
+
+extension VideoOverlayHelper on BuildContext {
+  /// Affiche un Dialog en masquant temporairement les vidéos
+  Future<T?> showDialogWithVideoHidden<T>({
+    required Widget dialog,
+    required WidgetRef ref,
+    bool barrierDismissible = true,
+  }) async {
+    // 1. Cache les vidéos
+    ref.read(globalVideoVisibilityProvider.notifier).hide();
+
+    // 2. Pause toutes les vidéos
+    ref.read(playingVideoProvider.notifier).stop();
+
+    try {
+      // 3. Affiche le dialog
+      final result = await showDialog<T>(
+        context: this,
+        barrierDismissible: barrierDismissible,
+        builder: (context) => dialog,
+      );
+      return result;
+    } finally {
+      // 4. Réaffiche les vidéos après fermeture
+      ref.read(globalVideoVisibilityProvider.notifier).show();
+    }
+  }
+
+  /// Affiche un BottomSheet en masquant les vidéos
+  Future<T?> showBottomSheetWithVideoHidden<T>({
+    required Widget bottomSheet,
+    required WidgetRef ref,
+    bool isScrollControlled = true,
+  }) async {
+    ref.read(globalVideoVisibilityProvider.notifier).hide();
+    ref.read(playingVideoProvider.notifier).stop();
+
+    try {
+      final result = await showModalBottomSheet<T>(
+        context: this,
+        isScrollControlled: isScrollControlled,
+        builder: (context) => bottomSheet,
+      );
+      return result;
+    } finally {
+      ref.read(globalVideoVisibilityProvider.notifier).show();
+    }
   }
 }
