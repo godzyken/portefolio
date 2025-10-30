@@ -25,6 +25,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Prepare image assets
+        run: |
+          echo "Setting up Python environment..."
+          pip install Pillow tqdm
+          
+          echo "Generating image assets from source..."
+          python generate_all_assets_variants.py
+          echo "✅ Image assets generated."
+
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:

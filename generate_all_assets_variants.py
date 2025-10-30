@@ -48,30 +48,37 @@ def resize_and_save(src_img: Image, dest_path: Path, new_width: int):
     resized.save(dest_path, optimize=True)
 
 def generate_variants(src_dir: Path, dest_dir: Path, scales: List[float], base_width: int):
-    """Génère les variantes d'images pour Flutter."""
+    """Génère les variantes d'images pour Flutter en conservant la structure des dossiers."""
 
     source_images = [p for p in src_dir.rglob('*') if p.is_file() and p.suffix.lower() in SUPPORTED_EXTS]
 
     if not source_images:
         print(f"❌ Aucune image trouvée dans le dossier source '{src_dir}'.")
-        print("Assurez-vous d'y avoir placé vos fichiers images en haute résolution.")
         return
 
     print(f"🖼️  {len(source_images)} image(s) trouvée(s). Traitement en cours...")
 
     for img_path in tqdm(source_images, desc="Génération des variantes", unit="img"):
         try:
+            # ✅ NOUVELLE PARTIE : Calculer le chemin relatif
+            # Ex: si img_path est 'assets_source/logos/flutter.png',
+            # relative_path sera 'logos/flutter.png'
+            relative_path = img_path.relative_to(src_dir)
+
             with Image.open(img_path) as img:
+
                 # Créer les variantes 2.0x, 3.0x, etc.
                 for scale in scales:
                     target_width = int(base_width * scale)
                     subdir = dest_dir / f"{scale:.1f}x"
-                    dest_file_path = subdir / img_path.name
+
+                    # ✅ On utilise le chemin relatif pour la destination
+                    dest_file_path = subdir / relative_path
                     resize_and_save(img, dest_file_path, target_width)
 
                 # Créer l'image de base (1.0x)
-                # Elle sera à la racine du dossier de destination
-                dest_base_file_path = dest_dir / img_path.name
+                # ✅ On utilise aussi le chemin relatif ici
+                dest_base_file_path = dest_dir / relative_path
                 resize_and_save(img, dest_base_file_path, base_width)
 
         except Exception as e:
