@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
+import 'package:portefolio/core/ui/widgets/responsive_text.dart';
 
 import '../../../../core/provider/app_providers.dart';
 import '../../../about/views/screens/about_screens.dart';
@@ -171,7 +172,7 @@ class _ContactScreenState extends ConsumerState<ContactScreen>
 
     return FadeTransition(
       opacity: _fadeAnimation,
-      child: Container(
+      child: ResponsiveBox(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
@@ -217,7 +218,7 @@ class _ContactScreenState extends ConsumerState<ContactScreen>
 
   /// ✨ Section About avec effet glassmorphism
   Widget _buildAboutSection(ResponsiveInfo info, ThemeData theme) {
-    return Container(
+    return ResponsiveBox(
       width: double.infinity,
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -237,19 +238,20 @@ class _ContactScreenState extends ConsumerState<ContactScreen>
 
   /// 🎨 Séparateur animé avec icône pulsante
   Widget _buildAnimatedDivider(ResponsiveInfo info, ThemeData theme) {
-    return Container(
+    return ResponsiveBox(
       width: double.infinity,
       padding: EdgeInsets.symmetric(
         vertical: info.isMobile ? 40 : 64,
         horizontal: info.isMobile ? 24 : 48,
       ),
+      paddingSize: info.isMobile ? ResponsiveSpacing.m : ResponsiveSpacing.l,
       child: Column(
         children: [
           // Ligne décorative avec icône au centre
           Row(
             children: [
               Expanded(
-                child: Container(
+                child: ResponsiveBox(
                   height: 2,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
@@ -265,7 +267,7 @@ class _ContactScreenState extends ConsumerState<ContactScreen>
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: ScaleTransition(
                   scale: _pulseAnimation,
-                  child: Container(
+                  child: ResponsiveBox(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
@@ -293,7 +295,7 @@ class _ContactScreenState extends ConsumerState<ContactScreen>
                 ),
               ),
               Expanded(
-                child: Container(
+                child: ResponsiveBox(
                   height: 2,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
@@ -308,7 +310,7 @@ class _ContactScreenState extends ConsumerState<ContactScreen>
             ],
           ),
 
-          SizedBox(height: info.isMobile ? 24 : 32),
+          ResponsiveBox(height: info.isMobile ? 24 : 32),
 
           // Titre principal
           TweenAnimationBuilder<double>(
@@ -326,7 +328,7 @@ class _ContactScreenState extends ConsumerState<ContactScreen>
             },
             child: Column(
               children: [
-                Text(
+                ResponsiveText.bodyMedium(
                   'Parlons de votre projet',
                   style: theme.textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
@@ -341,10 +343,12 @@ class _ContactScreenState extends ConsumerState<ContactScreen>
                   ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 12),
-                Text(
+                const ResponsiveBox(
+                  paddingSize: ResponsiveSpacing.m,
+                ),
+                ResponsiveText.headlineMedium(
                   'Je réponds généralement sous 24 heures',
-                  style: theme.textTheme.bodyLarge?.copyWith(
+                  style: TextStyle(
                     color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
                   textAlign: TextAlign.center,

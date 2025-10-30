@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart'; // facultatif, pour une animation fluide
+import 'package:lottie/lottie.dart';
+import 'package:portefolio/core/ui/widgets/responsive_text.dart'; // facultatif, pour une animation fluide
 
 class ErrorScreen extends StatelessWidget {
   final Object error;
@@ -23,14 +24,14 @@ class ErrorScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: isDark ? Colors.black : Colors.grey[50],
       body: Center(
-        child: Padding(
+        child: ResponsiveBox(
           padding: const EdgeInsets.all(24),
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 500),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Animation Lottie optionnelle (ajoute dans assets une JSON "error.json")
+                // Animation Lottie
                 Lottie.asset(
                   'assets/animations/error.json',
                   width: 200,
@@ -38,25 +39,31 @@ class ErrorScreen extends StatelessWidget {
                   errorBuilder: (_, __, ___) => const Icon(Icons.error_outline,
                       size: 96, color: Colors.redAccent),
                 ),
-                const SizedBox(height: 24),
+                const ResponsiveBox(
+                  paddingSize: ResponsiveSpacing.l,
+                ),
 
-                Text(
+                ResponsiveText.bodyMedium(
                   'Oups ! Quelque chose s’est mal passé...',
                   textAlign: TextAlign.center,
-                  style: theme.textTheme.headlineSmall?.copyWith(
+                  style: TextStyle(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 12),
+                const ResponsiveBox(
+                  paddingSize: ResponsiveSpacing.m,
+                ),
 
-                Text(
+                ResponsiveText.bodyMedium(
                   error.toString(),
                   textAlign: TextAlign.center,
-                  style: theme.textTheme.bodyMedium?.copyWith(
+                  style: TextStyle(
                     color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                   ),
                 ),
-                const SizedBox(height: 32),
+                const ResponsiveBox(
+                  paddingSize: ResponsiveSpacing.l,
+                ),
 
                 Wrap(
                   alignment: WrapAlignment.center,
@@ -67,7 +74,7 @@ class ErrorScreen extends StatelessWidget {
                       ElevatedButton.icon(
                         onPressed: onRetry,
                         icon: const Icon(Icons.refresh),
-                        label: const Text('Réessayer'),
+                        label: const ResponsiveText.bodyMedium('Réessayer'),
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 24, vertical: 12),
@@ -80,7 +87,8 @@ class ErrorScreen extends StatelessWidget {
                       OutlinedButton.icon(
                         onPressed: onGoHome,
                         icon: const Icon(Icons.home),
-                        label: const Text('Retour à l’accueil'),
+                        label: const ResponsiveText.bodyMedium(
+                            'Retour à l’accueil'),
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 24, vertical: 12),
@@ -93,17 +101,19 @@ class ErrorScreen extends StatelessWidget {
                   ],
                 ),
 
-                const SizedBox(height: 24),
+                const ResponsiveBox(
+                  paddingSize: ResponsiveSpacing.m,
+                ),
 
                 // Détails techniques (optionnel, affiché uniquement en debug)
                 if (!isReleaseMode)
                   ExpansionTile(
-                    title: const Text('Détails techniques'),
+                    title:
+                        const ResponsiveText.bodyMedium('Détails techniques'),
                     children: [
                       SelectableText(
                         stackTrace?.toString() ?? 'Aucune stacktrace',
-                        style: theme.textTheme.bodySmall
-                            ?.copyWith(fontFamily: 'monospace'),
+                        style: TextStyle(fontFamily: 'monospace'),
                       ),
                     ],
                   ),

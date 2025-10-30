@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:portefolio/core/ui/widgets/responsive_text.dart';
 
 class CodeHighlightList extends StatelessWidget {
   final List<String> items;
@@ -10,9 +11,9 @@ class CodeHighlightList extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Container(
+    return ResponsiveBox(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      paddingSize: ResponsiveSpacing.l,
       decoration: BoxDecoration(
         color: Colors.black87,
         borderRadius: BorderRadius.circular(12),
@@ -27,25 +28,26 @@ class CodeHighlightList extends StatelessWidget {
           const Row(
             children: [
               _EditorDot(color: Colors.red),
-              SizedBox(width: 6),
+              ResponsiveBox(paddingSize: ResponsiveSpacing.xs),
               _EditorDot(color: Colors.amber),
-              SizedBox(width: 6),
+              ResponsiveBox(paddingSize: ResponsiveSpacing.xs),
               _EditorDot(color: Colors.green),
             ],
           ),
-          const SizedBox(height: 12),
+          ResponsiveBox(paddingSize: ResponsiveSpacing.m),
           // Lignes de "code"
           ...items.asMap().entries.map((entry) {
             final index = entry.key + 1;
             final line = entry.value;
 
-            return Padding(
+            return ResponsiveBox(
               padding: const EdgeInsets.symmetric(vertical: 4),
+              paddingSize: ResponsiveSpacing.xs,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Numéro de ligne
-                  Text(
+                  ResponsiveText.headlineMedium(
                     index.toString().padLeft(2, '0'),
                     style: const TextStyle(
                       color: Colors.grey,
@@ -53,8 +55,9 @@ class CodeHighlightList extends StatelessWidget {
                       fontSize: 12,
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  // Texte avec coloration
+                  ResponsiveBox(
+                      paddingSize:
+                          ResponsiveSpacing.m), // Texte avec coloration
                   Expanded(
                     child: RichText(
                       text: TextSpan(
@@ -135,7 +138,7 @@ class _EditorDot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return ResponsiveBox(
       width: 12,
       height: 12,
       decoration: BoxDecoration(color: color, shape: BoxShape.circle),

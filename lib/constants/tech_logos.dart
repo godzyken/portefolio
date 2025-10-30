@@ -18,7 +18,7 @@ final Map<String, String> techLogos = {
   'laravel': 'assets/images/logos/laravel-logo.png',
   'hive': 'assets/images/logos/hive-logo.png',
   'postgresql': 'assets/images/logos/postgresql-logo.png',
-  'prestashop core': 'assets/images/logos/prestashop-logo.png',
+  'prestashop': 'assets/images/logos/prestashop-logo.png',
   'ftp/ssh': 'assets/images/logos/ftp-ssh-logo.png',
   'ci/cd': 'assets/images/logos/ci-cd-logo.png',
   'git': 'assets/images/logos/git-logo.png',

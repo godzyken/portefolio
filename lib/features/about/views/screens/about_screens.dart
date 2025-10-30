@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
+import 'package:portefolio/core/ui/widgets/responsive_text.dart';
 import 'package:portefolio/features/parametres/views/widgets/smart_image.dart';
 
 class AboutSection extends ConsumerStatefulWidget {
@@ -44,8 +45,9 @@ class _AboutSectionState extends ConsumerState<AboutSection>
 
     return FadeTransition(
       opacity: _fadeAnimation,
-      child: Container(
+      child: ResponsiveBox(
         width: double.infinity,
+        paddingSize: info.isMobile ? ResponsiveSpacing.m : ResponsiveSpacing.l,
         padding: EdgeInsets.symmetric(
           horizontal: info.isMobile ? 24 : 48,
           vertical: info.isMobile ? 48 : 72,
@@ -75,8 +77,8 @@ class _AboutSectionState extends ConsumerState<AboutSection>
           flex: 4,
           child: _buildProfileImage(context, theme, info),
         ),
-        const SizedBox(width: 64),
-        // Contenu à droite
+        const ResponsiveBox(
+            paddingSize: ResponsiveSpacing.xl), // Contenu à droite
         Flexible(
           flex: 6,
           child: _buildContent(context, theme, false),
@@ -94,7 +96,7 @@ class _AboutSectionState extends ConsumerState<AboutSection>
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         _buildProfileImage(context, theme, info),
-        const SizedBox(height: 40),
+        const ResponsiveBox(height: 40),
         _buildContent(context, theme, true),
       ],
     );
@@ -120,7 +122,7 @@ class _AboutSectionState extends ConsumerState<AboutSection>
           scale: value,
           child: Hero(
             tag: 'profile_image',
-            child: Container(
+            child: ResponsiveBox(
               width: imageSize,
               height: imageSize,
               decoration: BoxDecoration(
@@ -142,6 +144,7 @@ class _AboutSectionState extends ConsumerState<AboutSection>
                 ],
               ),
               padding: const EdgeInsets.all(8),
+              paddingSize: ResponsiveSpacing.s,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(24),
                 child: SmartImage(
@@ -170,7 +173,7 @@ class _AboutSectionState extends ConsumerState<AboutSection>
         // Titre
         _buildAnimatedText(
           delay: 200,
-          child: Text(
+          child: ResponsiveText.titleLarge(
             "Emryck Doré",
             style: GoogleFonts.montserrat(
               fontSize: 42,
@@ -186,12 +189,11 @@ class _AboutSectionState extends ConsumerState<AboutSection>
             textAlign: isCentered ? TextAlign.center : TextAlign.left,
           ),
         ),
-        const SizedBox(height: 16),
-
+        const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
         // Badge rôle
         _buildAnimatedText(
           delay: 400,
-          child: Container(
+          child: ResponsiveBox(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -227,15 +229,13 @@ class _AboutSectionState extends ConsumerState<AboutSection>
             ),
           ),
         ),
-        const SizedBox(height: 32),
-
+        const ResponsiveBox(paddingSize: ResponsiveSpacing.xl),
         // Description
         _buildAnimatedText(
           delay: 600,
           child: _buildDescription(context, theme, isCentered),
         ),
-        const SizedBox(height: 40),
-
+        const ResponsiveBox(paddingSize: ResponsiveSpacing.xl),
         // Statistiques
         _buildAnimatedText(
           delay: 800,
@@ -282,7 +282,7 @@ class _AboutSectionState extends ConsumerState<AboutSection>
           "Je conçois des applications Flutter sur mesure pour aider les entreprises à digitaliser leurs processus métiers.",
           isFirst: true,
         ),
-        const SizedBox(height: 16),
+        const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
         _buildParagraph(
           context,
           theme,
@@ -290,7 +290,7 @@ class _AboutSectionState extends ConsumerState<AboutSection>
           "Chaque année, je développe un projet complet — de l'idée à la mise en production — pour transformer des besoins réels en solutions performantes et durables.",
           isFirst: false,
         ),
-        const SizedBox(height: 16),
+        const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
         _buildParagraph(
           context,
           theme,
@@ -309,8 +309,9 @@ class _AboutSectionState extends ConsumerState<AboutSection>
     String text, {
     required bool isFirst,
   }) {
-    return Container(
+    return ResponsiveBox(
       padding: const EdgeInsets.all(16),
+      paddingSize: ResponsiveSpacing.m,
       decoration: BoxDecoration(
         color: theme.colorScheme.surface.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(12),
@@ -326,9 +327,9 @@ class _AboutSectionState extends ConsumerState<AboutSection>
             color: theme.colorScheme.primary,
             size: 20,
           ),
-          const SizedBox(width: 12),
+          const ResponsiveBox(width: 12),
           Expanded(
-            child: Text(
+            child: ResponsiveText(
               text,
               textAlign: isCentered ? TextAlign.center : TextAlign.start,
               style: GoogleFonts.openSans(
@@ -363,9 +364,10 @@ class _AboutSectionState extends ConsumerState<AboutSection>
       runSpacing: 16,
       alignment: isCentered ? WrapAlignment.center : WrapAlignment.start,
       children: stats.map((stat) {
-        return Container(
+        return ResponsiveBox(
           width: 140,
           padding: const EdgeInsets.all(20),
+          paddingSize: ResponsiveSpacing.l,
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
@@ -388,8 +390,8 @@ class _AboutSectionState extends ConsumerState<AboutSection>
                 color: theme.colorScheme.primary,
                 size: 32,
               ),
-              const SizedBox(height: 12),
-              Text(
+              const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
+              ResponsiveText(
                 stat['number'] as String,
                 style: GoogleFonts.montserrat(
                   fontSize: 28,
@@ -397,8 +399,8 @@ class _AboutSectionState extends ConsumerState<AboutSection>
                   color: theme.colorScheme.primary,
                 ),
               ),
-              const SizedBox(height: 4),
-              Text(
+              const ResponsiveBox(paddingSize: ResponsiveSpacing.xs),
+              ResponsiveText(
                 stat['label'] as String,
                 style: GoogleFonts.openSans(
                   fontSize: 12,

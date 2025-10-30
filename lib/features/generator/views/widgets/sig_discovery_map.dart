@@ -8,6 +8,7 @@ import 'package:portefolio/features/generator/data/location_data.dart';
 
 import '../../../../core/provider/location_providers.dart';
 import '../../../../core/provider/providers.dart';
+import '../../../../core/ui/widgets/responsive_text.dart';
 
 class SigDiscoveryMap extends ConsumerStatefulWidget {
   const SigDiscoveryMap({super.key});
@@ -285,7 +286,7 @@ class _SigDiscoveryMapState extends ConsumerState<SigDiscoveryMap>
             children: [
               CircularProgressIndicator(),
               SizedBox(height: 16),
-              Text('Chargement de la carte SIG...'),
+              ResponsiveText.bodyMedium('Chargement de la carte SIG...'),
             ],
           ),
         ),
@@ -305,8 +306,8 @@ class _SigDiscoveryMapState extends ConsumerState<SigDiscoveryMap>
           children: [
             Icon(isGpsError ? Icons.gps_off : Icons.error_outline,
                 size: 64, color: Colors.red.shade400),
-            const SizedBox(height: 24),
-            Text(
+            const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
+            ResponsiveText.headlineMedium(
               isPermissionError
                   ? "Accès à la localisation refusé"
                   : isGpsError
@@ -317,13 +318,13 @@ class _SigDiscoveryMapState extends ConsumerState<SigDiscoveryMap>
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 12),
-            Text(
+            const ResponsiveBox(paddingSize: ResponsiveSpacing.s),
+            ResponsiveText.headlineMedium(
               "$e",
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.grey.shade700),
             ),
-            const SizedBox(height: 24),
+            const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
             Wrap(
               spacing: 12,
               runSpacing: 12,
@@ -335,7 +336,8 @@ class _SigDiscoveryMapState extends ConsumerState<SigDiscoveryMap>
                       await ref.read(userLocationProvider.notifier).refresh();
                     },
                     icon: const Icon(Icons.settings),
-                    label: const Text('Ouvrir paramètres'),
+                    label: const ResponsiveText.headlineMedium(
+                        'Ouvrir paramètres'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.orange,
                       foregroundColor: Colors.white,
@@ -347,7 +349,7 @@ class _SigDiscoveryMapState extends ConsumerState<SigDiscoveryMap>
                       await ref.read(userLocationProvider.notifier).refresh();
                     },
                     icon: const Icon(Icons.location_on),
-                    label: const Text('Activer GPS'),
+                    label: const ResponsiveText.headlineMedium('Activer GPS'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
                       foregroundColor: Colors.white,
@@ -356,7 +358,7 @@ class _SigDiscoveryMapState extends ConsumerState<SigDiscoveryMap>
                 ElevatedButton.icon(
                   onPressed: () => ref.invalidate(userLocationProvider),
                   icon: const Icon(Icons.refresh),
-                  label: const Text('Réessayer'),
+                  label: const ResponsiveText.headlineMedium('Réessayer'),
                 ),
               ],
             ),

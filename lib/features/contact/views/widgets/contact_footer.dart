@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:portefolio/core/ui/widgets/responsive_text.dart';
 
 import '../../../../core/affichage/screen_size_detector.dart';
 
@@ -9,9 +10,9 @@ class ContactFooter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return ResponsiveBox(
       width: double.infinity,
-      padding: EdgeInsets.all(info.isMobile ? 24 : 40),
+      paddingSize: info.isMobile ? ResponsiveSpacing.m : ResponsiveSpacing.l,
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
@@ -24,14 +25,14 @@ class ContactFooter extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Text(
+          ResponsiveText.bodyMedium(
             '🚀 Prêt à transformer votre idée en réalité ?',
-            style: theme.textTheme.bodyLarge?.copyWith(
+            style: TextStyle(
               color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 16),
+          const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
           Wrap(
             spacing: 24,
             runSpacing: 12,
@@ -53,9 +54,9 @@ class ContactFooter extends StatelessWidget {
       children: [
         Icon(icon,
             size: 16, color: theme.colorScheme.primary.withValues(alpha: 0.7)),
-        const SizedBox(width: 6),
-        Text(text,
-            style: theme.textTheme.bodySmall?.copyWith(
+        const ResponsiveBox(paddingSize: ResponsiveSpacing.xs),
+        ResponsiveText.bodyMedium(text,
+            style: TextStyle(
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.6))),
       ],
     );

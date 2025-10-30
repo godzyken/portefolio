@@ -2,6 +2,7 @@ import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:portefolio/core/ui/widgets/responsive_text.dart';
 
 import '../../controllers/providers/card_flight_provider.dart';
 import '../../data/competences_data.dart';
@@ -104,12 +105,12 @@ class _CompetenceChipState extends ConsumerState<CompetenceChip> {
 
   Widget _buildChipContent(Competence comp, bool isActive,
       {bool dragging = false}) {
-    return SizedBox(
+    return ResponsiveBox(
       width: widget.size,
       height: widget.size,
       // 🔧 Utiliser ValueKey au lieu de GlobalKey
       key: ValueKey('competence_${widget.competenceName}_${comp.nom}'),
-      child: Container(
+      child: ResponsiveBox(
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           gradient: RadialGradient(
@@ -161,7 +162,7 @@ class _CompetenceChipState extends ConsumerState<CompetenceChip> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
+                  ResponsiveText.bodyMedium(
                     '${comp.valeur}',
                     style: TextStyle(
                       color: isActive ? Colors.black : Colors.white,
@@ -176,7 +177,7 @@ class _CompetenceChipState extends ConsumerState<CompetenceChip> {
                       ],
                     ),
                   ),
-                  Text(
+                  ResponsiveText.bodyMedium(
                     comp.nom,
                     style: TextStyle(
                       color: isActive ? Colors.black87 : Colors.white70,
@@ -201,7 +202,7 @@ class _CompetenceChipState extends ConsumerState<CompetenceChip> {
               Positioned(
                 top: widget.size * 0.1,
                 left: widget.size * 0.1,
-                child: Container(
+                child: ResponsiveBox(
                   width: widget.size * 0.25,
                   height: widget.size * 0.25,
                   decoration: BoxDecoration(
@@ -218,7 +219,7 @@ class _CompetenceChipState extends ConsumerState<CompetenceChip> {
             Positioned(
               bottom: widget.size * 0.0625,
               right: widget.size * 0.0625,
-              child: Container(
+              child: ResponsiveBox(
                 width: widget.size * 0.2,
                 height: widget.size * 0.2,
                 decoration: BoxDecoration(
@@ -227,7 +228,7 @@ class _CompetenceChipState extends ConsumerState<CompetenceChip> {
                   border: Border.all(color: Colors.white, width: 1),
                 ),
                 child: Center(
-                  child: Text(
+                  child: ResponsiveText.bodySmall(
                     _getNiveauIcon(comp.niveau),
                     style: TextStyle(
                       color: Colors.white,
@@ -245,7 +246,7 @@ class _CompetenceChipState extends ConsumerState<CompetenceChip> {
   }
 
   Widget _buildFallback() {
-    return Container(
+    return ResponsiveBox(
       width: widget.size,
       height: widget.size,
       key: ValueKey('fallback_${widget.competenceName}'),
@@ -254,7 +255,7 @@ class _CompetenceChipState extends ConsumerState<CompetenceChip> {
         color: Colors.grey,
       ),
       child: Center(
-        child: Text(
+        child: ResponsiveText.bodySmall(
           widget.competenceName,
           style: const TextStyle(color: Colors.white, fontSize: 10),
           textAlign: TextAlign.center,
@@ -276,7 +277,7 @@ class _CompetenceChipState extends ConsumerState<CompetenceChip> {
       final size = (widget.size * 0.8125) - (i * (widget.size * 0.125));
       circles.add(
         Center(
-          child: Container(
+          child: ResponsiveBox(
             width: size,
             height: size,
             decoration: BoxDecoration(

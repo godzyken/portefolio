@@ -60,7 +60,8 @@ final imageFilesProvider = FutureProvider<List<String>>((ref) async {
     return lower.endsWith('.png') ||
         lower.endsWith('.jpg') ||
         lower.endsWith('.jpeg') ||
-        lower.endsWith('.webp');
+        lower.endsWith('.webp') ||
+        lower.endsWith('.svg');
   }).toList();
 });
 
@@ -95,10 +96,6 @@ final appImagesProvider = FutureProvider<AppImages>((ref) async {
   final localImages = await ref.watch(allImagesProvider.future);
 
   final networkImages = [
-    'https://www.tatvasoft.com/outsourcing/wp-content/uploads/2023/06/Angular-Architecture.jpg',
-    'https://techpearl.com/wp-content/uploads/2021/11/Ionic-App.svg',
-    'https://cenotia.com/wp-content/uploads/2017/05/transformation-digitale.jpg',
-    'https://teachmeidea.com/wp-content/uploads/2025/04/ChatGPT-Image-Apr-3-2025-03_36_47-PM-1024x683.png',
     'https://storage.googleapis.com/cms-storage-bucket/build-more-with-flutter.f399274b364a6194c43d.png',
     'https://assets.setmore.com/website/v2/images/integrations-listing/wordpress/wordpress-plugin-crop@2x.webp',
   ];

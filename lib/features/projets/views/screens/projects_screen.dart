@@ -26,8 +26,8 @@ class _ProjectsScreenState extends ConsumerState<ProjectsScreen> {
         // --- Image de fond ---
         Positioned.fill(
           child: SmartImage(
-            path: "assets/images/flutter-mascotte.png", // ton image
-            fit: BoxFit.cover,
+            path: "assets/images/line.svg", // ton image
+            fit: BoxFit.contain,
             fallbackIcon: Icons.image,
             fallbackColor: Colors.white,
           ),

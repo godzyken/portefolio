@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:portefolio/core/ui/widgets/responsive_text.dart';
 
 import '../../../../core/affichage/screen_size_detector.dart';
 import '../../model/state/contact_form_state.dart';
@@ -322,14 +323,14 @@ class _SubmitRow extends StatelessWidget {
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 400),
       child: isSubmitting
-          ? Container(
+          ? ResponsiveBox(
               key: const ValueKey('loading'),
               padding: const EdgeInsets.all(32),
               child: Column(
                 children: [
                   CircularProgressIndicator(color: theme.colorScheme.primary),
-                  const SizedBox(height: 16),
-                  Text(
+                  const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
+                  ResponsiveText.bodySmall(
                     'Envoi en cours...',
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
@@ -342,13 +343,13 @@ class _SubmitRow extends StatelessWidget {
               key: const ValueKey('actions'),
               children: [
                 // Bouton Email (principal)
-                SizedBox(
+                ResponsiveBox(
                   width: double.infinity,
                   height: 60,
                   child: ElevatedButton.icon(
                     onPressed: onEmail,
                     icon: const Icon(Icons.send_rounded, size: 24),
-                    label: const Text(
+                    label: const ResponsiveText.bodyMedium(
                       'Envoyer par Email',
                       style:
                           TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
@@ -366,7 +367,7 @@ class _SubmitRow extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(height: 16),
+                const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
 
                 // Séparateur
                 Row(
@@ -375,9 +376,9 @@ class _SubmitRow extends StatelessWidget {
                         child: Divider(
                             color: theme.colorScheme.onSurface
                                 .withValues(alpha: 0.2))),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(
+                    ResponsiveBox(
+                      paddingSize: ResponsiveSpacing.m,
+                      child: ResponsiveText.bodyMedium(
                         'ou contactez-moi via',
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: theme.colorScheme.onSurface
@@ -392,16 +393,16 @@ class _SubmitRow extends StatelessWidget {
                   ],
                 ),
 
-                const SizedBox(height: 16),
+                const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
 
                 // Bouton WhatsApp
-                SizedBox(
+                ResponsiveBox(
                   width: double.infinity,
                   height: 56,
                   child: OutlinedButton.icon(
                     onPressed: onWhatsApp,
                     icon: const Icon(Icons.phone, size: 22),
-                    label: const Text(
+                    label: const ResponsiveText.bodyMedium(
                       'WhatsApp',
                       style:
                           TextStyle(fontSize: 16, fontWeight: FontWeight.w600),

@@ -5,6 +5,7 @@ import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/provider/providers.dart';
 
 import '../../../../constants/app_tab.dart';
+import '../../../../core/ui/widgets/responsive_text.dart';
 import '../../data/bubble_menu_item.dart';
 import '../widgets/bubble_navigation_menu.dart';
 
@@ -37,7 +38,8 @@ class MainScaffold extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(config.title, overflow: TextOverflow.ellipsis),
+        title: ResponsiveText.titleLarge(config.title,
+            overflow: TextOverflow.ellipsis),
         actions: config.actions,
       ),
       endDrawer: config.drawer,

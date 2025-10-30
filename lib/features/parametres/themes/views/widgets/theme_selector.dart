@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 
+import '../../../../../core/ui/widgets/responsive_text.dart';
 import '../../controller/theme_controller.dart';
 import '../../theme/theme_data.dart';
 
@@ -37,9 +38,9 @@ class _ThemeSelectorState extends ConsumerState<ThemeSelector> {
         child: buildWrap(current, controller));
   }
 
-  SizedBox buildWrap(BasicTheme current, ThemeController controller) {
+  ResponsiveBox buildWrap(BasicTheme current, ThemeController controller) {
     final info = ref.watch(responsiveInfoProvider);
-    return SizedBox(
+    return ResponsiveBox(
       height: info.size.height * 0.7,
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(12),
@@ -61,8 +62,9 @@ class _ThemeSelectorState extends ConsumerState<ThemeSelector> {
                   ),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Padding(
+                child: ResponsiveBox(
                   padding: const EdgeInsets.all(8),
+                  paddingSize: ResponsiveSpacing.s,
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -70,7 +72,7 @@ class _ThemeSelectorState extends ConsumerState<ThemeSelector> {
                         backgroundColor: theme.primaryColor,
                         child: Text(theme.emoji ?? '🎨'),
                       ),
-                      const SizedBox(width: 8),
+                      const ResponsiveBox(paddingSize: ResponsiveSpacing.s),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -78,14 +80,16 @@ class _ThemeSelectorState extends ConsumerState<ThemeSelector> {
                             Text(theme.name,
                                 style: const TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 23)),
-                            const SizedBox(height: 4),
+                            const ResponsiveBox(
+                                paddingSize: ResponsiveSpacing.xs),
                             Row(
                               children: [
                                 _colorDot(theme.primaryColor),
                                 _colorDot(theme.tertiaryColor),
                                 _colorDot(theme.neutralColor),
-                                const SizedBox(width: 8),
-                                Text(
+                                const ResponsiveBox(
+                                    paddingSize: ResponsiveSpacing.s),
+                                ResponsiveText.bodyMedium(
                                   'Mode: ${theme.mode.name}',
                                   style: TextStyle(fontSize: 14),
                                 ),
@@ -94,7 +98,7 @@ class _ThemeSelectorState extends ConsumerState<ThemeSelector> {
                           ],
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      const ResponsiveBox(paddingSize: ResponsiveSpacing.s),
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -104,14 +108,16 @@ class _ThemeSelectorState extends ConsumerState<ThemeSelector> {
                                 _previewTheme = theme;
                               });
                             },
-                            child: const Text('Prévisualiser'),
+                            child: const ResponsiveText.headlineMedium(
+                                'Prévisualiser'),
                           ),
-                          ElevatedButton(
+                          ResponsiveButton(
                             onPressed: () {
                               controller.applyTheme(theme);
                               Navigator.of(context).pop();
                             },
-                            child: const Text('Appliquer'),
+                            child: const ResponsiveText.headlineMedium(
+                                'Appliquer'),
                           ),
                         ],
                       )

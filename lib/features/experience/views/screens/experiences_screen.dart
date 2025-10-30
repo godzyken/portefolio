@@ -37,7 +37,7 @@ class _ExperiencesScreenState extends ConsumerState<ExperiencesScreen> {
       ]);
     }
 
-    Future.microtask(() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.listen<AsyncValue<List<Experience>>>(experiencesProvider,
           (prev, next) {
         next.whenOrNull(error: (e, st) {

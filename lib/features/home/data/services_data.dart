@@ -290,8 +290,7 @@ final List<Service> defaultServices = [
     description: 'Support technique et maintenance continue',
     features: ['24/7', 'Monitoring', 'Updates', 'Bug fixes'],
     icon: Icons.build,
-    imageUrl:
-        'https://cenotia.com/wp-content/uploads/2017/05/transformation-digitale.jpg',
+    imageUrl: 'assets/images/transformation-digitale.jpg',
     category: ServiceCategory.support,
     priority: 4,
   ),

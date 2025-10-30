@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:portefolio/core/ui/widgets/responsive_text.dart';
 
 /// Widget intelligent pour afficher des images locales ou réseau
 /// avec fallback et gestion d'erreur robuste et animations de chargement (fade-in + shimmer) et fallback élégant.
@@ -26,12 +28,19 @@ class SmartImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isSvg = path.toLowerCase().endsWith('.svg');
     final isNetwork = path.startsWith('http');
 
-    if (isNetwork) {
-      return _buildNetworkImage(context);
+    if (isSvg) {
+      // Gestion des images SVG
+      return _buildSvgImage(context);
     } else {
-      return _buildAssetImage(context);
+      // Gestion des images BITMAP et NETWORK
+      if (isNetwork) {
+        return _buildNetworkImage(context);
+      } else {
+        return _buildAssetImage(context);
+      }
     }
   }
 
@@ -129,9 +138,9 @@ class SmartImage extends StatelessWidget {
                       padding: const EdgeInsets.only(top: 8),
                       child: Opacity(
                         opacity: 0.7,
-                        child: Text(
+                        child: ResponsiveText.headlineMedium(
                           'Image indisponible',
-                          style: theme.textTheme.bodySmall?.copyWith(
+                          style: TextStyle(
                             color: color, // Couleur opaque
                           ),
                         ),
@@ -143,6 +152,38 @@ class SmartImage extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildSvgImage(BuildContext context) {
+    final isNetwork = path.startsWith('http');
+
+    if (isNetwork) {
+      return SvgPicture.network(
+        path,
+        width: width,
+        height: height,
+        fit: fit,
+        errorBuilder: (context, error, stackTrace) {
+          debugPrint('❌ Erreur chargement svg réseau: $path');
+          debugPrint('Erreur: $error');
+          return _buildFallback(context);
+        },
+        placeholderBuilder: (context) => _buildFallback(context),
+      );
+    }
+
+    return SvgPicture.asset(
+      path,
+      width: width,
+      height: height,
+      fit: fit,
+      errorBuilder: (context, error, stackTrace) {
+        debugPrint('❌ Erreur chargement svg asset: $path');
+        debugPrint('Erreur: $error');
+        return _buildFallback(context);
+      },
+      placeholderBuilder: (context) => _buildFallback(context),
     );
   }
 }

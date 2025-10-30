@@ -60,8 +60,8 @@
     ],
     "image": [
       "assets/images/flutter-image.png",
-      "assetes/images/line.svg",
       "assets/images/flutter-mascotte.png",
+      "assets/images/state-management-in-flutter.webp",
       "assets/images/screenshot-login.jpg",
       "assets/images/screenshot-inspector.jpg"
     ],
@@ -82,7 +82,6 @@
       "💬 Analyse UX, optimisation des parcours utilisateurs (User Flow) et ergonomie"
     ],
     "image": [
-      "assets/images/medimail-app.png",
       "assets/images/ui-ux-mobile.png",
       "assets/images/medical-app.png",
       "assets/images/business-app.svg"
@@ -127,7 +126,7 @@
     "tags": ["Flutter", "GitHub", "FlutterFlow"]
   },
   {
-    "id": "projet_ultron",
+    "id": "projet_7",
     "title": "Réseau Éducatif Résilient - Projet Workshop Ultron",
     "points": [
       "🛰️ Projet Workshop EPSI-WIS 2025 – Campus Montpellier",
@@ -149,6 +148,7 @@
       "matériel": ["Raspberry Pi 4", "ESP8266 NodeMCU", "Routeur Wi-Fi portable", "Smartphone Android/iOS"]
     },
     "image": [
+      "assets/images/ultron.webp",
       "assets/images/WorkShop/1.png",
       "assets/images/WorkShop/2.png",
       "assets/images/WorkShop/3.png",

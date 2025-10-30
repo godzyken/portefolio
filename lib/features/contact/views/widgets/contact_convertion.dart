@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:googleapis/calendar/v3.dart' as calendar;
 
 import '../../../../core/affichage/screen_size_detector.dart';
+import '../../../../core/ui/widgets/responsive_text.dart';
 import '../../providers/calendar_provider.dart';
 import '../../providers/cv_download_provider.dart';
 
@@ -17,13 +18,15 @@ class ContactConversionOption extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Container(
+    return ResponsiveBox(
       width: double.infinity,
       margin: EdgeInsets.symmetric(
         horizontal: info.isMobile ? 24 : 64,
         vertical: 32,
       ),
+      marginSize: info.isMobile ? ResponsiveSpacing.m : ResponsiveSpacing.l,
       padding: EdgeInsets.all(info.isMobile ? 24 : 40),
+      paddingSize: info.isMobile ? ResponsiveSpacing.m : ResponsiveSpacing.l,
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -40,21 +43,21 @@ class ContactConversionOption extends ConsumerWidget {
         children: [
           Icon(Icons.lightbulb_outline,
               size: 48, color: theme.colorScheme.primary),
-          const SizedBox(height: 16),
-          Text(
+          const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
+          ResponsiveText(
             'Vous avez une idée de projet ?',
             style: theme.textTheme.titleLarge
                 ?.copyWith(fontWeight: FontWeight.bold),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 8),
-          Text(
+          const ResponsiveBox(paddingSize: ResponsiveSpacing.xs),
+          ResponsiveText(
             'Discutons-en autour d\'un café virtuel ou réel',
             style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.7)),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 24),
+          const ResponsiveBox(paddingSize: ResponsiveSpacing.l),
           Wrap(
             spacing: 12,
             runSpacing: 12,
@@ -236,7 +239,7 @@ class ContactConversionOption extends ConsumerWidget {
       ThemeData theme, IconData icon, String label, VoidCallback onTap) {
     return ActionChip(
       avatar: Icon(icon, color: theme.colorScheme.primary),
-      label: Text(label),
+      label: ResponsiveText.headlineMedium(label),
       onPressed: onTap,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       backgroundColor: theme.colorScheme.surface,
@@ -253,7 +256,7 @@ class ContactConversionOption extends ConsumerWidget {
       SnackBar(
         content: Row(
           children: [
-            const SizedBox(
+            const ResponsiveBox(
               width: 20,
               height: 20,
               child: CircularProgressIndicator(
@@ -261,8 +264,8 @@ class ContactConversionOption extends ConsumerWidget {
                 color: Colors.white,
               ),
             ),
-            const SizedBox(width: 16),
-            Text(message),
+            const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
+            ResponsiveText.headlineMedium(message),
           ],
         ),
         duration: const Duration(seconds: 3),
@@ -276,8 +279,8 @@ class ContactConversionOption extends ConsumerWidget {
         content: Row(
           children: [
             const Icon(Icons.check_circle, color: Colors.white),
-            const SizedBox(width: 16),
-            Expanded(child: Text(message)),
+            const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
+            Expanded(child: ResponsiveText.bodyMedium(message)),
           ],
         ),
         backgroundColor: Colors.green,
@@ -292,8 +295,8 @@ class ContactConversionOption extends ConsumerWidget {
         content: Row(
           children: [
             const Icon(Icons.error, color: Colors.white),
-            const SizedBox(width: 16),
-            Expanded(child: Text('Erreur: $error')),
+            const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
+            Expanded(child: ResponsiveText.bodySmall('Erreur: $error')),
           ],
         ),
         backgroundColor: Colors.red,

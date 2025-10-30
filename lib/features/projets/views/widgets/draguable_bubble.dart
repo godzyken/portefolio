@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
+import 'package:portefolio/core/ui/widgets/responsive_text.dart';
 import 'package:portefolio/features/generator/views/widgets/generator_widgets_extentions.dart';
 import 'package:portefolio/features/parametres/views/widgets/smart_image.dart';
 import 'package:portefolio/features/projets/views/widgets/project_card.dart';
@@ -147,7 +148,7 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
             maxWidth: dialogMaxWidth,
             maxHeight: dialogMaxHeight,
           ),
-          child: SizedBox(
+          child: ResponsiveBox(
             width: dialogMaxWidth,
             height: dialogMaxHeight,
             child: ProjectCard(
@@ -169,7 +170,7 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
     final screenHeight = isPortrait
         ? spec.size.height - 2 * spec.bezelSize
         : spec.size.width - 2 * spec.bezelSize;
-    return Container(
+    return ResponsiveBox(
       width: spec.size.width,
       height: spec.size.height,
       decoration: BoxDecoration(
@@ -197,7 +198,7 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
       ),
       child: Stack(
         children: [
-          Container(
+          ResponsiveBox(
             decoration: BoxDecoration(
               borderRadius: spec.borderRadius,
               border: Border.all(
@@ -217,7 +218,7 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
             ),
           ),
           Positioned.fill(
-            child: Container(
+            child: ResponsiveBox(
               decoration: BoxDecoration(
                 borderRadius: spec.borderRadius,
                 gradient: LinearGradient(
@@ -231,11 +232,12 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
               ),
             ),
           ),
-          Padding(
+          ResponsiveBox(
             padding: EdgeInsets.all(spec.bezelSize),
+            paddingSize: ResponsiveSpacing.m,
             child: isExpanded
                 ? SingleChildScrollView(
-                    child: SizedBox(
+                    child: ResponsiveBox(
                       width: screenWidth,
                       height: screenHeight,
                       child: MinimalCard(
@@ -260,8 +262,9 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
                 builder: (context, double value, child) {
                   return Transform.scale(
                     scale: value,
-                    child: Container(
+                    child: ResponsiveBox(
                       padding: const EdgeInsets.all(6),
+                      paddingSize: ResponsiveSpacing.xs,
                       decoration: BoxDecoration(
                         color: Colors.green,
                         shape: BoxShape.circle,
@@ -348,7 +351,7 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
                 maxWidth: dialogMaxWidth,
                 maxHeight: dialogMaxHeight,
               ),
-              child: SizedBox(
+              child: ResponsiveBox(
                 width: dialogMaxWidth,
                 height: dialogMaxHeight,
                 key: ValueKey(
@@ -472,7 +475,7 @@ class DeviceSpec {
         Positioned(
           right: -4,
           top: size.height * 0.35,
-          child: Container(
+          child: ResponsiveBox(
             width: 10,
             height: 24,
             decoration: BoxDecoration(
@@ -493,7 +496,7 @@ class DeviceSpec {
         Positioned(
           bottom: bezelSize + 10,
           left: size.width / 2 - 8,
-          child: Container(
+          child: ResponsiveBox(
             width: 16,
             height: 16,
             decoration: BoxDecoration(
@@ -509,7 +512,7 @@ class DeviceSpec {
         Positioned(
           top: 0,
           left: size.width / 2 - 25,
-          child: Container(
+          child: ResponsiveBox(
             width: 50,
             height: bezelSize - 1,
             decoration: BoxDecoration(
@@ -522,16 +525,17 @@ class DeviceSpec {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Container(
+                ResponsiveBox(
                   width: 4,
                   height: 4,
                   margin: const EdgeInsets.only(right: 8),
+                  marginSize: ResponsiveSpacing.xs,
                   decoration: BoxDecoration(
                     color: Colors.grey.shade800,
                     shape: BoxShape.circle,
                   ),
                 ),
-                Container(
+                ResponsiveBox(
                   width: 6,
                   height: 6,
                   decoration: BoxDecoration(
@@ -549,7 +553,7 @@ class DeviceSpec {
         Positioned(
           top: bezelSize / 2 - 3,
           left: size.width / 2 - 3,
-          child: Container(
+          child: ResponsiveBox(
             width: 6,
             height: 6,
             decoration: BoxDecoration(
@@ -571,7 +575,7 @@ class DeviceSpec {
         Positioned(
           top: bezelSize / 2 - 2,
           left: size.width / 2 - 3,
-          child: Container(
+          child: ResponsiveBox(
             width: 6,
             height: 6,
             decoration: BoxDecoration(
@@ -589,7 +593,7 @@ class DeviceSpec {
         Positioned(
           bottom: -20,
           left: size.width / 2 - (isLarge ? 35 : 25),
-          child: Container(
+          child: ResponsiveBox(
             width: isLarge ? 70 : 50,
             height: 16,
             decoration: BoxDecoration(
@@ -608,7 +612,7 @@ class DeviceSpec {
         Positioned(
           bottom: -36,
           left: size.width / 2 - (isLarge ? 20 : 14),
-          child: Container(
+          child: ResponsiveBox(
             width: isLarge ? 40 : 28,
             height: 18,
             decoration: BoxDecoration(

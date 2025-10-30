@@ -159,8 +159,8 @@ class ProjectCard extends ConsumerWidget {
           mainAxisSize: MainAxisSize.max,
           children: [
             if (youtubeId != null && youtubeId.isNotEmpty) // 🎬 YouTube
-              Padding(
-                padding: const EdgeInsets.only(bottom: 16.0),
+              ResponsiveBox(
+                paddingSize: ResponsiveSpacing.m,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: Builder(
@@ -192,8 +192,8 @@ class ProjectCard extends ConsumerWidget {
               )
             else if (project.cleanedImages != null &&
                 project.cleanedImages!.isNotEmpty) // 🖼 Image
-              Padding(
-                padding: const EdgeInsets.only(bottom: 16.0),
+              ResponsiveBox(
+                paddingSize: ResponsiveSpacing.m,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: ConstrainedBox(
@@ -209,28 +209,34 @@ class ProjectCard extends ConsumerWidget {
                 ),
               )
             else
-              const SizedBox.shrink(),
+              const ResponsiveBox(
+                paddingSize: ResponsiveSpacing.xs,
+              ),
 
-            const SizedBox(height: 6),
+            const ResponsiveBox(
+              paddingSize: ResponsiveSpacing.m,
+            ),
 
             // --- WakaTime badge ---
             if (_hasProgrammingTag())
               WakaTimeDetailedBadge(projectName: project.title),
 
-            const SizedBox(height: 12),
+            const ResponsiveBox(
+              paddingSize: ResponsiveSpacing.m,
+            ),
             if (_hasProgrammingTag())
               CodeHighlightList(items: project.points, tag: '->')
             else
               Wrap(
                 spacing: 6,
                 children: project.points.take(3).map((p) {
-                  return Container(
+                  return ResponsiveBox(
                     padding: const EdgeInsets.all(4),
                     decoration: BoxDecoration(
                       color: Colors.blueGrey.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(6),
                     ),
-                    child: Text(
+                    child: ResponsiveText.bodyMedium(
                       _mapPointToEmoji(p),
                       style: const TextStyle(fontSize: 16),
                     ),
@@ -245,11 +251,11 @@ class ProjectCard extends ConsumerWidget {
           onPressed: () {
             context.pop();
           },
-          child: const Text('Fermer'),
+          child: const ResponsiveText.bodyMedium('Fermer'),
         ),
         TextButton.icon(
           icon: const Icon(Icons.picture_as_pdf),
-          label: const Text('Imprimer ce projet'),
+          label: const ResponsiveText.bodyMedium('Imprimer ce projet'),
           onPressed: () => pdfService.export([project]),
         ),
       ],

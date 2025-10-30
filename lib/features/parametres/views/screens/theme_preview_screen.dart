@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:portefolio/core/ui/widgets/responsive_text.dart';
 
 import '../../themes/controller/theme_controller.dart';
 import '../../themes/theme/theme_data.dart';
@@ -21,7 +22,7 @@ class _ThemePreviewScreenState extends ConsumerState<ThemePreviewScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Galerie de Thèmes'),
+        title: const ResponsiveText('Galerie de Thèmes'),
         actions: [
           IconButton(
             icon: const Icon(Icons.check),
@@ -36,7 +37,7 @@ class _ThemePreviewScreenState extends ConsumerState<ThemePreviewScreen> {
       body: Row(
         children: [
           // Liste des thèmes à gauche
-          SizedBox(
+          ResponsiveBox(
             width: 280,
             child: ListView.builder(
               itemCount: availableThemes.length,
@@ -46,7 +47,7 @@ class _ThemePreviewScreenState extends ConsumerState<ThemePreviewScreen> {
                 final isCurrent =
                     theme.primaryColorValue == currentTheme.primaryColorValue;
 
-                return Container(
+                return ResponsiveBox(
                   margin: const EdgeInsets.symmetric(
                     horizontal: 8,
                     vertical: 4,
@@ -63,7 +64,7 @@ class _ThemePreviewScreenState extends ConsumerState<ThemePreviewScreen> {
                     ),
                   ),
                   child: ListTile(
-                    leading: Container(
+                    leading: ResponsiveBox(
                       width: 50,
                       height: 50,
                       decoration: BoxDecoration(
@@ -81,13 +82,13 @@ class _ThemePreviewScreenState extends ConsumerState<ThemePreviewScreen> {
                             : null,
                       ),
                       child: Center(
-                        child: Text(
+                        child: ResponsiveText.bodySmall(
                           theme.emoji ?? '🎨',
                           style: const TextStyle(fontSize: 24),
                         ),
                       ),
                     ),
-                    title: Text(
+                    title: ResponsiveText(
                       theme.name,
                       style: TextStyle(
                         fontWeight:
@@ -99,7 +100,9 @@ class _ThemePreviewScreenState extends ConsumerState<ThemePreviewScreen> {
                         _colorDot(Color(theme.primaryColorValue)),
                         _colorDot(Color(theme.tertiaryColorValue)),
                         _colorDot(Color(theme.neutralColorValue)),
-                        const SizedBox(width: 8),
+                        const ResponsiveBox(
+                          paddingSize: ResponsiveSpacing.m,
+                        ),
                         if (isCurrent)
                           const Icon(
                             Icons.check_circle,
@@ -136,25 +139,31 @@ class _ThemePreviewScreenState extends ConsumerState<ThemePreviewScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header
-            Text(
+            ResponsiveText(
               'Prévisualisation',
               style: Theme.of(context).textTheme.headlineLarge,
             ),
-            const SizedBox(height: 8),
-            Text(
+            const ResponsiveBox(
+              paddingSize: ResponsiveSpacing.s,
+            ),
+            ResponsiveText(
               theme.name,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     color: theme.primaryColor,
                   ),
             ),
-            const SizedBox(height: 32),
+            const ResponsiveBox(
+              paddingSize: ResponsiveSpacing.xl,
+            ),
 
             // Cards preview
-            Text(
+            ResponsiveText(
               'Cards',
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            const SizedBox(height: 16),
+            const ResponsiveBox(
+              paddingSize: ResponsiveSpacing.m,
+            ),
             Row(
               children: [
                 Expanded(
@@ -169,13 +178,17 @@ class _ThemePreviewScreenState extends ConsumerState<ThemePreviewScreen> {
                             size: 32,
                             color: theme.primaryColor,
                           ),
-                          const SizedBox(height: 8),
-                          Text(
+                          const ResponsiveBox(
+                            paddingSize: ResponsiveSpacing.s,
+                          ),
+                          ResponsiveText(
                             'Développement',
                             style: Theme.of(context).textTheme.titleMedium,
                           ),
-                          const SizedBox(height: 4),
-                          Text(
+                          const ResponsiveBox(
+                            paddingSize: ResponsiveSpacing.xs,
+                          ),
+                          ResponsiveText(
                             'Applications modernes et performantes',
                             style: Theme.of(context).textTheme.bodySmall,
                           ),
@@ -184,7 +197,9 @@ class _ThemePreviewScreenState extends ConsumerState<ThemePreviewScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(width: 16),
+                const ResponsiveBox(
+                  paddingSize: ResponsiveSpacing.m,
+                ),
                 Expanded(
                   child: Card(
                     child: Padding(
@@ -197,13 +212,17 @@ class _ThemePreviewScreenState extends ConsumerState<ThemePreviewScreen> {
                             size: 32,
                             color: theme.primaryColor,
                           ),
-                          const SizedBox(height: 8),
-                          Text(
+                          const ResponsiveBox(
+                            paddingSize: ResponsiveSpacing.m,
+                          ),
+                          ResponsiveText(
                             'Design',
                             style: Theme.of(context).textTheme.titleMedium,
                           ),
-                          const SizedBox(height: 4),
-                          Text(
+                          const ResponsiveBox(
+                            paddingSize: ResponsiveSpacing.xs,
+                          ),
+                          ResponsiveText(
                             'Interfaces élégantes et intuitives',
                             style: Theme.of(context).textTheme.bodySmall,
                           ),
@@ -214,14 +233,19 @@ class _ThemePreviewScreenState extends ConsumerState<ThemePreviewScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 32),
+            const ResponsiveBox(
+              paddingSize: ResponsiveSpacing.xl,
+            ),
 
             // Buttons preview
-            Text(
+            ResponsiveText(
               'Boutons',
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            const SizedBox(height: 16),
+            const ResponsiveBox(
+              paddingSize: ResponsiveSpacing.m,
+            ),
+
             Wrap(
               spacing: 12,
               runSpacing: 12,
@@ -229,33 +253,38 @@ class _ThemePreviewScreenState extends ConsumerState<ThemePreviewScreen> {
                 ElevatedButton.icon(
                   onPressed: () {},
                   icon: const Icon(Icons.save),
-                  label: const Text('Enregistrer'),
+                  label: const ResponsiveText('Enregistrer'),
                 ),
                 FilledButton.icon(
                   onPressed: () {},
                   icon: const Icon(Icons.send),
-                  label: const Text('Envoyer'),
+                  label: const ResponsiveText('Envoyer'),
                 ),
                 OutlinedButton.icon(
                   onPressed: () {},
                   icon: const Icon(Icons.cancel),
-                  label: const Text('Annuler'),
+                  label: const ResponsiveText('Annuler'),
                 ),
                 TextButton.icon(
                   onPressed: () {},
                   icon: const Icon(Icons.info),
-                  label: const Text('Plus d\'infos'),
+                  label: const ResponsiveText('Plus d\'infos'),
                 ),
               ],
             ),
-            const SizedBox(height: 32),
+            const ResponsiveBox(
+              paddingSize: ResponsiveSpacing.l,
+            ),
 
             // Input preview
-            Text(
+            ResponsiveText(
               'Champs de saisie',
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            const SizedBox(height: 16),
+            const ResponsiveBox(
+              paddingSize: ResponsiveSpacing.m,
+            ),
+
             const TextField(
               decoration: InputDecoration(
                 labelText: 'Nom',
@@ -263,7 +292,9 @@ class _ThemePreviewScreenState extends ConsumerState<ThemePreviewScreen> {
                 prefixIcon: Icon(Icons.person),
               ),
             ),
-            const SizedBox(height: 16),
+            const ResponsiveBox(
+              paddingSize: ResponsiveSpacing.m,
+            ),
             const TextField(
               decoration: InputDecoration(
                 labelText: 'Email',
@@ -271,45 +302,56 @@ class _ThemePreviewScreenState extends ConsumerState<ThemePreviewScreen> {
                 prefixIcon: Icon(Icons.email),
               ),
             ),
-            const SizedBox(height: 32),
-
+            const ResponsiveBox(
+              paddingSize: ResponsiveSpacing.l,
+            ),
             // Chips preview
-            Text(
+            ResponsiveText(
               'Tags',
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            const SizedBox(height: 16),
+            const ResponsiveBox(
+              paddingSize: ResponsiveSpacing.m,
+            ),
+
             Wrap(
               spacing: 8,
               children: [
                 Chip(
-                  label: const Text('Flutter'),
+                  label: const ResponsiveText('Flutter'),
                   avatar: const Icon(Icons.flutter_dash, size: 18),
                 ),
                 Chip(
-                  label: const Text('React'),
+                  label: const ResponsiveText('React'),
                   backgroundColor: theme.primaryColor.withValues(alpha: 0.2),
                 ),
                 Chip(
-                  label: const Text('Node.js'),
+                  label: const ResponsiveText('Node.js'),
                   onDeleted: () {},
                 ),
               ],
             ),
-            const SizedBox(height: 32),
-
+            const ResponsiveBox(
+              paddingSize: ResponsiveSpacing.l,
+            ),
             // Color palette
-            Text(
+            ResponsiveText(
               'Palette de couleurs',
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            const SizedBox(height: 16),
+            const ResponsiveBox(
+              paddingSize: ResponsiveSpacing.m,
+            ),
             Row(
               children: [
                 _buildColorCard('Primary', theme.primaryColor),
-                const SizedBox(width: 16),
+                const ResponsiveBox(
+                  paddingSize: ResponsiveSpacing.m,
+                ),
                 _buildColorCard('Tertiary', theme.tertiaryColor),
-                const SizedBox(width: 16),
+                const ResponsiveBox(
+                  paddingSize: ResponsiveSpacing.m,
+                ),
                 _buildColorCard('Neutral', theme.neutralColor),
               ],
             ),
@@ -321,48 +363,48 @@ class _ThemePreviewScreenState extends ConsumerState<ThemePreviewScreen> {
 
   Widget _buildColorCard(String label, Color color) {
     return Expanded(
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              Container(
-                width: double.infinity,
-                height: 60,
-                decoration: BoxDecoration(
-                  color: color,
-                  borderRadius: BorderRadius.circular(8),
-                ),
+      child: ResponsiveBox(
+        paddingSize: ResponsiveSpacing.m,
+        marginSize: ResponsiveSpacing.m,
+        child: Column(
+          children: [
+            ResponsiveBox(
+              width: double.infinity,
+              height: 60,
+              decoration: BoxDecoration(
+                color: color,
+                borderRadius: BorderRadius.circular(8),
               ),
-              const SizedBox(height: 8),
-              Text(
-                label,
-                style: Theme.of(context).textTheme.bodySmall,
+            ),
+            const ResponsiveBox(
+              paddingSize: ResponsiveSpacing.s,
+            ),
+            ResponsiveText(
+              label,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            ResponsiveText(
+              '#${color.toARGB32().toRadixString(16).substring(2).toUpperCase()}',
+              style: TextStyle(
+                fontFamily: 'monospace',
               ),
-              Text(
-                '#${color.toARGB32().toRadixString(16).substring(2).toUpperCase()}',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      fontFamily: 'monospace',
-                    ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
 
   Widget _colorDot(Color color) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 4),
-      child: Container(
-        width: 16,
-        height: 16,
-        decoration: BoxDecoration(
-          color: color,
-          shape: BoxShape.circle,
-          border: Border.all(color: Colors.white24),
-        ),
+    return ResponsiveBox(
+      paddingSize: ResponsiveSpacing.xs,
+      marginSize: ResponsiveSpacing.xs,
+      width: 16,
+      height: 16,
+      decoration: BoxDecoration(
+        color: color,
+        shape: BoxShape.circle,
+        border: Border.all(color: Colors.white24),
       ),
     );
   }

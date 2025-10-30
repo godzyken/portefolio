@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/features/experience/views/widgets/competences_chip.dart';
 
 import '../../../../core/affichage/screen_size_detector.dart';
+import '../../../../core/ui/widgets/responsive_text.dart';
 import '../../controllers/providers/card_flight_provider.dart';
 import '../../data/competences_data.dart';
 import '../../data/experiences_data.dart';
@@ -209,14 +210,14 @@ class _InteractivePotState extends ConsumerState<InteractivePot>
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   if (activeTags.isEmpty)
-                    const Text(
+                    const ResponsiveText.bodyMedium(
                       "Glisse un jeton ici",
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                  SizedBox(
+                  ResponsiveBox(
                     width: chipStackWidth,
                     height: chipStackHeight,
                     child: Stack(
@@ -235,7 +236,7 @@ class _InteractivePotState extends ConsumerState<InteractivePot>
                     ),
                   ),
                   if (activeTags.isNotEmpty)
-                    ElevatedButton(
+                    ResponsiveButton(
                       onPressed: () {
                         tagsNotifier.clearTags();
 
@@ -267,7 +268,7 @@ class _InteractivePotState extends ConsumerState<InteractivePot>
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.red,
                           minimumSize: Size(potSize * 0.8, 36)),
-                      child: const Text("Vider le pot"),
+                      child: const ResponsiveText.bodySmall("Vider le pot"),
                     ),
                 ],
               ),

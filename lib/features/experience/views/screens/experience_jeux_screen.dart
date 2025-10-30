@@ -187,6 +187,7 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
     );
   }
 
+  // ✅ FIX 6: Utiliser une pile de cartes
   Widget _buildCardPile(ResponsiveInfo info) {
     final pile = widget.experiences
         .where(
@@ -260,6 +261,7 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
     );
   }
 
+  // ✅ FIX 7: Utiliser un target
   Widget _buildCardTarget(ResponsiveInfo info) {
     final width =
         info.isLandscape ? info.size.width * 0.4 : info.size.width * 0.5;
@@ -387,6 +389,7 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
     );
   }
 
+  // ✅ FIX 8: Utiliser des chips pieces en vadrouille
   List<Widget> _buildScatteredChips(ResponsiveInfo info) {
     // ✅ LOGIQUE DE TAILLE MAXIMALE
     // 1. Définir une taille maximale souhaitée pour les jetons.
@@ -422,6 +425,7 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
     }).toList();
   }
 
+  // ✅ FIX 9: Le layout du jeux
   Widget _buildLayout(ResponsiveInfo info) {
     return Stack(
       children: [
@@ -487,8 +491,8 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
       return Scaffold(
         backgroundColor: Colors.black,
         body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
+          child: ResponsiveBox(
+            paddingSize: ResponsiveSpacing.l,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [

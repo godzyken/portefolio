@@ -5,6 +5,7 @@ import 'package:portefolio/features/generator/data/extention_models.dart';
 import 'package:portefolio/features/generator/views/widgets/hover_card.dart';
 
 import '../../../../core/affichage/screen_size_detector.dart';
+import '../../../../core/ui/widgets/responsive_text.dart';
 import '../../../parametres/views/widgets/smart_image.dart';
 
 class ServicesCard extends ConsumerWidget {
@@ -66,7 +67,7 @@ class ServicesCard extends ConsumerWidget {
 
     return Column(
       children: [
-        SizedBox(
+        ResponsiveBox(
           height: imageHeight,
           width: double.infinity,
           child: Stack(
@@ -77,7 +78,7 @@ class ServicesCard extends ConsumerWidget {
             ],
           ),
         ),
-        Container(
+        ResponsiveBox(
           height: contentHeight,
           padding: EdgeInsets.all(_getPadding(info)),
           child: _buildContent(theme, info, compact: true),
@@ -96,7 +97,7 @@ class ServicesCard extends ConsumerWidget {
         Positioned.fill(child: _buildBackgroundImage(theme)),
         Positioned.fill(child: _buildOverlay()),
         Positioned.fill(
-          child: Padding(
+          child: ResponsiveBox(
             padding: EdgeInsets.all(_getPadding(info)),
             child: _buildContent(theme, info, compact: false),
           ),
@@ -115,11 +116,11 @@ class ServicesCard extends ConsumerWidget {
         Row(
           children: [
             _buildIconBadge(theme, info),
-            SizedBox(
+            ResponsiveBox(
                 height: _getSpacing(info, small: 16, medium: 16, large: 20)),
-            Text(
+            ResponsiveText.titleLarge(
               service.title,
-              style: theme.textTheme.headlineSmall?.copyWith(
+              style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 0.5,
@@ -130,10 +131,11 @@ class ServicesCard extends ConsumerWidget {
             ),
           ],
         ),
-        SizedBox(height: _getSpacing(info, small: 8, medium: 10, large: 12)),
-        Text(
+        ResponsiveBox(
+            height: _getSpacing(info, small: 8, medium: 10, large: 12)),
+        ResponsiveText.headlineMedium(
           service.description,
-          style: theme.textTheme.bodyMedium?.copyWith(
+          style: TextStyle(
             color: Colors.white.withValues(alpha: 0.9),
             height: 1.5,
             fontSize: _getFontSize(info, small: 12, medium: 14, large: 16),
@@ -141,7 +143,8 @@ class ServicesCard extends ConsumerWidget {
           maxLines: compact ? 3 : null,
           overflow: compact ? TextOverflow.ellipsis : null,
         ),
-        SizedBox(height: _getSpacing(info, small: 12, medium: 14, large: 16)),
+        ResponsiveBox(
+            height: _getSpacing(info, small: 12, medium: 14, large: 16)),
         Flexible(
           child: _buildFeatures(info, compact: compact),
         )
@@ -163,7 +166,7 @@ class ServicesCard extends ConsumerWidget {
   }
 
   Widget _buildOverlay() {
-    return Container(
+    return ResponsiveBox(
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -178,7 +181,7 @@ class ServicesCard extends ConsumerWidget {
   }
 
   Widget _buildFallbackGradient(ThemeData theme) {
-    return Container(
+    return ResponsiveBox(
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -202,7 +205,7 @@ class ServicesCard extends ConsumerWidget {
   Widget _buildIconBadge(ThemeData theme, ResponsiveInfo info) {
     final size = _getIconSize(info);
 
-    return Container(
+    return ResponsiveBox(
       padding: EdgeInsets.all(size * 0.4),
       decoration: BoxDecoration(
         shape: BoxShape.circle,
@@ -232,7 +235,7 @@ class ServicesCard extends ConsumerWidget {
       spacing: _getSpacing(info, small: 6, medium: 8, large: 10),
       runSpacing: _getSpacing(info, small: 6, medium: 8, large: 10),
       children: displayFeatures.map((feature) {
-        return Container(
+        return ResponsiveBox(
           padding: EdgeInsets.symmetric(
             horizontal: _getPadding(info) * 0.6,
             vertical: _getPadding(info) * 0.3,
@@ -244,7 +247,7 @@ class ServicesCard extends ConsumerWidget {
               color: Colors.white.withValues(alpha: 0.3),
             ),
           ),
-          child: Text(
+          child: ResponsiveText.headlineMedium(
             feature,
             style: TextStyle(
               color: Colors.white,

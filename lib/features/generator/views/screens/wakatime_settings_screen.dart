@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:portefolio/core/ui/widgets/responsive_text.dart';
 
 import '../../../projets/providers/projects_wakatime_service_provider.dart';
 import '../../services/wakatime_service.dart';
@@ -60,7 +61,8 @@ class _WakaTimeSettingsScreenState
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('✅ Clé API WakaTime configurée avec succès!'),
+            content: ResponsiveText.bodyMedium(
+                '✅ Clé API WakaTime configurée avec succès!'),
             backgroundColor: Colors.green,
           ),
         );
@@ -77,7 +79,7 @@ class _WakaTimeSettingsScreenState
     _apiKeyController.clear();
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Clé API supprimée')),
+        const SnackBar(content: ResponsiveText.bodyMedium('Clé API supprimée')),
       );
     }
   }
@@ -91,33 +93,35 @@ class _WakaTimeSettingsScreenState
         : const AsyncValue.data(<WakaTimeProject>[]);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Configuration WakaTime')),
+      appBar: AppBar(
+          title: const ResponsiveText.titleLarge('Configuration WakaTime')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             _buildInfoCard(),
-            const SizedBox(height: 24),
+            const ResponsiveBox(paddingSize: ResponsiveSpacing.l),
             _buildApiKeyField(currentApiKey),
-            const SizedBox(height: 16),
+            const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
             _buildActionButtons(),
-            const SizedBox(height: 32),
+            const ResponsiveBox(paddingSize: ResponsiveSpacing.l),
             if (currentApiKey != null) ...[
               const Divider(),
-              const SizedBox(height: 16),
-              const Text(
+              const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
+              const ResponsiveText.headlineSmall(
                 'Statistiques (7 derniers jours)',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 16),
+              const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
               statsAsync.when(
                 data: (stats) {
                   if (stats == null) {
                     return const Card(
                       child: Padding(
                         padding: EdgeInsets.all(16),
-                        child: Text('Aucune statistique disponible'),
+                        child: ResponsiveText.headlineSmall(
+                            'Aucune statistique disponible'),
                       ),
                     );
                   }
@@ -131,16 +135,17 @@ class _WakaTimeSettingsScreenState
                 ),
                 error: (err, _) => _buildErrorCard(err.toString()),
               ),
-              const SizedBox(height: 24),
-              const Text(
+              const ResponsiveBox(paddingSize: ResponsiveSpacing.l),
+              const ResponsiveText.bodyMedium(
                 'Vos projets WakaTime',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 12),
+              const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
               projectsAsync.when(
                 data: (projects) {
                   if (projects.isEmpty) {
-                    return const Text("Aucun projet trouvé sur votre compte.");
+                    return const ResponsiveText.headlineMedium(
+                        "Aucun projet trouvé sur votre compte.");
                   }
                   return _buildProjectsChart(projects);
                 },

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:portefolio/core/ui/widgets/responsive_text.dart';
 import 'package:portefolio/features/home/views/widgets/services_card.dart';
 
 import '../../../../core/affichage/screen_size_detector.dart';
@@ -22,9 +23,9 @@ class ServicesSection extends ConsumerWidget {
         Center(
           child: Column(
             children: [
-              Text(
+              ResponsiveText.titleLarge(
                 'Mes Services',
-                style: theme.textTheme.displaySmall?.copyWith(
+                style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: info.isMobile ? 28 : 40,
                   foreground: Paint()
@@ -36,10 +37,10 @@ class ServicesSection extends ConsumerWidget {
                     ).createShader(const Rect.fromLTWH(0, 0, 300, 70)),
                 ),
               ),
-              const SizedBox(height: 12),
-              Text(
+              const ResponsiveBox(paddingSize: ResponsiveSpacing.l),
+              ResponsiveText.bodyMedium(
                 'Solutions digitales pour votre entreprise',
-                style: theme.textTheme.bodyLarge?.copyWith(
+                style: TextStyle(
                   color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                   fontSize: info.isMobile ? 14 : 16,
                 ),
@@ -48,7 +49,7 @@ class ServicesSection extends ConsumerWidget {
           ),
         ),
 
-        const SizedBox(height: 40),
+        const ResponsiveBox(height: 40),
 
         // Grille de services
         servicesAsync.when(
@@ -83,7 +84,8 @@ class ServicesSection extends ConsumerWidget {
                           // Tu peux ajouter une navigation ou un dialog ici
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('Service : ${service.title}'),
+                              content: ResponsiveText.headlineMedium(
+                                  'Service : ${service.title}'),
                               duration: const Duration(seconds: 2),
                             ),
                           );
@@ -95,7 +97,7 @@ class ServicesSection extends ConsumerWidget {
               );
             },
             error: (err, stack) => Center(
-                  child: Text('Erreur : $err'),
+                  child: ResponsiveText.headlineMedium('Erreur : $err'),
                 ),
             loading: () => const Center(
                   child: CircularProgressIndicator(),

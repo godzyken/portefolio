@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:portefolio/core/ui/widgets/responsive_text.dart';
 
 import '../../../../core/affichage/screen_size_detector.dart';
 import '../../data/competences_data.dart';
@@ -76,7 +77,8 @@ class _CompetenceNiveauPileState extends ConsumerState<CompetenceNiveauPile> {
 
     final double offsetStep = info.isMobile ? 6 : 8;
 
-    if (_jetons.isEmpty) return const SizedBox.shrink();
+    if (_jetons.isEmpty)
+      return const ResponsiveBox(paddingSize: ResponsiveSpacing.s);
 
     return GestureDetector(
       onTap: () => setState(() => _isExpanded = !_isExpanded),
@@ -96,7 +98,7 @@ class _CompetenceNiveauPileState extends ConsumerState<CompetenceNiveauPile> {
                 left: 0,
                 key: ValueKey('pile_jeton_${competence.nom}_$index'),
                 child: Center(
-                  child: SizedBox(
+                  child: ResponsiveBox(
                     width: 80,
                     height: 80,
                     child: Draggable<Competence>(
@@ -134,14 +136,13 @@ class _CompetenceNiveauPileState extends ConsumerState<CompetenceNiveauPile> {
               left: 0,
               right: 0,
               child: Center(
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                child: ResponsiveBox(
+                  paddingSize: ResponsiveSpacing.s,
                   decoration: BoxDecoration(
                     color: Colors.black.withValues(alpha: 0.7),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Text(
+                  child: ResponsiveText.headlineMedium(
                     niveauLabel,
                     style: TextStyle(
                       color: Colors.white,
@@ -157,22 +158,22 @@ class _CompetenceNiveauPileState extends ConsumerState<CompetenceNiveauPile> {
             Positioned(
               top: 5,
               right: 5,
-              child: Container(
+              child: ResponsiveBox(
                 width: info.isMobile ? 18 : 20,
                 height: info.isMobile ? 18 : 20,
+                alignment: Alignment.center,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: couleursNiveau[widget.niveau]!,
                   border: Border.all(color: Colors.white, width: 2),
                 ),
-                child: Center(
-                  child: Text(
-                    '${_jetons.length}',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: info.isMobile ? 9 : 11,
-                      fontWeight: FontWeight.bold,
-                    ),
+                child: ResponsiveText.headlineSmall(
+                  '${_jetons.length}',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: info.isMobile ? 9 : 11,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
@@ -202,12 +203,14 @@ class CompetencesPilesByNiveau extends ConsumerWidget {
       NiveauCompetence.fonctionnel,
     ];
 
-    return Padding(
+    return ResponsiveBox(
+      paddingSize: ResponsiveSpacing.s,
+      marginSize: ResponsiveSpacing.s,
       padding: EdgeInsets.all(spacing * 2),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          ResponsiveText.bodyMedium(
             'Compétences',
             style: TextStyle(
               color: Colors.white,
@@ -215,7 +218,7 @@ class CompetencesPilesByNiveau extends ConsumerWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: 10),
+          const ResponsiveBox(paddingSize: ResponsiveSpacing.s),
           Flex(
               spacing: spacing,
               direction: isVerticalLayout ? Axis.vertical : Axis.horizontal,
@@ -225,7 +228,7 @@ class CompetencesPilesByNiveau extends ConsumerWidget {
                 for (final niveau in piles) ...[
                   CompetenceNiveauPile(niveau: niveau),
                   if (niveau != piles.last)
-                    SizedBox(
+                    ResponsiveBox(
                       width: spacing,
                       height: spacing,
                     )
