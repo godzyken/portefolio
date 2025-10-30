@@ -9,6 +9,7 @@ import 'package:portefolio/features/experience/views/screens/experience_screens_
 import '../../../../core/logging/app_logger.dart';
 import '../../../../core/provider/experience_providers.dart';
 import '../../../../core/provider/json_data_provider.dart';
+import '../../data/experiences_data.dart';
 import '../widgets/experience_widgets_extentions.dart';
 
 class ExperiencesScreen extends ConsumerStatefulWidget {
@@ -19,6 +20,10 @@ class ExperiencesScreen extends ConsumerStatefulWidget {
 }
 
 class _ExperiencesScreenState extends ConsumerState<ExperiencesScreen> {
+  final _slideKey = GlobalKey(debugLabel: 'ExperienceSlideScreen_key');
+  final _gameKey = GlobalKey(debugLabel: 'ExperienceJeuxScreen_key');
+  final _freezeKey = GlobalKey(debugLabel: 'ExperienceTimeline_key');
+
   @override
   void initState() {
     super.initState();
@@ -31,6 +36,23 @@ class _ExperiencesScreenState extends ConsumerState<ExperiencesScreen> {
         DeviceOrientation.landscapeRight,
       ]);
     }
+
+    Future.microtask(() {
+      ref.listen<AsyncValue<List<Experience>>>(experiencesProvider,
+          (prev, next) {
+        next.whenOrNull(error: (e, st) {
+          ref.read(loggerProvider("ExperienceScreen")).log(
+                "Erreur lors du chargement des expériences",
+                level: LogLevel.error,
+                error: e,
+                stackTrace: st,
+              );
+        });
+      });
+
+      // Initialiser le filtre de manière safe hors build
+      ref.read(experienceFilterProvider.notifier).setFilter("Flutter");
+    });
   }
 
   @override
@@ -66,16 +88,19 @@ class _ExperiencesScreenState extends ConsumerState<ExperiencesScreen> {
 
         // ✅ Mode Slide (toujours disponible)
         if (isPageView) {
-          return ExperienceSlideScreen(experiences: filteredExperiences);
+          return ExperienceSlideScreen(
+              key: _slideKey, experiences: filteredExperiences);
         }
 
         // ✅ Mode Jeu (si les conditions sont remplies)
         if (canPlayGame) {
-          return ExperienceJeuxScreen(experiences: filteredExperiences);
+          return ExperienceJeuxScreen(
+              key: _gameKey, experiences: filteredExperiences);
         }
 
         // 🟢 Fallback : Timeline (toujours disponible)
-        return ExperienceTimelineWrapper(experiences: filteredExperiences);
+        return ExperienceTimelineWrapper(
+            key: _freezeKey, experiences: filteredExperiences);
       },
       error: (e, st) {
         ref.read(loggerProvider("ExperienceScreen")).log(

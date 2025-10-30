@@ -8,6 +8,7 @@ import 'package:portefolio/features/parametres/views/widgets/smart_image.dart';
 
 import '../../../../constants/enum_global.dart';
 import '../../../../core/affichage/screen_size_detector.dart';
+import '../../../../core/ui/widgets/responsive_text.dart';
 import '../../controllers/providers/card_flight_provider.dart';
 import '../../data/experiences_data.dart';
 import '../widgets/experience_widgets_extentions.dart';
@@ -171,7 +172,7 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
               ),
             Padding(
               padding: const EdgeInsets.all(4),
-              child: Text(
+              child: ResponsiveText(
                 exp.entreprise,
                 style:
                     const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
@@ -210,7 +211,7 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
 
     return Align(
       alignment: Alignment.centerLeft,
-      child: SizedBox(
+      child: ResponsiveBox(
         width: info.size.width * 0.2,
         child: Stack(
           children: pile.asMap().entries.map((entry) {
@@ -227,13 +228,13 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
                   data: exp,
                   feedback: Material(
                     color: Colors.transparent,
-                    child: SizedBox(
+                    child: ResponsiveBox(
                       width: cardWidth,
                       height: cardHeight,
                       child: _cardClone(exp),
                     ),
                   ),
-                  childWhenDragging: SizedBox(
+                  childWhenDragging: ResponsiveBox(
                     width: cardWidth,
                     height: cardHeight,
                     // ✅ FIX 5: Utiliser Opacity correctement
@@ -242,7 +243,7 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
                       child: RepaintBoundary(child: _cardClone(exp)),
                     ),
                   ),
-                  child: SizedBox(
+                  child: ResponsiveBox(
                     width: cardWidth,
                     height: cardHeight,
                     child: Card(
@@ -313,8 +314,8 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
         if (_potCards.isNotEmpty) {
           return Align(
             alignment: Alignment.center,
-            child: Container(
-              padding: const EdgeInsets.all(20),
+            child: ResponsiveBox(
+              paddingSize: ResponsiveSpacing.m,
               decoration: BoxDecoration(
                 color: Colors.black.withValues(alpha: 0.7),
                 borderRadius: BorderRadius.circular(20),
@@ -330,7 +331,7 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text(
+                  const ResponsiveText.titleLarge(
                     "🎰 Main de Poker 🎰",
                     style: TextStyle(
                       color: Colors.yellow,
@@ -338,13 +339,15 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const ResponsiveBox(
+                    paddingSize: ResponsiveSpacing.m,
+                  ),
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: _potCards.take(4).map((exp) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: SizedBox(
+                      return ResponsiveBox(
+                        paddingSize: ResponsiveSpacing.s,
+                        child: ResponsiveBox(
                           width: cardWidth,
                           height: cardHeight,
                           child: _cardClone(exp),
@@ -352,8 +355,8 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
                       );
                     }).toList(),
                   ),
-                  const SizedBox(height: 20),
-                  Text(
+                  const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
+                  ResponsiveText.headlineSmall(
                     "${_potCards.length} carte(s) sélectionnée(s)",
                     style: const TextStyle(color: Colors.white, fontSize: 16),
                   ),
@@ -365,7 +368,7 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
 
         return Align(
           alignment: Alignment.center,
-          child: Container(
+          child: ResponsiveBox(
             width: width,
             height: height,
             alignment: Alignment.center,
@@ -373,7 +376,7 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
               border: Border.all(color: Colors.grey.withValues(alpha: 0.5)),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Text(
+            child: const ResponsiveText.headlineMedium(
               "👉 Glisse une carte ici\n🎰 ou utilise les jetons",
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.white, fontSize: 18),
@@ -440,10 +443,10 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
                       child: Column(
                         children: [
                           Expanded(flex: 7, child: _buildCardTarget(info)),
-                          const SizedBox(height: 10),
+                          const ResponsiveBox(height: 10),
                           Expanded(
                             flex: 3,
-                            child: SizedBox(
+                            child: ResponsiveBox(
                               height: info.size.height * 0.2,
                               child: const CompetencesPilesByNiveau(),
                             ),
@@ -491,8 +494,8 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
               children: [
                 const Icon(Icons.screen_rotation,
                     size: 80, color: Colors.yellow),
-                const SizedBox(height: 24),
-                Text(
+                const ResponsiveBox(height: 24),
+                ResponsiveText.headlineMedium(
                   isSmartphone
                       ? "🔄 Tourne ton appareil en mode paysage\npour accéder au jeu !"
                       : "📺 L'écran est trop petit pour le mode jeu.\nEssaie sur un appareil plus grand.",

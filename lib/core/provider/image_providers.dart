@@ -101,10 +101,6 @@ final appImagesProvider = FutureProvider<AppImages>((ref) async {
     'https://teachmeidea.com/wp-content/uploads/2025/04/ChatGPT-Image-Apr-3-2025-03_36_47-PM-1024x683.png',
     'https://storage.googleapis.com/cms-storage-bucket/build-more-with-flutter.f399274b364a6194c43d.png',
     'https://assets.setmore.com/website/v2/images/integrations-listing/wordpress/wordpress-plugin-crop@2x.webp',
-    'http://www.ludovicpassamonti.com/media/02/02/1215423486.png',
-    'https://pro.packlink.fr/wp-content/uploads/2021/12/services-g0e8be1220_640-1.jpg',
-    'https://www.motorbikespecs.net/images/BMW/G_310_R_16/G_310_R_16_1.jpg',
-    'https://images.wemoto.com/full/BRAKE_DISC_SIFAM/wemoto-10093400.jpg',
   ];
 
   return AppImages(

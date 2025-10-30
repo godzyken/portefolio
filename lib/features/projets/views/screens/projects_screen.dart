@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:portefolio/features/parametres/views/widgets/smart_image.dart';
 import 'package:portefolio/features/projets/providers/projects_wakatime_service_provider.dart';
 
 import '../../../../core/logging/app_logger.dart';
@@ -24,9 +25,11 @@ class _ProjectsScreenState extends ConsumerState<ProjectsScreen> {
       children: [
         // --- Image de fond ---
         Positioned.fill(
-          child: Image.asset(
-            "assets/images/design-digital.png", // ton image
-            fit: BoxFit.cover, // couvre tout l'écran
+          child: SmartImage(
+            path: "assets/images/flutter-mascotte.png", // ton image
+            fit: BoxFit.cover,
+            fallbackIcon: Icons.image,
+            fallbackColor: Colors.white,
           ),
         ),
 

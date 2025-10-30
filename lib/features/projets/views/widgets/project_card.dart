@@ -8,6 +8,7 @@ import 'package:portefolio/features/parametres/views/widgets/smart_image.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 import '../../../../core/provider/providers.dart';
+import '../../../../core/ui/widgets/responsive_text.dart';
 import '../../data/project_data.dart';
 import '../../providers/projects_wakatime_service_provider.dart';
 
@@ -135,12 +136,9 @@ class ProjectCard extends ConsumerWidget {
       title: Row(
         children: [
           Expanded(
-            child: Text(
+            child: ResponsiveText.titleLarge(
               project.title,
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge
-                  ?.copyWith(fontWeight: FontWeight.bold),
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
           // 🔹 Badge WakaTime dans le dialogue

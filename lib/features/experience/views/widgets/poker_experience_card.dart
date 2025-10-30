@@ -1,9 +1,13 @@
+import 'dart:developer' as developer;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
+import 'package:portefolio/core/ui/widgets/responsive_text.dart';
 import 'package:portefolio/features/experience/data/experiences_data.dart';
 import 'package:portefolio/features/generator/views/widgets/generator_widgets_extentions.dart';
 import 'package:portefolio/features/parametres/views/widgets/smart_image.dart';
+import 'package:vector_math/vector_math_64.dart' show Vector3;
 
 import '../../../../core/provider/providers.dart';
 
@@ -69,7 +73,8 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeOut,
-          transform: Matrix4.identity()..scale(_isHovered ? 1.03 : 1.0),
+          transform: Matrix4.identity()
+            ..scaledByVector3(Vector3.all(_isHovered ? 1.03 : 1.0)),
           child: AnimatedBuilder(
             animation: _glowAnimation,
             builder: (context, child) {
@@ -178,76 +183,77 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
     final isVideoVisible = ref.watch(globalVideoVisibilityProvider);
     final isVideoPlaying = ref.watch(playingVideoProvider);
 
+    // --- 2. Gérer les cas par ordre de priorité ---
+
+    // CAS 1 : Carte SIG
     if (hasSIG) {
-      // Afficher la carte SIG
       return const SigDiscoveryMap();
-    } else if (hasVideo && widget.isCenter) {
-      // Afficher la vidéo YouTube uniquement si la carte est au centre
+    }
 
-      if (isVideoVisible && isVideoPlaying == widget.experience.id) {
-        return hasImage
-            ? SmartImage(
-                path: widget.experience.image,
-                fit: BoxFit.cover,
-                fallbackIcon: Icons.business,
-              )
-            : Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Colors.indigo.shade900,
-                      Colors.purple.shade900,
-                    ],
-                  ),
-                ),
-                child: Center(
-                  child: Icon(
-                    Icons.play_circle_outline,
-                    size: 80,
-                    color: Colors.white.withValues(alpha: 0.5),
-                  ),
-                ),
-              );
+    // CAS 2 : La carte est au centre et a une vidéo
+    if (widget.isCenter && hasVideo) {
+      // Si une autre vidéo est en cours de lecture, on affiche le fallback.
+      // Sinon, on affiche notre vidéo.
+      final bool showFallback =
+          isVideoVisible && isVideoPlaying != widget.experience.id;
+
+      if (showFallback) {
+        // Le code de fallback (image ou icône) est maintenant dans un bloc clair.
+        if (hasImage) {
+          return SmartImage(
+            path: widget.experience.image,
+            fit: BoxFit.cover,
+            fallbackIcon: Icons.business,
+          );
+        }
+        // Si pas d'image, on affiche le fallback générique.
+        return Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Colors.indigo.shade900,
+                Colors.purple.shade900,
+              ],
+            ),
+          ),
+          child: Center(
+            child: Icon(
+              Icons.play_circle_outline,
+              size: 80,
+              color: Colors.white.withValues(alpha: 0.5),
+            ),
+          ),
+        );
+      } else {
+        // C'est le bon moment pour jouer notre vidéo.
+        return YoutubeVideoPlayerIframe(
+          youtubeVideoId: widget.experience.youtubeVideoId!,
+          cardId: widget.experience.id,
+        );
       }
+    }
 
-      return YoutubeVideoPlayerIframe(
-        youtubeVideoId: widget.experience.youtubeVideoId!,
-        cardId: widget.experience.id,
-      );
-    } else if (hasImage) {
-      // Afficher l'image
+    // CAS 3 (Fallback général) : Si ce n'est ni SIG, ni une vidéo au centre,
+    // on affiche l'image de l'expérience, ou une icône si pas d'image.
+    if (hasImage) {
       return SmartImage(
         path: widget.experience.image,
         fit: BoxFit.cover,
         fallbackIcon: Icons.business,
       );
-    } else {
-      // Fallback avec logo de l'entreprise
-      return Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Colors.indigo.shade900,
-              Colors.purple.shade900,
-            ],
-          ),
-        ),
-        child: Center(
-          child: widget.experience.logo.isNotEmpty
-              ? SmartImage(
-                  path: widget.experience.logo,
-                  width: 120,
-                  height: 120,
-                  fit: BoxFit.contain,
-                )
-              : Icon(
-                  Icons.business,
-                  size: 80,
-                  color: Colors.white.withValues(alpha: 0.3),
-                ),
-        ),
-      );
     }
+
+    // CAS 4 (Dernier recours) : Si absolument aucun média n'est défini.
+    return Container(
+      color: Colors.grey.shade900,
+      child: const Center(
+        child: Icon(
+          Icons.image_not_supported_outlined,
+          color: Colors.white24,
+          size: 60,
+        ),
+      ),
+    );
   }
 
   Widget _buildPosteBadge(ThemeData theme) {
@@ -258,8 +264,8 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
       builder: (context, value, child) {
         return Transform.scale(
           scale: value,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          child: ResponsiveBox(
+            paddingSize: ResponsiveSpacing.m,
             decoration: BoxDecoration(
               color: theme.colorScheme.primary.withValues(alpha: 0.95),
               borderRadius: BorderRadius.circular(30),
@@ -283,11 +289,12 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
                   size: 18,
                   color: Colors.white,
                 ),
-                const SizedBox(width: 8),
+                const ResponsiveBox(paddingSize: ResponsiveSpacing.s),
                 Flexible(
-                  child: Text(
+                  child: ResponsiveText(
                     widget.experience.poste,
-                    style: theme.textTheme.bodyMedium?.copyWith(
+                    size: ResponsiveTextSize.bodyMedium,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 0.5,
@@ -317,7 +324,7 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                ResponsiveText.headlineSmall(
                   widget.experience.entreprise,
                   style: theme.textTheme.headlineSmall?.copyWith(
                     color: Colors.white,
@@ -334,17 +341,12 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
                   overflow: TextOverflow.ellipsis,
                 ),
                 if (widget.experience.periode.isNotEmpty) ...[
-                  const SizedBox(height: 4),
-                  Text(
+                  const ResponsiveBox(
+                      paddingSize: ResponsiveSpacing.xs), // ✅ Remplace SizedBox
+                  ResponsiveText.bodyMedium(
                     widget.experience.periode,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: Colors.white.withValues(alpha: 0.9),
-                      shadows: [
-                        Shadow(
-                          color: Colors.black.withValues(alpha: 0.6),
-                          blurRadius: 4,
-                        ),
-                      ],
+                    style: const TextStyle(
+                      color: Color.fromRGBO(255, 255, 255, 0.9),
                     ),
                   ),
                 ],
@@ -370,7 +372,7 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
                 color: Colors.transparent,
                 child: InkWell(
                     onTap: () async {
-                      print('🎯 TAP DÉTECTÉ !'); // ✅ DEBUG
+                      developer.log('🎯 TAP DÉTECTÉ !'); // ✅ DEBUG
                       ref.read(globalVideoVisibilityProvider.notifier).hide();
                       ref.read(playingVideoProvider.notifier).stop();
 
@@ -406,11 +408,11 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
                         theme.colorScheme.primary.withValues(alpha: 0.3),
                     highlightColor:
                         theme.colorScheme.primary.withValues(alpha: 0.2),
-                    child: Container(
+                    child: ResponsiveBox(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 20, vertical: 10),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.2),
+                        color: const Color.fromRGBO(255, 255, 255, 0.2),
                         borderRadius: BorderRadius.circular(30),
                         border: Border.all(
                           color: Colors.white.withValues(alpha: 0.4),
@@ -425,10 +427,10 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
                             size: 18,
                             color: Colors.white,
                           ),
-                          const SizedBox(width: 8),
-                          Text(
+                          const ResponsiveBox(paddingSize: ResponsiveSpacing.s),
+                          ResponsiveText.bodySmall(
                             'Tap pour les détails',
-                            style: theme.textTheme.bodySmall?.copyWith(
+                            style: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w600,
                             ),

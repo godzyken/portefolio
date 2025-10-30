@@ -1,6 +1,9 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
+import 'package:portefolio/core/ui/widgets/responsive_text.dart';
 import 'package:portefolio/features/experience/data/experiences_data.dart';
 import 'package:portefolio/features/generator/views/widgets/particle_background.dart';
 import 'package:portefolio/features/generator/views/widgets/sig_discovery_map.dart';
@@ -181,14 +184,45 @@ class _ImmersiveExperienceDetailState
     } else if (hasImage) {
       // Fond avec image parallaxe
       return Positioned.fill(
-        child: Transform.translate(
-          offset: Offset(0, _scrollOffset * 0.5),
-          child: SmartImage(
-            path: widget.experience.image,
-            fit: BoxFit.cover,
+          child: Stack(
+        fit: StackFit.expand,
+        children: [
+          Transform.translate(
+            offset: Offset(0, _scrollOffset * 0.5),
+            child: SmartImage(
+              path: widget.experience.image,
+              fit: BoxFit.cover,
+            ),
           ),
-        ),
-      );
+          ResponsiveBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.black.withValues(alpha: 0.4), // Moins sombre en haut
+                  Colors.black.withValues(
+                      alpha: 0.8), // Plus sombre en bas où le texte défile
+                ],
+                stops: const [
+                  0.0,
+                  0.7
+                ], // Le dégradé commence à s'assombrir à 70% de la page
+              ),
+            ),
+            child: ClipRect(
+              // Le BackdropFilter doit être dans un ClipRect
+              child: BackdropFilter(
+                filter: ImageFilter.blur(
+                    sigmaX: 5.0, sigmaY: 5.0), // Ajustez la force du flou
+                child: Container(
+                  color: Colors.black.withValues(alpha: 0.1),
+                ),
+              ),
+            ),
+          )
+        ],
+      ));
     } else {
       // Fond avec particules animées
       return Positioned.fill(

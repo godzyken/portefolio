@@ -15,8 +15,8 @@
     ],
     "image": [
       "assets/images/vitrine.png",
-      "https://pro.packlink.fr/wp-content/uploads/2021/12/services-g0e8be1220_640-1.jpg",
-      "http://www.ludovicpassamonti.com/media/02/02/1215423486.png",
+      "assets/images/2rouesvertes-original-logo.jpg",
+      "assets/images/prestashop.jpg",
       "https://assets.setmore.com/website/v2/images/integrations-listing/wordpress/wordpress-plugin-crop@2x.webp"
     ],
     "platform" : ["Web", "Desktop"],
@@ -37,7 +37,7 @@
     ],
     "image": [
       "assets/images/logos/wemoto_logo.jpg",
-      "https://www.motorbikespecs.net/images/BMW/G_310_R_16/G_310_R_16_1.jpg",
+      "assets/images/moto.svg",
       "assets/images/piece_moto.jpg"
     ],
     "platform": ["Desktop", "Tablet"],
@@ -60,8 +60,10 @@
     ],
     "image": [
       "assets/images/flutter-image.png",
-      "https://storage.googleapis.com/cms-storage-bucket/build-more-with-flutter.f399274b364a6194c43d.png",
-      "https://teachmeidea.com/wp-content/uploads/2025/04/ChatGPT-Image-Apr-3-2025-03_36_47-PM-1024x683.png"
+      "assetes/images/line.svg",
+      "assets/images/flutter-mascotte.png",
+      "assets/images/screenshot-login.jpg",
+      "assets/images/screenshot-inspector.jpg"
     ],
     "platform" : ["Smartphone", "tablet", "DeskTop", "LargeDesktop"],
     "tags": ["Flutter", "Firebase", "IoT", "VR", "Management", "UX/UI", "Digitalisation"]
@@ -81,8 +83,9 @@
     ],
     "image": [
       "assets/images/medimail-app.png",
-      "https://www.tatvasoft.com/outsourcing/wp-content/uploads/2023/06/Angular-Architecture.jpg",
-      "https://techpearl.com/wp-content/uploads/2021/11/Ionic-App.svg"
+      "assets/images/ui-ux-mobile.png",
+      "assets/images/medical-app.png",
+      "assets/images/business-app.svg"
     ],
     "platform" : ["Smartphone", "tablet", "DeskTop", "LargeDesktop"],
     "tags": ["UX/UI", "Digitalisation"]
@@ -101,7 +104,8 @@
     "image": [
       "assets/images/getty-images.jpg",
       "assets/images/gestion-portefeuilles-projets-banniere.jpg",
-      "https://cenotia.com/wp-content/uploads/2017/05/transformation-digitale.jpg"
+      "assets/images/transformation-digitale.jpg",
+      "assets/images/sketchup-image.webp"
     ],
     "platform" : ["Smartphone", "tablet", "DeskTop", "LargeDesktop"],
     "tags": ["Flutter", "Firebase", "IoT", "VR", "Management", "UX/UI", "Digitalisation"]
@@ -151,9 +155,9 @@
       "assets/images/WorkShop/4.png",
       "assets/images/WorkShop/5.png",
       "assets/images/WorkShop/6.png",
-      "assets/images/WorkShop/7.png",
       "assets/images/WorkShop/esp_1.jpg",
-      "assets/images/WorkShop/esp_2.jpg"
+      "assets/images/WorkShop/esp_2.jpg",
+      "assets/images/WorkShop/fo_kanban.jpg"
     ],
     "platform": ["Mobile", "Web", "IoT"],
     "tags": ["Flutter", "Raspberry Pi", "ESP8266", "LAN", "Offline Sync", "Education", "IoT"]

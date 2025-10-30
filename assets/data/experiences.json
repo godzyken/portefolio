@@ -34,7 +34,7 @@
     "objectifs": ["Garantir une expérience de livraison irréprochable pour les utilisateurs Amazon en respectant scrupuleusement les créneaux de livraison, les protocoles de sécurité et les attentes de service client."],
     "missions": ["Réception des colis au dépôt Amazon, tri et organisation des tournées via application mobile, livraison directe aux clients ou en consignes (lockers) avec scan Bluetooth ou QR code, remontées terrain via l’app mobile intégrée."],
     "code": "",
-    "tags": ["Logistique", "Livraison", "Amazon"],
+    "tags": ["Logistique", "Livraison", "Amazon", "SIG"],
     "stack": {
       "Mobilité": ["Application Amazon livraison (Android/iOS)"],
       "Communication": ["Appels intégrés via l’app", "Notifications push"],
@@ -414,7 +414,7 @@
     "id": "exp_10",
     "entreprise": "APVM Pièces & Accessoires",
     "logo": "assets/images/logos/wemoto_logo.jpg",
-    "image": "https://www.motorbikespecs.net/images/BMW/G_310_R_16/G_310_R_16_1.jpg",
+    "image": "assets/images/moto.svg",
     "contexte": "Lancement d’une boutique e-commerce dédiée à la vente de pièces détachées moto et accessoires.",
     "objectifs": [
       "Proposer un site professionnel avec catalogue dynamique par marque, modèle et année.",
@@ -572,7 +572,6 @@
     },
     "periode": "Juillet 2010 - Décembre 2010",
     "lienProjet": "",
-    "youtubeVideoId": "gbalqHfDWCM",
     "resultats": [
       "Zéro erreur de picking sur plusieurs centaines de commandes",
       "Respect des cadences horaires imposées",
@@ -597,6 +596,7 @@
     },
     "periode": "Mars 2010 - Juin 2012",
     "lienProjet": "https://www.2rouesvertes.fr",
+    "youtubeVideoId": "gbalqHfDWCM",
     "resultats": [
       "Créer une boutique en ligne, installer PrestaShop",
       "Deployer sur OVH",

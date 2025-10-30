@@ -17,7 +17,7 @@ class ContactScreen extends ConsumerStatefulWidget {
 
 class _ContactScreenState extends ConsumerState<ContactScreen>
     with TickerProviderStateMixin {
-  final _formKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>(debugLabel: 'contact_form');
   final _scrollCtrl = ScrollController();
 
   late AnimationController _fadeController;
@@ -48,10 +48,16 @@ class _ContactScreenState extends ConsumerState<ContactScreen>
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(appBarTitleProvider.notifier).setTitle("Contactez-moi");
-      ref.read(appBarActionsProvider.notifier).clearActions();
+    Future.microtask(() {
+      if (!mounted) return;
       _fadeController.forward();
+
+      ref.listen<ContactFormState>(contactFormProvider, (prev, next) {
+        // ⚡ trigger après le frame build
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _listenAndSnack(next);
+        });
+      });
     });
   }
 
@@ -63,88 +69,102 @@ class _ContactScreenState extends ConsumerState<ContactScreen>
     super.dispose();
   }
 
-  void _listenAndSnack(ContactFormState next) {
-    if (next.status == SubmitStatus.success) {
-      // ✨ Animation de succès
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.check_circle, color: Colors.white),
-              ),
-              const SizedBox(width: 16),
-              const Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Message envoyé !',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                    Text(
-                      'Je vous répondrai sous 24h',
-                      style: TextStyle(fontSize: 12),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          backgroundColor: Colors.green,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          margin: const EdgeInsets.all(16),
-          duration: const Duration(seconds: 4),
-        ),
-      );
-      ref.read(contactFormProvider.notifier).reset();
-      _formKey.currentState?.reset();
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
 
-      // Scroll vers le haut après succès
-      _scrollCtrl.animateTo(
-        0,
-        duration: const Duration(milliseconds: 800),
-        curve: Curves.easeOutCubic,
-      );
-    } else if (next.status == SubmitStatus.error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Row(
-            children: [
-              const Icon(Icons.error_outline, color: Colors.white),
-              const SizedBox(width: 16),
-              Expanded(child: Text('Erreur : ${next.error}')),
-            ],
+    Future.microtask(() {
+      if (!mounted) return;
+      ref.read(appBarTitleProvider.notifier).setTitle("Contactez-moi");
+      ref.read(appBarActionsProvider.notifier).clearActions();
+    });
+  }
+
+  // ⚡ Snackbars pour succès / erreur
+  void _listenAndSnack(ContactFormState next) {
+    if (!mounted) return;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+
+      if (next.status == SubmitStatus.success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.check_circle, color: Colors.white),
+                ),
+                const SizedBox(width: 16),
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Message envoyé !',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      Text(
+                        'Je vous répondrai sous 24h',
+                        style: TextStyle(fontSize: 12),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: Colors.green,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            margin: const EdgeInsets.all(16),
+            duration: const Duration(seconds: 4),
           ),
-          backgroundColor: Colors.red.shade700,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+        );
+
+        // ⚡ Reset formulaire après succès
+        ref.read(contactFormProvider.notifier).reset();
+        _formKey.currentState?.reset();
+
+        _scrollCtrl.animateTo(
+          0,
+          duration: const Duration(milliseconds: 800),
+          curve: Curves.easeOutCubic,
+        );
+      } else if (next.status == SubmitStatus.error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.error_outline, color: Colors.white),
+                const SizedBox(width: 16),
+                Expanded(child: Text('Erreur : ${next.error}')),
+              ],
+            ),
+            backgroundColor: Colors.red.shade700,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            margin: const EdgeInsets.all(16),
           ),
-          margin: const EdgeInsets.all(16),
-        ),
-      );
-    }
+        );
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    ref.listen<ContactFormState>(contactFormProvider, (_, next) {
-      _listenAndSnack(next);
-    });
-
     final formState = ref.watch(contactFormProvider);
     final info = ref.watch(responsiveInfoProvider);
     final theme = Theme.of(context);

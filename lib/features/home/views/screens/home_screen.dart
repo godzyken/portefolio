@@ -5,6 +5,7 @@ import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/features/parametres/themes/views/widgets/space_background.dart';
 import 'package:portefolio/features/parametres/views/widgets/smart_image.dart';
 
+import '../../../../core/ui/widgets/responsive_text.dart';
 import '../widgets/extentions_widgets.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -175,64 +176,28 @@ class HomeScreen extends ConsumerWidget {
           isMobile ? CrossAxisAlignment.center : CrossAxisAlignment.start,
       children: [
         // Nom
-        Text(
+        const ResponsiveText.displayLarge(
           'Emryck Doré',
-          style: theme.textTheme.displayLarge?.copyWith(
+          style: TextStyle(
             fontWeight: FontWeight.bold,
             letterSpacing: 2,
-            fontSize: isMobile ? 42 : 64,
-            foreground: Paint()
-              ..shader = LinearGradient(
-                colors: [
-                  theme.colorScheme.primary,
-                  theme.colorScheme.secondary,
-                ],
-              ).createShader(const Rect.fromLTWH(0, 0, 400, 100)),
           ),
-          textAlign: isMobile ? TextAlign.center : TextAlign.left,
         ),
-
-        const SizedBox(height: 16),
-
         // Titre
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                theme.colorScheme.primary.withValues(alpha: 0.2),
-                theme.colorScheme.secondary.withValues(alpha: 0.2),
-              ],
-            ),
-            borderRadius: BorderRadius.circular(30),
-            border: Border.all(
-              color: theme.colorScheme.primary.withValues(alpha: 0.5),
-              width: 2,
-            ),
-          ),
-          child: Text(
+        ResponsiveBox(
+          paddingSize: ResponsiveSpacing.m,
+          child: const ResponsiveText.titleLarge(
             'Développeur Flutter & Architecte Logiciel',
-            style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w600,
-              color: theme.colorScheme.onSurface,
-            ),
-            textAlign: isMobile ? TextAlign.center : TextAlign.left,
+            style: TextStyle(fontWeight: FontWeight.w600),
           ),
         ),
-
-        const SizedBox(height: 32),
-
         // Description
-        Text(
+        const ResponsiveText.bodyLarge(
           'Expert en développement mobile cross-platform et solutions digitales. '
           'Spécialisé dans la création d\'applications Flutter performantes, '
           'l\'architecture logicielle et la transformation digitale des entreprises.',
-          style: theme.textTheme.bodyLarge?.copyWith(
-            fontSize: isMobile ? 16 : 18,
-            height: 1.8,
-            color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
-          ),
-          textAlign: isMobile ? TextAlign.center : TextAlign.left,
+          maxLines: 4,
+          overflow: TextOverflow.ellipsis,
         ),
       ],
     );

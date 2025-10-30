@@ -38,7 +38,7 @@ class GlobalErrorHandler {
 
     if (error is SocketException) {
       notifier.setError(GlobalErrorState(
-        message: 'No internet connection', // Marker pour pas de réseau
+        message: 'Aucune connexion internet', // Marker pour pas de réseau
       ));
       return;
     }
@@ -46,14 +46,14 @@ class GlobalErrorHandler {
     // Gestion des erreurs HTTP ou Timeout (optionnel)
     if (error is HttpException) {
       notifier.setError(GlobalErrorState(
-        message: 'HTTP error: ${error.message}',
+        message: 'Erreur HTTP : ${error.message}',
       ));
       return;
     }
 
     if (error is TimeoutException) {
       notifier.setError(GlobalErrorState(
-        message: 'Request timed out',
+        message: 'La requête a expiré',
       ));
       return;
     }
