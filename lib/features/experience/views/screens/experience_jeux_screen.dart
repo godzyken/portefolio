@@ -214,6 +214,10 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
       alignment: Alignment.centerLeft,
       child: ResponsiveBox(
         width: info.size.width * 0.2,
+        padding: EdgeInsets.only(
+          top: info.size.height * 0.12, // ~12% de l'écran pour le menu
+          left: 8,
+        ),
         child: Stack(
           children: pile.asMap().entries.map((entry) {
             final exp = entry.value;
@@ -403,6 +407,7 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
 
     // Définir les positions en pourcentage de la largeur/hauteur pour qu'elles s'adaptent.
     // Format: [top%, right%, competenceName]
+    // ✅ Positions ajustées pour éviter les bords
     final positions = [
       [0.15, 0.10, 'Flutter'], // 15% du haut, 10% de la droite
       [0.16, 0.15, 'Qualite'],
@@ -451,7 +456,10 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
                           Expanded(
                             flex: 3,
                             child: ResponsiveBox(
-                              height: info.size.height * 0.2,
+                              padding: EdgeInsets.symmetric(
+                                horizontal: info.size.width * 0.05,
+                                vertical: 8,
+                              ),
                               child: const CompetencesPilesByNiveau(),
                             ),
                           ),
@@ -459,17 +467,24 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
                       )),
                   Expanded(
                     flex: 2,
-                    child: Stack(
-                      children: [
-                        InteractivePot(
-                          experiences: widget.experiences,
-                          cardKeys: _cardKeys,
-                          flyCard: _flyCard,
-                          onCardsArrivedInPot: _onCardsArrivedInPot,
-                          onPotCleared: _onPotCleared,
-                        ),
-                        ..._buildScatteredChips(info),
-                      ],
+                    child: ResponsiveBox(
+                      padding: EdgeInsets.only(
+                        right: info.size.width * 0.02,
+                        top: info.size.height * 0.08,
+                      ),
+                      paddingSize: ResponsiveSpacing.m,
+                      child: Stack(
+                        children: [
+                          InteractivePot(
+                            experiences: widget.experiences,
+                            cardKeys: _cardKeys,
+                            flyCard: _flyCard,
+                            onCardsArrivedInPot: _onCardsArrivedInPot,
+                            onPotCleared: _onPotCleared,
+                          ),
+                          ..._buildScatteredChips(info),
+                        ],
+                      ),
                     ),
                   ),
                 ],

@@ -33,7 +33,7 @@ class ErrorScreen extends StatelessWidget {
               children: [
                 // Animation Lottie
                 Lottie.asset(
-                  'assets/animations/error.json',
+                  'assets/images/animations/error.json',
                   width: 200,
                   repeat: false,
                   errorBuilder: (_, __, ___) => const Icon(Icons.error_outline,

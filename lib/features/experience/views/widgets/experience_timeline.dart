@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:portefolio/core/ui/widgets/responsive_text.dart';
 import 'package:portefolio/features/experience/views/widgets/experience_widgets_extentions.dart';
 import 'package:portefolio/features/parametres/views/widgets/smart_image.dart';
 import 'package:timelines_plus/timelines_plus.dart';
@@ -25,7 +26,9 @@ class ExperienceTimeline extends ConsumerWidget {
     // Détermine si le timeline doit être horizontal
     final isWide = info.size.width >= 800;
 
-    return Container(
+    return ResponsiveBox(
+      height: isWide ? 200 : null, // Hauteur pour horizontal
+      width: isWide ? null : double.infinity, // Largeur pour vertical
       decoration: const BoxDecoration(
         image: DecorationImage(
           opacity: 0.5,
@@ -37,14 +40,14 @@ class ExperienceTimeline extends ConsumerWidget {
         opacity: fadeCtrl,
         child: Timeline.tileBuilder(
           scrollDirection: isWide ? Axis.horizontal : Axis.vertical,
-          shrinkWrap: true,
+          shrinkWrap: false,
           physics: const BouncingScrollPhysics(),
           builder: TimelineTileBuilder.fromStyle(
             itemCount: experiences.length,
             contentsAlign: ContentsAlign.alternating,
             oppositeContentsBuilder: (context, index) => Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Text(
+              child: ResponsiveText(
                 experiences[index].periode,
                 style: Theme.of(context).textTheme.labelMedium,
               ),
@@ -93,7 +96,7 @@ class ExperienceTimeline extends ConsumerWidget {
                         minHeight: screenHeight * initialSize,
                         maxHeight: screenHeight * 0.95,
                       ),
-                      child: Padding(
+                      child: ResponsiveBox(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 16),
                         child: PokerExperienceCard(

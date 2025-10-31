@@ -128,9 +128,10 @@ class _SigDiscoveryMapState extends ConsumerState<SigDiscoveryMap>
               Positioned(
                 top: 16,
                 left: 16,
-                child: Container(
+                child: ResponsiveBox(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  paddingSize: ResponsiveSpacing.s,
                   decoration: BoxDecoration(
                     color: Colors.orange.withValues(alpha: 0.9),
                     borderRadius: BorderRadius.circular(8),
@@ -139,8 +140,8 @@ class _SigDiscoveryMapState extends ConsumerState<SigDiscoveryMap>
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(Icons.info_outline, size: 16, color: Colors.white),
-                      SizedBox(width: 4),
-                      Text(
+                      ResponsiveBox(width: 4),
+                      ResponsiveText.headlineMedium(
                         'Mode Démo (Web)',
                         style: TextStyle(
                           color: Colors.white,
@@ -163,7 +164,8 @@ class _SigDiscoveryMapState extends ConsumerState<SigDiscoveryMap>
     return Positioned(
       top: 16,
       left: 16,
-      child: Container(
+      child: ResponsiveBox(
+        paddingSize: ResponsiveSpacing.s,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
           color: Colors.green.withValues(alpha: 0.9),
@@ -180,8 +182,8 @@ class _SigDiscoveryMapState extends ConsumerState<SigDiscoveryMap>
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(Icons.gps_fixed, size: 16, color: Colors.white),
-            SizedBox(width: 6),
-            Text(
+            ResponsiveBox(width: 6),
+            ResponsiveText.bodyMedium(
               'Géolocalisation active',
               style: TextStyle(
                 color: Colors.white,

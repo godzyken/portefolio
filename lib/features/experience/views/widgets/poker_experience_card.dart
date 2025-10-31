@@ -55,6 +55,45 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
     super.dispose();
   }
 
+  void _showDetails() async {
+    developer.log('🎯 Affichage des détails');
+
+    // Cache la vidéo
+    ref.read(globalVideoVisibilityProvider.notifier).hide();
+    ref.read(playingVideoProvider.notifier).stop();
+
+    await context.showDialogWithVideoHidden(
+      ref: ref,
+      dialog: AlertDialog(
+        title: ResponsiveText.bodyMedium(widget.experience.poste),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ResponsiveText.headlineMedium(
+                widget.experience.entreprise,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const ResponsiveBox(height: 8),
+              ResponsiveText.headlineSmall(
+                'Periode : ${widget.experience.periode}',
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Fermer'),
+          ),
+        ],
+      ),
+    );
+
+    // Réaffiche la vidéo
+    ref.read(globalVideoVisibilityProvider.notifier).show();
+  }
+
   @override
   Widget build(BuildContext context) {
     final info = ref.watch(responsiveInfoProvider);
@@ -69,7 +108,7 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
       onEnter: (_) => setState(() => _isHovered = true),
       onExit: (_) => setState(() => _isHovered = false),
       child: GestureDetector(
-        onTap: shouldShowVideo ? null : widget.onTap,
+        onTap: shouldShowVideo ? _showDetails : widget.onTap,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeOut,
@@ -78,7 +117,7 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
           child: AnimatedBuilder(
             animation: _glowAnimation,
             builder: (context, child) {
-              return Container(
+              return ResponsiveBox(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: widget.isCenter
@@ -116,7 +155,7 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
 
                       // Overlay gradient
                       IgnorePointer(
-                        child: Container(
+                        child: ResponsiveBox(
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
                               begin: Alignment.topCenter,
@@ -175,66 +214,77 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
   }
 
   Widget _buildMediaContent(ResponsiveInfo info) {
-    // Détermine le type de média à afficher
     final hasSIG = widget.experience.tags.contains('SIG');
-    final hasVideo = widget.experience.youtubeVideoId!.isNotEmpty;
+    final hasVideo = widget.experience.youtubeVideoId?.isNotEmpty ?? false;
     final hasImage = widget.experience.image.isNotEmpty;
-
-    final isVideoVisible = ref.watch(globalVideoVisibilityProvider);
-    final isVideoPlaying = ref.watch(playingVideoProvider);
-
-    // --- 2. Gérer les cas par ordre de priorité ---
 
     // CAS 1 : Carte SIG
     if (hasSIG) {
       return const SigDiscoveryMap();
     }
 
-    // CAS 2 : La carte est au centre et a une vidéo
+    // CAS 2 : Vidéo seulement si carte au centre ET pas d'autre vidéo en cours
     if (widget.isCenter && hasVideo) {
-      // Si une autre vidéo est en cours de lecture, on affiche le fallback.
-      // Sinon, on affiche notre vidéo.
-      final bool showFallback =
-          isVideoVisible && isVideoPlaying != widget.experience.id;
+      final isVideoVisible = ref.watch(globalVideoVisibilityProvider);
+      final playingVideo = ref.watch(playingVideoProvider);
 
-      if (showFallback) {
-        // Le code de fallback (image ou icône) est maintenant dans un bloc clair.
-        if (hasImage) {
-          return SmartImage(
-            path: widget.experience.image,
-            fit: BoxFit.cover,
-            fallbackIcon: Icons.business,
-          );
-        }
-        // Si pas d'image, on affiche le fallback générique.
-        return Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                Colors.indigo.shade900,
-                Colors.purple.shade900,
-              ],
-            ),
-          ),
-          child: Center(
-            child: Icon(
-              Icons.play_circle_outline,
-              size: 80,
-              color: Colors.white.withValues(alpha: 0.5),
-            ),
-          ),
-        );
-      } else {
-        // C'est le bon moment pour jouer notre vidéo.
+      // Affiche la vidéo uniquement si c'est la notre qui joue
+      if (isVideoVisible && playingVideo == widget.experience.id) {
         return YoutubeVideoPlayerIframe(
           youtubeVideoId: widget.experience.youtubeVideoId!,
           cardId: widget.experience.id,
         );
       }
+
+      // Sinon, affiche l'image avec un bouton play
+      return Stack(
+        fit: StackFit.expand,
+        children: [
+          if (hasImage)
+            SmartImage(
+              path: widget.experience.image,
+              fit: BoxFit.cover,
+              fallbackIcon: Icons.business,
+            )
+          else
+            ResponsiveBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.indigo.shade900, Colors.purple.shade900],
+                ),
+              ),
+            ),
+          // Bouton Play au centre
+          Center(
+            child: GestureDetector(
+              onTap: () {
+                // Active la vidéo
+                ref.read(globalVideoVisibilityProvider.notifier).show();
+                // Joue la vidéo
+                ref
+                    .read(playingVideoProvider.notifier)
+                    .play(widget.experience.id);
+              },
+              child: ResponsiveBox(
+                padding: const EdgeInsets.all(16),
+                paddingSize: ResponsiveSpacing.m,
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.5),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.play_arrow,
+                  size: 48,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
     }
 
-    // CAS 3 (Fallback général) : Si ce n'est ni SIG, ni une vidéo au centre,
-    // on affiche l'image de l'expérience, ou une icône si pas d'image.
+    // CAS 3 : Image standard
     if (hasImage) {
       return SmartImage(
         path: widget.experience.image,
@@ -243,7 +293,7 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
       );
     }
 
-    // CAS 4 (Dernier recours) : Si absolument aucun média n'est défini.
+    // CAS 4 : Fallback
     return Container(
       color: Colors.grey.shade900,
       child: const Center(
@@ -326,7 +376,7 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
               children: [
                 ResponsiveText.headlineSmall(
                   widget.experience.entreprise,
-                  style: theme.textTheme.headlineSmall?.copyWith(
+                  style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                     shadows: [
@@ -341,12 +391,11 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
                   overflow: TextOverflow.ellipsis,
                 ),
                 if (widget.experience.periode.isNotEmpty) ...[
-                  const ResponsiveBox(
-                      paddingSize: ResponsiveSpacing.xs), // ✅ Remplace SizedBox
+                  const ResponsiveBox(paddingSize: ResponsiveSpacing.xs),
                   ResponsiveText.bodyMedium(
                     widget.experience.periode,
-                    style: const TextStyle(
-                      color: Color.fromRGBO(255, 255, 255, 0.9),
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.9),
                     ),
                   ),
                 ],
@@ -379,16 +428,19 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
                       await context.showDialogWithVideoHidden(
                         ref: ref,
                         dialog: AlertDialog(
-                          title: Text(widget.experience.poste),
+                          title: ResponsiveText.bodyMedium(
+                              widget.experience.poste),
                           content: SingleChildScrollView(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(widget.experience.entreprise,
+                                ResponsiveText.headlineMedium(
+                                    widget.experience.entreprise,
                                     style: const TextStyle(
                                         fontWeight: FontWeight.bold)),
-                                const SizedBox(height: 8),
-                                Text('Periode : ${widget.experience.periode}'),
+                                const ResponsiveBox(height: 8),
+                                ResponsiveText.headlineSmall(
+                                    'Periode : ${widget.experience.periode}'),
                               ],
                             ),
                           ),
@@ -412,7 +464,7 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
                       padding: const EdgeInsets.symmetric(
                           horizontal: 20, vertical: 10),
                       decoration: BoxDecoration(
-                        color: const Color.fromRGBO(255, 255, 255, 0.2),
+                        color: Colors.white.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(30),
                         border: Border.all(
                           color: Colors.white.withValues(alpha: 0.4),
