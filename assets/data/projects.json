@@ -17,10 +17,52 @@
       "assets/images/vitrine.png",
       "assets/images/2rouesvertes-original-logo.jpg",
       "assets/images/prestashop.jpg",
-      "https://assets.setmore.com/website/v2/images/integrations-listing/wordpress/wordpress-plugin-crop@2x.webp"
+      "assets/images/etricks-bmx.png"
     ],
     "platform" : ["Web", "Desktop"],
-    "tags": ["FileZila", "Web", "Php", "Magento", "Prestashop", "Boutique", "Stock"]
+    "tags": ["FileZila", "Web", "Php", "Magento", "Prestashop", "Boutique", "Stock"],
+    "results": [
+      "Créer la boutique en ligne et déployer PrestaShop",
+      "Back-office opérationnel pour la gestion du stock et des commandes"
+    ],
+    "resultsMap": {
+      "ventes": [
+        {"gamme": "950-1250€", "quantite": 3},
+        {"gamme": "1250-1800€", "quantite": 5},
+        {"gamme": "1800-2500€", "quantite": 2}
+      ],
+      "clients": [
+        {"age": "18-30", "nombre": 10},
+        {"age": "30-40", "nombre": 30},
+        {"age": "40-50", "nombre": 40},
+        {"age": "50-60", "nombre": 30}
+      ],
+      "demonstrations": [
+        {"mois": "Mars 2010", "evenements": 2},
+        {"mois": "Avril 2010", "evenements": 3},
+        {"mois": "Mai 2010", "evenements": 4},
+        {"mois": "Juin 2010", "evenements": 2}
+      ],
+      "videos": [
+        {"titre": "Présentation 2 roues électrique", "vues": 1.550},
+        {"titre": "Tutoriel autonomie batterie", "vues": 16.287},
+        {"titre": "Démo Voie Verte Toulouse", "vues": 29.888},
+        {"titre": "ISD Futuro x'trem", "vues": 23.804},
+        {"titre": "SEV etricks BMX", "vues": 59.063},
+        {"titre": "Haibike", "vues": 7.011},
+        {"titre": "Haibike DH Pro", "vues": 7.011},
+        {"titre": "Haibike Nduro Pro", "vues": 7.011},
+        {"titre": "Moto comparaison", "vues": 139.248},
+        {"titre": "Quantya", "vues": 1.808},
+        {"titre": "BH Néo Nitro", "vues": 6.688},
+        {"titre": "Kios VX75", "vues": 4.452},
+        {"titre": "Vectrix", "vues": 1.475}
+      ],
+      "stock": [
+        {"etat": "Disponible", "nombre": 18},
+        {"etat": "Vendu", "nombre": 10}
+      ]
+    }
   },
   {
     "id": "projet_2",
@@ -28,20 +70,25 @@
     "points": [
       "🏍️ Création d’une boutique en ligne spécialisée dans la vente de pièces détachées moto et accessoires",
       "🛒 Développement complet sous PrestaShop avec module de facturation automatisé",
-      "⚙️ Mise en place d’un moteur de recherche par marque, modèle et année (type Oscaro)",
+      "⚙️ Mise en place d’un moteur de recherche par marque, modèle et année",
       "💾 Intégration du catalogue fournisseur (import automatique depuis source partenaire)",
       "💳 Intégration du paiement en ligne sécurisé (Prestashop Checkout / PayPal)",
       "📈 Optimisation SEO et configuration de l’hébergement OVH",
       "🎨 Collaboration avec un designer pour la création du logo professionnel (style dessin au crayon)",
-      "🔧 Formation du client à la gestion du back-office (produits, factures, comptes clients)"
+      "🔧 Formation du client à la gestion du CMS"
     ],
     "image": [
       "assets/images/logos/wemoto_logo.jpg",
       "assets/images/moto.svg",
-      "assets/images/piece_moto.jpg"
+      "assets/images/piece_moto.jpg",
+      "https://assets.setmore.com/website/v2/images/integrations-listing/wordpress/wordpress-plugin-crop@2x.webp"
     ],
     "platform": ["Desktop", "Tablet"],
-    "tags": ["E-commerce", "PrestaShop", "Facturation", "Moto", "Catalogue Dynamique"]
+    "tags": ["E-commerce", "PrestaShop", "Facturation", "Moto", "Catalogue Dynamique"],
+    "results": [
+      "Projet avortée en 2013, reportée et repris avec Wordpress cette année par le client, donc aucune données statistiques disponible",
+      "Visitez le site https://www.wemoto.fr/"
+    ]
   },
   {
     "id": "projet_3",
@@ -55,7 +102,7 @@
       "📊 Implémentation d’un CRM avec prospection commerciale intégrée",
       "🎨 Respect des principes Material Design & amélioration de l'expérience utilisateur (UX)",
       "🧰 Développement avec le SDK Flutter, Dart, et interopérabilité Android (Java/Kotlin)",
-      "🚀 Tests, packaging et déploiement sur le Play Store",
+      "🚀 Tests, packaging et déploiement sur MDM privé",
       "🔐 Conformité avec les normes RGPD (protection des données utilisateurs)"
     ],
     "image": [
@@ -178,6 +225,65 @@
     ],
     "youtubeVideoId": "7hjJeGOZEgI",
     "platform": ["Web", "Mobile", "Logic Pro"],
-    "tags": ["Facebook", "Youtube", "Spotify"]
+    "tags": ["Facebook", "Youtube", "Spotify"],
+    "results": [
+      "Créer un page Facebook, Diffuser sur les chaines et pages populaires",
+      "Créer un compte Spotify, Diffuser sur les chaines et pages populaires",
+      "Créer un compte Youtube, Diffuser sur les chaines et pages populaires"
+    ],
+    "resultsMap": {
+      "ventes": [],
+      "clients": [
+        {"age": "18-30", "nombre": 60},
+        {"age": "30-40", "nombre": 30},
+        {"age": "40-50", "nombre": 7},
+        {"age": "50-60", "nombre": 3}
+      ],
+      "demonstrations": [
+        {"mois": "Mars 2008", "evenements": 2},
+        {"mois": "Juin 2010", "evenements": 3},
+        {"mois": "Mai 2013", "evenements": 4},
+        {"mois": "Decembre 2018", "evenements": 1},
+        {"mois": "Juin 2020", "evenements": 3},
+        {"mois": "Novembre 2023", "evenements": 3}
+      ],
+      "videos": [
+        {"titre": "Au sommet", "vues": 11.550},
+        {"titre": "Moulah", "vues": 24.287},
+        {"titre": "Dog is life", "vues": 4.388},
+        {"titre": "Alba", "vues": 0.341},
+        {"titre": "Survivor", "vues": 10.069},
+        {"titre": "Start me start", "vues": 0.169},
+        {"titre": "Public ennemie", "vues": 11.069},
+        {"titre": "Faux Zanmi", "vues": 0.415},
+        {"titre": "Smoke da weeda", "vues": 0.177},
+        {"titre": "Benit", "vues": 0.221},
+        {"titre": "Kilo", "vues": 11.000},
+        {"titre": "N'est pas peur", "vues": 9.500},
+        {"titre": "Chien de rue", "vues": 0.174},
+        {"titre": "The best in the radio", "vues": 8.100},
+        {"titre": "Capo del capi", "vues": 8.811},
+        {"titre": "Blow your mind", "vues": 0.089},
+        {"titre": "Praije jah", "vues": 0.330},
+        {"titre": "Di Dada", "vues": 4.330},
+        {"titre": "In da hood", "vues": 0.105},
+        {"titre": "Top boy", "vues": 15.000},
+        {"titre": "Capo del capi", "vues": 8.811},
+        {"titre": "Mach up", "vues": 1.948},
+        {"titre": "Hit Them", "vues": 0.213},
+        {"titre": "Paka domi", "vues": 6.565},
+        {"titre": "Haï mwen", "vues": 2.108},
+        {"titre": "Life is a bitch", "vues": 4.488},
+        {"titre": "Città", "vues": 0.254},
+        {"titre": "Music it my life", "vues": 0.170},
+        {"titre": "En reve en mewn", "vues": 3.470},
+        {"titre": "Perché", "vues": 0.168},
+        {"titre": "Boumbaba", "vues": 18.098},
+        {"titre": "Ipocrisia", "vues": 0.290},
+        {"titre": "Anithing", "vues": 7.780},
+        {"titre": "Mama hot", "vues": 12.336}
+      ],
+      "stock": []
+    }
   }
 ]

@@ -8,7 +8,7 @@ import '../../../projets/data/project_data.dart';
 import 'immersive_detail_screen.dart';
 
 class MinimalCard extends ConsumerStatefulWidget {
-  final ProjectInfo project; // ✅ on passe directement un ProjectInfo
+  final ProjectInfo project;
 
   const MinimalCard({
     super.key,

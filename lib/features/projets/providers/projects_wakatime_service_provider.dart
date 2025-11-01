@@ -1,5 +1,6 @@
 import 'dart:developer' as developer;
 
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/features/parametres/themes/provider/theme_repository_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -33,7 +34,12 @@ final wakaTimeApiKeyProvider = FutureProvider<String?>((ref) async {
 final wakaTimeServiceProvider = Provider<WakaTimeService?>((ref) {
   final apiKeyAsync = ref.watch(wakaTimeApiKeyProvider);
   return apiKeyAsync.maybeWhen(
-    data: (key) => key != null ? WakaTimeService(apiKey: key) : null,
+    data: (key) {
+      if (key == null || key.isEmpty) {
+        return null;
+      }
+      return WakaTimeService(apiKey: key);
+    },
     orElse: () => null,
   );
 });
@@ -51,7 +57,7 @@ final wakaTimeStatsProvider = FutureProvider.family<WakaTimeStats?, String>(
 final wakaTimeProjectsProvider = FutureProvider<List<WakaTimeProject>>(
   (ref) async {
     final service = ref.watch(wakaTimeServiceProvider);
-    if (service == null) return [];
+    if (service == null || service.apiKey.isEmpty) return [];
     return await service.getProjects();
   },
 );
@@ -59,7 +65,7 @@ final wakaTimeProjectsProvider = FutureProvider<List<WakaTimeProject>>(
 final wakaTimeDurationsProvider =
     FutureProvider<List<WakaTimeProjectDuration>>((ref) async {
   final apiKey = await ref.watch(wakaTimeApiKeyProvider.future);
-  if (apiKey == null) return [];
+  if (apiKey == null || apiKey.isEmpty) return [];
   final service = WakaTimeService(apiKey: apiKey);
   return service.getProjectDurations(range: 'last_7_days');
 });
@@ -170,25 +176,41 @@ class WakaTimeApiKeyNotifier extends Notifier<String?> {
   @override
   String? build() {
     // Charge la clé depuis les préférences
-    ref.watch(wakaTimeApiKeyProvider).whenData((key) {
-      state = key;
-    });
+    _loadApiKey();
     return null;
+  }
+
+  Future<void> _loadApiKey() async {
+    final prefs = await SharedPreferences.getInstance();
+    final storedKey = prefs.getString('wakatime_api_key');
+    if (storedKey != null && storedKey.isNotEmpty) {
+      developer
+          .log('Charge la clé WakaTime depuis les préférences: $storedKey');
+
+      // ⚠️ Mettre à jour state hors du build
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        state = storedKey;
+        ref.invalidate(wakaTimeServiceProvider);
+      });
+    }
   }
 
   Future<void> setApiKey(String key) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('wakatime_api_key', key);
-    state = key;
-    // Force le refresh des providers dépendants
-    ref.invalidate(wakaTimeServiceProvider);
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      state = key;
+      ref.invalidate(wakaTimeServiceProvider);
+    });
   }
 
   Future<void> clearApiKey() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('wakatime_api_key');
-    state = null;
-    ref.invalidate(wakaTimeServiceProvider);
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      state = null;
+      ref.invalidate(wakaTimeServiceProvider);
+    });
   }
 }
 

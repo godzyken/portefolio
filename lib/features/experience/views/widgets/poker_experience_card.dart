@@ -55,43 +55,26 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
     super.dispose();
   }
 
-  void _showDetails() async {
-    developer.log('🎯 Affichage des détails');
+  void _navigateToDetails() async {
+    developer.log('🎯 Navigation vers ImmersiveExperienceDetail');
 
-    // Cache la vidéo
+    // Cache et arrête la vidéo avant la navigation
     ref.read(globalVideoVisibilityProvider.notifier).hide();
     ref.read(playingVideoProvider.notifier).stop();
 
-    await context.showDialogWithVideoHidden(
-      ref: ref,
-      dialog: AlertDialog(
-        title: ResponsiveText.bodyMedium(widget.experience.poste),
-        content: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ResponsiveText.headlineMedium(
-                widget.experience.entreprise,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const ResponsiveBox(height: 8),
-              ResponsiveText.headlineSmall(
-                'Periode : ${widget.experience.periode}',
-              ),
-            ],
-          ),
+    // Navigation vers l'écran de détails
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => ImmersiveExperienceDetail(
+          experience: widget.experience,
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Fermer'),
-          ),
-        ],
       ),
     );
 
-    // Réaffiche la vidéo
-    ref.read(globalVideoVisibilityProvider.notifier).show();
+    // Réaffiche la vidéo après le retour
+    if (mounted) {
+      ref.read(globalVideoVisibilityProvider.notifier).show();
+    }
   }
 
   @override
@@ -108,7 +91,7 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
       onEnter: (_) => setState(() => _isHovered = true),
       onExit: (_) => setState(() => _isHovered = false),
       child: GestureDetector(
-        onTap: shouldShowVideo ? _showDetails : widget.onTap,
+        onTap: shouldShowVideo ? _navigateToDetails : widget.onTap,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeOut,
@@ -420,41 +403,7 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
             child: Material(
                 color: Colors.transparent,
                 child: InkWell(
-                    onTap: () async {
-                      developer.log('🎯 TAP DÉTECTÉ !'); // ✅ DEBUG
-                      ref.read(globalVideoVisibilityProvider.notifier).hide();
-                      ref.read(playingVideoProvider.notifier).stop();
-
-                      await context.showDialogWithVideoHidden(
-                        ref: ref,
-                        dialog: AlertDialog(
-                          title: ResponsiveText.bodyMedium(
-                              widget.experience.poste),
-                          content: SingleChildScrollView(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                ResponsiveText.headlineMedium(
-                                    widget.experience.entreprise,
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold)),
-                                const ResponsiveBox(height: 8),
-                                ResponsiveText.headlineSmall(
-                                    'Periode : ${widget.experience.periode}'),
-                              ],
-                            ),
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: const Text('Fermer'),
-                            ),
-                          ],
-                        ),
-                      );
-
-                      ref.read(globalVideoVisibilityProvider.notifier).show();
-                    },
+                    onTap: _navigateToDetails,
                     borderRadius: BorderRadius.circular(30),
                     splashColor:
                         theme.colorScheme.primary.withValues(alpha: 0.3),

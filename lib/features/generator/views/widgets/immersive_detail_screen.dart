@@ -1,6 +1,10 @@
+import 'dart:async';
+
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
+import 'package:portefolio/core/ui/widgets/responsive_text.dart';
 import 'package:portefolio/features/parametres/views/widgets/smart_image.dart';
 
 import '../../../projets/data/project_data.dart';
@@ -27,17 +31,26 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
   late ScrollController _scrollController;
+  late Timer _imageTimer;
+
   int _currentImageIndex = 0;
-  double _scrollOffset = 0.0;
+
+  // ----- Pré-calcul des charts -----
+  late List<BarChartGroupData> barGroups;
+  late List<Widget> venteXLabels;
+  late List<PieChartSectionData> clientSections;
+  late List<FlSpot> demoSpots;
+  late List<Widget> demoXLabels;
+  late List<FlSpot> videoSpots;
+  late List<Widget> videoXLabels;
+  late List<PieChartSectionData> stockSections;
 
   @override
   void initState() {
     super.initState();
 
-    _scrollController = ScrollController()
-      ..addListener(() {
-        setState(() => _scrollOffset = _scrollController.offset);
-      });
+    _scrollController = ScrollController();
+    _setupImageRotation();
 
     _controller = AnimationController(
       duration: const Duration(milliseconds: 800),
@@ -59,26 +72,120 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
 
     _controller.forward();
 
-    // Rotation automatique d’images
-    if (widget.project.image != null && widget.project.image!.length > 1) {
-      Future.delayed(const Duration(seconds: 5), _rotateImage);
-    }
+    _prepareChartData();
   }
 
-  void _rotateImage() {
-    if (!mounted || widget.project.image == null) return;
-    setState(() {
-      _currentImageIndex =
-          (_currentImageIndex + 1) % widget.project.image!.length;
+  void _setupImageRotation() {
+    if (widget.project.image == null || widget.project.image!.length <= 1) {
+      return;
+    }
+    _imageTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+      if (!mounted) return;
+      setState(() {
+        _currentImageIndex =
+            (_currentImageIndex + 1) % widget.project.image!.length;
+      });
     });
-    Future.delayed(const Duration(seconds: 5), _rotateImage);
+  }
+
+  void _prepareChartData() {
+    final resultats = widget.project.resultsMap;
+    if (resultats == null) {
+      barGroups = [];
+      venteXLabels = [];
+      clientSections = [];
+      demoSpots = [];
+      demoXLabels = [];
+      videoSpots = [];
+      videoXLabels = [];
+      stockSections = [];
+      return;
+    }
+
+    // Ventes
+    final ventes = resultats['ventes'] as List<dynamic>? ?? [];
+    barGroups = ventes.asMap().entries.map((entry) {
+      final x = entry.key;
+      final y = (entry.value['quantite'] as num).toDouble();
+      return BarChartGroupData(
+        x: x,
+        barRods: [BarChartRodData(toY: y, color: Colors.blueAccent)],
+      );
+    }).toList();
+    venteXLabels = ventes.asMap().entries.map((entry) {
+      return Text(
+        entry.value['gamme'].toString(),
+        style: const TextStyle(color: Colors.white70, fontSize: 12),
+      );
+    }).toList();
+
+    // Clients
+    final clients = resultats['clients'] as List<dynamic>? ?? [];
+    clientSections = clients.asMap().entries.map((entry) {
+      final c = entry.value;
+      return PieChartSectionData(
+        value: (c['nombre'] as num).toDouble(),
+        title: c['age'],
+        color: Colors.primaries[entry.key % Colors.primaries.length],
+        radius: 50,
+        titleStyle: const TextStyle(color: Colors.white, fontSize: 12),
+      );
+    }).toList();
+
+    // Démonstrations
+    final demonstrations = resultats['demonstrations'] as List<dynamic>? ?? [];
+    demoSpots = demonstrations.asMap().entries.map((entry) {
+      final x = entry.key.toDouble();
+      final y = (entry.value['evenements'] as num).toDouble();
+      return FlSpot(x, y);
+    }).toList();
+    demoXLabels = demonstrations.asMap().entries.map((entry) {
+      return Text(
+        entry.value['mois'].toString(),
+        style: const TextStyle(color: Colors.white70, fontSize: 12),
+      );
+    }).toList();
+
+    // Vidéos
+    final videos = resultats['videos'] as List<dynamic>? ?? [];
+    videoSpots = videos.asMap().entries.map((entry) {
+      final x = entry.key.toDouble();
+      final y = (entry.value['vues'] as num).toDouble();
+      return FlSpot(x, y);
+    }).toList();
+    videoXLabels = videos.asMap().entries.map((entry) {
+      return Text(
+        entry.value['titre'].toString(),
+        style: const TextStyle(color: Colors.white70, fontSize: 12),
+      );
+    }).toList();
+
+    // Stock
+    final stock = resultats['stock'] as List<dynamic>? ?? [];
+    stockSections = stock.asMap().entries.map((entry) {
+      final s = entry.value;
+      return PieChartSectionData(
+        value: (s['nombre'] as num).toDouble(),
+        title: s['etat'],
+        color: Colors.primaries[entry.key % Colors.primaries.length],
+        radius: 50,
+        titleStyle: const TextStyle(color: Colors.white, fontSize: 12),
+      );
+    }).toList();
   }
 
   @override
   void dispose() {
     _controller.dispose();
     _scrollController.dispose();
+    _imageTimer.cancel();
     super.dispose();
+  }
+
+  String? _getCurrentImage() {
+    final images = widget.project.cleanedImages ?? widget.project.image;
+    if (images == null || images.isEmpty) return null;
+    return images[_currentImageIndex % images.length];
   }
 
   @override
@@ -87,29 +194,34 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
     final theme = Theme.of(context);
     final randomImage = _getCurrentImage();
 
+    Widget yLabel(double value) => ResponsiveBox(
+          padding: const EdgeInsets.only(right: 6),
+          child: ResponsiveText.bodySmall(
+            value.toInt().toString(),
+            style: TextStyle(
+              color: Colors.white70,
+              fontSize: info.isMobile ? 10 : 12,
+            ),
+          ),
+        );
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Stack(
         children: [
-          // 🖼️ Background immersif
           if (randomImage != null)
             Positioned.fill(
-              child: Transform.translate(
-                offset: Offset(0, _scrollOffset * 0.5),
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 1000),
-                  child: SmartImage(
-                    key: ValueKey(randomImage),
-                    path: randomImage,
-                    fit: BoxFit.cover,
-                  ),
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 1000),
+                child: SmartImage(
+                  key: UniqueKey(),
+                  path: randomImage,
+                  fit: BoxFit.cover,
                 ),
               ),
             ),
-
-          // 🔲 Overlay sombre
           Positioned.fill(
-            child: Container(
+            child: ResponsiveBox(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
@@ -123,18 +235,12 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
               ),
             ),
           ),
-
-          // ✨ Particules animées
           const Positioned.fill(
-            child: ParticleBackground(
-              particleCount: 40,
-              particleColor: Colors.white,
-              minSize: 1.5,
-              maxSize: 4.0,
-            ),
-          ),
-
-          // 🧱 Contenu principal
+              child: ParticleBackground(
+                  particleCount: 40,
+                  particleColor: Colors.white,
+                  minSize: 1.5,
+                  maxSize: 4.0)),
           FadeTransition(
             opacity: _fadeAnimation,
             child: SlideTransition(
@@ -147,24 +253,22 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _buildTitle(theme, info),
-                      SizedBox(height: info.isMobile ? 32 : 48),
+                      ResponsiveBox(height: info.isMobile ? 32 : 48),
                       _buildSection(
                           "📜 Description", widget.project.points, theme, info),
                       if (widget.project.techDetails != null &&
                           widget.project.techDetails!.isNotEmpty) ...[
-                        SizedBox(height: 32),
+                        ResponsiveBox(height: 32),
                         _buildTechDetails(
                             widget.project.techDetails!, theme, info),
                       ],
                       if (widget.project.results != null &&
                           widget.project.results!.isNotEmpty) ...[
-                        SizedBox(height: 32),
+                        ResponsiveBox(height: 32),
                         _buildSection("🏁 Résultats & livrables",
                             widget.project.results!, theme, info),
-                      ],
-                      if (randomImage != null) ...[
-                        SizedBox(height: 48),
-                        _buildImageCarousel(info),
+                        ResponsiveBox(height: 32),
+                        _buildKPISection(theme, info, yLabel),
                       ],
                     ],
                   ),
@@ -172,8 +276,6 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
               ),
             ),
           ),
-
-          // ❌ Bouton fermer
           Positioned(
             top: 16,
             right: 16,
@@ -199,10 +301,9 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
     );
   }
 
-  // ---------------- Widgets de contenu ---------------- //
-
+  // ----- Widgets de contenu (inchangés) -----
   Widget _buildTitle(ThemeData theme, ResponsiveInfo info) {
-    return Container(
+    return ResponsiveBox(
       padding: EdgeInsets.all(info.isMobile ? 24 : 32),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.05),
@@ -210,9 +311,9 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
         border:
             Border.all(color: Colors.white.withValues(alpha: 0.1), width: 2),
       ),
-      child: Text(
+      child: ResponsiveText.titleLarge(
         widget.project.title,
-        style: theme.textTheme.displayMedium?.copyWith(
+        style: TextStyle(
           color: Colors.white,
           fontWeight: FontWeight.bold,
           fontSize: info.isMobile ? 28 : 48,
@@ -226,16 +327,16 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        ResponsiveText.titleLarge(
           title,
-          style: theme.textTheme.titleLarge?.copyWith(
+          style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
             fontSize: info.isMobile ? 20 : 24,
           ),
         ),
-        const SizedBox(height: 16),
-        Container(
+        const ResponsiveBox(height: 16),
+        ResponsiveBox(
           padding: EdgeInsets.all(info.isMobile ? 20 : 32),
           decoration: BoxDecoration(
             color: Colors.white.withValues(alpha: 0.03),
@@ -245,11 +346,11 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: points.map((text) {
-              return Padding(
+              return ResponsiveBox(
                 padding: const EdgeInsets.only(bottom: 12),
-                child: Text(
+                child: ResponsiveText.bodyLarge(
                   text,
-                  style: theme.textTheme.bodyLarge?.copyWith(
+                  style: TextStyle(
                     color: Colors.white.withValues(alpha: 0.9),
                     fontSize: info.isMobile ? 16 : 18,
                     height: 1.6,
@@ -268,16 +369,16 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        ResponsiveText.titleLarge(
           "⚙️ Détails techniques",
-          style: theme.textTheme.titleLarge?.copyWith(
+          style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
             fontSize: info.isMobile ? 20 : 24,
           ),
         ),
-        const SizedBox(height: 16),
-        Container(
+        const ResponsiveBox(height: 16),
+        ResponsiveBox(
           padding: EdgeInsets.all(info.isMobile ? 20 : 32),
           decoration: BoxDecoration(
             color: Colors.white.withValues(alpha: 0.03),
@@ -287,7 +388,7 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: details.entries.map((entry) {
-              return Padding(
+              return ResponsiveBox(
                 padding: const EdgeInsets.only(bottom: 12),
                 child: RichText(
                   text: TextSpan(
@@ -318,25 +419,217 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
     );
   }
 
-  Widget _buildImageCarousel(ResponsiveInfo info) {
-    final image = _getCurrentImage();
-    if (image == null) return const SizedBox.shrink();
+  Widget _buildKPISection(
+    ThemeData theme,
+    ResponsiveInfo info,
+    Widget Function(double) yLabel,
+  ) {
+    // Fonction utilitaire pour espacer proprement les sections présentes
+    Widget sectionSpacing() => const ResponsiveBox(height: 32);
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
-      child: SmartImage(
-        key: ValueKey(image),
-        path: image,
-        fit: BoxFit.cover,
-        width: info.isMobile ? info.size.shortestSide : info.size.longestSide,
-        height: info.isMobile ? info.size.shortestSide : info.size.longestSide,
-      ),
+    // Utilitaire : construit un graphique linéaire avec labels espacés
+    Widget buildLineChart({
+      required List<FlSpot> spots,
+      required List<Widget> labels,
+      required Color color,
+      int step = 2,
+    }) {
+      if (spots.isEmpty) return const SizedBox.shrink();
+
+      return ResponsiveBox(
+        height: 200,
+        child: LineChart(
+          LineChartData(
+            lineBarsData: [
+              LineChartBarData(
+                spots: spots,
+                isCurved: true,
+                color: color,
+                barWidth: 3,
+                dotData: FlDotData(show: true),
+              ),
+            ],
+            titlesData: FlTitlesData(
+              bottomTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  reservedSize: 36,
+                  showTitles: true,
+                  getTitlesWidget: (value, meta) {
+                    final idx = value.toInt();
+                    if (idx >= labels.length) return const SizedBox.shrink();
+                    final show = idx % step == 0;
+                    return show
+                        ? Transform.rotate(
+                            angle: info.isMobile ? -0.3 : -0.2,
+                            child: labels[idx],
+                          )
+                        : const SizedBox.shrink();
+                  },
+                ),
+              ),
+              rightTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  reservedSize: info.isMobile ? 40 : 56,
+                  showTitles: true,
+                  interval: 1,
+                  getTitlesWidget: (v, m) => yLabel(v),
+                ),
+              ),
+              leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            ),
+            gridData: FlGridData(show: false),
+            borderData: FlBorderData(show: false),
+          ),
+        ),
+      );
+    }
+
+    // Utilitaire : construit un graphique en barres (ventes)
+    Widget buildBarChart() {
+      if (barGroups.isEmpty) return const SizedBox.shrink();
+
+      return ResponsiveBox(
+        height: 200,
+        child: BarChart(
+          BarChartData(
+            barGroups: barGroups,
+            titlesData: FlTitlesData(
+              bottomTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true,
+                  reservedSize: 36,
+                  getTitlesWidget: (value, meta) {
+                    final idx = value.toInt();
+                    if (idx < venteXLabels.length) {
+                      final show = idx % (info.isMobile ? 2 : 1) == 0;
+                      return show ? venteXLabels[idx] : const SizedBox.shrink();
+                    }
+                    return const SizedBox.shrink();
+                  },
+                ),
+              ),
+              leftTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true,
+                  reservedSize: info.isMobile ? 32 : 40,
+                  getTitlesWidget: (v, m) => yLabel(v),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    // Utilitaire : graphique camembert
+    Widget buildPieChart(List<PieChartSectionData> sections) {
+      if (sections.isEmpty) return const SizedBox.shrink();
+      return ResponsiveBox(
+        height: 200,
+        child: PieChart(
+          PieChartData(
+            sections: sections,
+            centerSpaceRadius: 40,
+            sectionsSpace: 2,
+          ),
+        ),
+      );
+    }
+
+    // Contenu dynamique selon ce que le projet contient
+    final List<Widget> charts = [];
+
+    if (barGroups.isNotEmpty) {
+      charts.addAll([
+        ResponsiveText.headlineMedium(
+          "Ventes par gamme de prix",
+          style: TextStyle(
+            color: Colors.white70,
+            fontSize: info.isMobile ? 16 : 18,
+          ),
+        ),
+        buildBarChart(),
+        sectionSpacing(),
+      ]);
+    }
+
+    if (clientSections.isNotEmpty) {
+      charts.addAll([
+        ResponsiveText.headlineMedium(
+          "Répartition des clients par âge",
+          style: TextStyle(
+            color: Colors.white70,
+            fontSize: info.isMobile ? 16 : 18,
+          ),
+        ),
+        buildPieChart(clientSections),
+        sectionSpacing(),
+      ]);
+    }
+
+    if (demoSpots.isNotEmpty) {
+      charts.addAll([
+        ResponsiveText.headlineMedium(
+          "Démonstrations / événements",
+          style: TextStyle(
+            color: Colors.white70,
+            fontSize: info.isMobile ? 16 : 18,
+          ),
+        ),
+        buildLineChart(
+          spots: demoSpots,
+          labels: demoXLabels,
+          color: Colors.orangeAccent,
+          step: info.isMobile ? 2 : 1,
+        ),
+        sectionSpacing(),
+      ]);
+    }
+
+    if (videoSpots.isNotEmpty) {
+      charts.addAll([
+        ResponsiveText.headlineMedium(
+          "Vues des vidéos promotionnelles",
+          style: TextStyle(
+            color: Colors.white70,
+            fontSize: info.isMobile ? 16 : 18,
+          ),
+        ),
+        buildLineChart(
+          spots: videoSpots,
+          labels: videoXLabels,
+          color: Colors.greenAccent,
+          step: info.isMobile ? 3 : 2,
+        ),
+        sectionSpacing(),
+      ]);
+    }
+
+    if (stockSections.isNotEmpty) {
+      charts.addAll([
+        ResponsiveText.headlineMedium(
+          "État du stock",
+          style: TextStyle(
+            color: Colors.white70,
+            fontSize: info.isMobile ? 16 : 18,
+          ),
+        ),
+        buildPieChart(stockSections),
+      ]);
+    }
+
+    // Rien à afficher ?
+    if (charts.isEmpty) {
+      return ResponsiveText.bodyMedium(
+        "Aucune donnée de performance à afficher pour ce projet.",
+        style: const TextStyle(color: Colors.white60),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: charts,
     );
-  }
-
-  String? _getCurrentImage() {
-    final images = widget.project.cleanedImages ?? widget.project.image;
-    if (images == null || images.isEmpty) return null;
-    return images[_currentImageIndex % images.length];
   }
 }

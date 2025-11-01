@@ -112,6 +112,7 @@ class ErrorScreen extends StatelessWidget {
                         const ResponsiveText.bodyMedium('Détails techniques'),
                     children: [
                       SelectableText(
+                        scrollPhysics: ScrollPhysics(),
                         stackTrace?.toString() ?? 'Aucune stacktrace',
                         style: TextStyle(fontFamily: 'monospace'),
                       ),

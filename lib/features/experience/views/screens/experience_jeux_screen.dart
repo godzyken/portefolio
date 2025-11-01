@@ -436,7 +436,7 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
       children: [
         Positioned.fill(
           child: SmartImage(
-            path: 'assets/images/tapis-poker.png',
+            path: 'assets/images/tapis-poker-2.png',
             fit: BoxFit.cover,
           ),
         ),
@@ -473,6 +473,11 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
                         top: info.size.height * 0.08,
                       ),
                       paddingSize: ResponsiveSpacing.m,
+                      marginSize: ResponsiveSpacing.m,
+                      margin: EdgeInsets.only(
+                        right: info.size.width * 0.02,
+                        top: info.size.height * 0.08,
+                      ),
                       child: Stack(
                         children: [
                           InteractivePot(

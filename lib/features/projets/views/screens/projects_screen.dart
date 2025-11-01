@@ -16,6 +16,21 @@ class ProjectsScreen extends ConsumerStatefulWidget {
 }
 
 class _ProjectsScreenState extends ConsumerState<ProjectsScreen> {
+  bool _initialized = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // On s’assure de ne lancer le provider qu’après la première frame
+    if (!_initialized) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(enrichedProjectsProvider.future);
+      });
+      _initialized = true;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final projectsAsync = ref.watch(enrichedProjectsProvider);
@@ -26,6 +41,7 @@ class _ProjectsScreenState extends ConsumerState<ProjectsScreen> {
         // --- Image de fond ---
         Positioned.fill(
           child: SmartImage(
+            key: UniqueKey(),
             path: "assets/images/line.svg", // ton image
             fit: BoxFit.contain,
             fallbackIcon: Icons.image,
@@ -36,22 +52,36 @@ class _ProjectsScreenState extends ConsumerState<ProjectsScreen> {
         // --- Contenu principal ---
         Positioned.fill(
           child: Container(
-            color: Colors.black.withValues(
-              alpha: 0.4,
-            ), // voile pour lisibilité
-            child: projectsAsync.when(
-              data: (projects) =>
-                  ProjectGridView(projects: projects, selected: selected),
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (e, st) {
-                ref.read(loggerProvider("ProjetsScreen")).log(
-                      "Erreur lors du chargement des services",
-                      level: LogLevel.error,
-                      error: e,
-                      stackTrace: st,
-                    );
-                return Center(child: Text('Erreur : $e'));
-              },
+            color: Colors.black.withValues(alpha: 0.4),
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 500),
+              switchInCurve: Curves.easeIn,
+              switchOutCurve: Curves.easeOut,
+              child: projectsAsync.when(
+                data: (projects) => ProjectGridView(
+                  projects: projects,
+                  selected: selected,
+                ),
+                loading: () => const Center(
+                  key: ValueKey('loading'),
+                  child: CircularProgressIndicator(),
+                ),
+                error: (e, st) {
+                  ref.read(loggerProvider("ProjectsScreen")).log(
+                        "Erreur lors du chargement des projets",
+                        level: LogLevel.error,
+                        error: e,
+                        stackTrace: st,
+                      );
+                  return Center(
+                    key: const ValueKey('error'),
+                    child: Text(
+                      'Erreur : $e',
+                      style: const TextStyle(color: Colors.redAccent),
+                    ),
+                  );
+                },
+              ),
             ),
           ),
         ),

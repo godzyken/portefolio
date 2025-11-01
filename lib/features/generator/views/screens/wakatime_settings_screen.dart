@@ -29,7 +29,7 @@ class _WakaTimeSettingsScreenState
 
   Future<void> _loadApiKey() async {
     final apiKey = await ref.read(wakaTimeApiKeyProvider.future);
-    if (apiKey != null && mounted) {
+    if (apiKey != null || apiKey!.isNotEmpty && mounted) {
       _apiKeyController.text = apiKey;
     }
   }

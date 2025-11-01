@@ -12,7 +12,7 @@ class WakaTimeService {
 
   /// Headers pour les requêtes authentifiées
   Map<String, String> get _headers => {
-        'Authorization': 'Basic ${base64Encode(utf8.encode(apiKey))}',
+        'Authorization': 'Basic ${base64Encode(utf8.encode('$apiKey:'))}',
         'Content-Type': 'application/json',
       };
 

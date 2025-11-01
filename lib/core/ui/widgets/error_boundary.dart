@@ -39,6 +39,7 @@ class _ErrorBoundaryState extends ConsumerState<ErrorBoundary> {
       // Si le widget n'est plus monté, on ne peut rien faire de plus que de logger.
       // On ne peut pas utiliser ref ni setState.
       debugPrint('Erreur capturée sur un widget démonté: $error');
+      debugPrintStack(stackTrace: stackTrace);
       return;
     }
 

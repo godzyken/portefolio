@@ -73,12 +73,12 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/animations/
     - assets/images/
     - assets/images/2.0x/
     - assets/images/3.0x/
     - assets/images/4.0x/
     - assets/images/logos/
+    - assets/images/animations/
     - assets/images/WorkShop/
     - assets/data/
     - assets/fonts/Noto_Sans/

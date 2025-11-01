@@ -11,7 +11,12 @@ class ProjectInfo {
   final List<String>? tags;
   final Duration? timeSpent;
   final Map<String, dynamic>? techDetails;
+
+  /// Résultats textuels classiques
   final List<String>? results;
+
+  /// Résultats structurés pour KPI (ventes, clients, démonstrations…)
+  final Map<String, dynamic>? resultsMap;
 
   ProjectInfo({
     required this.id,
@@ -25,6 +30,7 @@ class ProjectInfo {
     this.timeSpent,
     this.techDetails,
     this.results,
+    this.resultsMap,
   });
 
   // Getter qui retourne les images nettoyées
@@ -62,6 +68,7 @@ class ProjectInfo {
     Duration? timeSpent,
     Map<String, dynamic>? techDetails,
     List<String>? results,
+    Map<String, dynamic>? resultsMap,
   }) {
     return ProjectInfo(
       id: id ?? this.id,
@@ -75,6 +82,7 @@ class ProjectInfo {
       timeSpent: timeSpent ?? this.timeSpent,
       techDetails: techDetails ?? this.techDetails,
       results: results ?? this.results,
+      resultsMap: resultsMap ?? this.resultsMap,
     );
   }
 
@@ -94,6 +102,9 @@ class ProjectInfo {
           : null,
       results:
           json['results'] != null ? List<String>.from(json['results']) : null,
+      resultsMap: json['resultsMap'] != null
+          ? Map<String, dynamic>.from(json['resultsMap'])
+          : null,
     );
   }
 }
