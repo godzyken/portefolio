@@ -3,8 +3,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:portefolio/core/ui/widgets/smart_image.dart';
 import 'package:portefolio/features/generator/views/widgets/immersive_experience_detail.dart';
-import 'package:portefolio/features/parametres/views/widgets/smart_image.dart';
 
 import '../../../../constants/enum_global.dart';
 import '../../../../core/affichage/screen_size_detector.dart';
@@ -411,8 +411,8 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
     final positions = [
       [0.15, 0.10, 'Flutter'], // 15% du haut, 10% de la droite
       [0.16, 0.15, 'Qualite'],
-      [0.60, 0.12, 'Relation Client'],
-      [0.75, 0.20, 'Logistique'],
+      [0.20, 0.12, 'Relation Client'],
+      [0.09, 0.20, 'Logistique'],
     ];
 
     return positions.map((pos) {
@@ -437,6 +437,7 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
         Positioned.fill(
           child: SmartImage(
             path: 'assets/images/tapis-poker-2.png',
+            responsiveSize: ResponsiveImageSize.xlarge,
             fit: BoxFit.cover,
           ),
         ),
@@ -456,8 +457,11 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
                           Expanded(
                             flex: 3,
                             child: ResponsiveBox(
+                              width: info.size.width * 0.35,
+                              height: info.size.height * 0.35,
+                              paddingSize: ResponsiveSpacing.m,
                               padding: EdgeInsets.symmetric(
-                                horizontal: info.size.width * 0.05,
+                                horizontal: info.size.width * 0.02,
                                 vertical: 8,
                               ),
                               child: const CompetencesPilesByNiveau(),

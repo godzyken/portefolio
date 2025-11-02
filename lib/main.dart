@@ -8,15 +8,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:portefolio/core/exceptions/handler/global_exeption_handler.dart';
 import 'package:portefolio/core/logging/app_logger.dart';
-import 'package:portefolio/core/provider/error_providers.dart';
-import 'package:portefolio/core/provider/providers.dart';
 
 import 'core/exceptions/error/error_screen.dart';
 import 'core/provider/config_env_provider.dart';
+import 'core/provider/error_providers.dart';
+import 'core/provider/providers.dart';
 import 'core/routes/router.dart';
 import 'core/service/bootstrap_service.dart';
 import 'core/service/config_env.dart';
-import 'core/ui/widgets/error_boundary.dart';
+import 'core/ui/widgets/ui_widgets_extentions.dart';
 import 'features/generator/views/widgets/generator_widgets_extentions.dart';
 import 'features/home/views/screens/splash_screen.dart';
 import 'features/home/views/widgets/precache_wrapper.dart';

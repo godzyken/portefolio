@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:portefolio/core/ui/widgets/responsive_text.dart';
 
 class AnimatedCardOverlay extends StatefulWidget {
   final Offset start;
@@ -69,7 +70,7 @@ class _AnimatedCardOverlayState extends State<AnimatedCardOverlay>
             scale: _scale.value,
             child: Transform.rotate(
               angle: _rotation.value,
-              child: SizedBox(
+              child: ResponsiveBox(
                 width: widget.size.width,
                 height: widget.size.height,
                 child: widget.child,

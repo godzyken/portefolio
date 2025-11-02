@@ -7,6 +7,7 @@ export 'immersive_detail_screen.dart';
 export 'immersive_experience_detail.dart';
 export 'location_permission_dialog.dart';
 export 'minimal_card.dart';
+export 'particle_background.dart';
 export 'responsive_layout.dart';
 export 'responsive_scope.dart';
 export 'sig_discovery_map.dart';

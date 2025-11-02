@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/ui/widgets/responsive_text.dart';
-import 'package:portefolio/features/parametres/views/widgets/smart_image.dart';
+import 'package:portefolio/core/ui/widgets/smart_image.dart';
 
 import '../../../projets/data/project_data.dart';
 import 'particle_background.dart';
@@ -39,8 +39,13 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
   late List<BarChartGroupData> barGroups;
   late List<Widget> venteXLabels;
   late List<PieChartSectionData> clientSections;
+  late List<PieChartSectionData> followersSections;
   late List<FlSpot> demoSpots;
   late List<Widget> demoXLabels;
+  late List<FlSpot> diffusionsSpots;
+  late List<Widget> diffusionsXLabels;
+  late List<FlSpot> representationsSpots;
+  late List<Widget> representationsXLabels;
   late List<FlSpot> videoSpots;
   late List<Widget> videoXLabels;
   late List<PieChartSectionData> stockSections;
@@ -99,6 +104,11 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
       videoSpots = [];
       videoXLabels = [];
       stockSections = [];
+      followersSections = [];
+      representationsSpots = [];
+      representationsXLabels = [];
+      diffusionsSpots = [];
+      diffusionsXLabels = [];
       return;
     }
 
@@ -172,6 +182,48 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
         titleStyle: const TextStyle(color: Colors.white, fontSize: 12),
       );
     }).toList();
+
+    // Diffusions
+    final diffusions = resultats['diffusions'] as List<dynamic>? ?? [];
+    diffusionsSpots = diffusions.asMap().entries.map((entry) {
+      final x = entry.key.toDouble();
+      final y = (entry.value['musics'] as num).toDouble();
+      return FlSpot(x, y);
+    }).toList();
+    diffusionsXLabels = diffusions.asMap().entries.map((entry) {
+      return ResponsiveText.bodySmall(
+        entry.value['annee'].toString(),
+        style: const TextStyle(color: Colors.white70, fontSize: 12),
+      );
+    }).toList();
+
+    // Followers
+    final followers = resultats['followers'] as List<dynamic>? ?? [];
+    followersSections = followers.asMap().entries.map((entry) {
+      final f = entry.value;
+      return PieChartSectionData(
+        value: (f['nombre'] as num).toDouble(),
+        title: f['plateforme'],
+        color: Colors.primaries[entry.key % Colors.primaries.length],
+        radius: 50,
+        titleStyle: const TextStyle(color: Colors.white, fontSize: 12),
+      );
+    }).toList();
+
+    // Representations
+    final representations =
+        resultats['representations'] as List<dynamic>? ?? [];
+    representationsSpots = representations.asMap().entries.map((entry) {
+      final x = entry.key.toDouble();
+      final y = (entry.value['evenements'] as num).toDouble();
+      return FlSpot(x, y);
+    }).toList();
+    representationsXLabels = representations.asMap().entries.map((entry) {
+      return ResponsiveText.bodySmall(
+        entry.value['annee'].toString(),
+        style: const TextStyle(color: Colors.white70, fontSize: 12),
+      );
+    }).toList();
   }
 
   @override
@@ -216,6 +268,7 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
                 child: SmartImage(
                   key: UniqueKey(),
                   path: randomImage,
+                  responsiveSize: ResponsiveImageSize.xlarge,
                   fit: BoxFit.cover,
                 ),
               ),
@@ -424,6 +477,19 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
     ResponsiveInfo info,
     Widget Function(double) yLabel,
   ) {
+    /// Calcul automatique d'un interval Y pour éviter la surcharge
+    double computeYInterval(List<FlSpot> spots) {
+      if (spots.isEmpty) return 1;
+      final maxY = spots.map((e) => e.y).reduce((a, b) => a > b ? a : b);
+      final minY = spots.map((e) => e.y).reduce((a, b) => a < b ? a : b);
+      final range = maxY - minY;
+      if (range <= 5) return 1; // petite plage, interval simple
+      if (range <= 20) return 5;
+      if (range <= 50) return 10;
+      if (range <= 100) return 20;
+      return (range / 5).ceilToDouble(); // 5 graduations max
+    }
+
     // Fonction utilitaire pour espacer proprement les sections présentes
     Widget sectionSpacing() => const ResponsiveBox(height: 32);
 
@@ -432,9 +498,17 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
       required List<FlSpot> spots,
       required List<Widget> labels,
       required Color color,
-      int step = 2,
+      int step = 1, // on affiche toutes les X labels sur l'axe X selon step
     }) {
       if (spots.isEmpty) return const SizedBox.shrink();
+
+      // Calcul des labels uniques pour l'axe X
+      final uniqueLabels = <int, Widget>{};
+      for (var i = 0; i < labels.length; i++) {
+        if (i % step == 0) {
+          uniqueLabels[i] = labels[i];
+        }
+      }
 
       return ResponsiveBox(
         height: 200,
@@ -446,40 +520,74 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
                 isCurved: true,
                 color: color,
                 barWidth: 3,
-                dotData: FlDotData(show: true),
+                dotData: FlDotData(
+                  show: true,
+                  checkToShowDot: (spot, barData) {
+                    // par exemple, afficher seulement si y > 10
+                    return spot.y > 10;
+                  },
+                  getDotPainter: (spot, percent, bar, index) {
+                    return FlDotCirclePainter(
+                      radius: 4,
+                      color: Colors.white,
+                      strokeWidth: 1,
+                      strokeColor: Colors.greenAccent,
+                    );
+                  },
+                ),
               ),
             ],
             titlesData: FlTitlesData(
               bottomTitles: AxisTitles(
                 sideTitles: SideTitles(
-                  reservedSize: 36,
                   showTitles: true,
+                  reservedSize: 36,
                   getTitlesWidget: (value, meta) {
                     final idx = value.toInt();
-                    if (idx >= labels.length) return const SizedBox.shrink();
-                    final show = idx % step == 0;
-                    return show
-                        ? Transform.rotate(
-                            angle: info.isMobile ? -0.3 : -0.2,
-                            child: labels[idx],
-                          )
-                        : const SizedBox.shrink();
+                    if (!uniqueLabels.containsKey(idx)) {
+                      return const SizedBox.shrink();
+                    }
+                    return Transform.rotate(
+                      angle: -0.2,
+                      alignment: Alignment.center,
+                      child: uniqueLabels[idx]!,
+                    );
                   },
                 ),
               ),
-              rightTitles: AxisTitles(
+              leftTitles: AxisTitles(
                 sideTitles: SideTitles(
-                  reservedSize: info.isMobile ? 40 : 56,
                   showTitles: true,
-                  interval: 1,
-                  getTitlesWidget: (v, m) => yLabel(v),
+                  reservedSize: info.isMobile ? 32 : 40,
+                  interval: computeYInterval(spots),
+                  getTitlesWidget: (value, meta) {
+                    return Text(
+                      value.toInt().toString(),
+                      style: TextStyle(
+                        color: Colors.white70,
+                        fontSize: info.isMobile ? 10 : 12,
+                      ),
+                    );
+                  },
                 ),
               ),
-              leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              rightTitles:
+                  AxisTitles(sideTitles: SideTitles(showTitles: false)),
               topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
             ),
-            gridData: FlGridData(show: false),
-            borderData: FlBorderData(show: false),
+            gridData: FlGridData(
+              show: true,
+              drawVerticalLine: false,
+              horizontalInterval: computeYInterval(spots),
+              getDrawingHorizontalLine: (value) => FlLine(
+                color: Colors.white12,
+                strokeWidth: 1,
+              ),
+            ),
+            borderData: FlBorderData(
+              show: true,
+              border: Border.all(color: Colors.white24),
+            ),
           ),
         ),
       );
@@ -590,7 +698,7 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
     if (videoSpots.isNotEmpty) {
       charts.addAll([
         ResponsiveText.headlineMedium(
-          "Vues des vidéos promotionnelles",
+          "Audience par publications",
           style: TextStyle(
             color: Colors.white70,
             fontSize: info.isMobile ? 16 : 18,
@@ -616,6 +724,48 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
           ),
         ),
         buildPieChart(stockSections),
+      ]);
+    }
+
+    if (diffusionsSpots.isNotEmpty) {
+      charts.addAll([
+        ResponsiveText.headlineMedium(
+          "Taux de publications par an",
+          style: TextStyle(
+              color: Colors.white70, fontSize: info.isMobile ? 16 : 18),
+        ),
+        buildLineChart(
+            spots: diffusionsSpots,
+            labels: diffusionsXLabels,
+            color: Colors.blueAccent),
+        sectionSpacing(),
+      ]);
+    }
+
+    if (representationsSpots.isNotEmpty) {
+      charts.addAll([
+        ResponsiveText.headlineMedium(
+          "Participations aux evenements / Representation Scenes / interviews",
+          style: TextStyle(
+              color: Colors.white70, fontSize: info.isMobile ? 16 : 18),
+        ),
+        buildLineChart(
+            spots: representationsSpots,
+            labels: representationsXLabels,
+            color: Colors.blueAccent),
+        sectionSpacing(),
+      ]);
+    }
+
+    if (followersSections.isNotEmpty) {
+      charts.addAll([
+        ResponsiveText.headlineMedium(
+          "Followers",
+          style: TextStyle(
+              color: Colors.white70, fontSize: info.isMobile ? 16 : 18),
+        ),
+        buildPieChart(followersSections),
+        sectionSpacing(),
       ]);
     }
 

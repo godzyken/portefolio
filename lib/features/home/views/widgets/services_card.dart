@@ -6,7 +6,7 @@ import 'package:portefolio/features/generator/views/widgets/hover_card.dart';
 
 import '../../../../core/affichage/screen_size_detector.dart';
 import '../../../../core/ui/widgets/responsive_text.dart';
-import '../../../parametres/views/widgets/smart_image.dart';
+import '../../../../core/ui/widgets/smart_image.dart';
 
 class ServicesCard extends ConsumerWidget {
   final Service service;
@@ -160,6 +160,7 @@ class ServicesCard extends ConsumerWidget {
     return SmartImage(
       path: service.cleanedImageUrl!,
       fit: BoxFit.cover,
+      responsiveSize: ResponsiveImageSize.medium,
       fallbackIcon: service.icon,
       fallbackColor: theme.colorScheme.primary,
     );

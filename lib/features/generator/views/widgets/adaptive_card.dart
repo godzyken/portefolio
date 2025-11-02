@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:portefolio/features/generator/views/widgets/responsive_layout.dart';
-import 'package:portefolio/features/generator/views/widgets/sig_discovery_map.dart';
+import 'package:portefolio/features/generator/views/widgets/generator_widgets_extentions.dart';
 import 'package:portefolio/features/parametres/themes/provider/theme_repository_provider.dart';
 
 import '../../../../core/provider/providers.dart';
 import '../../data/location_data.dart';
 import '../../services/location_service.dart';
-import 'location_permission_dialog.dart';
 
 class AdaptiveCard extends ConsumerWidget {
   final String title;

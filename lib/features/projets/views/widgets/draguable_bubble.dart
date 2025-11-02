@@ -3,9 +3,8 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
-import 'package:portefolio/core/ui/widgets/responsive_text.dart';
+import 'package:portefolio/core/ui/widgets/ui_widgets_extentions.dart';
 import 'package:portefolio/features/generator/views/widgets/generator_widgets_extentions.dart';
-import 'package:portefolio/features/parametres/views/widgets/smart_image.dart';
 import 'package:portefolio/features/projets/views/widgets/project_card.dart';
 
 import '../../data/project_data.dart';

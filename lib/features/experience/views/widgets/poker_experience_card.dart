@@ -3,10 +3,9 @@ import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
-import 'package:portefolio/core/ui/widgets/responsive_text.dart';
+import 'package:portefolio/core/ui/widgets/ui_widgets_extentions.dart';
 import 'package:portefolio/features/experience/data/experiences_data.dart';
 import 'package:portefolio/features/generator/views/widgets/generator_widgets_extentions.dart';
-import 'package:portefolio/features/parametres/views/widgets/smart_image.dart';
 import 'package:vector_math/vector_math_64.dart' show Vector3;
 
 import '../../../../core/provider/providers.dart';
@@ -227,6 +226,7 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
             SmartImage(
               path: widget.experience.image,
               fit: BoxFit.cover,
+              responsiveSize: ResponsiveImageSize.medium,
               fallbackIcon: Icons.business,
             )
           else
@@ -271,6 +271,7 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
     if (hasImage) {
       return SmartImage(
         path: widget.experience.image,
+        responsiveSize: ResponsiveImageSize.medium,
         fit: BoxFit.cover,
         fallbackIcon: Icons.business,
       );

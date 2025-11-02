@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
-import 'package:portefolio/features/parametres/views/widgets/smart_image.dart';
+import 'package:portefolio/core/ui/widgets/smart_image.dart';
 import 'package:vector_math/vector_math_64.dart' show Vector3;
 
 import '../../../projets/data/project_data.dart';
@@ -138,6 +138,7 @@ class _MinimalCardState extends ConsumerState<MinimalCard> {
     if (project.image != null && project.cleanedImages!.isNotEmpty) {
       return SmartImage(
         path: project.cleanedImages!.first,
+        responsiveSize: ResponsiveImageSize.large,
         fit: BoxFit.cover,
         fallbackIcon: Icons.workspace_premium,
         fallbackColor: theme.colorScheme.primary,

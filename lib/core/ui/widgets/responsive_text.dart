@@ -244,63 +244,6 @@ class ResponsiveBox extends ConsumerWidget {
 
 enum ResponsiveSpacing { xs, s, m, l, xl, xxl }
 
-/// 🖼️ Image avec taille responsive
-class ResponsiveImage extends ConsumerWidget {
-  final String path;
-  final ResponsiveImageSize size;
-  final BoxFit fit;
-  final IconData? fallbackIcon;
-  final Color? fallbackColor;
-
-  const ResponsiveImage({
-    super.key,
-    required this.path,
-    this.size = ResponsiveImageSize.medium,
-    this.fit = BoxFit.cover,
-    this.fallbackIcon,
-    this.fallbackColor,
-  });
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final constants = ref.watch(responsiveConstantsProvider);
-    final imageSize = _getImageSize(constants);
-
-    return SizedBox(
-      width: imageSize,
-      height: imageSize,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(constants.radiusM),
-        child: Image.asset(
-          path,
-          fit: fit,
-          errorBuilder: (context, error, stackTrace) {
-            return Container(
-              color: fallbackColor?.withValues(alpha: 0.1),
-              child: Icon(
-                fallbackIcon ?? Icons.image,
-                size: imageSize * 0.4,
-                color: fallbackColor?.withValues(alpha: 0.5),
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }
-
-  double _getImageSize(ResponsiveConstants constants) {
-    return switch (size) {
-      ResponsiveImageSize.small => constants.avatarS,
-      ResponsiveImageSize.medium => constants.avatarM,
-      ResponsiveImageSize.large => constants.avatarL,
-      ResponsiveImageSize.xlarge => constants.avatarXL,
-    };
-  }
-}
-
-enum ResponsiveImageSize { small, medium, large, xlarge }
-
 /// 🔘 Bouton avec taille responsive
 class ResponsiveButton extends ConsumerWidget {
   final VoidCallback? onPressed;

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:portefolio/core/ui/widgets/responsive_text.dart';
 
 import '../../../../core/provider/experience_providers.dart';
 
@@ -26,7 +27,7 @@ class _ExperienceFilterChipsState extends ConsumerState<ExperienceFilterChips> {
       children: widget.tags.map((tag) {
         final isSelected = selectedTags == tag;
         return ChoiceChip(
-          label: Text(tag),
+          label: ResponsiveText.bodySmall(tag),
           selected: isSelected,
           onSelected: (_) => ref
               .read(experienceFilterProvider.notifier)

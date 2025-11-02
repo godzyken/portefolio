@@ -77,8 +77,9 @@ class _CompetenceNiveauPileState extends ConsumerState<CompetenceNiveauPile> {
 
     final double offsetStep = info.isMobile ? 6 : 8;
 
-    if (_jetons.isEmpty)
+    if (_jetons.isEmpty) {
       return const ResponsiveBox(paddingSize: ResponsiveSpacing.s);
+    }
 
     return GestureDetector(
       onTap: () => setState(() => _isExpanded = !_isExpanded),

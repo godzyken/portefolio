@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:portefolio/features/parametres/views/widgets/smart_image.dart';
+import 'package:portefolio/core/ui/widgets/ui_widgets_extentions.dart';
 import 'package:portefolio/features/projets/providers/projects_wakatime_service_provider.dart';
 
 import '../../../../core/logging/app_logger.dart';
-import '../../../../core/provider/providers.dart';
+import '../../../../core/provider/provider_extentions.dart';
 import '../../providers/projet_providers.dart';
-import '../widgets/project_grid_view.dart';
+import '../widgets/project_widgets_extentions.dart';
 
 class ProjectsScreen extends ConsumerStatefulWidget {
   const ProjectsScreen({super.key});
@@ -44,6 +44,7 @@ class _ProjectsScreenState extends ConsumerState<ProjectsScreen> {
             key: UniqueKey(),
             path: "assets/images/line.svg", // ton image
             fit: BoxFit.contain,
+            responsiveSize: ResponsiveImageSize.xlarge,
             fallbackIcon: Icons.image,
             fallbackColor: Colors.white,
           ),

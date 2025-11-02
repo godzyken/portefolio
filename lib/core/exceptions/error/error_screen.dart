@@ -1,3 +1,5 @@
+import 'dart:developer' as developer;
+
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:portefolio/core/ui/widgets/responsive_text.dart'; // facultatif, pour une animation fluide
@@ -32,13 +34,7 @@ class ErrorScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 // Animation Lottie
-                Lottie.asset(
-                  'assets/images/animations/error.json',
-                  width: 200,
-                  repeat: false,
-                  errorBuilder: (_, __, ___) => const Icon(Icons.error_outline,
-                      size: 96, color: Colors.redAccent),
-                ),
+                _buildLottieErrorAnimation(),
                 const ResponsiveBox(
                   paddingSize: ResponsiveSpacing.l,
                 ),
@@ -111,11 +107,20 @@ class ErrorScreen extends StatelessWidget {
                     title:
                         const ResponsiveText.bodyMedium('Détails techniques'),
                     children: [
-                      SelectableText(
-                        scrollPhysics: ScrollPhysics(),
-                        stackTrace?.toString() ?? 'Aucune stacktrace',
-                        style: TextStyle(fontFamily: 'monospace'),
-                      ),
+                      SizedBox(
+                        height:
+                            200, // ou MediaQuery.height / 2 pour plus de flexibilité
+                        child: SingleChildScrollView(
+                          child: SelectableText(
+                            stackTrace?.toString() ??
+                                'Aucune stacktrace disponible',
+                            style: const TextStyle(
+                                fontFamily: 'monospace', fontSize: 12),
+                            scrollPhysics: const BouncingScrollPhysics(),
+                            maxLines: null, // pas de limite de lignes
+                          ),
+                        ),
+                      )
                     ],
                   ),
               ],
@@ -124,6 +129,30 @@ class ErrorScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget _buildLottieErrorAnimation() {
+    developer.log('isReleaseMode: $isReleaseMode');
+    developer.log('error: $error');
+    developer.log('stackTrace: $stackTrace');
+    developer.log('onRetry: $onRetry');
+    developer.log('onGoHome: $onGoHome');
+
+    try {
+      return Lottie.asset(
+        'assets/images/animations/error.json',
+        width: 200,
+        repeat: false,
+        errorBuilder: (_, __, ___) => const Icon(
+          Icons.error_outline,
+          size: 96,
+          color: Colors.redAccent,
+        ),
+      );
+    } catch (_) {
+      developer.log('Erreur lors de la lecture de l’animation Lottie');
+      return const Icon(Icons.error_outline, size: 96, color: Colors.redAccent);
+    }
   }
 
   bool get isReleaseMode {

@@ -23,7 +23,8 @@
     "tags": ["FileZila", "Web", "Php", "Magento", "Prestashop", "Boutique", "Stock"],
     "results": [
       "Créer la boutique en ligne et déployer PrestaShop",
-      "Back-office opérationnel pour la gestion du stock et des commandes"
+      "Back-office opérationnel pour la gestion du stock et des commandes",
+      "Le projet a changé de main, d'adresse, d'organisation, et est devenue plus grand et plus ambitieux"
     ],
     "resultsMap": {
       "ventes": [
@@ -38,10 +39,10 @@
         {"age": "50-60", "nombre": 30}
       ],
       "demonstrations": [
-        {"mois": "Mars 2010", "evenements": 2},
-        {"mois": "Avril 2010", "evenements": 3},
-        {"mois": "Mai 2010", "evenements": 4},
-        {"mois": "Juin 2010", "evenements": 2}
+        {"mois": "Mars 2010", "evenements": 10},
+        {"mois": "Avril 2010", "evenements": 18},
+        {"mois": "Mai 2010", "evenements": 16},
+        {"mois": "Juin 2010", "evenements": 16}
       ],
       "videos": [
         {"titre": "Présentation 2 roues électrique", "vues": 1.550},
@@ -167,7 +168,9 @@
       "📂 Hébergement via GitHub Pages"
     ],
     "image": [
-      "assets/images/logo_godzyken.png"
+      "assets/images/logo_godzyken.png",
+      "assets/images/portefolio-ide.png",
+      "assets/images/portefolio-projet.png"
     ],
     "platform": ["Web", "Desktop", "Mobile"],
     "tags": ["Flutter", "GitHub", "FlutterFlow"]
@@ -232,22 +235,33 @@
       "Créer un compte Youtube, Diffuser sur les chaines et pages populaires"
     ],
     "resultsMap": {
-      "ventes": [],
-      "clients": [
-        {"age": "18-30", "nombre": 60},
-        {"age": "30-40", "nombre": 30},
-        {"age": "40-50", "nombre": 7},
-        {"age": "50-60", "nombre": 3}
+      "followers": [
+        {"plateforme": "Youtube", "nombre": 8260},
+        {"plateforme": "Spotify", "nombre": 8500},
+        {"plateforme": "Facebook", "nombre": 168},
+        {"plateforme": "X", "nombre": 6},
+        {"plateforme": "TikTok", "nombre": 15000}
       ],
-      "demonstrations": [
-        {"mois": "Mars 2008", "evenements": 2},
-        {"mois": "Juin 2010", "evenements": 3},
-        {"mois": "Mai 2013", "evenements": 4},
-        {"mois": "Decembre 2018", "evenements": 1},
-        {"mois": "Juin 2020", "evenements": 3},
-        {"mois": "Novembre 2023", "evenements": 3}
+      "diffusions": [
+        {"annee": 2016, "musics": 2},
+        {"annee": 2018, "musics": 3},
+        {"annee": 2019, "musics": 3},
+        {"annee": 2020, "musics": 1},
+        {"annee": 2021, "musics": 3},
+        {"annee": 2022, "musics": 7},
+        {"annee": 2023, "musics": 15},
+        {"annee": 2024, "musics": 5},
+        {"annee": 2025, "musics": 1}
+      ],
+      "representations": [
+        {"annee": "Mars 2008", "evenements": 2},
+        {"annee": "Juin 2010", "evenements": 3},
+        {"annee": "Mai 2013", "evenements": 4},
+        {"annee": "Decembre 2018", "evenements": 1},
+        {"annee": "Novembre 2023", "evenements": 3}
       ],
       "videos": [
+        {"titre": "Bessaya", "vues": 4.701},
         {"titre": "Au sommet", "vues": 11.550},
         {"titre": "Moulah", "vues": 24.287},
         {"titre": "Dog is life", "vues": 4.388},
@@ -270,7 +284,7 @@
         {"titre": "Top boy", "vues": 15.000},
         {"titre": "Capo del capi", "vues": 8.811},
         {"titre": "Mach up", "vues": 1.948},
-        {"titre": "Hit Them", "vues": 0.213},
+        {"titre": "Just the life", "vues": 0.213},
         {"titre": "Paka domi", "vues": 6.565},
         {"titre": "Haï mwen", "vues": 2.108},
         {"titre": "Life is a bitch", "vues": 4.488},
@@ -282,8 +296,7 @@
         {"titre": "Ipocrisia", "vues": 0.290},
         {"titre": "Anithing", "vues": 7.780},
         {"titre": "Mama hot", "vues": 12.336}
-      ],
-      "stock": []
+      ]
     }
   }
 ]

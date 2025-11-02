@@ -5,8 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/features/parametres/themes/provider/theme_repository_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../core/provider/config_env_provider.dart';
-import '../../../core/provider/json_data_provider.dart';
+import '../../../core/provider/provider_extentions.dart';
 import '../../generator/services/wakatime_service.dart';
 import '../../projets/data/project_data.dart';
 

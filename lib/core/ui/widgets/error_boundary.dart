@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../exceptions/error/error_screen.dart';
@@ -51,9 +52,12 @@ class _ErrorBoundaryState extends ConsumerState<ErrorBoundary> {
           stackTrace: stackTrace,
         );
 
-    setState(() {
-      _error = error;
-      _stackTrace = stackTrace;
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        setState(() {
+          // Ta mise à jour
+        });
+      }
     });
   }
 

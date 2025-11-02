@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/ui/widgets/responsive_text.dart';
-import 'package:portefolio/features/parametres/views/widgets/smart_image.dart';
+import 'package:portefolio/core/ui/widgets/smart_image.dart';
 
 class AboutSection extends ConsumerStatefulWidget {
   const AboutSection({super.key});

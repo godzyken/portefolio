@@ -4,10 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/ui/widgets/responsive_text.dart';
+import 'package:portefolio/core/ui/widgets/smart_image.dart';
 import 'package:portefolio/features/experience/data/experiences_data.dart';
-import 'package:portefolio/features/generator/views/widgets/particle_background.dart';
-import 'package:portefolio/features/generator/views/widgets/sig_discovery_map.dart';
-import 'package:portefolio/features/parametres/views/widgets/smart_image.dart';
+import 'package:portefolio/features/generator/views/widgets/generator_widgets_extentions.dart';
 
 /// Écran de détails immersif pour une expérience
 /// Affiche tous les détails avec animations et thème dynamique
@@ -271,8 +270,7 @@ class _ImmersiveExperienceDetailState
               ? Center(
                   child: SmartImage(
                     path: widget.experience.logo,
-                    width: 120,
-                    height: 120,
+                    responsiveSize: ResponsiveImageSize.medium,
                     fit: BoxFit.contain,
                   ),
                 )
