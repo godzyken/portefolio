@@ -93,6 +93,7 @@ class _CompetenceChipState extends ConsumerState<CompetenceChip> {
               }
             },
             child: AnimatedScale(
+              alignment: Alignment.center,
               scale: _hovering ? 1.05 : 1.0,
               duration: const Duration(milliseconds: 200),
               child: _buildChipContent(comp, isActive),
@@ -156,6 +157,8 @@ class _CompetenceChipState extends ConsumerState<CompetenceChip> {
           ],
         ),
         child: Stack(
+          alignment: Alignment.center,
+          fit: StackFit.expand,
           children: [
             _buildConcentricCircles(comp.niveau),
             Center(

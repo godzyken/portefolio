@@ -96,7 +96,7 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
     final overlay = Overlay.of(context);
 
     ref.read(cardFlightProvider.notifier).setStateForCard(
-          exp.id, // ✅ Utiliser l'ID au lieu de l'entreprise
+          exp.id,
           flyUp ? CardFlightState.flyingUp : CardFlightState.inPile,
         );
 
@@ -172,10 +172,9 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
               ),
             Padding(
               padding: const EdgeInsets.all(4),
-              child: ResponsiveText(
+              child: ResponsiveText.bodySmall(
                 exp.entreprise,
-                style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                style: const TextStyle(fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
@@ -197,18 +196,10 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
         )
         .toList();
 
-    // ✅ LOGIQUE DE TAILLE MAXIMALE
-    // 1. Définir une taille maximale souhaitée pour la largeur des cartes.
     const double maxCardWidth = 80;
-
-    // ✅ ÉTAPE 2: RENDRE LES CARTES PROPORTIONNELLES
     final proportionalCardWidth = info.size.width * 0.11;
-
-    // 3. Utiliser la plus petite des deux valeurs.
-    //    - Sur un grand écran, proportionalCardWidth > 140, donc cardWidth = 140.
-    //    - Sur un petit écran, proportionalCardWidth < 140, donc cardWidth = proportionalCardWidth.
     final cardWidth = min(proportionalCardWidth, maxCardWidth);
-    final cardHeight = cardWidth * 1.33; // Le ratio est conservé
+    final cardHeight = cardWidth * 1.33;
 
     return Align(
       alignment: Alignment.centerLeft,
@@ -242,7 +233,6 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
                   childWhenDragging: ResponsiveBox(
                     width: cardWidth,
                     height: cardHeight,
-                    // ✅ FIX 5: Utiliser Opacity correctement
                     child: Opacity(
                       opacity: 0.3,
                       child: RepaintBoundary(child: _cardClone(exp)),
@@ -252,7 +242,7 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
                     width: cardWidth,
                     height: cardHeight,
                     child: Card(
-                      key: ValueKey('card_${exp.id}'), // ✅ Utiliser l'ID
+                      key: ValueKey('card_${exp.id}'),
                       child: _cardClone(exp),
                     ),
                   ),
@@ -265,15 +255,14 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
     );
   }
 
-  // ✅ FIX 7: Utiliser un target
+  // Utiliser un target
   Widget _buildCardTarget(ResponsiveInfo info) {
     final width =
         info.isLandscape ? info.size.width * 0.4 : info.size.width * 0.5;
     final height =
         info.isLandscape ? info.size.height * 0.7 : info.size.height * 0.6;
 
-    // ✅ LOGIQUE DE TAILLE MAXIMALE APPLIQUÉE ICI AUSSI
-    const double maxCardWidth = 120.0; // Un peu plus petit pour le pot
+    const double maxCardWidth = 120.0;
     final proportionalCardWidth = info.size.width * 0.10;
     final cardWidth = min(proportionalCardWidth, maxCardWidth);
     final cardHeight = cardWidth * 1.33;
@@ -393,16 +382,10 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
     );
   }
 
-  // ✅ FIX 8: Utiliser des chips pieces en vadrouille
+  // Utiliser des chips pieces en vadrouille
   List<Widget> _buildScatteredChips(ResponsiveInfo info) {
-    // ✅ LOGIQUE DE TAILLE MAXIMALE
-    // 1. Définir une taille maximale souhaitée pour les jetons.
     const double maxChipSize = 80.0;
-
-    // 2. Calculer la taille proportionnelle comme avant.
     final proportionalChipSize = info.size.height * 0.15;
-
-    // 3. Utiliser la plus petite des deux valeurs.
     final chipSize = min(proportionalChipSize, maxChipSize);
 
     // Définir les positions en pourcentage de la largeur/hauteur pour qu'elles s'adaptent.
@@ -412,7 +395,7 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
       [0.15, 0.10, 'Flutter'], // 15% du haut, 10% de la droite
       [0.16, 0.15, 'Qualite'],
       [0.20, 0.12, 'Relation Client'],
-      [0.09, 0.20, 'Logistique'],
+      [0.09, 0.07, 'Logistique'],
     ];
 
     return positions.map((pos) {
@@ -443,59 +426,88 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
         ),
         Column(
           children: [
+            // ✅ ROW 1: Pile de cartes, Cible, Jetons éparpillés
             Expanded(
-              flex: 8,
+              flex: 85,
               child: Row(
                 children: [
-                  Expanded(flex: 2, child: _buildCardPile(info)),
+                  // Colonne 1: Pile de cartes
                   Expanded(
-                      flex: 3,
-                      child: Column(
-                        children: [
-                          Expanded(flex: 7, child: _buildCardTarget(info)),
-                          const ResponsiveBox(height: 10),
-                          Expanded(
-                            flex: 3,
-                            child: ResponsiveBox(
-                              width: info.size.width * 0.35,
-                              height: info.size.height * 0.35,
-                              paddingSize: ResponsiveSpacing.m,
-                              padding: EdgeInsets.symmetric(
-                                horizontal: info.size.width * 0.02,
-                                vertical: 8,
-                              ),
-                              child: const CompetencesPilesByNiveau(),
-                            ),
-                          ),
-                        ],
-                      )),
+                    flex: 30,
+                    child: ResponsiveBox(
+                      child: _buildCardPile(info),
+                    ),
+                  ),
+                  // Colonne 2: Zone cible centrale
                   Expanded(
-                    flex: 2,
+                    flex: 50,
+                    child: ResponsiveBox(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: info.size.width * 0.01,
+                        vertical: info.size.height * 0.02,
+                      ),
+                      child: _buildCardTarget(info),
+                    ),
+                  ),
+                  // Colonne 3: Jetons éparpillés
+                  Expanded(
+                    flex: 30,
                     child: ResponsiveBox(
                       padding: EdgeInsets.only(
-                        right: info.size.width * 0.02,
-                        top: info.size.height * 0.08,
-                      ),
-                      paddingSize: ResponsiveSpacing.m,
-                      marginSize: ResponsiveSpacing.m,
-                      margin: EdgeInsets.only(
-                        right: info.size.width * 0.02,
-                        top: info.size.height * 0.08,
+                        right: info.size.width * 0.01,
+                        left: info.size.width * 0.02,
+                        top: info.size.height * 0.05,
                       ),
                       child: Stack(
-                        children: [
-                          InteractivePot(
-                            experiences: widget.experiences,
-                            cardKeys: _cardKeys,
-                            flyCard: _flyCard,
-                            onCardsArrivedInPot: _onCardsArrivedInPot,
-                            onPotCleared: _onPotCleared,
-                          ),
-                          ..._buildScatteredChips(info),
-                        ],
+                        children: _buildScatteredChips(info),
                       ),
                     ),
                   ),
+                ],
+              ),
+            ),
+            // ✅ ROW 2: Compétences et Pot
+            Expanded(
+              flex: 35,
+              child: Row(
+                children: [
+                  // Colonne 1: Rangée de compétences
+                  Expanded(
+                      flex: 65,
+                      child: Stack(
+                        children: [
+                          Positioned.fill(
+                            child: ResponsiveBox(
+                              alignment: Alignment.center,
+                              child: const CompetencesPilesByNiveau(),
+                            ),
+                          )
+                        ],
+                      )),
+                  // Colonne 2: Pot
+                  Expanded(
+                      flex: 45,
+                      child: Stack(
+                        children: [
+                          Positioned.fill(
+                            child: ResponsiveBox(
+                              padding: EdgeInsets.only(
+                                right: info.size.width * 0.02,
+                                left: info.size.width * 0.02,
+                                bottom: info.size.height * 0.03,
+                                top: info.size.height * 0.01,
+                              ),
+                              child: InteractivePot(
+                                experiences: widget.experiences,
+                                cardKeys: _cardKeys,
+                                flyCard: _flyCard,
+                                onCardsArrivedInPot: _onCardsArrivedInPot,
+                                onPotCleared: _onPotCleared,
+                              ),
+                            ),
+                          )
+                        ],
+                      )),
                 ],
               ),
             ),

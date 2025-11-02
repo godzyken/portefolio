@@ -78,7 +78,7 @@ class _CompetenceNiveauPileState extends ConsumerState<CompetenceNiveauPile> {
     final double offsetStep = info.isMobile ? 6 : 8;
 
     if (_jetons.isEmpty) {
-      return const ResponsiveBox(paddingSize: ResponsiveSpacing.s);
+      return const ResponsiveBox(paddingSize: ResponsiveSpacing.xs);
     }
 
     return GestureDetector(
@@ -89,6 +89,7 @@ class _CompetenceNiveauPileState extends ConsumerState<CompetenceNiveauPile> {
         height: height,
         child: Stack(
           alignment: Alignment.bottomCenter,
+          fit: StackFit.expand,
           children: [
             // Pile réelle : chaque jeton est interactif
             ..._jetons.asMap().entries.map((entry) {
@@ -100,6 +101,9 @@ class _CompetenceNiveauPileState extends ConsumerState<CompetenceNiveauPile> {
                 key: ValueKey('pile_jeton_${competence.nom}_$index'),
                 child: Center(
                   child: ResponsiveBox(
+                    paddingSize: ResponsiveSpacing.s,
+                    marginSize: ResponsiveSpacing.s,
+                    alignment: Alignment.center,
                     width: 80,
                     height: 80,
                     child: Draggable<Competence>(
@@ -207,7 +211,7 @@ class CompetencesPilesByNiveau extends ConsumerWidget {
     return ResponsiveBox(
       paddingSize: ResponsiveSpacing.s,
       marginSize: ResponsiveSpacing.s,
-      padding: EdgeInsets.all(spacing * 2),
+      alignment: Alignment.center,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -219,13 +223,17 @@ class CompetencesPilesByNiveau extends ConsumerWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-          const ResponsiveBox(paddingSize: ResponsiveSpacing.s),
           Flex(
-              spacing: spacing,
               direction: isVerticalLayout ? Axis.vertical : Axis.horizontal,
+              spacing: spacing,
               mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisSize: MainAxisSize.max,
+              clipBehavior: Clip.hardEdge,
               children: [
+                const SizedBox(
+                  height: 10,
+                ),
                 for (final niveau in piles) ...[
                   CompetenceNiveauPile(niveau: niveau),
                   if (niveau != piles.last)

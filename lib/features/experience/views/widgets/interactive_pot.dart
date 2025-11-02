@@ -268,7 +268,8 @@ class _InteractivePotState extends ConsumerState<InteractivePot>
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.red,
                           minimumSize: Size(potSize * 0.8, 36)),
-                      child: const ResponsiveText.bodySmall("Vider le pot"),
+                      child: const ResponsiveText.bodySmall("Vider le pot",
+                          style: TextStyle(color: Colors.white)),
                     ),
                 ],
               ),
