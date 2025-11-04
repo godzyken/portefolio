@@ -1,5 +1,6 @@
 export 'adaptive_card.dart';
 export 'bubble_navigation_menu.dart';
+export 'chart_renderer.dart';
 export 'code_high_light_list.dart';
 export 'fade_slide_animation.dart';
 export 'hover_card.dart';

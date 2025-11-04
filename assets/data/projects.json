@@ -114,7 +114,48 @@
       "assets/images/screenshot-inspector.jpg"
     ],
     "platform" : ["Smartphone", "tablet", "DeskTop", "LargeDesktop"],
-    "tags": ["Flutter", "Firebase", "IoT", "VR", "Management", "UX/UI", "Digitalisation"]
+    "tags": ["Flutter", "Firebase", "IoT", "VR", "Management", "UX/UI", "Digitalisation"],
+    "results": [
+      "🔄 Digitalisation complète de 80% des processus administratifs",
+      "📱 Accès mobile temps réel pour 100% des intervenants",
+      "🎨 Visualisation 3D/AR réduisant les incompréhensions de -65%",
+      "📈 +50% de réactivité sur les imprévus chantier",
+      "🧾 Suppression totale du papier sur 90% des projets",
+      "⚡ Validation des interventions en -5 minutes (vs 2 jours avant)",
+      "🎯 Traçabilité complète : 100% des actions documentées",
+      "💡 +40% de suggestions d'amélioration remontées par les équipes"
+    ],
+    "resultsMap": {
+      "roi": "250%",
+      "timeSaved": "12h/semaine",
+      "clients": "500+",
+      "projects": "150+",
+      "satisfaction": "4.7/5",
+      "efficiency": "+35%",
+      "deployment": "-95%",
+      "compliance": "100%",
+      "ventes": [
+        {"gamme": "0-50k€", "quantite": 45},
+        {"gamme": "50-100k€", "quantite": 32},
+        {"gamme": "100-250k€", "quantite": 28},
+        {"gamme": "250k+", "quantite": 15}
+      ],
+      "demonstrations": [
+        {"mois": "Jan", "evenements": 5},
+        {"mois": "Fév", "evenements": 8},
+        {"mois": "Mar", "evenements": 12},
+        {"mois": "Avr", "evenements": 15},
+        {"mois": "Mai", "evenements": 18},
+        {"mois": "Juin", "evenements": 22}
+      ],
+      "videos": [
+        {"titre": "Tuto 1", "vues": 1200},
+        {"titre": "Demo 2", "vues": 2500},
+        {"titre": "Présentation 3", "vues": 3800},
+        {"titre": "Formation 4", "vues": 1800},
+        {"titre": "Webinar 5", "vues": 4200}
+      ]
+    }
   },
   {
     "id": "projet_4",

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:portefolio/core/ui/widgets/responsive_text.dart';
 
 import '../core/provider/json_data_provider.dart';
 import '../core/provider/providers.dart';
@@ -58,6 +59,12 @@ enum AppTab {
               );
             },
           ),
+          SizedBox.shrink(),
+          IconButton(
+            icon: const Icon(Icons.gavel),
+            tooltip: 'Mentions légales',
+            onPressed: () => context.push('/legal'),
+          ),
         ]);
 
       case AppTab.experiences:
@@ -106,7 +113,8 @@ enum AppTab {
                 padding: const EdgeInsets.only(right: 12),
                 child: Row(
                   children: [
-                    const Text('Vue:', style: TextStyle(fontSize: 12)),
+                    const ResponsiveText.bodySmall('Vue:',
+                        style: TextStyle(fontSize: 12)),
                     const SizedBox(width: 4),
                     ToggleButtons(
                       constraints:
@@ -144,6 +152,12 @@ enum AppTab {
                         ),
                       ],
                     ),
+                    SizedBox.shrink(),
+                    IconButton(
+                      icon: const Icon(Icons.gavel),
+                      tooltip: 'Mentions légales',
+                      onPressed: () => context.push('/legal'),
+                    ),
                   ],
                 ),
               ),
@@ -179,7 +193,13 @@ enum AppTab {
         );
 
       case AppTab.contact:
-        return const AppBarConfig(title: "Contact");
+        return AppBarConfig(title: "Contact", actions: [
+          IconButton(
+            icon: const Icon(Icons.gavel),
+            tooltip: 'Mentions légales',
+            onPressed: () => context.push('/legal'),
+          ),
+        ]);
     }
   }
 
