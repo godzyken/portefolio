@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:portefolio/features/generator/views/widgets/generator_widgets_extentions.dart';
+import 'package:portefolio/features/generator/views/generator_widgets_extentions.dart';
 import 'package:portefolio/features/parametres/themes/provider/theme_repository_provider.dart';
 
 import '../../../../core/provider/providers.dart';

@@ -5,9 +5,9 @@ import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/provider/providers.dart';
 
 import '../../../../constants/app_tab.dart';
-import '../../../../core/ui/widgets/responsive_text.dart';
+import '../../../../core/ui/widgets/ui_widgets_extentions.dart';
 import '../../data/bubble_menu_item.dart';
-import '../widgets/bubble_navigation_menu.dart';
+import '../generator_widgets_extentions.dart';
 
 class MainScaffold extends ConsumerWidget {
   final Widget child;
@@ -101,6 +101,7 @@ class MainScaffold extends ConsumerWidget {
           ),
         ],
       ),
+      bottomNavigationBar: const PortfolioFooter(),
     );
   }
 }

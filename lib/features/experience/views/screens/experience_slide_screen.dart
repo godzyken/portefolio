@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 
-import '../../../generator/views/widgets/generator_widgets_extentions.dart';
+import '../../../generator/views/generator_widgets_extentions.dart';
 import '../../data/experiences_data.dart';
 import '../widgets/experience_widgets_extentions.dart';
 

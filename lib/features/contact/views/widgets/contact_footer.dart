@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:portefolio/core/ui/widgets/responsive_text.dart';
 
 import '../../../../core/affichage/screen_size_detector.dart';
@@ -34,6 +33,7 @@ class ContactFooter extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
+/*
           Wrap(
             spacing: 24,
             runSpacing: 12,
@@ -47,12 +47,13 @@ class ContactFooter extends StatelessWidget {
               _buildFooterInfo(context, theme, Icons.verified, 'Devis gratuit'),
             ],
           ),
+*/
         ],
       ),
     );
   }
 
-  Widget _buildFooterInfo(
+/*  Widget _buildFooterInfo(
     BuildContext context,
     ThemeData theme,
     IconData icon,
@@ -89,5 +90,5 @@ class ContactFooter extends StatelessWidget {
         child: content,
       ),
     );
-  }
+  }*/
 }

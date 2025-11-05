@@ -8,7 +8,7 @@ import 'package:portefolio/core/ui/widgets/smart_image.dart';
 
 import '../../../projets/data/project_data.dart';
 import '../../data/chart_data.dart';
-import 'generator_widgets_extentions.dart';
+import '../generator_widgets_extentions.dart';
 
 class ImmersiveDetailScreen extends ConsumerStatefulWidget {
   final ProjectInfo project;

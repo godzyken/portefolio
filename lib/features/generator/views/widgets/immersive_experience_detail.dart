@@ -6,7 +6,7 @@ import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/ui/widgets/responsive_text.dart';
 import 'package:portefolio/core/ui/widgets/smart_image.dart';
 import 'package:portefolio/features/experience/data/experiences_data.dart';
-import 'package:portefolio/features/generator/views/widgets/generator_widgets_extentions.dart';
+import 'package:portefolio/features/generator/views/generator_widgets_extentions.dart';
 
 /// Écran de détails immersif pour une expérience
 /// Affiche tous les détails avec animations et thème dynamique

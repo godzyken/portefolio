@@ -7,7 +7,7 @@ import 'package:portefolio/features/experience/views/widgets/experience_widgets_
 import 'package:timelines_plus/timelines_plus.dart';
 
 import '../../../../core/affichage/screen_size_detector.dart';
-import '../../../generator/views/widgets/generator_widgets_extentions.dart';
+import '../../../generator/views/generator_widgets_extentions.dart';
 import '../../data/experiences_data.dart';
 
 final fadeCtrlProvider = Provider<AnimationController>((_) {

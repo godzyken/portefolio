@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/ui/widgets/ui_widgets_extentions.dart';
 import 'package:portefolio/features/generator/services/pdf_export_service.dart';
-import 'package:portefolio/features/generator/views/widgets/generator_widgets_extentions.dart';
+import 'package:portefolio/features/generator/views/generator_widgets_extentions.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 import '../../../../core/provider/providers.dart';

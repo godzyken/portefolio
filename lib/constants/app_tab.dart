@@ -60,11 +60,6 @@ enum AppTab {
             },
           ),
           SizedBox.shrink(),
-          IconButton(
-            icon: const Icon(Icons.gavel),
-            tooltip: 'Mentions légales',
-            onPressed: () => context.push('/legal'),
-          ),
         ]);
 
       case AppTab.experiences:
@@ -152,12 +147,6 @@ enum AppTab {
                         ),
                       ],
                     ),
-                    SizedBox.shrink(),
-                    IconButton(
-                      icon: const Icon(Icons.gavel),
-                      tooltip: 'Mentions légales',
-                      onPressed: () => context.push('/legal'),
-                    ),
                   ],
                 ),
               ),
@@ -193,13 +182,7 @@ enum AppTab {
         );
 
       case AppTab.contact:
-        return AppBarConfig(title: "Contact", actions: [
-          IconButton(
-            icon: const Icon(Icons.gavel),
-            tooltip: 'Mentions légales',
-            onPressed: () => context.push('/legal'),
-          ),
-        ]);
+        return AppBarConfig(title: "Contact");
     }
   }
 
