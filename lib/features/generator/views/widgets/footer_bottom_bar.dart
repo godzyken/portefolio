@@ -10,10 +10,9 @@ class PortfolioFooter extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Container(
+    return ResponsiveBox(
       width: double.infinity,
-      color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
-      padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -36,7 +35,7 @@ class PortfolioFooter extends StatelessWidget {
             ],
           ),
 
-          const SizedBox(height: 24),
+          const ResponsiveBox(paddingSize: ResponsiveSpacing.xs),
 
           // --- Séparateur léger ---
           Divider(
