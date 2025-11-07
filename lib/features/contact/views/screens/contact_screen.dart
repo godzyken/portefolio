@@ -26,6 +26,8 @@ class _ContactScreenState extends ConsumerState<ContactScreen>
   late Animation<double> _fadeAnimation;
   late Animation<double> _pulseAnimation;
 
+  ProviderSubscription<ContactFormState>? _formSubscription;
+
   @override
   void initState() {
     super.initState();
@@ -49,21 +51,20 @@ class _ContactScreenState extends ConsumerState<ContactScreen>
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
 
-    Future.microtask(() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       _fadeController.forward();
 
-      ref.listen<ContactFormState>(contactFormProvider, (prev, next) {
-        // ⚡ trigger après le frame build
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          _listenAndSnack(next);
-        });
-      });
+      _formSubscription = ref.listenManual<ContactFormState>(
+        contactFormProvider,
+        (previous, next) => _listenAndSnack(next),
+      );
     });
   }
 
   @override
   void dispose() {
+    _formSubscription?.close();
     _scrollCtrl.dispose();
     _fadeController.dispose();
     _pulseController.dispose();

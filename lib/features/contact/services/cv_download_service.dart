@@ -11,7 +11,9 @@ class CvDownloadService {
   /// Télécharge le CV depuis OneDrive
   Future<void> downloadCv(BuildContext context, String cvUrl) async {
     try {
-      final uri = Uri.parse(cvUrl);
+      // Convertir l'URL en format de téléchargement direct
+      final downloadUrl = _convertToDirectDownloadUrl(cvUrl);
+      final uri = Uri.parse(downloadUrl);
 
       if (!await canLaunchUrl(uri)) {
         throw Exception('Impossible d\'ouvrir le lien du CV');
@@ -99,10 +101,13 @@ class CvDownloadService {
 
       // OneDrive: ajouter le paramètre download=1
       if (url.contains('1drv.ms') || url.contains('onedrive.live.com')) {
-        if (url.contains('?')) {
-          return '$url&download=1';
-        } else {
-          return '$url?download=1';
+        if (url.contains('redir?')) {
+          url = url.replaceAll('redir?', 'download?');
+        }
+
+        if (!url.contains('download=')) {
+          final separator = url.contains('?') ? '&' : '?';
+          return '$url${separator}download=1';
         }
       }
 
