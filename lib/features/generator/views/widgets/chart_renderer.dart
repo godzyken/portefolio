@@ -1,6 +1,8 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:portefolio/constants/benchmark_colors.dart';
 import 'package:portefolio/features/generator/data/chart_data.dart';
+import 'package:portefolio/features/generator/views/widgets/benchmark_widgets.dart';
 
 import '../../../../core/affichage/screen_size_detector.dart';
 import '../../../../core/ui/widgets/responsive_text.dart';
@@ -70,12 +72,44 @@ class ChartRenderer {
           info,
           yLabelBuilder,
         );
+      case ChartType.benchmarkGlobal:
+        if (chart.benchmarkInfo != null) {
+          return BenchmarkGlobalWidget(
+            benchmark: chart.benchmarkInfo!,
+            info: info,
+          );
+        }
+        return const SizedBox.shrink();
+
+      case ChartType.benchmarkComparison:
+        if (chart.benchmarkComparison != null) {
+          return BenchmarkComparisonWidget(
+            benchmarks: chart.benchmarkComparison!,
+            info: info,
+          );
+        }
+        return const SizedBox.shrink();
+
+      case ChartType.benchmarkRadar:
+        if (chart.benchmarkInfo != null) {
+          return BenchmarkRadarWidget(
+            benchmark: chart.benchmarkInfo!,
+            info: info,
+            color: BenchmarkColors.purple,
+          );
+        }
+        return const SizedBox.shrink();
+
+      case ChartType.benchmarkTable:
+        if (chart.benchmarkComparison != null) {
+          return BenchmarkTableWidget(
+            benchmarks: chart.benchmarkComparison!,
+            info: info,
+          );
+        }
+        return const SizedBox.shrink();
     }
   }
-
-  // ============================================
-  // NOUVEAU : KPI CARDS WIDGET
-  // ============================================
 
   static Widget _buildKPICards(Map<String, String> kpis, ResponsiveInfo info) {
     // Calcul du nombre de colonnes selon l'écran
@@ -314,5 +348,159 @@ class ChartRenderer {
     if (range <= 50) return 10;
     if (range <= 100) return 20;
     return (range / 5).ceilToDouble();
+  }
+}
+
+extension ChartRendererBenchmark on ChartRenderer {
+  /// Rend tous les charts incluant les benchmarks
+  static Widget renderChartsWithBenchmarks(
+    List<ChartData> charts,
+    ResponsiveInfo info,
+    Widget Function(double) yLabel,
+  ) {
+    if (charts.isEmpty) return const SizedBox.shrink();
+
+    // Séparer les benchmarks des autres charts
+    final benchmarkCharts = charts
+        .where((c) =>
+            c.type == ChartType.benchmarkGlobal ||
+            c.type == ChartType.benchmarkComparison ||
+            c.type == ChartType.benchmarkRadar ||
+            c.type == ChartType.benchmarkTable)
+        .toList();
+
+    final otherCharts = charts
+        .where((c) =>
+            c.type != ChartType.benchmarkGlobal &&
+            c.type != ChartType.benchmarkComparison &&
+            c.type != ChartType.benchmarkRadar &&
+            c.type != ChartType.benchmarkTable)
+        .toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Section Benchmark avec titre et fond spécial
+        if (benchmarkCharts.isNotEmpty) ...[
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(info.isMobile ? 24 : 48),
+            decoration: BoxDecoration(
+              gradient: BenchmarkColors.bgGradient,
+              borderRadius: BorderRadius.circular(32),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.1),
+                width: 2,
+              ),
+            ),
+            child: Column(
+              children: [
+                // Titre de section
+                Text(
+                  '📊 Analyse des Benchmarks',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: info.isMobile ? 28 : 36,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: info.isMobile ? 32 : 48),
+
+                // Rendre les charts de benchmark
+                ...benchmarkCharts.map((chart) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 24),
+                    child: _renderBenchmarkChart(chart, info),
+                  );
+                }),
+
+                // Recommandations si on a des comparaisons
+                if (benchmarkCharts
+                    .any((c) => c.type == ChartType.benchmarkComparison)) ...[
+                  SizedBox(height: info.isMobile ? 24 : 32),
+                  _renderBenchmarkRecommendations(benchmarkCharts, info),
+                ],
+              ],
+            ),
+          ),
+          SizedBox(height: info.isMobile ? 32 : 48),
+        ],
+
+        // Autres charts (KPI, ventes, etc.)
+        if (otherCharts.isNotEmpty)
+          ChartRenderer.renderCharts(otherCharts, info, yLabel),
+      ],
+    );
+  }
+
+  /// Rend un chart de benchmark individuel
+  static Widget _renderBenchmarkChart(ChartData chart, ResponsiveInfo info) {
+    switch (chart.type) {
+      case ChartType.benchmarkGlobal:
+        if (chart.benchmarkInfo != null) {
+          return BenchmarkGlobalWidget(
+            benchmark: chart.benchmarkInfo!,
+            info: info,
+          );
+        }
+        break;
+
+      case ChartType.benchmarkComparison:
+        if (chart.benchmarkComparison != null) {
+          return BenchmarkComparisonWidget(
+            benchmarks: chart.benchmarkComparison!,
+            info: info,
+          );
+        }
+        break;
+
+      case ChartType.benchmarkRadar:
+        if (chart.benchmarkInfo != null) {
+          // Déterminer la couleur selon l'index
+          final colors = [BenchmarkColors.purple, BenchmarkColors.pink];
+          return BenchmarkRadarWidget(
+            benchmark: chart.benchmarkInfo!,
+            info: info,
+            color: colors[0], // Adapter selon le contexte
+          );
+        }
+        break;
+
+      case ChartType.benchmarkTable:
+        if (chart.benchmarkComparison != null) {
+          return BenchmarkTableWidget(
+            benchmarks: chart.benchmarkComparison!,
+            info: info,
+          );
+        }
+        break;
+
+      default:
+        break;
+    }
+    return const SizedBox.shrink();
+  }
+
+  /// Rend les recommandations pour les benchmarks
+  static Widget _renderBenchmarkRecommendations(
+    List<ChartData> benchmarkCharts,
+    ResponsiveInfo info,
+  ) {
+    // Récupérer toutes les infos de benchmark
+    final allBenchmarks = <BenchmarkInfo>[];
+
+    for (final chart in benchmarkCharts) {
+      if (chart.benchmarkComparison != null) {
+        allBenchmarks.addAll(chart.benchmarkComparison!);
+      }
+    }
+
+    if (allBenchmarks.isEmpty) return const SizedBox.shrink();
+
+    return BenchmarkRecommendationsWidget(
+      benchmarks: allBenchmarks,
+      info: info,
+    );
   }
 }

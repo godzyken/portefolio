@@ -337,6 +337,7 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
           ),
         );
 
-    return ChartRenderer.renderCharts(_charts, info, yLabel);
+    return ChartRendererBenchmark.renderChartsWithBenchmarks(
+        _charts, info, yLabel);
   }
 }

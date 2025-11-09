@@ -6,16 +6,74 @@ enum ChartType {
   barChart,
   pieChart,
   lineChart,
-  kpiCards, // NOUVEAU : pour afficher les KPIs simples
+  kpiCards,
+  benchmarkGlobal,
+  benchmarkComparison,
+  benchmarkRadar,
+  benchmarkTable,
+}
+
+// Données de benchmark
+class BenchmarkInfo {
+  final String projectTitle;
+  final int scoreGlobal;
+  final int performances;
+  final int performancesMax;
+  final int seo;
+  final int seoMax;
+  final int mobile;
+  final int mobileMax;
+  final int securite;
+  final int securiteMax;
+
+  const BenchmarkInfo({
+    required this.projectTitle,
+    required this.scoreGlobal,
+    required this.performances,
+    this.performancesMax = 30,
+    required this.seo,
+    this.seoMax = 30,
+    required this.mobile,
+    this.mobileMax = 30,
+    required this.securite,
+    this.securiteMax = 10,
+  });
+
+  int get total => performances + seo + mobile + securite;
+  int get maxTotal => performancesMax + seoMax + mobileMax + securiteMax;
+
+  factory BenchmarkInfo.fromJson(Map<String, dynamic> json) {
+    // Parse "79/100" ou juste "79"
+    int parseScore(dynamic value) {
+      if (value is int) return value;
+      if (value is String) {
+        return int.tryParse(value.split('/').first) ?? 0;
+      }
+      return 0;
+    }
+
+    return BenchmarkInfo(
+      projectTitle: json['projectTitle'] ?? '',
+      scoreGlobal: parseScore(json['score']),
+      performances: parseScore(json['performances']),
+      performancesMax: json['performancesMax'] ?? 30,
+      seo: parseScore(json['seo']),
+      seoMax: json['seoMax'] ?? 30,
+      mobile: parseScore(json['mobile']),
+      mobileMax: json['mobileMax'] ?? 30,
+      securite: parseScore(json['sécurité'] ?? json['securite']),
+      securiteMax: json['securiteMax'] ?? 10,
+    );
+  }
 }
 
 /// Configuration d'un chart
 class ChartConfig {
   final String title;
   final ChartType type;
-  final String dataKey; // clé dans resultsMap
+  final String dataKey;
   final Color color;
-  final int xLabelStep; // pour espacer les labels X
+  final int xLabelStep;
 
   const ChartConfig({
     required this.title,
@@ -43,8 +101,9 @@ class ChartData {
   final Color? lineColor;
   final int? xLabelStep;
 
-  // Pour KPI Cards (NOUVEAU)
   final Map<String, String>? kpiValues;
+  final BenchmarkInfo? benchmarkInfo;
+  final List<BenchmarkInfo>? benchmarkComparison;
 
   ChartData.bar({
     required this.title,
@@ -55,7 +114,9 @@ class ChartData {
         xLabels = null,
         lineColor = null,
         xLabelStep = null,
-        kpiValues = null;
+        kpiValues = null,
+        benchmarkInfo = null,
+        benchmarkComparison = null;
 
   ChartData.pie({
     required this.title,
@@ -66,7 +127,9 @@ class ChartData {
         xLabels = null,
         lineColor = null,
         xLabelStep = null,
-        kpiValues = null;
+        kpiValues = null,
+        benchmarkInfo = null,
+        benchmarkComparison = null;
 
   ChartData.line({
     required this.title,
@@ -77,9 +140,10 @@ class ChartData {
   })  : type = ChartType.lineChart,
         barGroups = null,
         pieSections = null,
-        kpiValues = null;
+        kpiValues = null,
+        benchmarkInfo = null,
+        benchmarkComparison = null;
 
-  // NOUVEAU : constructeur pour KPI Cards
   ChartData.kpiCards({
     required this.title,
     required this.kpiValues,
@@ -89,7 +153,61 @@ class ChartData {
         lineSpots = null,
         xLabels = null,
         lineColor = null,
-        xLabelStep = null;
+        xLabelStep = null,
+        benchmarkInfo = null,
+        benchmarkComparison = null;
+
+  ChartData.benchmarkGlobal({
+    required this.title,
+    required this.benchmarkInfo,
+  })  : type = ChartType.benchmarkGlobal,
+        barGroups = null,
+        pieSections = null,
+        lineSpots = null,
+        xLabels = null,
+        lineColor = null,
+        xLabelStep = null,
+        kpiValues = null,
+        benchmarkComparison = null;
+
+  ChartData.benchmarkComparison({
+    required this.title,
+    required this.benchmarkComparison,
+  })  : type = ChartType.benchmarkComparison,
+        barGroups = null,
+        pieSections = null,
+        lineSpots = null,
+        xLabels = null,
+        lineColor = null,
+        xLabelStep = null,
+        kpiValues = null,
+        benchmarkInfo = null;
+
+  ChartData.benchmarkRadar({
+    required this.title,
+    required this.benchmarkInfo,
+  })  : type = ChartType.benchmarkRadar,
+        barGroups = null,
+        pieSections = null,
+        lineSpots = null,
+        xLabels = null,
+        lineColor = null,
+        xLabelStep = null,
+        kpiValues = null,
+        benchmarkComparison = null;
+
+  ChartData.benchmarkTable({
+    required this.title,
+    required this.benchmarkComparison,
+  })  : type = ChartType.benchmarkTable,
+        barGroups = null,
+        pieSections = null,
+        lineSpots = null,
+        xLabels = null,
+        lineColor = null,
+        xLabelStep = null,
+        kpiValues = null,
+        benchmarkInfo = null;
 }
 
 class ChartDataFactory {
@@ -97,6 +215,10 @@ class ChartDataFactory {
   static List<ChartData> createChartsFromResults(
       Map<String, dynamic> resultsMap) {
     final charts = <ChartData>[];
+
+    if (resultsMap.containsKey('benchmark')) {
+      charts.addAll(_createBenchmarkCharts(resultsMap['benchmark']));
+    }
 
     // 1. KPI Cards (NOUVEAU - en premier pour l'impact visuel)
     if (resultsMap.containsKey('roi') ||
@@ -192,7 +314,50 @@ class ChartDataFactory {
     return charts;
   }
 
-  // NOUVEAU : Créer les KPI Cards
+  static List<ChartData> _createBenchmarkCharts(dynamic benchmarkData) {
+    final charts = <ChartData>[];
+
+    // Si c'est un seul benchmark
+    if (benchmarkData is Map<String, dynamic>) {
+      final info = BenchmarkInfo.fromJson(benchmarkData);
+
+      // Score global avec pie chart
+      charts.add(ChartData.benchmarkGlobal(
+        title: '📊 Score Global - ${info.projectTitle}',
+        benchmarkInfo: info,
+      ));
+
+      // Radar chart
+      charts.add(ChartData.benchmarkRadar(
+        title: '🎯 Analyse Détaillée',
+        benchmarkInfo: info,
+      ));
+    }
+
+    // Si c'est une liste de benchmarks (pour comparaison)
+    if (benchmarkData is List) {
+      final infos = benchmarkData
+          .map((item) => BenchmarkInfo.fromJson(item as Map<String, dynamic>))
+          .toList();
+
+      if (infos.isNotEmpty) {
+        // Comparaison par critères
+        charts.add(ChartData.benchmarkComparison(
+          title: '📊 Comparaison des Critères',
+          benchmarkComparison: infos,
+        ));
+
+        // Tableau récapitulatif
+        charts.add(ChartData.benchmarkTable(
+          title: '📋 Tableau Récapitulatif',
+          benchmarkComparison: infos,
+        ));
+      }
+    }
+
+    return charts;
+  }
+
   static ChartData _createKPICards(Map<String, dynamic> resultsMap) {
     final kpis = <String, String>{};
 

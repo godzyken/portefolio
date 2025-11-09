@@ -27,6 +27,14 @@
       "Le projet a changé de main, d'adresse, d'organisation, et est devenue plus grand et plus ambitieux"
     ],
     "resultsMap": {
+      "benchmark": {
+        "projectTitle": "2RouesVertes",
+        "score": "79/100",
+        "performances": "19/30",
+        "seo": "30/30",
+        "mobile": "20/30",
+        "sécurité": "10/10"
+      },
       "ventes": [
         {"gamme": "950-1250€", "quantite": 3},
         {"gamme": "1250-1800€", "quantite": 5},
@@ -63,13 +71,6 @@
         {"etat": "Disponible", "nombre": 18},
         {"etat": "Vendu", "nombre": 10}
       ]
-    },
-    "benchmark": {
-      "score": "79/100",
-      "performances": "19/30",
-      "seo": "30/30",
-      "mobile": "20/30",
-      "sécurité": "10/10"
     }
   },
   {
@@ -97,12 +98,14 @@
       "Projet avortée en 2013, reportée et repris avec Wordpress cette année par le client, donc aucune données statistiques disponible",
       "Visitez le site https://www.wemoto.fr/"
     ],
-    "benchmark": {
-      "score": "62/100",
-      "performances": "12/30",
-      "seo": "25/30",
-      "mobile": "20/30",
-      "sécurité": "5/10"
+    "resultsMap": {
+      "benchmark": {
+        "score": "62/100",
+        "performances": "12/30",
+        "seo": "25/30",
+        "mobile": "20/30",
+        "sécurité": "5/10"
+      }
     }
   },
   {
@@ -361,6 +364,42 @@
         {"titre": "Ipocrisia", "vues": 0.290},
         {"titre": "Anithing", "vues": 7.780},
         {"titre": "Mama hot", "vues": 12.336}
+      ]
+    }
+  },
+  {
+    "id": "projet_comparison",
+    "title": "Comparaison des Projets E-commerce",
+    "points": [
+      "📊 Analyse comparative des performances des boutiques en ligne",
+      "🎯 Identification des axes d'amélioration"
+    ],
+    "resultsMap": {
+      "benchmark": [
+        {
+          "projectTitle": "2RouesVertes",
+          "score": 79,
+          "performances": 19,
+          "performancesMax": 30,
+          "seo": 30,
+          "seoMax": 30,
+          "mobile": 20,
+          "mobileMax": 30,
+          "sécurité": 10,
+          "securiteMax": 10
+        },
+        {
+          "projectTitle": "APVM Pièces & Accessoires",
+          "score": 62,
+          "performances": 12,
+          "performancesMax": 30,
+          "seo": 25,
+          "seoMax": 30,
+          "mobile": 20,
+          "mobileMax": 30,
+          "sécurité": 5,
+          "securiteMax": 10
+        }
       ]
     }
   }

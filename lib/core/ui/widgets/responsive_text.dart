@@ -37,7 +37,7 @@ class ResponsiveText extends ConsumerWidget {
     this.softWrap = true,
   }) : size = ResponsiveTextSize.displayLarge;
 
-  const ResponsiveText.headlineMedium(
+  const ResponsiveText.displayMedium(
     this.text, {
     super.key,
     this.style,
@@ -45,7 +45,17 @@ class ResponsiveText extends ConsumerWidget {
     this.maxLines,
     this.overflow,
     this.softWrap = true,
-  }) : size = ResponsiveTextSize.headlineMedium;
+  }) : size = ResponsiveTextSize.displayMedium;
+
+  const ResponsiveText.displaySmall(
+    this.text, {
+    super.key,
+    this.style,
+    this.textAlign,
+    this.maxLines,
+    this.overflow,
+    this.softWrap = true,
+  }) : size = ResponsiveTextSize.displaySmall;
 
   const ResponsiveText.titleLarge(
     this.text, {
@@ -56,6 +66,26 @@ class ResponsiveText extends ConsumerWidget {
     this.overflow,
     this.softWrap = true,
   }) : size = ResponsiveTextSize.titleLarge;
+
+  const ResponsiveText.titleMedium(
+    this.text, {
+    super.key,
+    this.style,
+    this.textAlign,
+    this.maxLines,
+    this.overflow,
+    this.softWrap = true,
+  }) : size = ResponsiveTextSize.titleMedium;
+
+  const ResponsiveText.titleSmall(
+    this.text, {
+    super.key,
+    this.style,
+    this.textAlign,
+    this.maxLines,
+    this.overflow,
+    this.softWrap = true,
+  }) : size = ResponsiveTextSize.titleSmall;
 
   const ResponsiveText.bodyLarge(
     this.text, {
@@ -86,6 +116,26 @@ class ResponsiveText extends ConsumerWidget {
     this.textAlign,
     this.softWrap = true,
   }) : size = ResponsiveTextSize.bodySmall;
+
+  const ResponsiveText.headlineLarge(
+    this.text, {
+    super.key,
+    this.style,
+    this.textAlign,
+    this.maxLines,
+    this.overflow,
+    this.softWrap = true,
+  }) : size = ResponsiveTextSize.headlineLarge;
+
+  const ResponsiveText.headlineMedium(
+    this.text, {
+    super.key,
+    this.style,
+    this.textAlign,
+    this.maxLines,
+    this.overflow,
+    this.softWrap = true,
+  }) : size = ResponsiveTextSize.headlineMedium;
 
   const ResponsiveText.headlineSmall(
     this.text, {
