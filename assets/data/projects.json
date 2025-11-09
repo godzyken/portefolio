@@ -63,6 +63,13 @@
         {"etat": "Disponible", "nombre": 18},
         {"etat": "Vendu", "nombre": 10}
       ]
+    },
+    "benchmark": {
+      "score": "79/100",
+      "performances": "19/30",
+      "seo": "30/30",
+      "mobile": "20/30",
+      "sécurité": "10/10"
     }
   },
   {
@@ -89,11 +96,18 @@
     "results": [
       "Projet avortée en 2013, reportée et repris avec Wordpress cette année par le client, donc aucune données statistiques disponible",
       "Visitez le site https://www.wemoto.fr/"
-    ]
+    ],
+    "benchmark": {
+      "score": "62/100",
+      "performances": "12/30",
+      "seo": "25/30",
+      "mobile": "20/30",
+      "sécurité": "5/10"
+    }
   },
   {
     "id": "projet_3",
-    "title": "Flutter",
+    "title": "EGOTe Services",
     "points": [
       "🧭 Directeur du service de transformation digitale",
       "📱 Déploiement d'applications multiplateformes : Android, iOS et Desktop",
@@ -176,7 +190,7 @@
       "assets/images/business-app.svg"
     ],
     "platform" : ["Smartphone", "tablet", "DeskTop", "LargeDesktop"],
-    "tags": ["UX/UI", "Digitalisation"]
+    "tags": ["UX/UI", "Digitalisation", "AWS Cloud"]
   },
   {
     "id": "projet_5",
@@ -202,11 +216,11 @@
     "id": "projet_6",
     "title": "Portefolio",
     "points": [
-      "🔗 Présentation de mes projets personnels",
-      "🌐 Site statique avec sections : projets, expérience, contact",
+      "🔗 Présentation de mon parcours pro et académique",
+      "🌐 Utilisation du CMS Wordpress et Flutter",
       "🎨 Design responsive pour mobile, tablette et desktop",
       "🧰 Utilisation de HTML, CSS, JS pour l’interface",
-      "📂 Hébergement via GitHub Pages"
+      "📂 Hébergement local et/ou via GitHub Pages"
     ],
     "image": [
       "assets/images/logo_godzyken.png",
@@ -224,13 +238,13 @@
       "assets/images/pf_wp (11).png"
     ],
     "platform": ["Web", "Desktop", "Mobile"],
-    "tags": ["Flutter", "GitHub", "FlutterFlow"]
+    "tags": ["WordPress", "GitHub", "FlutterFlow"]
   },
   {
     "id": "projet_7",
     "title": "Réseau Éducatif Résilient - Projet Workshop Ultron",
     "points": [
-      "🛰️ Projet Workshop EPSI-WIS 2025 – Campus Montpellier",
+      "🛰️ Projet Workshop EPSI-WIS 2025-2026 – Campus Montpellier",
       "🌐 Contexte : après l’avènement d’Ultron, l’internet mondial est corrompu, rendant impossible toute communication centralisée.",
       "🎯 Objectif : reconstruire un réseau éducatif décentralisé et résilient permettant d’échanger localement des informations liées à l’éducation.",
       "🏫 Concept : chaque ville possède un campus équipé d’une antenne locale (ESP8266) capable d’échanger des données via un réseau LAN indépendant.",
