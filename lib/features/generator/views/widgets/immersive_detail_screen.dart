@@ -121,8 +121,8 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
                 child: SmartImage(
                   key: UniqueKey(),
                   path: randomImage,
-                  responsiveSize: ResponsiveImageSize.xlarge,
-                  fit: BoxFit.cover,
+                  //responsiveSize: ResponsiveImageSize.xlarge,
+                  fit: BoxFit.contain,
                 ),
               ),
             ),
@@ -337,7 +337,6 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
           ),
         );
 
-    // SIMPLIFIÉ : Un seul appel !
     return ChartRenderer.renderCharts(_charts, info, yLabel);
   }
 }

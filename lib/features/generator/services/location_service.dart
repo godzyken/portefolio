@@ -24,13 +24,7 @@ class _PlatformLocationService extends LocationService {
   _PlatformLocationService() : _impl = _createService();
 
   static LocationService _createService() {
-    // 💡 Option de débogage/simulation :
-    // Utilisez un mode simulé si vous avez besoin de tester la logique
-    // de l'application sans dépendre d'une position réelle.
-    const bool isSimulationMode =
-        false; // À remplacer par un ValueNotifier ou un KDebugMode si besoin
-
-    if (isSimulationMode) return _SimulatedLocationService();
+    if (kDebugMode) return _SimulatedLocationService();
 
     // 🎯 Utiliser Geolocator pour toutes les plateformes prises en charge
     // par Flutter (Web, Android, iOS, Windows, Mac, Linux).
@@ -146,7 +140,7 @@ class _GeolocatorLocationService extends LocationService {
         latitude: pos.latitude,
         longitude: pos.longitude,
         accuracy: pos.accuracy,
-        timestamp: pos.timestamp ?? DateTime.now(),
+        timestamp: pos.timestamp,
       );
 
   @override
