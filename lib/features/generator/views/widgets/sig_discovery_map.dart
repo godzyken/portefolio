@@ -1,3 +1,5 @@
+import 'dart:developer' as developer;
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -54,7 +56,10 @@ class _SigDiscoveryMapState extends ConsumerState<SigDiscoveryMap>
         ],
       ),
       loading: () => _buildLoading(),
-      error: (e, st) => _buildError(e),
+      error: (e, st) {
+        developer.log('⚠️ Erreur géolocalisation: $e');
+        return _buildStaticMap();
+      },
     );
   }
 
@@ -67,18 +72,14 @@ class _SigDiscoveryMapState extends ConsumerState<SigDiscoveryMap>
         data: (experiences) {
           final sigExperience = experiences.firstWhere(
               (exp) => exp.tags.contains('SIG'),
-              orElse: () => throw Exception(
-                  "L'expérience 'SIG' est introuvable dans experiences.json"));
+              orElse: () => experiences.first);
 
-          if (sigExperience.location == null) {
-            return _buildError(Exception(
-                "Aucune donnée de localisation pour l'expérience SIG."));
-          }
-
-          final positionProjet = LatLng(
-            sigExperience.location!.latitude,
-            sigExperience.location!.longitude,
-          );
+          final positionProjet = sigExperience.location != null
+              ? LatLng(
+                  sigExperience.location!.latitude,
+                  sigExperience.location!.longitude,
+                )
+              : const LatLng(48.8566, 2.3522); // Paris
 
           return Stack(
             children: [
@@ -99,6 +100,7 @@ class _SigDiscoveryMapState extends ConsumerState<SigDiscoveryMap>
                         'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
                     subdomains: const ['a', 'b', 'c'],
                     userAgentPackageName: 'com.godzyken.portfolio',
+                    tileProvider: NetworkTileProvider(),
                   ),
                   MarkerLayer(
                     markers: [
@@ -242,11 +244,13 @@ class _SigDiscoveryMapState extends ConsumerState<SigDiscoveryMap>
           urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
           subdomains: const ['a', 'b', 'c'],
           userAgentPackageName: 'com.godzyken.portfolio',
+          tileProvider: NetworkTileProvider(),
         ),
         TileLayer(
           urlTemplate:
               'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
           userAgentPackageName: 'com.godzyken.portfolio',
+          tileProvider: NetworkTileProvider(),
         ),
         MarkerLayer(markers: markers),
         RichAttributionWidget(

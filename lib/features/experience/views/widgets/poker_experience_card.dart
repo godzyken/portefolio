@@ -10,8 +10,6 @@ import 'package:vector_math/vector_math_64.dart' show Vector3;
 
 import '../../../../core/provider/providers.dart';
 
-/// Carte minimaliste pour le jeu de poker
-/// Affiche uniquement le média (image/vidéo/map) et le poste
 class PokerExperienceCard extends ConsumerStatefulWidget {
   final Experience experience;
   final bool isCenter;
@@ -57,9 +55,14 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
   void _navigateToDetails() async {
     developer.log('🎯 Navigation vers ImmersiveExperienceDetail');
 
+    final playingVideo = ref.read(playingVideoProvider);
+    if (playingVideo != null) {
+      ref.read(playingVideoProvider.notifier).stop();
+
+      await Future.delayed(const Duration(milliseconds: 100));
+    }
     // Cache et arrête la vidéo avant la navigation
     ref.read(globalVideoVisibilityProvider.notifier).hide();
-    ref.read(playingVideoProvider.notifier).stop();
 
     // Navigation vers l'écran de détails
     await Navigator.of(context).push(
@@ -90,7 +93,13 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
       onEnter: (_) => setState(() => _isHovered = true),
       onExit: (_) => setState(() => _isHovered = false),
       child: GestureDetector(
-        onTap: shouldShowVideo ? _navigateToDetails : widget.onTap,
+        onTap: () {
+          if (widget.isCenter) {
+            _navigateToDetails();
+          } else {
+            widget.onTap?.call();
+          }
+        },
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeOut,
@@ -200,12 +209,10 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
     final hasVideo = widget.experience.youtubeVideoId?.isNotEmpty ?? false;
     final hasImage = widget.experience.image.isNotEmpty;
 
-    // CAS 1 : Carte SIG
     if (hasSIG) {
       return const SigDiscoveryMap();
     }
 
-    // CAS 2 : Vidéo seulement si carte au centre ET pas d'autre vidéo en cours
     if (widget.isCenter && hasVideo) {
       final isVideoVisible = ref.watch(globalVideoVisibilityProvider);
       final playingVideo = ref.watch(playingVideoProvider);

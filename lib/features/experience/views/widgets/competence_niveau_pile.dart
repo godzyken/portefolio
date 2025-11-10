@@ -89,7 +89,8 @@ class _CompetenceNiveauPileState extends ConsumerState<CompetenceNiveauPile> {
         height: height,
         child: Stack(
           alignment: Alignment.bottomCenter,
-          fit: StackFit.expand,
+          fit: StackFit.loose,
+          clipBehavior: Clip.none,
           children: [
             // Pile réelle : chaque jeton est interactif
             ..._jetons.asMap().entries.map((entry) {
@@ -210,8 +211,8 @@ class CompetencesPilesByNiveau extends ConsumerWidget {
 
     return ResponsiveBox(
       paddingSize: ResponsiveSpacing.s,
-      marginSize: ResponsiveSpacing.s,
-      alignment: Alignment.center,
+      marginSize: ResponsiveSpacing.l,
+      alignment: Alignment.bottomCenter,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

@@ -152,7 +152,7 @@ class BenchmarkComparisonWidget extends StatelessWidget {
       ));
     }
 
-    return Container(
+    return ResponsiveBox(
       padding: EdgeInsets.all(info.isMobile ? 20 : 24),
       decoration: BoxDecoration(
         color: BenchmarkColors.darkBg.withValues(alpha: 0.5),
@@ -173,8 +173,8 @@ class BenchmarkComparisonWidget extends StatelessWidget {
             ),
             textAlign: TextAlign.center,
           ),
-          SizedBox(height: info.isMobile ? 16 : 24),
-          SizedBox(
+          ResponsiveBox(height: info.isMobile ? 16 : 24),
+          ResponsiveBox(
             height: info.isMobile ? 300 : 400,
             child: BarChart(
               BarChartData(
@@ -199,9 +199,9 @@ class BenchmarkComparisonWidget extends StatelessWidget {
                       getTitlesWidget: (value, meta) {
                         final labels = ['Perfs', 'SEO', 'Mobile', 'Sécu'];
                         if (value.toInt() < labels.length) {
-                          return Padding(
+                          return ResponsiveBox(
                             padding: const EdgeInsets.only(top: 8),
-                            child: Text(
+                            child: ResponsiveText.displayMedium(
                               labels[value.toInt()],
                               style: TextStyle(
                                 color: BenchmarkColors.textGray,
@@ -219,7 +219,7 @@ class BenchmarkComparisonWidget extends StatelessWidget {
                       showTitles: true,
                       reservedSize: 30,
                       getTitlesWidget: (value, meta) {
-                        return ResponsiveText(
+                        return ResponsiveText.displaySmall(
                           value.toInt().toString(),
                           style: TextStyle(
                             color: BenchmarkColors.textGray,
@@ -261,7 +261,9 @@ class BenchmarkComparisonWidget extends StatelessWidget {
             ),
           ),
           // Légende
-          SizedBox(height: info.isMobile ? 12 : 16),
+          ResponsiveBox(
+              paddingSize: ResponsiveSpacing.s,
+              height: info.isMobile ? 12 : 16),
           Wrap(
             spacing: 16,
             runSpacing: 8,
@@ -285,7 +287,7 @@ class BenchmarkComparisonWidget extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(
+        ResponsiveBox(
           width: 12,
           height: 12,
           decoration: BoxDecoration(
@@ -293,8 +295,8 @@ class BenchmarkComparisonWidget extends StatelessWidget {
             borderRadius: BorderRadius.circular(2),
           ),
         ),
-        const SizedBox(width: 6),
-        Text(
+        const ResponsiveBox(width: 6),
+        ResponsiveText.bodyMedium(
           label,
           style: TextStyle(
             color: BenchmarkColors.textGray,
@@ -320,7 +322,7 @@ class BenchmarkRadarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return ResponsiveBox(
       padding: EdgeInsets.all(info.isMobile ? 20 : 24),
       decoration: BoxDecoration(
         color: BenchmarkColors.darkBg.withValues(alpha: 0.5),
@@ -341,8 +343,8 @@ class BenchmarkRadarWidget extends StatelessWidget {
             ),
             textAlign: TextAlign.center,
           ),
-          SizedBox(height: info.isMobile ? 16 : 24),
-          SizedBox(
+          ResponsiveBox(height: info.isMobile ? 16 : 24),
+          ResponsiveBox(
             height: info.isMobile ? 250 : 300,
             child: RadarChart(
               RadarChartData(
@@ -415,7 +417,7 @@ class BenchmarkTableWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     if (benchmarks.isEmpty) return const SizedBox.shrink();
 
-    return Container(
+    return ResponsiveBox(
       padding: EdgeInsets.all(info.isMobile ? 16 : 24),
       decoration: BoxDecoration(
         color: BenchmarkColors.darkBg.withValues(alpha: 0.5),
@@ -436,7 +438,7 @@ class BenchmarkTableWidget extends StatelessWidget {
             ),
             textAlign: TextAlign.center,
           ),
-          SizedBox(height: info.isMobile ? 16 : 24),
+          ResponsiveBox(height: info.isMobile ? 16 : 24),
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: DataTable(
@@ -454,7 +456,7 @@ class BenchmarkTableWidget extends StatelessWidget {
               ),
               columns: [
                 DataColumn(
-                  label: Text(
+                  label: ResponsiveText.displayMedium(
                     'Critère',
                     style: TextStyle(
                       color: Colors.white,
@@ -464,7 +466,7 @@ class BenchmarkTableWidget extends StatelessWidget {
                   ),
                 ),
                 DataColumn(
-                  label: Text(
+                  label: ResponsiveText.displayMedium(
                     'Maximum',
                     style: TextStyle(
                       color: BenchmarkColors.textGray,
@@ -474,7 +476,7 @@ class BenchmarkTableWidget extends StatelessWidget {
                   ),
                 ),
                 ...benchmarks.map((b) => DataColumn(
-                      label: Text(
+                      label: ResponsiveText.displayMedium(
                         b.projectTitle.length > 15
                             ? '${b.projectTitle.substring(0, 15)}...'
                             : b.projectTitle,
@@ -510,17 +512,17 @@ class BenchmarkTableWidget extends StatelessWidget {
   ) {
     return DataRow(
       cells: [
-        DataCell(Text(
+        DataCell(ResponsiveText.displaySmall(
           label,
           style: const TextStyle(color: Colors.white),
         )),
-        DataCell(Text(
+        DataCell(ResponsiveText.displaySmall(
           max.toString(),
           style: TextStyle(color: BenchmarkColors.textGray),
           textAlign: TextAlign.center,
         )),
         ...benchmarks.asMap().entries.map((entry) {
-          return DataCell(Text(
+          return DataCell(ResponsiveText.displaySmall(
             getValue(entry.value).toString(),
             style: TextStyle(
               color: BenchmarkColors.getProjectColor(entry.key),
@@ -537,14 +539,14 @@ class BenchmarkTableWidget extends StatelessWidget {
     return DataRow(
       color: WidgetStateProperty.all(Colors.white.withValues(alpha: 0.05)),
       cells: [
-        const DataCell(Text(
+        const DataCell(ResponsiveText.displayMedium(
           '📊 SCORE TOTAL',
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
         )),
-        DataCell(Text(
+        DataCell(ResponsiveText.displayMedium(
           '100',
           style: TextStyle(
             color: BenchmarkColors.textGray,
@@ -553,7 +555,7 @@ class BenchmarkTableWidget extends StatelessWidget {
           textAlign: TextAlign.center,
         )),
         ...benchmarks.asMap().entries.map((entry) {
-          return DataCell(Text(
+          return DataCell(ResponsiveText.displayMedium(
             entry.value.scoreGlobal.toString(),
             style: TextStyle(
               color: BenchmarkColors.getProjectColor(entry.key),
@@ -588,9 +590,9 @@ class BenchmarkRecommendationsWidget extends StatelessWidget {
       children: limitedBenchmarks.asMap().entries.map((entry) {
         final gradient = BenchmarkColors.getProjectGradient(entry.key);
 
-        return Padding(
+        return ResponsiveBox(
           padding: const EdgeInsets.only(bottom: 16),
-          child: Container(
+          child: ResponsiveBox(
             padding: EdgeInsets.all(info.isMobile ? 20 : 24),
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -614,20 +616,22 @@ class BenchmarkRecommendationsWidget extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 16),
+                const ResponsiveBox(
+                  paddingSize: ResponsiveSpacing.m,
+                ),
                 ..._buildRecommendations(entry.value).map((rec) {
-                  return Padding(
+                  return ResponsiveBox(
                     padding: const EdgeInsets.only(bottom: 8),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        ResponsiveText.bodySmall(
                           rec['icon']!,
                           style: const TextStyle(fontSize: 16),
                         ),
-                        const SizedBox(width: 8),
+                        const ResponsiveBox(width: 8),
                         Expanded(
-                          child: Text(
+                          child: ResponsiveText.bodySmall(
                             rec['text']!,
                             style: const TextStyle(
                               color: Colors.white,

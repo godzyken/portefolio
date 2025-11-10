@@ -22,7 +22,6 @@ class ExperienceJeuxScreen extends ConsumerStatefulWidget {
 }
 
 class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
-  // ✅ FIX 1: Utiliser l'ID unique au lieu de l'entreprise
   late final Map<String, GlobalKey> _cardKeys = {};
   Experience? activeExperience;
   final List<Experience> _potCards = [];
@@ -34,8 +33,6 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
-
-    // ✅ FIX 2: S'assurer que chaque key est unique avec l'ID
     _initializeCardKeys();
 
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
@@ -52,14 +49,12 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
   void didUpdateWidget(ExperienceJeuxScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    // Si la liste des expériences change, réinitialiser les keys
     if (oldWidget.experiences.length != widget.experiences.length ||
         !_isSameExperienceList(oldWidget.experiences, widget.experiences)) {
       _initializeCardKeys();
     }
   }
 
-  /// Vérifier si deux listes d'expériences sont identiques
   bool _isSameExperienceList(List<Experience> list1, List<Experience> list2) {
     if (list1.length != list2.length) return false;
     for (int i = 0; i < list1.length; i++) {
@@ -77,14 +72,12 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
     super.dispose();
   }
 
-  /// Fonction pour animer une carte vers un target
   void _flyCard(
     Experience exp,
     Offset target,
     BuildContext cardContext, {
     bool flyUp = true,
   }) {
-    // ✅ FIX 3: Utiliser l'ID pour récupérer la key
     final key = _cardKeys[exp.id];
     if (key == null || key.currentContext == null) return;
 
@@ -154,7 +147,6 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
     });
   }
 
-  // ✅ FIX 4: Éviter le warning Impeller avec RepaintBoundary
   Widget _cardClone(Experience exp) {
     return RepaintBoundary(
       child: Card(
@@ -186,7 +178,6 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
     );
   }
 
-  // ✅ FIX 6: Utiliser une pile de cartes
   Widget _buildCardPile(ResponsiveInfo info) {
     final pile = widget.experiences
         .where(
@@ -210,6 +201,9 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
           left: 8,
         ),
         child: Stack(
+          alignment: Alignment.center,
+          fit: StackFit.loose,
+          clipBehavior: Clip.hardEdge,
           children: pile.asMap().entries.map((entry) {
             final exp = entry.value;
             final angle =
@@ -255,7 +249,6 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
     );
   }
 
-  // Utiliser un target
   Widget _buildCardTarget(ResponsiveInfo info) {
     final width =
         info.isLandscape ? info.size.width * 0.4 : info.size.width * 0.5;
@@ -382,15 +375,11 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
     );
   }
 
-  // Utiliser des chips pieces en vadrouille
   List<Widget> _buildScatteredChips(ResponsiveInfo info) {
     const double maxChipSize = 80.0;
     final proportionalChipSize = info.size.height * 0.15;
     final chipSize = min(proportionalChipSize, maxChipSize);
 
-    // Définir les positions en pourcentage de la largeur/hauteur pour qu'elles s'adaptent.
-    // Format: [top%, right%, competenceName]
-    // ✅ Positions ajustées pour éviter les bords
     final positions = [
       [0.15, 0.10, 'Flutter'], // 15% du haut, 10% de la droite
       [0.16, 0.15, 'Qualite'],
@@ -413,7 +402,6 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
     }).toList();
   }
 
-  // ✅ FIX 9: Le layout du jeux
   Widget _buildLayout(ResponsiveInfo info) {
     return Stack(
       children: [
@@ -468,17 +456,21 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
             ),
             // ✅ ROW 2: Compétences et Pot
             Expanded(
-              flex: 35,
+              flex: 40,
               child: Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                spacing: 33,
                 children: [
                   // Colonne 1: Rangée de compétences
                   Expanded(
-                      flex: 65,
+                      flex: 60,
                       child: Stack(
                         children: [
                           Positioned.fill(
                             child: ResponsiveBox(
-                              alignment: Alignment.center,
+                              alignment: Alignment.bottomCenter,
                               child: const CompetencesPilesByNiveau(),
                             ),
                           )
@@ -486,7 +478,7 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
                       )),
                   // Colonne 2: Pot
                   Expanded(
-                      flex: 45,
+                      flex: 40,
                       child: Stack(
                         children: [
                           Positioned.fill(
@@ -494,8 +486,8 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
                               padding: EdgeInsets.only(
                                 right: info.size.width * 0.02,
                                 left: info.size.width * 0.02,
-                                bottom: info.size.height * 0.03,
-                                top: info.size.height * 0.01,
+                                bottom: info.size.height * 0.02,
+                                top: info.size.height * 0.02,
                               ),
                               child: InteractivePot(
                                 experiences: widget.experiences,

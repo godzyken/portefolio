@@ -382,7 +382,7 @@ extension ChartRendererBenchmark on ChartRenderer {
       children: [
         // Section Benchmark avec titre et fond spécial
         if (benchmarkCharts.isNotEmpty) ...[
-          Container(
+          ResponsiveBox(
             width: double.infinity,
             padding: EdgeInsets.all(info.isMobile ? 24 : 48),
             decoration: BoxDecoration(
@@ -396,7 +396,7 @@ extension ChartRendererBenchmark on ChartRenderer {
             child: Column(
               children: [
                 // Titre de section
-                Text(
+                ResponsiveText.titleLarge(
                   '📊 Analyse des Benchmarks',
                   style: TextStyle(
                     color: Colors.white,
@@ -405,11 +405,11 @@ extension ChartRendererBenchmark on ChartRenderer {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: info.isMobile ? 32 : 48),
+                ResponsiveBox(height: info.isMobile ? 32 : 48),
 
                 // Rendre les charts de benchmark
                 ...benchmarkCharts.map((chart) {
-                  return Padding(
+                  return ResponsiveBox(
                     padding: const EdgeInsets.only(bottom: 24),
                     child: _renderBenchmarkChart(chart, info),
                   );
@@ -418,13 +418,13 @@ extension ChartRendererBenchmark on ChartRenderer {
                 // Recommandations si on a des comparaisons
                 if (benchmarkCharts
                     .any((c) => c.type == ChartType.benchmarkComparison)) ...[
-                  SizedBox(height: info.isMobile ? 24 : 32),
+                  ResponsiveBox(height: info.isMobile ? 24 : 32),
                   _renderBenchmarkRecommendations(benchmarkCharts, info),
                 ],
               ],
             ),
           ),
-          SizedBox(height: info.isMobile ? 32 : 48),
+          ResponsiveBox(height: info.isMobile ? 32 : 48),
         ],
 
         // Autres charts (KPI, ventes, etc.)
