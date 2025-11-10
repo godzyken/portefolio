@@ -1,3 +1,4 @@
+/*
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -108,3 +109,4 @@ class _ThemePaletteButtonState extends ConsumerState<ThemePaletteButton>
     super.dispose();
   }
 }
+*/

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:portefolio/core/ui/widgets/responsive_text.dart';
 
 import '../../controller/theme_controller.dart';
 import '../../theme/theme_data.dart';
@@ -40,7 +41,7 @@ class _ThemeEditorDialogState extends ConsumerState<ThemeEditorDialog> {
     final notifier = ref.read(themeControllerProvider.notifier);
 
     return AlertDialog(
-      title: const Text("Créer un thème personnalisé"),
+      title: const ResponsiveText.bodyMedium("Créer un thème personnalisé"),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -50,14 +51,14 @@ class _ThemeEditorDialogState extends ConsumerState<ThemeEditorDialog> {
               labelText: "Nom du thème",
             ),
           ),
-          const SizedBox(height: 8),
+          const ResponsiveBox(height: 8),
           DropdownButton<String>(
             items: ['🎨', '🧀', '🌈', '🧠', '🚀', '🍕'].map((e) {
               return DropdownMenuItem(value: e, child: Text(e));
             }).toList(),
             onChanged: (e) => setState(() => emoji = e!),
           ),
-          const SizedBox(height: 8),
+          const ResponsiveBox(height: 8),
           ColorPickerTile(
             label: "Couleur principale",
             initial: primary,
@@ -76,11 +77,11 @@ class _ThemeEditorDialogState extends ConsumerState<ThemeEditorDialog> {
         ],
       ),
       actions: [
-        TextButton(
+        ResponsiveButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text("Annuler"),
+          child: const ResponsiveText.bodyMedium("Annuler"),
         ),
-        ElevatedButton(
+        ResponsiveButton(
           onPressed: () {
             notifier.applyTheme(
               BasicTheme(
@@ -93,7 +94,10 @@ class _ThemeEditorDialogState extends ConsumerState<ThemeEditorDialog> {
             );
             Navigator.pop(context);
           },
-          child: const Text("Appliquer"),
+          style: ButtonStyle(
+            backgroundColor: WidgetStateProperty.all(Colors.green),
+          ),
+          child: const ResponsiveText.bodyMedium("Appliquer"),
         ),
       ],
     );

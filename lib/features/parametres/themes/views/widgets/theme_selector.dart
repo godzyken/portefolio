@@ -70,14 +70,14 @@ class _ThemeSelectorState extends ConsumerState<ThemeSelector> {
                     children: [
                       CircleAvatar(
                         backgroundColor: theme.primaryColor,
-                        child: Text(theme.emoji ?? '🎨'),
+                        child: ResponsiveText.bodyMedium(theme.emoji ?? '🎨'),
                       ),
                       const ResponsiveBox(paddingSize: ResponsiveSpacing.s),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(theme.name,
+                            ResponsiveText.bodyMedium(theme.name,
                                 style: const TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 23)),
                             const ResponsiveBox(

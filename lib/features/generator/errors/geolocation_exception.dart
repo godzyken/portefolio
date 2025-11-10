@@ -1,3 +1,4 @@
+/*
 class GeolocationException implements Exception {
   final String message;
   final String? code; // Ex: PERMISSION_DENIED, POSITION_UNAVAILABLE
@@ -7,3 +8,4 @@ class GeolocationException implements Exception {
   @override
   String toString() => 'GeolocationException: $message (code: $code)';
 }
+*/

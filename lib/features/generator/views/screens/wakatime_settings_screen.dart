@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/ui/widgets/responsive_text.dart';
 
-import '../../../projets/providers/projects_wakatime_service_provider.dart';
+import '../../../projets/providers/projects_extentions_providers.dart';
 import '../../services/wakatime_service.dart';
 
 class WakaTimeSettingsScreen extends ConsumerStatefulWidget {

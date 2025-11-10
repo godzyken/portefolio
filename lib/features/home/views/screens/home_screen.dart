@@ -43,7 +43,7 @@ class HomeScreen extends ConsumerWidget {
     ThemeData theme,
     bool isMobile,
   ) {
-    return Padding(
+    return ResponsiveBox(
       padding: EdgeInsets.symmetric(
         horizontal: isMobile ? 24 : 48,
         vertical: 32,
@@ -83,7 +83,7 @@ class HomeScreen extends ConsumerWidget {
     ResponsiveInfo info,
     ThemeData theme,
   ) {
-    return Padding(
+    return ResponsiveBox(
       padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 48),
       child: Column(
         children: [
@@ -96,7 +96,7 @@ class HomeScreen extends ConsumerWidget {
                 child: _buildProfileImage(context, info, theme),
               ),
 
-              const SizedBox(width: 64),
+              const ResponsiveBox(width: 64),
 
               // Contenu à droite
               Flexible(
@@ -116,7 +116,7 @@ class HomeScreen extends ConsumerWidget {
             ],
           ),
           // 🔥Section Services
-          const SizedBox(height: 80),
+          const ResponsiveBox(height: 80),
           ServicesSection(),
         ],
       ),
@@ -136,7 +136,7 @@ class HomeScreen extends ConsumerWidget {
 
     return Hero(
       tag: 'profile_image',
-      child: Container(
+      child: ResponsiveBox(
         width: imageSize,
         height: imageSize,
         decoration: BoxDecoration(
@@ -217,7 +217,7 @@ class HomeScreen extends ConsumerWidget {
         ElevatedButton.icon(
           onPressed: () => context.go('/projects'),
           icon: const Icon(Icons.work_outline),
-          label: const Text('Voir mes projets'),
+          label: const ResponsiveText.bodyMedium('Voir mes projets'),
           style: ElevatedButton.styleFrom(
             padding: EdgeInsets.symmetric(
               horizontal: isMobile ? 24 : 32,
@@ -237,7 +237,7 @@ class HomeScreen extends ConsumerWidget {
         OutlinedButton.icon(
           onPressed: () => context.go('/contact'),
           icon: const Icon(Icons.mail_outline),
-          label: const Text('Me contacter'),
+          label: const ResponsiveText.bodyMedium('Me contacter'),
           style: OutlinedButton.styleFrom(
             padding: EdgeInsets.symmetric(
               horizontal: isMobile ? 24 : 32,
@@ -277,19 +277,19 @@ class HomeScreen extends ConsumerWidget {
       crossAxisAlignment:
           isMobile ? CrossAxisAlignment.center : CrossAxisAlignment.start,
       children: [
-        Text(
+        ResponsiveText.titleLarge(
           'Expertises',
           style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
           ),
         ),
-        const SizedBox(height: 16),
+        const ResponsiveBox(height: 16),
         Wrap(
           spacing: 12,
           runSpacing: 12,
           alignment: isMobile ? WrapAlignment.center : WrapAlignment.start,
           children: skills.map((skill) {
-            return Container(
+            return ResponsiveBox(
               padding: const EdgeInsets.symmetric(
                 horizontal: 16,
                 vertical: 12,
@@ -311,7 +311,7 @@ class HomeScreen extends ConsumerWidget {
                     size: 20,
                   ),
                   const SizedBox(width: 8),
-                  Text(
+                  ResponsiveText.bodyMedium(
                     skill['label'] as String,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w600,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:portefolio/core/ui/widgets/responsive_text.dart';
 
 class ColorPickerTile extends StatelessWidget {
   final String label;
@@ -16,13 +17,13 @@ class ColorPickerTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text(label),
+      title: ResponsiveText.bodySmall(label),
       trailing: GestureDetector(
         onTap: () async {
           final color = await showDialog<Color>(
             context: context,
             builder: (context) => AlertDialog(
-              title: Text('Sélectionnez $label'),
+              title: ResponsiveText.displayMedium('Sélectionnez $label'),
               content: SingleChildScrollView(
                 child: BlockPicker(
                   pickerColor: initial,

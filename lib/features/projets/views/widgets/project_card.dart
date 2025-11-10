@@ -9,7 +9,7 @@ import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 import '../../../../core/provider/providers.dart';
 import '../../data/project_data.dart';
-import '../../providers/projects_wakatime_service_provider.dart';
+import '../../providers/projects_extentions_providers.dart';
 
 class ProjectCard extends ConsumerWidget {
   final ProjectInfo project;

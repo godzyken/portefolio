@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../../../projets/providers/projects_wakatime_service_provider.dart';
+import '../../../projets/providers/projects_extentions_providers.dart';
 import '../../services/wakatime_service.dart';
 
 /// Badge WakaTime amélioré avec indicateur de tracking
