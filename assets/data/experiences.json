@@ -531,7 +531,7 @@
   },
   {
     "id": "exp_06",
-    "entreprise": "CoyCoyCoy Ridders inside",
+    "entreprise": "CoyCoyCoy Riders inside",
     "logo": "assets/images/coy.jpg",
     "image": "assets/images/coy.jpg",
     "contexte": "Création d’une boutique en ligne pour un fabricant d'accessoires de ridder",
@@ -551,7 +551,7 @@
       "Créer une boutique en ligne, installer PrestaShop",
       "Deployer sur OVH",
       "Back-office opérationnel pour la gestion de stock et de commandes",
-      "https://www.coycoycoy-ridders-inside.fr"
+      "https://www.coycoycoy-ridersinside.com/"
     ],
     "poste": "Developpeur Web"
   },

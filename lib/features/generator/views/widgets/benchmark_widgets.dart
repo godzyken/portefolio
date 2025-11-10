@@ -129,8 +129,7 @@ class BenchmarkComparisonWidget extends StatelessWidget {
       ));
 
       // Barres colorées pour chaque projet
-      final colors = [BenchmarkColors.purple, BenchmarkColors.pink];
-      for (int j = 0; j < benchmarks.length && j < 2; j++) {
+      for (int j = 0; j < benchmarks.length; j++) {
         final benchmark = benchmarks[j];
         final values = [
           benchmark.performances.toDouble(),
@@ -141,7 +140,7 @@ class BenchmarkComparisonWidget extends StatelessWidget {
 
         rods.add(BarChartRodData(
           toY: values[i],
-          color: colors[j],
+          color: BenchmarkColors.getProjectColor(j),
           width: info.isMobile ? 12 : 16,
         ));
       }
@@ -166,7 +165,7 @@ class BenchmarkComparisonWidget extends StatelessWidget {
       child: Column(
         children: [
           ResponsiveText.titleLarge(
-            'Comparaison des Critères',
+            'Comparaison des Critères (${benchmarks.length} projets)',
             style: TextStyle(
               color: Colors.white,
               fontSize: info.isMobile ? 20 : 24,
@@ -220,7 +219,7 @@ class BenchmarkComparisonWidget extends StatelessWidget {
                       showTitles: true,
                       reservedSize: 30,
                       getTitlesWidget: (value, meta) {
-                        return Text(
+                        return ResponsiveText(
                           value.toInt().toString(),
                           style: TextStyle(
                             color: BenchmarkColors.textGray,
@@ -269,11 +268,10 @@ class BenchmarkComparisonWidget extends StatelessWidget {
             alignment: WrapAlignment.center,
             children: [
               _buildLegendItem('Maximum', BenchmarkColors.gridColor),
-              ...benchmarks.take(2).toList().asMap().entries.map((entry) {
-                final colors = [BenchmarkColors.purple, BenchmarkColors.pink];
+              ...benchmarks.asMap().entries.map((entry) {
                 return _buildLegendItem(
                   entry.value.projectTitle,
-                  colors[entry.key],
+                  BenchmarkColors.getProjectColor(entry.key),
                 );
               }),
             ],
@@ -430,7 +428,7 @@ class BenchmarkTableWidget extends StatelessWidget {
       child: Column(
         children: [
           ResponsiveText.titleLarge(
-            'Tableau Récapitulatif',
+            'Tableau Récapitulatif (${benchmarks.length} projets)',
             style: TextStyle(
               color: Colors.white,
               fontSize: info.isMobile ? 20 : 24,
@@ -475,7 +473,7 @@ class BenchmarkTableWidget extends StatelessWidget {
                     ),
                   ),
                 ),
-                ...benchmarks.take(2).map((b) => DataColumn(
+                ...benchmarks.map((b) => DataColumn(
                       label: Text(
                         b.projectTitle.length > 15
                             ? '${b.projectTitle.substring(0, 15)}...'
@@ -510,8 +508,6 @@ class BenchmarkTableWidget extends StatelessWidget {
     List<BenchmarkInfo> benchmarks,
     int Function(BenchmarkInfo) getValue,
   ) {
-    final colors = [BenchmarkColors.purple, BenchmarkColors.pink];
-
     return DataRow(
       cells: [
         DataCell(Text(
@@ -523,11 +519,11 @@ class BenchmarkTableWidget extends StatelessWidget {
           style: TextStyle(color: BenchmarkColors.textGray),
           textAlign: TextAlign.center,
         )),
-        ...benchmarks.take(2).toList().asMap().entries.map((entry) {
+        ...benchmarks.asMap().entries.map((entry) {
           return DataCell(Text(
             getValue(entry.value).toString(),
             style: TextStyle(
-              color: colors[entry.key],
+              color: BenchmarkColors.getProjectColor(entry.key),
               fontWeight: FontWeight.bold,
             ),
             textAlign: TextAlign.center,
@@ -538,8 +534,6 @@ class BenchmarkTableWidget extends StatelessWidget {
   }
 
   DataRow _buildTotalRow(List<BenchmarkInfo> benchmarks) {
-    final colors = [BenchmarkColors.purple, BenchmarkColors.pink];
-
     return DataRow(
       color: WidgetStateProperty.all(Colors.white.withValues(alpha: 0.05)),
       cells: [
@@ -558,11 +552,11 @@ class BenchmarkTableWidget extends StatelessWidget {
           ),
           textAlign: TextAlign.center,
         )),
-        ...benchmarks.take(2).toList().asMap().entries.map((entry) {
+        ...benchmarks.asMap().entries.map((entry) {
           return DataCell(Text(
             entry.value.scoreGlobal.toString(),
             style: TextStyle(
-              color: colors[entry.key],
+              color: BenchmarkColors.getProjectColor(entry.key),
               fontWeight: FontWeight.bold,
               fontSize: 18,
             ),
@@ -587,13 +581,12 @@ class BenchmarkRecommendationsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (benchmarks.isEmpty) return const SizedBox.shrink();
+    // Limiter à 2 benchmarks maximum pour éviter l'erreur d'index
+    final limitedBenchmarks = benchmarks.take(3).toList();
 
     return Column(
-      children: benchmarks.take(2).toList().asMap().entries.map((entry) {
-        final colors = [
-          [Color(0xFF581C87), Color(0xFF6B21A8), Color(0xFF7C3AED)],
-          [Color(0xFF9F1239), Color(0xFFBE123C), Color(0xFFEC4899)],
-        ];
+      children: limitedBenchmarks.asMap().entries.map((entry) {
+        final gradient = BenchmarkColors.getProjectGradient(entry.key);
 
         return Padding(
           padding: const EdgeInsets.only(bottom: 16),
@@ -603,11 +596,11 @@ class BenchmarkRecommendationsWidget extends StatelessWidget {
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: colors[entry.key],
+                colors: gradient,
               ),
               borderRadius: BorderRadius.circular(24),
               border: Border.all(
-                color: colors[entry.key][2].withValues(alpha: 0.6),
+                color: gradient[2].withValues(alpha: 0.6),
                 width: 2,
               ),
             ),

@@ -110,6 +110,38 @@
   },
   {
     "id": "projet_3",
+    "title": "CoyCoyCoy Rider Inside",
+    "points": [
+      "🏍️ Création d’une boutique en ligne spécialisée dans la vente d'accessoire de riders",
+      "🛒 Développement complet sous PrestaShop avec module de facturation automatisé",
+      "⚙️ Promouvoir la marque et la vente sur les réseaux sociaux",
+      "💾 Intégration du catalogue fournisseur (import automatique depuis source partenaire)",
+      "💳 Intégration du paiement en ligne sécurisé (Prestashop Checkout / PayPal)",
+      "📈 Optimisation SEO et configuration de l’hébergement OVH",
+      "🎨 Collaboration avec un designer pour la création du logo professionnel (style dessin au crayon)",
+      "🔧 Formation du client à la gestion du CMS"
+    ],
+    "image": [
+      "assets/images/coy.jpg"
+    ],
+    "platform": ["Desktop", "Web"],
+    "tags": ["E-commerce", "PrestaShop", "Facturation", "Accessoire du Ridder", "Catalogue Dynamique"],
+    "results": [
+      "Parution sur le journal Ladepeche, https://www.ladepeche.fr/article/2013/08/30/1698022-villefranche-de-lauragais-du-gros-niveau-attendu-au-skate-park.html",
+      "Visitez le site https://coycoycoy-ridersinside.com/"
+    ],
+    "resultsMap": {
+      "benchmark": {
+        "score": "75/100",
+        "performances": "22/30",
+        "seo": "28/30",
+        "mobile": "20/30",
+        "sécurité": "5/10"
+      }
+    }
+  },
+  {
+    "id": "projet_4",
     "title": "EGOTe Services",
     "points": [
       "🧭 Directeur du service de transformation digitale",
@@ -175,7 +207,7 @@
     }
   },
   {
-    "id": "projet_4",
+    "id": "projet_5",
     "title": "Angular & Ionic",
     "points": [
       "👨‍💻 Architecte & Lead Developer sur des applications mobiles et web hybrides",
@@ -196,7 +228,7 @@
     "tags": ["UX/UI", "Digitalisation", "AWS Cloud"]
   },
   {
-    "id": "projet_5",
+    "id": "projet_6",
     "title": "Chef de Projet Digital",
     "subtitle": "Transformation numérique & pilotage d’innovations",
     "points": [
@@ -216,7 +248,7 @@
     "tags": ["Flutter", "Firebase", "IoT", "VR", "Management", "UX/UI", "Digitalisation"]
   },
   {
-    "id": "projet_6",
+    "id": "projet_7",
     "title": "Portefolio",
     "points": [
       "🔗 Présentation de mon parcours pro et académique",
@@ -244,7 +276,7 @@
     "tags": ["WordPress", "GitHub", "FlutterFlow"]
   },
   {
-    "id": "projet_7",
+    "id": "projet_8",
     "title": "Réseau Éducatif Résilient - Projet Workshop Ultron",
     "points": [
       "🛰️ Projet Workshop EPSI-WIS 2025-2026 – Campus Montpellier",
@@ -281,7 +313,7 @@
     "tags": ["Flutter", "Raspberry Pi", "ESP8266", "LAN", "Offline Sync", "Education", "IoT"]
   },
   {
-    "id": "projet_8",
+    "id": "projet_9",
     "title": "Accompagnement digital – Clip musical d’artiste indépendant",
     "points": [
       "🎤 Enregistrement et accompagnement vocal de l’artiste sur les instrumentaux.",
@@ -374,6 +406,9 @@
       "📊 Analyse comparative des performances des boutiques en ligne",
       "🎯 Identification des axes d'amélioration"
     ],
+    "results": [
+      "2RouesVertes : 79/100, APVM : 62/100, CoyCoyCoy : 75/100"
+    ],
     "resultsMap": {
       "benchmark": [
         {
@@ -394,6 +429,18 @@
           "performances": 12,
           "performancesMax": 30,
           "seo": 25,
+          "seoMax": 30,
+          "mobile": 20,
+          "mobileMax": 30,
+          "sécurité": 5,
+          "securiteMax": 10
+        },
+        {
+          "projectTitle": "CoyCoyCoy Riders Inside",
+          "score": 75,
+          "performances": 22,
+          "performancesMax": 30,
+          "seo": 28,
           "seoMax": 30,
           "mobile": 20,
           "mobileMax": 30,

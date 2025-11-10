@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../responsive_constants.dart';
 
-/// 📝 Texte avec taille responsive automatique
 class ResponsiveText extends ConsumerWidget {
   final String text;
   final TextStyle? style;
@@ -227,7 +226,6 @@ enum ResponsiveTextSize {
   labelSmall,
 }
 
-/// 📦 Box avec spacing responsive
 class ResponsiveBox extends ConsumerWidget {
   final Widget? child;
   final EdgeInsets? padding;
@@ -294,7 +292,6 @@ class ResponsiveBox extends ConsumerWidget {
 
 enum ResponsiveSpacing { xs, s, m, l, xl, xxl }
 
-/// 🔘 Bouton avec taille responsive
 class ResponsiveButton extends ConsumerWidget {
   final VoidCallback? onPressed;
   final Widget child;
