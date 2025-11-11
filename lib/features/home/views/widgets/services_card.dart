@@ -1,10 +1,13 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/features/generator/data/extention_models.dart';
 import 'package:portefolio/features/generator/views/widgets/hover_card.dart';
+import 'package:portefolio/features/home/views/widgets/service_expertise_card.dart';
 
 import '../../../../core/affichage/screen_size_detector.dart';
+import '../../../../core/provider/expertise_provider.dart';
 import '../../../../core/ui/widgets/responsive_text.dart';
 import '../../../../core/ui/widgets/smart_image.dart';
 
@@ -24,15 +27,25 @@ class ServicesCard extends ConsumerWidget {
     final info = ref.watch(responsiveInfoProvider);
 
     return GestureDetector(
-      onTap: onTap,
+      onTap: onTap ?? () => _showExpertiseDialog(context, ref),
       child: HoverCard(
         id: service.id,
         child: ClipRRect(
           borderRadius: BorderRadius.circular(_getBorderRadius(info)),
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              return _buildCardContent(context, theme, info, constraints);
-            },
+          child: Column(
+            children: [
+              // Section supérieure : Image + Badge + Titre
+              Expanded(
+                flex: 5,
+                child: _buildTopSection(context, theme, info, ref),
+              ),
+
+              // Section inférieure : Graphique camembert
+              Expanded(
+                flex: 5,
+                child: _buildBottomSection(context, theme, info, ref),
+              ),
+            ],
           ),
         ),
       ),
@@ -42,115 +55,375 @@ class ServicesCard extends ConsumerWidget {
         .slideY(begin: 0.2, duration: 500.ms, curve: Curves.easeOutBack);
   }
 
-  Widget _buildCardContent(
+  /// Section supérieure avec image de fond
+  Widget _buildTopSection(
     BuildContext context,
     ThemeData theme,
     ResponsiveInfo info,
-    BoxConstraints constraints,
+    WidgetRef ref,
   ) {
-    // Layout vertical pour mobile/portrait
-    if (info.isMobile || info.isWatch || info.isPortrait) {
-      return _buildVerticalLayout(theme, info, constraints);
-    }
+    final expertise = ref.watch(serviceExpertiseProvider(service.id));
 
-    // Layout horizontal pour desktop/landscape
-    return _buildHorizontalLayout(theme, info, constraints);
-  }
-
-  Widget _buildVerticalLayout(
-    ThemeData theme,
-    ResponsiveInfo info,
-    BoxConstraints constraints,
-  ) {
-    final imageHeight = constraints.maxHeight * 0.5;
-    final contentHeight = constraints.maxHeight * 0.5;
-
-    return Column(
+    return Stack(
+      fit: StackFit.expand,
       children: [
+        // Image de fond
+        _buildBackgroundImage(theme),
+
+        // Overlay gradient
+        _buildOverlay(),
+
+        // Contenu
         ResponsiveBox(
-          height: imageHeight,
-          width: double.infinity,
-          child: Stack(
-            fit: StackFit.expand,
+          padding: EdgeInsets.all(_getPadding(info)),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildBackgroundImage(theme),
-              _buildOverlay(),
+              // Badge d'expertise en haut à droite
+              if (expertise != null)
+                Align(
+                  alignment: Alignment.topRight,
+                  child: _buildExpertiseBadge(expertise, theme),
+                ),
+
+              // Titre et icône en bas
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      _buildIconBadge(theme, info),
+                      ResponsiveBox(
+                          width: _getSpacing(info,
+                              small: 12, medium: 14, large: 16)),
+                      Expanded(
+                        child: Text(
+                          service.title,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: _getFontSize(info,
+                                small: 18, medium: 22, large: 24),
+                            letterSpacing: 0.5,
+                            shadows: [
+                              Shadow(
+                                color: Colors.black.withValues(alpha: 0.5),
+                                blurRadius: 8,
+                              ),
+                            ],
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                  ResponsiveBox(
+                      height:
+                          _getSpacing(info, small: 8, medium: 10, large: 12)),
+                  ResponsiveText.bodySmall(
+                    service.description,
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.9),
+                      fontSize:
+                          _getFontSize(info, small: 12, medium: 13, large: 14),
+                      height: 1.4,
+                      shadows: [
+                        Shadow(
+                          color: Colors.black.withValues(alpha: 0.5),
+                          blurRadius: 4,
+                        ),
+                      ],
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
             ],
           ),
         ),
-        ResponsiveBox(
-          height: contentHeight,
-          padding: EdgeInsets.all(_getPadding(info)),
-          child: _buildContent(theme, info, compact: true),
-        ),
       ],
     );
   }
 
-  Widget _buildHorizontalLayout(
+  /// Section inférieure avec graphique camembert
+  Widget _buildBottomSection(
+    BuildContext context,
     ThemeData theme,
     ResponsiveInfo info,
-    BoxConstraints constraints,
+    WidgetRef ref,
   ) {
-    return Stack(
+    final expertise = ref.watch(serviceExpertiseProvider(service.id));
+
+    if (expertise == null) {
+      return Container(
+        color: theme.colorScheme.surface,
+        child: Center(
+          child: Text(
+            'Aucune donnée disponible',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return Container(
+      color: theme.colorScheme.surface,
+      padding: EdgeInsets.all(_getPadding(info)),
+      child: Column(
+        children: [
+          // Titre de la section
+          Text(
+            'Technologies & Compétences',
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: theme.colorScheme.onSurface,
+            ),
+          ),
+          SizedBox(height: _getSpacing(info, small: 8, medium: 10, large: 12)),
+
+          // Graphique + Légende
+          Expanded(
+            child: Row(
+              children: [
+                // Graphique camembert
+                Expanded(
+                  flex: info.isMobile ? 2 : 3,
+                  child: _buildPieChart(expertise, theme, info),
+                ),
+
+                ResponsiveBox(
+                    width: _getSpacing(info, small: 8, medium: 12, large: 16)),
+
+                // Légende
+                Expanded(
+                  flex: 2,
+                  child: _buildLegend(expertise, theme, info),
+                ),
+              ],
+            ),
+          ),
+
+          // Stats en bas
+          ResponsiveBox(
+              height: _getSpacing(info, small: 8, medium: 10, large: 12)),
+          _buildStats(expertise, theme, info),
+        ],
+      ),
+    );
+  }
+
+  /// Graphique camembert
+  Widget _buildPieChart(
+    ServiceExpertise expertise,
+    ThemeData theme,
+    ResponsiveInfo info,
+  ) {
+    final skills = expertise.topSkills.take(5).toList();
+
+    final colors = [
+      Colors.blue.shade600,
+      Colors.green.shade600,
+      Colors.orange.shade600,
+      Colors.purple.shade600,
+      Colors.red.shade600,
+    ];
+
+    return PieChart(
+      PieChartData(
+        sectionsSpace: 2,
+        centerSpaceRadius: info.isMobile ? 20 : 30,
+        sections: skills.asMap().entries.map((entry) {
+          final index = entry.key;
+          final skill = entry.value;
+
+          return PieChartSectionData(
+            color: colors[index % colors.length],
+            value: skill.level * 100,
+            title: info.isMobile ? '' : '${skill.levelPercent}%',
+            radius: 65,
+            titleStyle: TextStyle(
+              fontSize: info.isMobile ? 10 : 12,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+            badgeWidget: ResponsiveBox(
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.2),
+                    blurRadius: 4,
+                  ),
+                ],
+              ),
+              child: ResponsiveText.bodyMedium(
+                skill.name,
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                  color: colors[index % colors.length],
+                ),
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  /// Légende du graphique
+  Widget _buildLegend(
+    ServiceExpertise expertise,
+    ThemeData theme,
+    ResponsiveInfo info,
+  ) {
+    final skills = expertise.topSkills.take(5).toList();
+
+    final colors = [
+      Colors.blue.shade600,
+      Colors.green.shade600,
+      Colors.orange.shade600,
+      Colors.purple.shade600,
+      Colors.red.shade600,
+    ];
+
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: skills.asMap().entries.map((entry) {
+          final index = entry.key;
+          final skill = entry.value;
+
+          return ResponsiveBox(
+            padding: EdgeInsets.symmetric(
+              vertical: _getSpacing(info, small: 2, medium: 3, large: 4),
+            ),
+            child: Row(
+              children: [
+                ResponsiveBox(
+                  width: _getSpacing(info, small: 8, medium: 10, large: 12),
+                  height: _getSpacing(info, small: 8, medium: 10, large: 12),
+                  decoration: BoxDecoration(
+                    color: colors[index % colors.length],
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                ResponsiveBox(
+                    width: _getSpacing(info, small: 4, medium: 6, large: 8)),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ResponsiveText.bodySmall(
+                        skill.name,
+                        style: TextStyle(
+                          fontSize: _getFontSize(info,
+                              small: 10, medium: 11, large: 12),
+                          fontWeight: FontWeight.w600,
+                          color: theme.colorScheme.onSurface,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      ResponsiveText.bodySmall(
+                        '${skill.levelPercent}% • ${skill.projectCount} projets',
+                        style: TextStyle(
+                          fontSize: _getFontSize(info,
+                              small: 8, medium: 9, large: 10),
+                          color: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.6),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  /// Stats en bas de la carte
+  Widget _buildStats(
+    ServiceExpertise expertise,
+    ThemeData theme,
+    ResponsiveInfo info,
+  ) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        Positioned.fill(child: _buildBackgroundImage(theme)),
-        Positioned.fill(child: _buildOverlay()),
-        Positioned.fill(
-          child: ResponsiveBox(
-            padding: EdgeInsets.all(_getPadding(info)),
-            child: _buildContent(theme, info, compact: false),
+        _buildStatItem(
+          icon: Icons.work_outline,
+          label: '${expertise.totalProjects} projets',
+          color: theme.colorScheme.primary,
+          info: info,
+        ),
+        Container(
+          width: 1,
+          height: 20,
+          color: theme.colorScheme.outline.withValues(alpha: 0.3),
+        ),
+        _buildStatItem(
+          icon: Icons.calendar_today,
+          label: '${expertise.totalYearsExperience} ans',
+          color: theme.colorScheme.secondary,
+          info: info,
+        ),
+        Container(
+          width: 1,
+          height: 20,
+          color: theme.colorScheme.outline.withValues(alpha: 0.3),
+        ),
+        _buildStatItem(
+          icon: Icons.star,
+          label: '${(expertise.averageLevel * 100).toInt()}%',
+          color: Colors.orange,
+          info: info,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStatItem({
+    required IconData icon,
+    required String label,
+    required Color color,
+    required ResponsiveInfo info,
+  }) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          icon,
+          size: _getFontSize(info, small: 14, medium: 16, large: 18),
+          color: color,
+        ),
+        ResponsiveBox(width: _getSpacing(info, small: 4, medium: 6, large: 8)),
+        ResponsiveText.bodySmall(
+          label,
+          style: TextStyle(
+            fontSize: _getFontSize(info, small: 10, medium: 11, large: 12),
+            fontWeight: FontWeight.w600,
+            color: color,
           ),
         ),
       ],
     );
   }
 
-  Widget _buildContent(ThemeData theme, ResponsiveInfo info,
-      {required bool compact}) {
-    return Column(
-      mainAxisAlignment:
-          compact ? MainAxisAlignment.start : MainAxisAlignment.end,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            _buildIconBadge(theme, info),
-            ResponsiveBox(
-                height: _getSpacing(info, small: 16, medium: 16, large: 20)),
-            ResponsiveText.titleLarge(
-              service.title,
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 0.5,
-                fontSize: _getFontSize(info, small: 16, medium: 22, large: 26),
-              ),
-              maxLines: compact ? 1 : 2,
-              overflow: TextOverflow.fade,
-            ),
-          ],
-        ),
-        ResponsiveBox(
-            height: _getSpacing(info, small: 8, medium: 10, large: 12)),
-        ResponsiveText.headlineMedium(
-          service.description,
-          style: TextStyle(
-            color: Colors.white.withValues(alpha: 0.9),
-            height: 1.5,
-            fontSize: _getFontSize(info, small: 12, medium: 14, large: 16),
-          ),
-          maxLines: compact ? 3 : null,
-          overflow: compact ? TextOverflow.ellipsis : null,
-        ),
-        ResponsiveBox(
-            height: _getSpacing(info, small: 12, medium: 14, large: 16)),
-        Flexible(
-          child: _buildFeatures(info, compact: compact),
-        )
-      ],
-    );
-  }
+  // ============================================================================
+  // WIDGETS DE BASE (inchangés)
+  // ============================================================================
 
   Widget _buildBackgroundImage(ThemeData theme) {
     if (!service.hasValidImage) {
@@ -171,8 +444,8 @@ class ServicesCard extends ConsumerWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            Colors.black.withValues(alpha: 0.75),
-            Colors.black.withValues(alpha: 0.45),
+            Colors.black.withValues(alpha: 0.6),
+            Colors.black.withValues(alpha: 0.3),
           ],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
@@ -228,40 +501,107 @@ class ServicesCard extends ConsumerWidget {
     );
   }
 
-  Widget _buildFeatures(ResponsiveInfo info, {required bool compact}) {
-    final maxFeatures = compact ? 3 : service.features.length;
-    final displayFeatures = service.features.take(maxFeatures).toList();
+  Widget _buildExpertiseBadge(ServiceExpertise expertise, ThemeData theme) {
+    final level = (expertise.averageLevel * 100).toInt();
 
-    return Wrap(
-      spacing: _getSpacing(info, small: 6, medium: 8, large: 10),
-      runSpacing: _getSpacing(info, small: 6, medium: 8, large: 10),
-      children: displayFeatures.map((feature) {
-        return ResponsiveBox(
-          padding: EdgeInsets.symmetric(
-            horizontal: _getPadding(info) * 0.6,
-            vertical: _getPadding(info) * 0.3,
+    return ResponsiveBox(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: _getColorForLevel(expertise.averageLevel),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.3),
+            blurRadius: 8,
           ),
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: Colors.white.withValues(alpha: 0.3),
-            ),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(
+            Icons.star,
+            size: 16,
+            color: Colors.white,
           ),
-          child: ResponsiveText.headlineMedium(
-            feature,
-            style: TextStyle(
+          const SizedBox(width: 4),
+          ResponsiveText.headlineSmall(
+            '$level% expertise',
+            style: const TextStyle(
               color: Colors.white,
-              fontSize: _getFontSize(info, small: 10, medium: 11, large: 12),
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.bold,
+              fontSize: 12,
             ),
           ),
-        );
-      }).toList(),
+        ],
+      ),
     );
   }
 
-  // Helpers
+  Color _getColorForLevel(double level) {
+    if (level >= 0.9) return Colors.green.shade600;
+    if (level >= 0.7) return Colors.blue.shade600;
+    if (level >= 0.5) return Colors.orange.shade600;
+    return Colors.red.shade600;
+  }
+
+  void _showExpertiseDialog(BuildContext context, WidgetRef ref) {
+    final expertise = ref.read(serviceExpertiseProvider(service.id));
+
+    if (expertise == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Données d\'expertise non disponibles'),
+        ),
+      );
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: ResponsiveBox(
+          paddingSize: ResponsiveSpacing.l,
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: ResponsiveText.headlineSmall(
+                      'Expertise - ${service.title}',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: const Icon(Icons.close),
+                  ),
+                ],
+              ),
+              const ResponsiveBox(height: 24),
+              Flexible(
+                child: SingleChildScrollView(
+                  child: ServiceExpertiseCard(expertise: expertise),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ============================================================================
+  // HELPERS
+  // ============================================================================
+
   double _getBorderRadius(ResponsiveInfo info) => info.isWatch
       ? 12
       : info.isMobile

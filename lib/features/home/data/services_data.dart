@@ -295,3 +295,113 @@ final List<Service> defaultServices = [
     priority: 4,
   ),
 ];
+
+/// Modèle pour représenter une compétence technique avec niveau d'expertise
+class TechSkill {
+  final String name;
+  final double level; // 0.0 à 1.0 (ou 0 à 100%)
+  final int yearsOfExperience;
+  final int projectCount;
+  final String category; // 'language', 'framework', 'tool', etc.
+  final String? icon; // Nom de l'icône ou chemin logo
+
+  const TechSkill({
+    required this.name,
+    required this.level,
+    required this.yearsOfExperience,
+    required this.projectCount,
+    required this.category,
+    this.icon,
+  });
+
+  /// Niveau en pourcentage
+  int get levelPercent => (level * 100).round();
+
+  /// Label du niveau d'expertise
+  String get expertiseLabel {
+    if (level >= 0.9) return 'Expert';
+    if (level >= 0.7) return 'Avancé';
+    if (level >= 0.5) return 'Intermédiaire';
+    if (level >= 0.3) return 'Débutant avancé';
+    return 'Débutant';
+  }
+
+  factory TechSkill.fromJson(Map<String, dynamic> json) {
+    return TechSkill(
+      name: json['name'] as String,
+      level: (json['level'] as num).toDouble(),
+      yearsOfExperience: json['yearsOfExperience'] as int,
+      projectCount: json['projectCount'] as int,
+      category: json['category'] as String,
+      icon: json['icon'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'level': level,
+      'yearsOfExperience': yearsOfExperience,
+      'projectCount': projectCount,
+      'category': category,
+      'icon': icon,
+    };
+  }
+}
+
+/// Statistiques d'expertise pour un service
+class ServiceExpertise {
+  final String serviceId;
+  final List<TechSkill> skills;
+  final int totalProjects;
+  final int totalYearsExperience;
+  final double averageLevel;
+
+  const ServiceExpertise({
+    required this.serviceId,
+    required this.skills,
+    required this.totalProjects,
+    required this.totalYearsExperience,
+    required this.averageLevel,
+  });
+
+  factory ServiceExpertise.fromJson(Map<String, dynamic> json) {
+    final skillsList = (json['skills'] as List)
+        .map((e) => TechSkill.fromJson(e as Map<String, dynamic>))
+        .toList();
+
+    return ServiceExpertise(
+      serviceId: json['serviceId'] as String,
+      skills: skillsList,
+      totalProjects: json['totalProjects'] as int,
+      totalYearsExperience: json['totalYearsExperience'] as int,
+      averageLevel: (json['averageLevel'] as num).toDouble(),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'serviceId': serviceId,
+      'skills': skills.map((s) => s.toJson()).toList(),
+      'totalProjects': totalProjects,
+      'totalYearsExperience': totalYearsExperience,
+      'averageLevel': averageLevel,
+    };
+  }
+
+  /// Compétences par catégorie
+  Map<String, List<TechSkill>> get skillsByCategory {
+    final Map<String, List<TechSkill>> result = {};
+    for (final skill in skills) {
+      result.putIfAbsent(skill.category, () => []).add(skill);
+    }
+    return result;
+  }
+
+  /// Top 5 compétences
+  List<TechSkill> get topSkills {
+    final sorted = List<TechSkill>.from(skills)
+      ..sort((a, b) => b.level.compareTo(a.level));
+    return sorted.take(5).toList();
+  }
+}

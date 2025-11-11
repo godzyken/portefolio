@@ -1,0 +1,250 @@
+[
+  {
+    "serviceId": "mobile-dev",
+    "totalProjects": 15,
+    "totalYearsExperience": 6,
+    "averageLevel": 0.85,
+    "skills": [
+      {
+        "name": "Flutter",
+        "level": 0.95,
+        "yearsOfExperience": 6,
+        "projectCount": 12,
+        "category": "framework",
+        "icon": "flutter"
+      },
+      {
+        "name": "Dart",
+        "level": 0.95,
+        "yearsOfExperience": 6,
+        "projectCount": 12,
+        "category": "language",
+        "icon": "dart"
+      },
+      {
+        "name": "Riverpod",
+        "level": 0.90,
+        "yearsOfExperience": 4,
+        "projectCount": 8,
+        "category": "state_management",
+        "icon": "riverpod"
+      },
+      {
+        "name": "Firebase",
+        "level": 0.85,
+        "yearsOfExperience": 5,
+        "projectCount": 10,
+        "category": "backend",
+        "icon": "firebase"
+      },
+      {
+        "name": "Android (Java/Kotlin)",
+        "level": 0.70,
+        "yearsOfExperience": 4,
+        "projectCount": 6,
+        "category": "platform",
+        "icon": "android"
+      },
+      {
+        "name": "iOS (Swift)",
+        "level": 0.65,
+        "yearsOfExperience": 3,
+        "projectCount": 4,
+        "category": "platform",
+        "icon": "apple"
+      },
+      {
+        "name": "REST API",
+        "level": 0.90,
+        "yearsOfExperience": 6,
+        "projectCount": 15,
+        "category": "integration",
+        "icon": "api"
+      },
+      {
+        "name": "Material Design",
+        "level": 0.88,
+        "yearsOfExperience": 6,
+        "projectCount": 12,
+        "category": "design",
+        "icon": "material"
+      }
+    ]
+  },
+  {
+    "serviceId": "web-dev",
+    "totalProjects": 20,
+    "totalYearsExperience": 8,
+    "averageLevel": 0.82,
+    "skills": [
+      {
+        "name": "Angular",
+        "level": 0.88,
+        "yearsOfExperience": 5,
+        "projectCount": 8,
+        "category": "framework",
+        "icon": "angular"
+      },
+      {
+        "name": "TypeScript",
+        "level": 0.85,
+        "yearsOfExperience": 5,
+        "projectCount": 10,
+        "category": "language",
+        "icon": "typescript"
+      },
+      {
+        "name": "JavaScript",
+        "level": 0.90,
+        "yearsOfExperience": 8,
+        "projectCount": 20,
+        "category": "language",
+        "icon": "javascript"
+      },
+      {
+        "name": "HTML/CSS",
+        "level": 0.92,
+        "yearsOfExperience": 8,
+        "projectCount": 20,
+        "category": "language",
+        "icon": "html5"
+      },
+      {
+        "name": "Ionic",
+        "level": 0.80,
+        "yearsOfExperience": 4,
+        "projectCount": 6,
+        "category": "framework",
+        "icon": "ionic"
+      },
+      {
+        "name": "Node.js",
+        "level": 0.75,
+        "yearsOfExperience": 4,
+        "projectCount": 8,
+        "category": "backend",
+        "icon": "nodejs"
+      },
+      {
+        "name": "RxJS",
+        "level": 0.78,
+        "yearsOfExperience": 4,
+        "projectCount": 7,
+        "category": "library",
+        "icon": "rxjs"
+      }
+    ]
+  },
+  {
+    "serviceId": "cloud-solutions",
+    "totalProjects": 10,
+    "totalYearsExperience": 5,
+    "averageLevel": 0.75,
+    "skills": [
+      {
+        "name": "Firebase",
+        "level": 0.85,
+        "yearsOfExperience": 5,
+        "projectCount": 10,
+        "category": "platform",
+        "icon": "firebase"
+      },
+      {
+        "name": "AWS Cloud",
+        "level": 0.65,
+        "yearsOfExperience": 3,
+        "projectCount": 4,
+        "category": "platform",
+        "icon": "aws"
+      },
+      {
+        "name": "Docker",
+        "level": 0.70,
+        "yearsOfExperience": 3,
+        "projectCount": 5,
+        "category": "tool",
+        "icon": "docker"
+      },
+      {
+        "name": "CI/CD",
+        "level": 0.80,
+        "yearsOfExperience": 4,
+        "projectCount": 8,
+        "category": "devops",
+        "icon": "cicd"
+      },
+      {
+        "name": "GitHub Actions",
+        "level": 0.75,
+        "yearsOfExperience": 3,
+        "projectCount": 6,
+        "category": "devops",
+        "icon": "github"
+      },
+      {
+        "name": "MongoDB",
+        "level": 0.72,
+        "yearsOfExperience": 4,
+        "projectCount": 6,
+        "category": "database",
+        "icon": "mongodb"
+      }
+    ]
+  },
+  {
+    "serviceId": "support-maintenance",
+    "totalProjects": 25,
+    "totalYearsExperience": 8,
+    "averageLevel": 0.80,
+    "skills": [
+      {
+        "name": "Debugging",
+        "level": 0.90,
+        "yearsOfExperience": 8,
+        "projectCount": 25,
+        "category": "skill",
+        "icon": "bug"
+      },
+      {
+        "name": "Performance Optimization",
+        "level": 0.85,
+        "yearsOfExperience": 6,
+        "projectCount": 15,
+        "category": "skill",
+        "icon": "speed"
+      },
+      {
+        "name": "Git",
+        "level": 0.88,
+        "yearsOfExperience": 8,
+        "projectCount": 25,
+        "category": "tool",
+        "icon": "git"
+      },
+      {
+        "name": "Testing",
+        "level": 0.75,
+        "yearsOfExperience": 5,
+        "projectCount": 12,
+        "category": "skill",
+        "icon": "test"
+      },
+      {
+        "name": "Documentation",
+        "level": 0.80,
+        "yearsOfExperience": 8,
+        "projectCount": 20,
+        "category": "skill",
+        "icon": "docs"
+      },
+      {
+        "name": "Monitoring",
+        "level": 0.70,
+        "yearsOfExperience": 4,
+        "projectCount": 8,
+        "category": "tool",
+        "icon": "monitor"
+      }
+    ]
+  }
+]

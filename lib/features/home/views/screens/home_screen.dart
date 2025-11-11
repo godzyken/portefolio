@@ -54,24 +54,17 @@ class HomeScreen extends ConsumerWidget {
           // Image de profil
           _buildProfileImage(context, info, theme),
 
-          const SizedBox(height: 32),
+          const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
 
           // Texte de présentation
           _buildPresentationText(context, theme, isMobile),
 
-          const SizedBox(height: 40),
+          const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
 
           // Boutons d'action
           _buildActionButtons(context, theme, isMobile),
 
-          const SizedBox(height: 48),
-
-          // Section compétences rapides
-          _buildQuickSkills(context, theme, isMobile),
-
-          const SizedBox(height: 64),
-
-          // 🔥 Section Services
+          const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
           ServicesSection(),
         ],
       ),
@@ -96,7 +89,7 @@ class HomeScreen extends ConsumerWidget {
                 child: _buildProfileImage(context, info, theme),
               ),
 
-              const ResponsiveBox(width: 64),
+              const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
 
               // Contenu à droite
               Flexible(
@@ -108,16 +101,13 @@ class HomeScreen extends ConsumerWidget {
                     _buildPresentationText(context, theme, false),
                     const SizedBox(height: 40),
                     _buildActionButtons(context, theme, false),
-                    const SizedBox(height: 48),
-                    _buildQuickSkills(context, theme, false),
                   ],
                 ),
               ),
             ],
           ),
-          // 🔥Section Services
-          const ResponsiveBox(height: 80),
-          ServicesSection(),
+          const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
+          const ServicesSection(),
         ],
       ),
     );
@@ -252,76 +242,6 @@ class HomeScreen extends ConsumerWidget {
               borderRadius: BorderRadius.circular(16),
             ),
           ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildQuickSkills(
-    BuildContext context,
-    ThemeData theme,
-    bool isMobile,
-  ) {
-    final skills = [
-      {'icon': Icons.phone_android, 'label': 'Flutter', 'color': Colors.blue},
-      {'icon': Icons.web, 'label': 'Angular', 'color': Colors.red},
-      {'icon': Icons.cloud, 'label': 'Firebase', 'color': Colors.orange},
-      {
-        'icon': Icons.architecture,
-        'label': 'Architecture',
-        'color': Colors.purple
-      },
-    ];
-
-    return Column(
-      crossAxisAlignment:
-          isMobile ? CrossAxisAlignment.center : CrossAxisAlignment.start,
-      children: [
-        ResponsiveText.titleLarge(
-          'Expertises',
-          style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const ResponsiveBox(height: 16),
-        Wrap(
-          spacing: 12,
-          runSpacing: 12,
-          alignment: isMobile ? WrapAlignment.center : WrapAlignment.start,
-          children: skills.map((skill) {
-            return ResponsiveBox(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 12,
-              ),
-              decoration: BoxDecoration(
-                color: (skill['color'] as Color).withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: (skill['color'] as Color).withValues(alpha: 0.3),
-                  width: 1.5,
-                ),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    skill['icon'] as IconData,
-                    color: skill['color'] as Color,
-                    size: 20,
-                  ),
-                  const SizedBox(width: 8),
-                  ResponsiveText.bodyMedium(
-                    skill['label'] as String,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: skill['color'] as Color,
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }).toList(),
         ),
       ],
     );

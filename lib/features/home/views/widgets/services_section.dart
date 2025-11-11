@@ -49,7 +49,7 @@ class ServicesSection extends ConsumerWidget {
           ),
         ),
 
-        const ResponsiveBox(height: 40),
+        const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
 
         // Grille de services
         servicesAsync.when(
