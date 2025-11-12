@@ -98,7 +98,7 @@ class ServicesCard extends ConsumerWidget {
                           width: _getSpacing(info,
                               small: 12, medium: 14, large: 16)),
                       Expanded(
-                        child: Text(
+                        child: ResponsiveText.titleMedium(
                           service.title,
                           style: TextStyle(
                             color: Colors.white,
@@ -161,10 +161,11 @@ class ServicesCard extends ConsumerWidget {
       return Container(
         color: theme.colorScheme.surface,
         child: Center(
-          child: Text(
+          child: ResponsiveText.titleMedium(
             'Aucune donnée disponible',
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+              fontSize: _getFontSize(info, small: 8, medium: 14, large: 18),
             ),
           ),
         ),
@@ -177,11 +178,12 @@ class ServicesCard extends ConsumerWidget {
       child: Column(
         children: [
           // Titre de la section
-          Text(
+          ResponsiveText.titleSmall(
             'Technologies & Compétences',
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.bold,
               color: theme.colorScheme.onSurface,
+              fontSize: _getFontSize(info, small: 18, medium: 22, large: 24),
             ),
           ),
           SizedBox(height: _getSpacing(info, small: 8, medium: 10, large: 12)),

@@ -1,3 +1,5 @@
+import 'dart:developer' as developer;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -48,7 +50,7 @@ class ProjectCard extends ConsumerWidget {
 
   Widget _buildCardContent(BuildContext context, WidgetRef ref, Size size) {
     final pdfService = ref.watch(pdfExportProvider);
-
+    developer.log('Building card for ${project.title}');
     return HoverCard(
       id: project.title,
       child: InkWell(
@@ -67,7 +69,7 @@ class ProjectCard extends ConsumerWidget {
               ? (ctx, size) => _buildImage(size)
               : null,
           videoBuilder: (context, size) {
-            if (project.youtubeVideoId == null &&
+            if (project.youtubeVideoId == null ||
                 project.youtubeVideoId!.isEmpty) {
               return _buildImage(size);
             }

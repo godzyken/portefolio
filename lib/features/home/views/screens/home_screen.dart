@@ -146,7 +146,7 @@ class HomeScreen extends ConsumerWidget {
         ),
         child: ClipOval(
           child: SmartImage(
-            path: 'assets/images/pers_do.png',
+            path: 'assets/images/pers_do_am.png',
             fit: BoxFit.cover,
             fallbackIcon: Icons.person,
             fallbackColor: theme.colorScheme.primary,
