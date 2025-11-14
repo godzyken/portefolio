@@ -3,42 +3,67 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/provider/json_data_provider.dart';
 
+import '../../../../core/affichage/screen_size_detector.dart';
 import '../../../../core/ui/widgets/responsive_text.dart';
 import '../../../home/data/comparatifs_data.dart';
 
-class ComparisonStatsView extends ConsumerWidget {
-  final bool autoScroll;
-  final Duration scrollInterval;
-
-  const ComparisonStatsView({
-    super.key,
-    this.autoScroll = true,
-    this.scrollInterval = const Duration(seconds: 5),
-  });
+class ComparisonStatsView extends ConsumerStatefulWidget {
+  const ComparisonStatsView({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ComparisonStatsView> createState() =>
+      _ComparisonStatsViewState();
+}
+
+class _ComparisonStatsViewState extends ConsumerState<ComparisonStatsView> {
+  late final PageController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = PageController(viewportFraction: 0.85);
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final asyncData = ref.watch(comparaisonsJsonProvider);
-    final size = MediaQuery.of(context).size;
+    final info = ref.watch(responsiveInfoProvider);
 
     return asyncData.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Center(child: ResponsiveText.bodyMedium('Erreur: $e')),
-      data: (comparatifs) {
-        final double maxHeight = size.height * 0.5;
+      error: (e, _) => Center(child: Text('Erreur: $e')),
+      data: (comparatifs) => AspectRatio(
+        aspectRatio: info.isMobile ? 1.2 : 1.8,
+        child: PageView.builder(
+          controller: controller,
+          itemCount: comparatifs.length,
+          itemBuilder: (context, index) {
+            return AnimatedBuilder(
+              animation: controller,
+              builder: (context, child) {
+                double value = 1.0;
 
-        return SizedBox(
-          height: maxHeight,
-          child: PageView.builder(
-            itemCount: comparatifs.length,
-            controller: PageController(viewportFraction: 0.9),
-            itemBuilder: (context, index) {
-              final item = comparatifs[index];
-              return ComparatifCard(comparatif: item);
-            },
-          ),
-        );
-      },
+                if (controller.position.haveDimensions) {
+                  value = (controller.page! - index).abs();
+                  value = (1 - (value * 0.3)).clamp(0.8, 1.0);
+                }
+
+                return Transform.scale(
+                  scale: Curves.easeOut.transform(value),
+                  child: child,
+                );
+              },
+              child: ComparatifCard(comparatif: comparatifs[index]),
+            );
+          },
+        ),
+      ),
     );
   }
 }
@@ -60,7 +85,8 @@ class ComparatifCard extends StatelessWidget {
           children: [
             ResponsiveText.headlineSmall(comparatif.title),
             const SizedBox(height: 8),
-            Expanded(
+            Flexible(
+              fit: FlexFit.loose,
               child: DefaultTabController(
                 length: 4,
                 child: Column(
@@ -73,7 +99,8 @@ class ComparatifCard extends StatelessWidget {
                         Tab(text: 'Recommendation'),
                       ],
                     ),
-                    Expanded(
+                    Flexible(
+                      fit: FlexFit.loose,
                       child: TabBarView(
                         children: [
                           _buildBarChart(comparatif),
@@ -118,6 +145,9 @@ class ComparatifCard extends StatelessWidget {
         BarChartData(
           barGroups: barGroups,
           titlesData: FlTitlesData(
+            topTitles: AxisTitles(
+              sideTitles: SideTitles(showTitles: false),
+            ),
             bottomTitles: AxisTitles(
               sideTitles: SideTitles(
                 showTitles: true,
@@ -126,14 +156,27 @@ class ComparatifCard extends StatelessWidget {
                   if (index < 0 || index >= comparatif.categories.length) {
                     return const SizedBox();
                   }
-                  return ResponsiveText.bodySmall(
-                      comparatif.categories[index].name);
+
+                  return Transform.rotate(
+                      angle: -0.5,
+                      child: ResponsiveText.bodySmall(
+                          comparatif.categories[index].name,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis));
                 },
               ),
             ),
             leftTitles: AxisTitles(
-              sideTitles: SideTitles(showTitles: true),
+              sideTitles: SideTitles(showTitles: false),
             ),
+            rightTitles: AxisTitles(
+                sideTitles: SideTitles(showTitles: true),
+                axisNameWidget: const Padding(
+                  padding: EdgeInsets.only(top: 8.0),
+                  child: ResponsiveText.bodySmall('Score'),
+                ),
+                drawBelowEverything: true,
+                axisNameSize: double.minPositive),
           ),
           gridData: FlGridData(show: true),
           borderData: FlBorderData(show: false),

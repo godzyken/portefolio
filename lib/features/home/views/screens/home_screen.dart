@@ -66,6 +66,7 @@ class HomeScreen extends ConsumerWidget {
 
         // Toujours scrollable si contenu long
         Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: const [
             ComparisonStatsView(),
             SizedBox(height: 24),
@@ -106,6 +107,7 @@ class HomeScreen extends ConsumerWidget {
 
               // Le reste scroll si nécessaire
               Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: const [
                   ComparisonStatsView(),
                   SizedBox(height: 24),

@@ -6,101 +6,149 @@ import 'package:portefolio/features/home/views/widgets/services_card.dart';
 import '../../../../core/affichage/screen_size_detector.dart';
 import '../../../../core/provider/json_data_provider.dart';
 
-class ServicesSection extends ConsumerWidget {
+class ServicesSection extends ConsumerStatefulWidget {
   const ServicesSection({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ServicesSection> createState() => _ServicesSectionState();
+}
+
+class _ServicesSectionState extends ConsumerState<ServicesSection>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _fade;
+  late Animation<Offset> _slide;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
+
+    _fade = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeOut,
+    );
+
+    _slide = Tween<Offset>(
+      begin: const Offset(0, 0.1),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeOut,
+    ));
+
+    // Lance l'animation une fois que Flutter a tout construit
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _controller.forward();
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final info = ref.watch(responsiveInfoProvider);
     final theme = Theme.of(context);
-
     final servicesAsync = ref.watch(servicesJsonProvider);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Titre de section
-        Center(
-          child: Column(
-            children: [
-              ResponsiveText.titleLarge(
-                'Mes Services',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  foreground: Paint()
-                    ..shader = LinearGradient(
-                      colors: [
-                        theme.colorScheme.primary,
-                        theme.colorScheme.secondary,
-                      ],
-                    ).createShader(const Rect.fromLTWH(0, 0, 300, 70)),
-                ),
-              ),
-              const ResponsiveBox(paddingSize: ResponsiveSpacing.l),
-              ResponsiveText.bodyMedium(
-                'Solutions digitales pour votre entreprise',
-                style: TextStyle(
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
-                ),
-              ),
-            ],
+    return FadeTransition(
+      opacity: _fade,
+      child: SlideTransition(
+        position: _slide,
+        child: servicesAsync.when(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (err, _) => Center(
+            child: ResponsiveText.headlineMedium('Erreur : $err'),
           ),
-        ),
 
-        const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
-
-        // Grille de services
-        servicesAsync.when(
-            data: (services) {
-              return LayoutBuilder(
-                builder: (context, constraints) {
-                  // Adapter le nombre de colonnes selon la largeur
-                  int crossAxisCount;
-                  if (info.isMobile) {
-                    crossAxisCount = 1;
-                  } else if (info.isTablet) {
-                    crossAxisCount = 2;
-                  } else {
-                    crossAxisCount = constraints.maxWidth > 1400 ? 4 : 3;
-                  }
-
-                  return GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: crossAxisCount,
-                      childAspectRatio: info.isMobile ? 1.5 : 1.1,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
-                    ),
-                    itemCount: services.length,
-                    itemBuilder: (context, index) {
-                      final service = services[index];
-                      return ServicesCard(
-                        service: service,
-                        onTap: () {
-                          // Tu peux ajouter une navigation ou un dialog ici
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: ResponsiveText.bodyMedium(
-                                  'Service : ${service.title}'),
-                              duration: const Duration(seconds: 2),
-                            ),
-                          );
-                        },
-                      );
-                    },
-                  );
-                },
-              );
-            },
-            error: (err, stack) => Center(
-                  child: ResponsiveText.headlineMedium('Erreur : $err'),
+          // Le contenu du layout responsive
+          data: (services) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // ---------- TITRE ----------
+                Center(
+                  child: Column(
+                    children: [
+                      ResponsiveText.titleLarge(
+                        'Mes Services',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          foreground: Paint()
+                            ..shader = LinearGradient(
+                              colors: [
+                                theme.colorScheme.primary,
+                                theme.colorScheme.secondary,
+                              ],
+                            ).createShader(const Rect.fromLTWH(0, 0, 300, 70)),
+                        ),
+                      ),
+                      const ResponsiveBox(paddingSize: ResponsiveSpacing.l),
+                      ResponsiveText.bodyMedium(
+                        'Solutions digitales pour votre entreprise',
+                        style: TextStyle(
+                          color: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.7),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-            loading: () => const Center(
-                  child: CircularProgressIndicator(),
-                ))
-      ],
+
+                const ResponsiveBox(paddingSize: ResponsiveSpacing.l),
+
+                // ---------- LISTE RESPONSIVE ----------
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final double maxW = constraints.maxWidth;
+                    double cardWidth;
+
+                    if (info.isMobile) {
+                      cardWidth = maxW;
+                    } else if (info.isTablet) {
+                      cardWidth = (maxW - 16) / 2;
+                    } else {
+                      final cols = maxW > 1400 ? 4 : 3;
+                      cardWidth = (maxW - (16 * (cols - 1))) / cols;
+                    }
+
+                    return Wrap(
+                      spacing: 16,
+                      runSpacing: 16,
+                      children: services.map((service) {
+                        return SizedBox(
+                          width: cardWidth,
+                          height: info.isMobile ? 400 : 450,
+                          child: ServicesCard(
+                            service: service,
+                            onTap: () {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: ResponsiveText.bodyMedium(
+                                      'Service : ${service.title}'),
+                                  duration: const Duration(seconds: 2),
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                      }).toList(),
+                    );
+                  },
+                ),
+              ],
+            );
+          },
+        ),
+      ),
     );
   }
 }

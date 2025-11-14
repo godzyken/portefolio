@@ -32,20 +32,22 @@ class ServicesCard extends ConsumerWidget {
         id: service.id,
         child: ClipRRect(
           borderRadius: BorderRadius.circular(_getBorderRadius(info)),
-          child: Column(
-            children: [
-              // Section supérieure : Image + Badge + Titre
-              Expanded(
-                flex: 5,
-                child: _buildTopSection(context, theme, info, ref),
-              ),
-
-              // Section inférieure : Graphique camembert
-              Expanded(
-                flex: 5,
-                child: _buildBottomSection(context, theme, info, ref),
-              ),
-            ],
+          child: SizedBox(
+            height: info.isMobile ? 420 : 480,
+            child: Column(
+              children: [
+                // Section supérieure : Image + Badge + Titre
+                SizedBox(
+                  height: info.isMobile ? 180 : 200,
+                  child: _buildTopSection(context, theme, info, ref),
+                ),
+                const ResponsiveBox(height: 8),
+                // Section inférieure : Graphique camembert
+                Expanded(
+                  child: _buildBottomSection(context, theme, info, ref),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -97,7 +99,8 @@ class ServicesCard extends ConsumerWidget {
                       ResponsiveBox(
                           width: _getSpacing(info,
                               small: 12, medium: 14, large: 16)),
-                      Expanded(
+                      Flexible(
+                        fit: FlexFit.tight,
                         child: ResponsiveText.titleMedium(
                           service.title,
                           style: TextStyle(
@@ -158,63 +161,72 @@ class ServicesCard extends ConsumerWidget {
     final expertise = ref.watch(serviceExpertiseProvider(service.id));
 
     if (expertise == null) {
-      return Container(
+      return Card(
         color: theme.colorScheme.surface,
-        child: Center(
-          child: ResponsiveText.titleMedium(
-            'Aucune donnée disponible',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-              fontSize: _getFontSize(info, small: 8, medium: 14, large: 18),
+        margin: const EdgeInsets.all(16),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Center(
+            child: Text(
+              'Aucune donnée disponible',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+              ),
             ),
           ),
         ),
       );
     }
 
-    return Container(
+    return Card(
       color: theme.colorScheme.surface,
-      padding: EdgeInsets.all(_getPadding(info)),
-      child: Column(
-        children: [
-          // Titre de la section
-          ResponsiveText.titleSmall(
-            'Technologies & Compétences',
-            style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: theme.colorScheme.onSurface,
-              fontSize: _getFontSize(info, small: 18, medium: 22, large: 24),
+      margin: const EdgeInsets.all(16),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min, // la carte s’adapte au contenu
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Technologies & Compétences',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
-          SizedBox(height: _getSpacing(info, small: 8, medium: 10, large: 12)),
+            SizedBox(
+                height: _getSpacing(info, small: 8, medium: 12, large: 16)),
 
-          // Graphique + Légende
-          Expanded(
-            child: Row(
-              children: [
-                // Graphique camembert
-                Expanded(
-                  flex: info.isMobile ? 2 : 3,
-                  child: _buildPieChart(expertise, theme, info),
-                ),
+            // Pie chart + légende
+            info.isMobile
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _buildPieChart(expertise, theme, info),
+                      SizedBox(
+                          height: _getSpacing(info,
+                              small: 8, medium: 12, large: 16)),
+                      _buildLegend(expertise, theme, info),
+                    ],
+                  )
+                : Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                          flex: 3,
+                          child: _buildPieChart(expertise, theme, info)),
+                      SizedBox(
+                          width: _getSpacing(info,
+                              small: 8, medium: 12, large: 16)),
+                      Expanded(
+                          flex: 2, child: _buildLegend(expertise, theme, info)),
+                    ],
+                  ),
 
-                ResponsiveBox(
-                    width: _getSpacing(info, small: 8, medium: 12, large: 16)),
-
-                // Légende
-                Expanded(
-                  flex: 2,
-                  child: _buildLegend(expertise, theme, info),
-                ),
-              ],
-            ),
-          ),
-
-          // Stats en bas
-          ResponsiveBox(
-              height: _getSpacing(info, small: 8, medium: 10, large: 12)),
-          _buildStats(expertise, theme, info),
-        ],
+            SizedBox(
+                height: _getSpacing(info, small: 8, medium: 10, large: 12)),
+            _buildStats(expertise, theme, info),
+          ],
+        ),
       ),
     );
   }
@@ -284,9 +296,12 @@ class ServicesCard extends ConsumerWidget {
   Widget _buildLegend(
     ServiceExpertise expertise,
     ThemeData theme,
-    ResponsiveInfo info,
-  ) {
+    ResponsiveInfo info, {
+    double? fontSize,
+  }) {
     final skills = expertise.topSkills.take(5).toList();
+    final double size =
+        fontSize ?? _getFontSize(info, small: 10, medium: 12, large: 14);
 
     final colors = [
       Colors.blue.shade600,
@@ -305,6 +320,7 @@ class ServicesCard extends ConsumerWidget {
           final skill = entry.value;
 
           return ResponsiveBox(
+            paddingSize: ResponsiveSpacing.s,
             padding: EdgeInsets.symmetric(
               vertical: _getSpacing(info, small: 2, medium: 3, large: 4),
             ),
@@ -320,15 +336,15 @@ class ServicesCard extends ConsumerWidget {
                 ),
                 ResponsiveBox(
                     width: _getSpacing(info, small: 4, medium: 6, large: 8)),
-                Expanded(
+                Flexible(
+                  fit: FlexFit.loose,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       ResponsiveText.bodySmall(
                         skill.name,
                         style: TextStyle(
-                          fontSize: _getFontSize(info,
-                              small: 10, medium: 11, large: 12),
+                          fontSize: size,
                           fontWeight: FontWeight.w600,
                           color: theme.colorScheme.onSurface,
                         ),
@@ -338,8 +354,7 @@ class ServicesCard extends ConsumerWidget {
                       ResponsiveText.bodySmall(
                         '${skill.levelPercent}% • ${skill.projectCount} projets',
                         style: TextStyle(
-                          fontSize: _getFontSize(info,
-                              small: 8, medium: 9, large: 10),
+                          fontSize: size,
                           color: theme.colorScheme.onSurface
                               .withValues(alpha: 0.6),
                         ),
@@ -589,6 +604,7 @@ class ServicesCard extends ConsumerWidget {
               ),
               const ResponsiveBox(height: 24),
               Flexible(
+                fit: FlexFit.tight,
                 child: SingleChildScrollView(
                   child: ServiceExpertiseCard(expertise: expertise),
                 ),
