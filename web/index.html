@@ -3,97 +3,26 @@
 <head>
   <base href="$FLUTTER_BASE_HREF">
   <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
-  <meta name="description" content="Ce portfolio a été conçu pour illustrer mes compétences en Flutter et offrir un aperçu clair et esthétique de mon parcours.">
+  <title>Portefolio</title>
 
-  <!-- iOS meta tags & icons -->
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="portefolio">
-  <meta http-equiv="Permissions-Policy" content="geolocation=(self)">
-  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+  <!-- IMPORTANT: base relative pour GitHub Pages -->
 
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png"/>
-  <title>portefolio</title>
-  <link rel="manifest" href="manifest.json">
-
-  <!-- Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXX"></script>
+  <!-- Configuration Flutter obligatoire -->
   <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){ dataLayer.push(arguments); }
-    gtag('js', new Date());
-    gtag('config', 'G-WQRTDMK3');
+    window._flutter = {
+      buildConfig: {
+        renderer: "canvaskit",
+        assetBase: "./",
+      }
+    };
   </script>
 
-  <style>
-    html, body {
-      height: 100%;
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-    }
-    #flutter_container {
-      height: 100%;
-      width: 100%;
-    }
-     #loading {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    }
-
-    .loader {
-      width: 50px;
-      height: 50px;
-      border: 5px solid #f3f3f3;
-      border-top: 5px solid #667eea;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-  </style>
+  <!-- Le bootloader Flutter -->
+  <script src="./flutter.js" defer></script>
 </head>
+
 <body>
-  <!-- Conteneur Flutter -->
-  <!-- Écran de chargement -->
-  <div id="loading">
-    <div class="loader"></div>
-  </div>
-
-  <script>
-    // Vérifier si la géolocalisation est supportée
-    if ('geolocation' in navigator) {
-      console.log('✅ Géolocalisation disponible');
-    } else {
-      console.warn('❌ Géolocalisation non supportée par ce navigateur');
-    }
-
-    // Configuration Flutter
-    window.addEventListener('load', function(ev) {
-      _flutter.loader.load({
-        serviceWorker: {
-          serviceWorkerVersion: serviceWorkerVersion,
-        },
-        onEntrypointLoaded: function(engineInitializer) {
-          engineInitializer.initializeEngine().then(function(appRunner) {
-            appRunner.runApp();
-            // Cacher l'écran de chargement
-            document.getElementById('loading').style.display = 'none';
-          });
-        }
-      });
-    });
-  </script>
-
-  <!-- Bootstrap Flutter -->
-  <script async src="flutter_bootstrap.js"></script>
+<!-- Le code compilé -->
+<script src="./main.dart.js" type="application/javascript" defer></script>
 </body>
 </html>

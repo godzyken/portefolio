@@ -4,7 +4,6 @@ export 'config_env_provider.dart';
 export 'error_providers.dart';
 export 'experience_providers.dart';
 export 'expertise_provider.dart';
-export 'hive_initializer_provider.dart';
 export 'image_providers.dart';
 export 'json_data_provider.dart';
 export 'location_providers.dart';

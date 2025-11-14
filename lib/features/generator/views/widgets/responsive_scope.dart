@@ -1,6 +1,5 @@
-import 'dart:async';
-
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/affichage/screen_size_detector.dart';
@@ -15,28 +14,26 @@ class ResponsiveScope extends ConsumerStatefulWidget {
 
 class _ResponsiveScopeState extends ConsumerState<ResponsiveScope>
     with WidgetsBindingObserver {
-  Timer? _resizeTimer;
+  bool _pendingUpdate = false;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    // On attend la fin de la première frame pour mettre à jour
-    WidgetsBinding.instance.addPostFrameCallback((_) => _safeUpdateSize());
+
+    // Mise à jour initiale après build
+    WidgetsBinding.instance.addPostFrameCallback((_) => _updateSize());
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    _resizeTimer?.cancel();
     super.dispose();
   }
 
   @override
   void didChangeMetrics() {
-    // Déclenche seulement après un léger délai pour éviter les rebuilds multiples
-    _resizeTimer?.cancel();
-    _safeUpdateSize();
+    _scheduleUpdate();
   }
 
   @override
@@ -44,19 +41,27 @@ class _ResponsiveScopeState extends ConsumerState<ResponsiveScope>
     return widget.child;
   }
 
-  void _safeUpdateSize() {
-    if (!mounted) return;
+  /// Évite les mises à jour multiples : ne s'exécute qu'une fois par frame
+  void _scheduleUpdate() {
+    if (_pendingUpdate) return;
+    _pendingUpdate = true;
+
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _pendingUpdate = false;
+      _updateSize();
+    });
+  }
+
+  void _updateSize() {
     final mq = MediaQuery.maybeOf(context);
     if (mq == null || mq.size == Size.zero) return;
 
     final newSize = mq.size;
     final currentSize = ref.read(screenSizeProvider);
+
     if (currentSize != newSize) {
-      Future.microtask(() {
-        if (mounted) {
-          ref.read(screenSizeProvider.notifier).setSize(newSize);
-        }
-      });
+      ref.read(screenSizeProvider.notifier).setSize(newSize);
     }
   }
 }

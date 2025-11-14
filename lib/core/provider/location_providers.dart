@@ -8,6 +8,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../../features/generator/data/location_data.dart';
+import '../../features/generator/providers/errors/geolocation_exception.dart';
+import '../../features/generator/providers/location_service_provider.dart';
 import '../../features/generator/services/location_service.dart';
 import '../notifier/location_notifiers.dart';
 
@@ -29,8 +31,13 @@ final currentActuLocationProvider = FutureProvider<LocationData?>((ref) async {
 });
 
 /// 🔹 Provider pour le flux en temps réel (mise à jour continue)
-final locationStreamProvider = StreamProvider<LocationData>((ref) {
-  return LocationService.instance.getLocationStream();
+final locationStreamProvider = StreamProvider.autoDispose<LocationData>((ref) {
+  final service = ref.watch(locationServiceProvider);
+  return service.getLocationStream().handleError((e, st) {
+    ref
+        .read(locationErrorProvier.notifier)
+        .setError(e is GeolocationException ? e : null);
+  });
 });
 
 /// 🔹 Provider pour savoir si le GPS est activé

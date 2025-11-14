@@ -267,9 +267,10 @@ class _SmartImageState extends ConsumerState<SmartImage> {
   }
 
   Widget _buildAssetImage(BuildContext context, double? w, double? h) {
+    final cleanPath = widget.path.replaceFirst('assets/assets/', 'assets/');
     return FadeInImage(
       placeholder: MemoryImage(transparentImage),
-      image: AssetImage(widget.path),
+      image: AssetImage(cleanPath),
       width: w,
       height: h,
       fit: widget.fit,

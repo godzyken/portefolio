@@ -1,4 +1,5 @@
-{
+[
+  {
   "id" : "projet_egoteservices",
   "title": "Flutter vs React Native",
   "description": "Comparatif complet entre Flutter et React Native pour un usage professionnel (Construction 4.0, portfolio, intégrations Firebase, IoT, PDF, etc.)",
@@ -101,4 +102,109 @@
       "Animations et expérience utilisateur supérieures"
     ]
   }
-}
+},
+  {
+    "id": "projet_sig_urbalyon",
+    "title": "Flutter vs Angular",
+    "description": "Comparatif complet entre Flutter et Angular pour le projet SIG Urba'lyon (Web et Mobile, cartes, visualisation géospatiale, intégration API, performance).",
+    "categories": [
+      {
+        "name": "Performance",
+        "flutter": "Très haute sur mobile, rendu natif fluide",
+        "react_native": "Angular performant côté Web, dépend du DOM et du navigateur",
+        "score_flutter": 9,
+        "score_react_native": 7
+      },
+      {
+        "name": "UI / Rendu",
+        "flutter": "Widgets personnalisables, rendu homogène sur toutes les plateformes",
+        "react_native": "Angular UI flexible, mais dépend des composants HTML/CSS",
+        "score_flutter": 9,
+        "score_react_native": 8
+      },
+      {
+        "name": "Animations",
+        "flutter": "Animations fluides et complexes très simples à implémenter",
+        "react_native": "Animations réalisables via CSS/JS, plus limitées sur mobile",
+        "score_flutter": 10,
+        "score_react_native": 6
+      },
+      {
+        "name": "Écosystème",
+        "flutter": "Stable, maintenu par Google, nombreux packages",
+        "react_native": "Angular mature côté Web, vaste écosystème JS",
+        "score_flutter": 8,
+        "score_react_native": 9
+      },
+      {
+        "name": "Intégration native",
+        "flutter": "Très simple sur mobile, support natif pour cartes et capteurs",
+        "react_native": "Angular est Web-only, nécessite wrappers pour mobile",
+        "score_flutter": 9,
+        "score_react_native": 5
+      },
+      {
+        "name": "Web / Desktop",
+        "flutter": "Support Web en développement stable, Desktop expérimental",
+        "react_native": "Angular Web natif, Desktop via Electron",
+        "score_flutter": 7,
+        "score_react_native": 9
+      },
+      {
+        "name": "Taille de l'app",
+        "flutter": "Lourde sur Web, légère sur mobile",
+        "react_native": "Angular léger côté Web, dépend des bundles",
+        "score_flutter": 6,
+        "score_react_native": 8
+      },
+      {
+        "name": "Apprentissage",
+        "flutter": "Dart + widgets, courbe moyenne mais logique unifiée",
+        "react_native": "TypeScript/JS + HTML/CSS, facile si déjà Web",
+        "score_flutter": 8,
+        "score_react_native": 9
+      }
+    ],
+    "graphs": {
+      "bar_chart": {
+        "title": "Scores comparatifs",
+        "axes": ["Flutter", "Angular"],
+        "data": [
+          { "category": "Performance", "flutter": 9, "react_native": 7 },
+          { "category": "UI / Rendu", "flutter": 9, "react_native": 8 },
+          { "category": "Animations", "flutter": 10, "react_native": 6 },
+          { "category": "Écosystème", "flutter": 8, "react_native": 9 },
+          { "category": "Intégration native", "flutter": 9, "react_native": 5 },
+          { "category": "Web / Desktop", "flutter": 7, "react_native": 9 },
+          { "category": "Taille de l'app", "flutter": 6, "react_native": 8 },
+          { "category": "Apprentissage", "flutter": 8, "react_native": 9 }
+        ]
+      },
+      "radar_chart": {
+        "title": "Profil technologique",
+        "labels": [
+          "Performance",
+          "UI / Rendu",
+          "Animations",
+          "Écosystème",
+          "Intégration native",
+          "Web / Desktop",
+          "Taille de l'app",
+          "Apprentissage"
+        ],
+        "flutter": [9, 9, 10, 8, 9, 7, 6, 8],
+        "react_native": [7, 8, 6, 9, 5, 9, 8, 9]
+      }
+    },
+    "recommendation": {
+      "summary": "Flutter est recommandé pour un projet multi-plateforme avec SIG Urba'lyon.",
+      "details": [
+        "UI complexes et cohérentes (cartes interactives, composants personnalisés)",
+        "Performance mobile et animations supérieures",
+        "Intégration API et services natifs simplifiée",
+        "Multi-platform Web/Mobile/Desktop possible",
+        "Développement unifié avec Dart"
+      ]
+    }
+  }
+]

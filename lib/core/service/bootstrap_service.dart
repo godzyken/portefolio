@@ -16,62 +16,52 @@ class BootstrapService {
   BootstrapService({required this.theme, required this.prefs});
 
   static Future<BootstrapService> initialize() async {
-    developer.log('🚀 Démarrage de BootstrapService...');
+    developer.log('🚀 BootstrapService starting...');
 
     final prefs = await _initializeSharedPreferences();
-
     await _initializeHive();
 
     final repo = ThemeRepository(prefs: prefs);
     final theme = await repo.loadTheme();
 
-    developer.log('✅ BootstrapService terminé.');
+    developer.log('✅ BootstrapService finished.');
 
     return BootstrapService(theme: theme, prefs: prefs);
   }
 
-  /// Initialise SharedPreferences avec un fallback pour les plateformes non supportées.
   static Future<SharedPreferences> _initializeSharedPreferences() async {
     try {
       return await SharedPreferences.getInstance();
     } catch (e) {
-      developer
-          .log('⚠️ SharedPreferences non disponible, fallback mémoire : $e');
-      // FakeSharedPreferences doit être une classe qui implémente SharedPreferences avec une Map.
+      developer.log('⚠️ SharedPreferences unavailable, using fallback.');
       return FakeSharedPreferences();
     }
   }
 
-  /// Initialise Hive, enregistre les adaptateurs et ouvre les boîtes nécessaires.
   static Future<void> _initializeHive() async {
-    const int basicThemeAdapterId = 10; // L'ID de votre adaptateur
+    const int basicThemeAdapterId = 10;
 
     try {
-      // Pour le web, `Hive.initFlutter()` gère tout.
-      // Pour les autres plateformes, il a besoin d'un chemin.
+      // Mobile / Desktop: must initialize Hive with a folder
       if (!kIsWeb) {
-        final appDocumentDir = await getApplicationDocumentsDirectory();
-        Hive.init(appDocumentDir.path);
-      } else {
-        // Alternative plus simple pour toutes les plateformes si vous utilisez hive_flutter
-        Hive.ignoreTypeId(basicThemeAdapterId);
+        final dir = await getApplicationDocumentsDirectory();
+        Hive.init(dir.path);
       }
 
-      // Enregistrer l'adaptateur pour BasicTheme s'il n'est pas déjà enregistré.
+      // Register adapter ONCE only
       if (!Hive.isAdapterRegistered(basicThemeAdapterId)) {
-        Hive.registerAdapter(BasicThemeAdapter());
-        developer.log('👍 Adaptateur BasicThemeAdapter enregistré.');
+        Hive.registerAdapter<BasicTheme>(BasicThemeAdapter());
+        developer.log('👍 BasicThemeAdapter registered.');
       }
 
-      // Ouvrir la boîte 'themes' pour la rendre accessible dans toute l'application.
+      // Open box ONCE only
       if (!Hive.isBoxOpen('themes')) {
         await Hive.openBox<BasicTheme>('themes');
-        developer.log("✅ Boîte Hive 'themes' ouverte avec succès.");
+        developer.log("📦 Hive box 'themes' opened.");
       }
     } catch (e) {
-      developer.log('❌ Erreur critique lors de l\'initialisation de Hive: $e');
-      // Vous pourriez vouloir remonter l'erreur ici si Hive est essentiel.
-      throw Exception('Impossible d\'initialiser la base de données locale.');
+      developer.log('❌ Hive initialization failed: $e');
+      throw Exception('Hive init error.');
     }
   }
 }

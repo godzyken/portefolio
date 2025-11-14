@@ -25,7 +25,6 @@ class ComparisonStatsView extends ConsumerWidget {
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (e, _) => Center(child: ResponsiveText.bodyMedium('Erreur: $e')),
       data: (comparatifs) {
-        // Hauteur maximale selon l'écran (50% max par exemple)
         final double maxHeight = size.height * 0.5;
 
         return SizedBox(
@@ -35,14 +34,7 @@ class ComparisonStatsView extends ConsumerWidget {
             controller: PageController(viewportFraction: 0.9),
             itemBuilder: (context, index) {
               final item = comparatifs[index];
-              // Ajustement dynamique : si beaucoup d'éléments, on réduit la hauteur de chaque graphique
-              final double graphHeight =
-                  (maxHeight / (item.entries.length.clamp(1, 5)));
-
-              return ComparatifCard(
-                comparatif: item,
-                graphHeight: graphHeight,
-              );
+              return ComparatifCard(comparatif: item);
             },
           ),
         );
@@ -53,9 +45,8 @@ class ComparisonStatsView extends ConsumerWidget {
 
 class ComparatifCard extends StatelessWidget {
   final Comparatif comparatif;
-  final double? graphHeight;
 
-  const ComparatifCard({super.key, required this.comparatif, this.graphHeight});
+  const ComparatifCard({super.key, required this.comparatif});
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +54,7 @@ class ComparatifCard extends StatelessWidget {
       elevation: 4,
       margin: const EdgeInsets.all(16),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -71,92 +62,173 @@ class ComparatifCard extends StatelessWidget {
             const SizedBox(height: 8),
             Expanded(
               child: DefaultTabController(
-                length: 3,
+                length: 4,
                 child: Column(
                   children: [
                     const TabBar(
                       tabs: [
-                        Tab(text: 'Graphiques'),
+                        Tab(text: 'Barres'),
+                        Tab(text: 'Radar'),
                         Tab(text: 'Table'),
-                        Tab(text: 'Camembert'),
+                        Tab(text: 'Recommendation'),
                       ],
                     ),
                     Expanded(
                       child: TabBarView(
                         children: [
-                          _buildGraphView(),
-                          _buildTableView(),
-                          _buildPieChart(),
+                          _buildBarChart(comparatif),
+                          _buildRadarChart(comparatif),
+                          _buildTableView(comparatif),
+                          _buildRecommendation(comparatif),
                         ],
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildGraphView() {
-    return SizedBox(
-      height: graphHeight ?? 250, // hauteur dynamique
+  // ---------- Bar Chart ----------
+  Widget _buildBarChart(Comparatif comparatif) {
+    final barGroups = comparatif.categories
+        .asMap()
+        .entries
+        .map(
+          (entry) => BarChartGroupData(
+            x: entry.key,
+            barRods: [
+              BarChartRodData(
+                  toY: entry.value.scoreFlutter.toDouble(), color: Colors.blue),
+              BarChartRodData(
+                  toY: entry.value.scoreReactNative.toDouble(),
+                  color: Colors.green),
+            ],
+          ),
+        )
+        .toList();
+
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
       child: BarChart(
         BarChartData(
-          barGroups: [
-            for (var i = 0; i < comparatif.entries.length; i++)
-              BarChartGroupData(
-                  x: i,
-                  barRods: [BarChartRodData(toY: comparatif.entries[i].value)])
-          ],
+          barGroups: barGroups,
           titlesData: FlTitlesData(
             bottomTitles: AxisTitles(
               sideTitles: SideTitles(
                 showTitles: true,
                 getTitlesWidget: (value, _) {
                   final index = value.toInt();
-                  if (index < 0 || index >= comparatif.entries.length)
+                  if (index < 0 || index >= comparatif.categories.length) {
                     return const SizedBox();
-                  return ResponsiveText.displaySmall(
-                      comparatif.entries[index].label);
+                  }
+                  return ResponsiveText.bodySmall(
+                      comparatif.categories[index].name);
                 },
               ),
             ),
+            leftTitles: AxisTitles(
+              sideTitles: SideTitles(showTitles: true),
+            ),
           ),
+          gridData: FlGridData(show: true),
+          borderData: FlBorderData(show: false),
         ),
       ),
     );
   }
 
-  Widget _buildTableView() {
+  // ---------- Radar Chart ----------
+  Widget _buildRadarChart(Comparatif comparatif) {
+    final categories = comparatif.categories.map((e) => e.name).toList();
+    final flutterScores =
+        comparatif.categories.map((e) => e.scoreFlutter.toDouble()).toList();
+    final reactScores = comparatif.categories
+        .map((e) => e.scoreReactNative.toDouble())
+        .toList();
+
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: RadarChart(
+        RadarChartData(
+          dataSets: [
+            RadarDataSet(
+              dataEntries:
+                  flutterScores.map((s) => RadarEntry(value: s)).toList(),
+              borderColor: Colors.blue,
+              fillColor: Colors.blue.withValues(alpha: 0.3),
+              entryRadius: 3,
+            ),
+            RadarDataSet(
+              dataEntries:
+                  reactScores.map((s) => RadarEntry(value: s)).toList(),
+              borderColor: Colors.green,
+              fillColor: Colors.green.withValues(alpha: 0.3),
+              entryRadius: 3,
+            ),
+          ],
+          radarBackgroundColor: Colors.transparent,
+          titleTextStyle: const TextStyle(fontSize: 12),
+          getTitle: (index, angle) {
+            // Retourne un RadarChartTitle pour chaque index
+            return RadarChartTitle(
+              text: categories[index],
+              angle: angle,
+            );
+          },
+          tickCount: 5,
+        ),
+      ),
+    );
+  }
+
+  // ---------- Table View ----------
+  Widget _buildTableView(Comparatif comparatif) {
     return SingleChildScrollView(
       child: DataTable(
-        columns: [
-          DataColumn(label: ResponsiveText.displaySmall('Label')),
-          DataColumn(label: ResponsiveText.displaySmall('Valeur')),
+        columns: const [
+          DataColumn(label: ResponsiveText.bodySmall('Catégorie')),
+          DataColumn(label: ResponsiveText.bodySmall('Flutter')),
+          DataColumn(label: ResponsiveText.bodySmall('React Native')),
         ],
-        rows: comparatif.entries
-            .map((e) => DataRow(cells: [
-                  DataCell(ResponsiveText.displaySmall(e.label)),
-                  DataCell(ResponsiveText.displaySmall(e.value.toString())),
-                ]))
+        rows: comparatif.categories
+            .map(
+              (c) => DataRow(
+                cells: [
+                  DataCell(ResponsiveText.bodySmall(c.name)),
+                  DataCell(ResponsiveText.bodySmall('${c.scoreFlutter}')),
+                  DataCell(ResponsiveText.bodySmall('${c.scoreReactNative}')),
+                ],
+              ),
+            )
             .toList(),
       ),
     );
   }
 
-  Widget _buildPieChart() {
-    return SizedBox(
-      height: graphHeight ?? 250,
-      child: PieChart(
-        PieChartData(
-          sections: [
-            for (final entry in comparatif.entries)
-              PieChartSectionData(value: entry.value, title: entry.label)
-          ],
-        ),
+  // ---------- Recommendation ----------
+  Widget _buildRecommendation(Comparatif comparatif) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ResponsiveText.headlineSmall('Recommendation'),
+          const SizedBox(height: 8),
+          ResponsiveText.bodyMedium(comparatif.recommendation.summary),
+          const SizedBox(height: 8),
+          ...comparatif.recommendation.details.map((d) => Row(
+                children: [
+                  const Icon(Icons.check, color: Colors.green, size: 16),
+                  const SizedBox(width: 6),
+                  Expanded(child: ResponsiveText.bodySmall(d)),
+                ],
+              )),
+        ],
       ),
     );
   }

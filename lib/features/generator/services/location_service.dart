@@ -71,7 +71,7 @@ class _GeolocatorLocationService extends LocationService {
       return _mapPermission(perm);
     } catch (e) {
       developer.log('❌ Erreur checkPermission: $e');
-      return LocationPermissionStatus.denied;
+      return LocationPermissionStatus.unableToDetermine;
     }
   }
 
@@ -93,7 +93,12 @@ class _GeolocatorLocationService extends LocationService {
         developer.log('GPS désactivé, position simulée renvoyée');
         return null;
       }
-      final pos = await Geolocator.getCurrentPosition();
+      final pos = await Geolocator.getCurrentPosition(
+        locationSettings: LocationSettings(
+          accuracy: LocationAccuracy.best,
+          distanceFilter: 5,
+        ),
+      );
       return _toLocationData(pos);
     } on PermissionDeniedException catch (e) {
       developer.log('❌ Permission refusée: $e');
@@ -106,12 +111,14 @@ class _GeolocatorLocationService extends LocationService {
 
   @override
   Stream<LocationData> getLocationStream() {
-    return Geolocator.getPositionStream(
+    final stream = Geolocator.getPositionStream(
       locationSettings: const LocationSettings(
-        accuracy: LocationAccuracy.high,
-        distanceFilter: 10,
+        accuracy: LocationAccuracy.best,
+        distanceFilter: 5,
       ),
-    ).map(_toLocationData);
+    );
+
+    return stream.map(_toLocationData);
   }
 
   @override
@@ -187,7 +194,7 @@ class _StubLocationService extends LocationService {
 /// Service simulé pour mobile/desktop (position fixe)
 class _SimulatedLocationService extends LocationService {
   StreamController<LocationData>? _controller;
-  Timer? _timer;
+  StreamSubscription? _periodicSub;
 
   static const _defaultLat = 48.8566;
   static const _defaultLng = 2.3522;
@@ -207,12 +214,7 @@ class _SimulatedLocationService extends LocationService {
   @override
   Future<LocationData?> getCurrentLocation() async {
     developer.log('📱 LocationService: Position simulée (Paris)');
-    return LocationData(
-      latitude: _defaultLat,
-      longitude: _defaultLng,
-      accuracy: 100,
-      timestamp: DateTime.now(),
-    );
+    return _createFakeLocation();
   }
 
   @override
@@ -225,38 +227,45 @@ class _SimulatedLocationService extends LocationService {
   }
 
   void _startEmitting() {
-    developer.log('📱 LocationService: Démarrage du stream de position');
+    developer.log('📱 SimulatedLocationService: start stream');
+
+    // 🔥 1ère valeur immédiatement
     _emitPosition();
-    _timer = Timer.periodic(const Duration(seconds: 10), (_) {
-      _emitPosition();
-    });
+
+    // 🔥 Emission périodique SANS TIMER (compatible Web)
+    _periodicSub = Stream.periodic(const Duration(seconds: 10))
+        .listen((_) => _emitPosition());
   }
 
   void _emitPosition() {
-    if (_controller != null && !_controller!.isClosed) {
-      final loc = LocationData(
+    if (_controller == null || _controller!.isClosed) return;
+
+    final loc = _createFakeLocation();
+    _controller!.add(loc);
+
+    developer.log('📱 SimulatedLocation: position emitted');
+  }
+
+  LocationData _createFakeLocation() => LocationData(
         latitude: _defaultLat,
         longitude: _defaultLng,
         accuracy: 100,
         timestamp: DateTime.now(),
       );
-      _controller!.add(loc);
-      developer.log('📱 LocationService: Position émise');
-    }
-  }
 
   void _stopEmitting() {
-    developer.log('📱 LocationService: Arrêt du stream');
-    _timer?.cancel();
-    _timer = null;
+    developer.log('📱 SimulatedLocationService: stop stream');
+
+    _periodicSub?.cancel();
+    _periodicSub = null;
+
     _controller?.close();
     _controller = null;
   }
 
   @override
   Future<bool> isLocationEnabled() async {
-    developer.log('📱 LocationService: GPS simulé actif');
-    return true;
+    return true; // simulé => toujours dispo
   }
 
   @override
