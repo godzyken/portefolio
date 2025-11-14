@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:portefolio/features/home/data/comparatifs_data.dart';
 
 import '../../features/generator/data/extention_models.dart';
 
@@ -39,4 +40,8 @@ final experiencesProvider = FutureProvider<List<Experience>>((ref) async {
 
 final servicesJsonProvider = FutureProvider<List<Service>>((ref) async {
   return loadJsonFile('assets/data/services.json', Service.fromJson);
+});
+
+final comparaisonsJsonProvider = FutureProvider<List<Comparatif>>((ref) async {
+  return loadJsonFile('assets/data/comparaisons.json', Comparatif.fromJson);
 });

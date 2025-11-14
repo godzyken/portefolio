@@ -155,11 +155,12 @@ class ResponsiveText extends ConsumerWidget {
     final fontSize = _getFontSize(constants);
 
     // Récupérer le style de base du thème
-    final baseStyle = _getBaseStyle(theme);
+    final TextStyle? baseStyle = _getBaseStyle(theme);
+    final finalStyle = baseStyle?.copyWith(fontSize: fontSize).merge(style);
 
     return Text(
       text,
-      style: baseStyle?.copyWith(fontSize: fontSize).merge(style),
+      style: finalStyle,
       textAlign: textAlign,
       maxLines: maxLines,
       overflow: overflow,

@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
+import 'package:portefolio/core/provider/hive_initializer_provider.dart';
 
 import '../theme/theme_data.dart';
 
@@ -12,6 +13,8 @@ class CustomThemesNotifier extends Notifier<List<BasicTheme>> {
 
   @override
   List<BasicTheme> build() {
+    ref.watch(hiveInitializerProvider);
+
     _box = Hive.box<BasicTheme>('themes');
     return _box.values.toList();
   }

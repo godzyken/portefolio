@@ -2,6 +2,7 @@ export 'widgets/adaptive_card.dart';
 export 'widgets/bubble_navigation_menu.dart';
 export 'widgets/chart_renderer.dart';
 export 'widgets/code_high_light_list.dart';
+export 'widgets/comparatif_widget.dart';
 export 'widgets/fade_slide_animation.dart';
 export 'widgets/footer_bottom_bar.dart';
 export 'widgets/hover_card.dart';

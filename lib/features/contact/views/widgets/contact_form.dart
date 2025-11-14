@@ -28,13 +28,13 @@ class ContactForm extends ConsumerWidget {
             ? 24.0
             : 64.0;
 
-    return Padding(
+    return ResponsiveBox(
       padding: EdgeInsets.symmetric(
         horizontal: horizontalPadding,
         vertical: 32,
       ),
-      child: Container(
-        constraints: const BoxConstraints(maxWidth: 700),
+      child: ResponsiveBox(
+        paddingSize: ResponsiveSpacing.m,
         padding: EdgeInsets.all(info.isMobile ? 24 : 40),
         decoration: BoxDecoration(
           color: theme.colorScheme.surface,
@@ -72,13 +72,13 @@ class ContactForm extends ConsumerWidget {
 
     final notifier = ref.read(contactFormProvider.notifier);
 
-    return Container(
+    return ResponsiveBox(
       padding: EdgeInsets.symmetric(
         horizontal: horizontalPadding,
         vertical: 32,
       ),
-      child: Container(
-        constraints: const BoxConstraints(maxWidth: 700),
+      child: ResponsiveBox(
+        paddingSize: ResponsiveSpacing.m,
         padding: EdgeInsets.all(info.isMobile ? 24 : 40),
         decoration: BoxDecoration(
           color: theme.colorScheme.surface,
@@ -107,21 +107,24 @@ class ContactForm extends ConsumerWidget {
                   child: _NameField(
                       initial: formState.name, onChanged: notifier.updateName),
                 ),
-                const SizedBox(height: 20),
+                const ResponsiveBox(
+                    paddingSize: ResponsiveSpacing.m, height: 20),
                 _buildFieldWithAnimation(
                   delay: 200,
                   child: _EmailField(
                       initial: formState.email,
                       onChanged: notifier.updateEmail),
                 ),
-                const SizedBox(height: 20),
+                const ResponsiveBox(
+                    paddingSize: ResponsiveSpacing.l, height: 20),
                 _buildFieldWithAnimation(
                   delay: 300,
                   child: _MessageField(
                       initial: formState.message,
                       onChanged: notifier.updateMessage),
                 ),
-                const SizedBox(height: 32),
+                const ResponsiveBox(
+                    paddingSize: ResponsiveSpacing.xl, height: 32),
                 _buildFieldWithAnimation(
                   delay: 400,
                   child: _SubmitRow(
@@ -380,7 +383,7 @@ class _SubmitRow extends StatelessWidget {
                       paddingSize: ResponsiveSpacing.m,
                       child: ResponsiveText.bodyMedium(
                         'ou contactez-moi via',
-                        style: theme.textTheme.bodySmall?.copyWith(
+                        style: TextStyle(
                           color: theme.colorScheme.onSurface
                               .withValues(alpha: 0.5),
                         ),

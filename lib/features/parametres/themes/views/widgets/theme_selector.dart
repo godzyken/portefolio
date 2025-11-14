@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:portefolio/core/affichage/screen_size_detector.dart';
 
+import '../../../../../core/affichage/screen_size_detector.dart';
 import '../../../../../core/ui/widgets/responsive_text.dart';
 import '../../controller/theme_controller.dart';
+import '../../provider/custom_themes_provider.dart';
 import '../../theme/theme_data.dart';
 
 class ThemeSelector extends ConsumerStatefulWidget {
@@ -19,10 +20,6 @@ class _ThemeSelectorState extends ConsumerState<ThemeSelector> {
   @override
   void initState() {
     super.initState();
-    previewTheme();
-  }
-
-  Future<void> previewTheme() async {
     _previewTheme = ref.read(themeControllerProvider);
   }
 
@@ -35,18 +32,25 @@ class _ThemeSelectorState extends ConsumerState<ThemeSelector> {
 
     return Theme(
         data: _previewTheme.toThemeData(),
-        child: buildWrap(current, controller));
+        child: _buildThemeList(current, controller));
   }
 
-  ResponsiveBox buildWrap(BasicTheme current, ThemeController controller) {
+  // Cette méthode gère l'état asynchrone des thèmes personnalisés.
+  Widget _buildThemeList(BasicTheme current, ThemeController controller) {
     final info = ref.watch(responsiveInfoProvider);
+    final customThemesAsync = ref.watch(customThemesProvider);
+
+    // Construction de la liste des thèmes (statiques + personnalisés)
+    final themeList = [...availableThemes, ...customThemesAsync];
+
     return ResponsiveBox(
+      // La hauteur est maintenue, mais on gère l'état asynchrone
       height: info.size.height * 0.7,
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(12),
         child: Column(
-          children: List.generate(availableThemes.length, (index) {
-            final theme = availableThemes[index];
+          children: List.generate(themeList.length, (index) {
+            final theme = themeList[index];
             final isSelected = theme.primaryColor == current.primaryColor;
 
             return GestureDetector(

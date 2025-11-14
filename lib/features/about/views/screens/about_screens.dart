@@ -287,7 +287,7 @@ class _AboutSectionState extends ConsumerState<AboutSection>
           context,
           theme,
           isCentered,
-          "Chaque année, je développe un projet complet — de l'idée à la mise en production — pour transformer des besoins réels en solutions performantes et durables.",
+          "Chaque année, je développe un projet complet pour transformer des besoins réels en solutions performantes et durables.",
           isFirst: false,
         ),
         const ResponsiveBox(paddingSize: ResponsiveSpacing.m),

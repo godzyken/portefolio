@@ -4,6 +4,7 @@ import 'dart:developer' as developer;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:portefolio/core/exceptions/handler/global_exeption_handler.dart';
@@ -98,11 +99,12 @@ class MyRouterApp extends ConsumerWidget {
 // ÉTAPE 3 : Application complète
 // Version finale avec toutes les fonctionnalités
 // ====================
-Future<void> main() async {
+void main() {
   //BindingBase.debugZoneErrorsAreFatal = false;
-  WidgetsFlutterBinding.ensureInitialized();
+  final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
 
-  // 🚀 Lancer l’application
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+
   runZonedGuarded(
     () async {
       // ✅ Patch pour le bug du MouseTracker au démarrage web

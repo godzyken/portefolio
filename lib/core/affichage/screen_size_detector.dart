@@ -15,7 +15,7 @@ class Breakpoints {
 }
 
 /// Catégorisation de l’écran
-enum DeviceType { watch, mobile, tablet, desktop, largeDesktop }
+enum DeviceType { watch, mobile, smallTablet, tablet, desktop, largeDesktop }
 
 /// Objet regroupant toutes les infos responsive
 class ResponsiveInfo {
@@ -40,6 +40,7 @@ class ResponsiveInfo {
 
   bool get isWatch => type == DeviceType.watch;
   bool get isMobile => type == DeviceType.mobile;
+  bool get isSmallTablet => type == DeviceType.smallTablet;
   bool get isTablet => type == DeviceType.tablet;
   bool get isDesktop => type == DeviceType.desktop;
   bool get isLargeDesktop => type == DeviceType.largeDesktop;
@@ -60,22 +61,28 @@ final responsiveInfoProvider = Provider<ResponsiveInfo>((ref) {
   late DeviceType type;
   late GridConfig grid;
 
+  // Logique corrigée pour le DeviceType
   if (shortestSide < Breakpoints.watch) {
     type = DeviceType.watch;
     grid = const GridConfig(1, 1.6);
   } else if (shortestSide < Breakpoints.mobile) {
+    // Mobile (jusqu'à 600)
     type = DeviceType.mobile;
     grid = GridConfig(1, orientation == Orientation.portrait ? 1.4 : 1.1);
   } else if (shortestSide < Breakpoints.smallTablet) {
-    type = DeviceType.mobile;
+    // Petite Tablette (600 à 800)
+    type = DeviceType.smallTablet; // NOUVEAU TYPE AJOUTÉ
     grid = GridConfig(2, orientation == Orientation.portrait ? 1.2 : 1.0);
   } else if (shortestSide < Breakpoints.tablet) {
+    // Tablette (800 à 1024)
     type = DeviceType.tablet;
     grid = GridConfig(orientation == Orientation.portrait ? 2 : 3, 0.7);
   } else if (shortestSide < Breakpoints.desktop) {
+    // Desktop (1024 à 1440)
     type = DeviceType.desktop;
     grid = GridConfig(orientation == Orientation.portrait ? 3 : 4, 0.5);
   } else {
+    // Large Desktop (1440+)
     type = DeviceType.largeDesktop;
     grid = GridConfig(orientation == Orientation.portrait ? 4 : 6, 0.45);
   }
@@ -84,6 +91,9 @@ final responsiveInfoProvider = Provider<ResponsiveInfo>((ref) {
   final cardHeightRatio = switch (type) {
     DeviceType.watch => 1.6,
     DeviceType.mobile => orientation == Orientation.portrait ? 0.85 : 0.6,
+    DeviceType.smallTablet => orientation == Orientation.portrait
+        ? 0.75
+        : 0.55, // RATIO POUR SMALL TABLETTE
     DeviceType.tablet => orientation == Orientation.portrait ? 0.7 : 0.5,
     DeviceType.desktop => orientation == Orientation.portrait ? 0.5 : 0.4,
     DeviceType.largeDesktop => orientation == Orientation.portrait ? 0.6 : 0.35,

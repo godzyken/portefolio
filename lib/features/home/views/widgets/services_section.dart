@@ -27,7 +27,6 @@ class ServicesSection extends ConsumerWidget {
                 'Mes Services',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: info.isMobile ? 28 : 40,
                   foreground: Paint()
                     ..shader = LinearGradient(
                       colors: [
@@ -42,7 +41,6 @@ class ServicesSection extends ConsumerWidget {
                 'Solutions digitales pour votre entreprise',
                 style: TextStyle(
                   color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
-                  fontSize: info.isMobile ? 14 : 16,
                 ),
               ),
             ],
@@ -71,7 +69,7 @@ class ServicesSection extends ConsumerWidget {
                     physics: const NeverScrollableScrollPhysics(),
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: crossAxisCount,
-                      childAspectRatio: info.isMobile ? 1.2 : 0.85,
+                      childAspectRatio: info.isMobile ? 1.5 : 1.1,
                       crossAxisSpacing: 16,
                       mainAxisSpacing: 16,
                     ),
@@ -84,7 +82,7 @@ class ServicesSection extends ConsumerWidget {
                           // Tu peux ajouter une navigation ou un dialog ici
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: ResponsiveText.headlineMedium(
+                              content: ResponsiveText.bodyMedium(
                                   'Service : ${service.title}'),
                               duration: const Duration(seconds: 2),
                             ),

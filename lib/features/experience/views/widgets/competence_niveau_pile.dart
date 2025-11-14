@@ -66,6 +66,7 @@ class _CompetenceNiveauPileState extends ConsumerState<CompetenceNiveauPile> {
     final double width = switch (info.type) {
       DeviceType.watch => 70,
       DeviceType.mobile => 90,
+      DeviceType.smallTablet => 100,
       DeviceType.tablet => 110,
       DeviceType.desktop => 130,
       DeviceType.largeDesktop => 150,

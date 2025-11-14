@@ -45,7 +45,7 @@ class ExperienceTimeline extends ConsumerWidget {
           builder: TimelineTileBuilder.fromStyle(
             itemCount: experiences.length,
             contentsAlign: ContentsAlign.alternating,
-            oppositeContentsBuilder: (context, index) => Padding(
+            oppositeContentsBuilder: (context, index) => ResponsiveBox(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: ResponsiveText(
                 experiences[index].periode,

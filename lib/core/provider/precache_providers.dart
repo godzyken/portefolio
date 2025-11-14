@@ -29,6 +29,7 @@ final precacheAllAssetsProvider =
     ref.read(projectsProvider.future),
     ref.read(experiencesProvider.future),
     ref.read(servicesJsonProvider.future),
+    ref.read(comparaisonsJsonProvider.future),
   ]);
   developer.log('✅ JSON chargé');
 
@@ -91,6 +92,7 @@ final precacheAllAssetsParallelProvider =
       ref.read(projectsProvider.future),
       ref.read(experiencesProvider.future),
       ref.read(servicesJsonProvider.future),
+      ref.read(comparaisonsJsonProvider.future),
     ]);
     developer.log('✅ [2/5] Données JSON chargées.');
 

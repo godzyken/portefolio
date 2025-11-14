@@ -1,0 +1,104 @@
+{
+  "id" : "projet_egoteservices",
+  "title": "Flutter vs React Native",
+  "description": "Comparatif complet entre Flutter et React Native pour un usage professionnel (Construction 4.0, portfolio, intégrations Firebase, IoT, PDF, etc.)",
+  "categories": [
+    {
+      "name": "Performance",
+      "flutter": "Très haute (60/120 fps)",
+      "react_native": "Bonne mais dépend du bridge JS ↔ Natif",
+      "score_flutter": 9,
+      "score_react_native": 7
+    },
+    {
+      "name": "UI / Rendu",
+      "flutter": "Moteur graphique interne, rendu pixel-perfect",
+      "react_native": "Composants natifs, look OS",
+      "score_flutter": 9,
+      "score_react_native": 7
+    },
+    {
+      "name": "Animations",
+      "flutter": "Fluides, simples, très performantes",
+      "react_native": "Plus complexes, moins performantes",
+      "score_flutter": 10,
+      "score_react_native": 6
+    },
+    {
+      "name": "Écosystème",
+      "flutter": "Stable, maintenu par Google",
+      "react_native": "Énorme grâce à JS/React",
+      "score_flutter": 8,
+      "score_react_native": 9
+    },
+    {
+      "name": "Intégration native",
+      "flutter": "Bridging un peu plus technique",
+      "react_native": "Très bonne intégration Swift/Kotlin",
+      "score_flutter": 7,
+      "score_react_native": 9
+    },
+    {
+      "name": "Web / Desktop",
+      "flutter": "Support officiel complet",
+      "react_native": "React Native Web (moins mature)",
+      "score_flutter": 9,
+      "score_react_native": 6
+    },
+    {
+      "name": "Taille de l'app",
+      "flutter": "Plus lourde",
+      "react_native": "Plus légère",
+      "score_flutter": 6,
+      "score_react_native": 9
+    },
+    {
+      "name": "Apprentissage",
+      "flutter": "Dart + widgets très cohérents",
+      "react_native": "JS/React → facile si déjà web",
+      "score_flutter": 8,
+      "score_react_native": 9
+    }
+  ],
+  "graphs": {
+    "bar_chart": {
+      "title": "Scores comparatifs",
+      "axes": ["Flutter", "React Native"],
+      "data": [
+        { "category": "Performance", "flutter": 9, "react_native": 7 },
+        { "category": "UI", "flutter": 9, "react_native": 7 },
+        { "category": "Animations", "flutter": 10, "react_native": 6 },
+        { "category": "Écosystème", "flutter": 8, "react_native": 9 },
+        { "category": "Intégration native", "flutter": 7, "react_native": 9 },
+        { "category": "Web/Desktop", "flutter": 9, "react_native": 6 },
+        { "category": "Taille app", "flutter": 6, "react_native": 9 },
+        { "category": "Apprentissage", "flutter": 8, "react_native": 9 }
+      ]
+    },
+    "radar_chart": {
+      "title": "Profil technologique",
+      "labels": [
+        "Performance",
+        "UI",
+        "Animations",
+        "Écosystème",
+        "Intégration native",
+        "Web/Desktop",
+        "Taille app",
+        "Apprentissage"
+      ],
+      "flutter": [9, 9, 10, 8, 7, 9, 6, 8],
+      "react_native": [7, 7, 6, 9, 9, 6, 9, 9]
+    }
+  },
+  "recommendation": {
+    "summary": "Flutter est recommandé pour tes projets actuels.",
+    "details": [
+      "UI complexes et cohérentes (timeline, cards, rôles)",
+      "PDF + offline + Firebase → Flutter est plus fluide",
+      "Intégration IoT/VR plus simple",
+      "Multi-platform Web/Mobile/Desktop natif",
+      "Animations et expérience utilisateur supérieures"
+    ]
+  }
+}

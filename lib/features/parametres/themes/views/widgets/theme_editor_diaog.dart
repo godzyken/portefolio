@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/ui/widgets/responsive_text.dart';
+import 'package:portefolio/features/parametres/themes/provider/custom_themes_provider.dart';
 
 import '../../controller/theme_controller.dart';
 import '../../theme/theme_data.dart';
@@ -83,15 +84,21 @@ class _ThemeEditorDialogState extends ConsumerState<ThemeEditorDialog> {
         ),
         ResponsiveButton(
           onPressed: () {
-            notifier.applyTheme(
-              BasicTheme(
-                primaryColorValue: primary.toARGB32(),
-                tertiaryColorValue: tertiary.toARGB32(),
-                neutralColorValue: neutral.toARGB32(),
-                mode: AppThemeMode.custom,
-                name: "Custom",
-              ),
+            final newTheme = BasicTheme(
+              primaryColorValue: primary.toARGB32(),
+              tertiaryColorValue: tertiary.toARGB32(),
+              neutralColorValue: neutral.toARGB32(),
+              mode: AppThemeMode.custom,
+              name: _nameController.text.isEmpty
+                  ? "Custom"
+                  : _nameController.text,
+              emoji: emoji,
             );
+
+            notifier.applyTheme(newTheme);
+
+            ref.read(customThemesProvider.notifier).addTheme(newTheme);
+
             Navigator.pop(context);
           },
           style: ButtonStyle(
