@@ -8,10 +8,9 @@ import 'package:portefolio/features/home/views/widgets/service_expertise_card.da
 
 import '../../../../core/affichage/screen_size_detector.dart';
 import '../../../../core/provider/expertise_provider.dart';
-import '../../../../core/ui/widgets/responsive_text.dart';
-import '../../../../core/ui/widgets/smart_image.dart';
+import '../../../../core/ui/widgets/ui_widgets_extentions.dart';
 
-class ServicesCard extends ConsumerWidget {
+class ServicesCard extends ConsumerStatefulWidget {
   final Service service;
   final VoidCallback? onTap;
 
@@ -22,39 +21,100 @@ class ServicesCard extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ServicesCard> createState() => _ServicesCardState();
+}
+
+class _ServicesCardState extends ConsumerState<ServicesCard>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _scrollController;
+  late Animation<double> _scrollAnimation;
+  int _currentSkillIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+
+    /// Initialisation du contrôleur d'animation
+    // Durée totale du cycle pour une compétence (par exemple 2.5 secondes)
+    _scrollController = AnimationController(
+      vsync: this,
+      duration: 2500.ms,
+    );
+
+    // L'animation va de 0.0 à 1.0 (une seule fois pour ce contrôleur,
+    // l'index sera mis à jour dans le listener)
+    _scrollAnimation =
+        Tween<double>(begin: 0.0, end: 1.0).animate(_scrollController);
+
+    // Démarrer l'animation en boucle
+    _scrollController.repeat();
+
+    // Écouter l'animation pour mettre à jour l'index
+    _scrollController.addListener(() {
+      final expertise = ref.read(serviceExpertiseProvider(widget.service.id));
+      final skillCount = expertise?.topSkills.take(5).length ?? 0;
+
+      if (skillCount > 0) {
+        // Calcul de l'index basé sur la valeur actuelle de l'animation (0.0 à 1.0)
+        final newIndex =
+            (_scrollAnimation.value * skillCount).floor() % skillCount;
+
+        // Mettre à jour l'état uniquement si l'index change
+        if (newIndex != _currentSkillIndex) {
+          setState(() {
+            _currentSkillIndex = newIndex;
+          });
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final info = ref.watch(responsiveInfoProvider);
 
     return GestureDetector(
-      onTap: onTap ?? () => _showExpertiseDialog(context, ref),
+      onTap: widget.onTap ?? () => _showExpertiseDialog(context, ref),
       child: HoverCard(
-        id: service.id,
+        id: widget.service.id,
         child: ClipRRect(
           borderRadius: BorderRadius.circular(_getBorderRadius(info)),
-          child: SizedBox(
-            height: info.isMobile ? 420 : 480,
-            child: Column(
+          child: LayoutBuilder(builder: (context, constraints) {
+            return Column(
               children: [
-                // Section supérieure : Image + Badge + Titre
+                // Section supérieure : Image + Badge + Titre (ratio fixe)
                 SizedBox(
-                  height: info.isMobile ? 180 : 200,
+                  height: _getTopSectionHeight(info),
                   child: _buildTopSection(context, theme, info, ref),
                 ),
-                const ResponsiveBox(height: 8),
-                // Section inférieure : Graphique camembert
+
+                // Section inférieure : Graphique (prend l'espace restant)
                 Expanded(
                   child: _buildBottomSection(context, theme, info, ref),
                 ),
               ],
-            ),
-          ),
+            );
+          }),
         ),
       ),
     )
         .animate()
         .fadeIn(duration: 500.ms, delay: 150.ms)
         .slideY(begin: 0.2, duration: 500.ms, curve: Curves.easeOutBack);
+  }
+
+  double _getTopSectionHeight(ResponsiveInfo info) {
+    if (info.isWatch) return 120;
+    if (info.isMobile) return 160;
+    if (info.isTablet) return 180;
+    return info.cardWidth * info.cardHeightRatio;
   }
 
   /// Section supérieure avec image de fond
@@ -64,7 +124,7 @@ class ServicesCard extends ConsumerWidget {
     ResponsiveInfo info,
     WidgetRef ref,
   ) {
-    final expertise = ref.watch(serviceExpertiseProvider(service.id));
+    final expertise = ref.watch(serviceExpertiseProvider(widget.service.id));
 
     return Stack(
       fit: StackFit.expand,
@@ -86,7 +146,7 @@ class ServicesCard extends ConsumerWidget {
               if (expertise != null)
                 Align(
                   alignment: Alignment.topRight,
-                  child: _buildExpertiseBadge(expertise, theme),
+                  child: _buildExpertiseBadge(expertise, theme, info),
                 ),
 
               // Titre et icône en bas
@@ -98,16 +158,15 @@ class ServicesCard extends ConsumerWidget {
                       _buildIconBadge(theme, info),
                       ResponsiveBox(
                           width: _getSpacing(info,
-                              small: 12, medium: 14, large: 16)),
-                      Flexible(
-                        fit: FlexFit.tight,
+                              small: 8, medium: 10, large: 12)),
+                      Expanded(
                         child: ResponsiveText.titleMedium(
-                          service.title,
+                          widget.service.title,
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
                             fontSize: _getFontSize(info,
-                                small: 18, medium: 22, large: 24),
+                                small: 14, medium: 16, large: 18),
                             letterSpacing: 0.5,
                             shadows: [
                               Shadow(
@@ -123,15 +182,14 @@ class ServicesCard extends ConsumerWidget {
                     ],
                   ),
                   ResponsiveBox(
-                      height:
-                          _getSpacing(info, small: 8, medium: 10, large: 12)),
+                      height: _getSpacing(info, small: 4, medium: 6, large: 8)),
                   ResponsiveText.bodySmall(
-                    service.description,
+                    widget.service.description,
                     style: TextStyle(
                       color: Colors.white.withValues(alpha: 0.9),
                       fontSize:
-                          _getFontSize(info, small: 12, medium: 13, large: 14),
-                      height: 1.4,
+                          _getFontSize(info, small: 11, medium: 12, large: 13),
+                      height: 1.3,
                       shadows: [
                         Shadow(
                           color: Colors.black.withValues(alpha: 0.5),
@@ -158,20 +216,17 @@ class ServicesCard extends ConsumerWidget {
     ResponsiveInfo info,
     WidgetRef ref,
   ) {
-    final expertise = ref.watch(serviceExpertiseProvider(service.id));
+    final expertise = ref.watch(serviceExpertiseProvider(widget.service.id));
 
     if (expertise == null) {
       return Card(
         color: theme.colorScheme.surface,
-        margin: const EdgeInsets.all(16),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Center(
-            child: Text(
-              'Aucune donnée disponible',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-              ),
+        margin: EdgeInsets.all(_getPadding(info)),
+        child: Center(
+          child: ResponsiveText.bodyMedium(
+            'Aucune donnée disponible',
+            style: TextStyle(
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
             ),
           ),
         ),
@@ -180,54 +235,94 @@ class ServicesCard extends ConsumerWidget {
 
     return Card(
       color: theme.colorScheme.surface,
-      margin: const EdgeInsets.all(16),
+      margin: EdgeInsets.all(_getPadding(info)),
       child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min, // la carte s’adapte au contenu
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Technologies & Compétences',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
+          padding: EdgeInsets.all(_getPadding(info)),
+          child: Column(
+            mainAxisSize: MainAxisSize.min, // la carte s’adapte au contenu
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                flex: 1,
+                child: ResponsiveText.titleSmall(
+                  'Technologies',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize:
+                          _getFontSize(info, small: 12, medium: 14, large: 16)),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
+              SizedBox(
+                  height: _getSpacing(info, small: 8, medium: 12, large: 16)),
+
+              // Pie chart + légende
+              Expanded(
+                flex: 5,
+                child: _buildChartSection(expertise, theme, info),
+              ),
+
+              SizedBox(
+                  height: _getSpacing(info, small: 8, medium: 10, large: 12)),
+
+              Expanded(
+                flex: 1,
+                child: _buildStats(expertise, theme, info),
+              ),
+            ],
+          )).animate().fadeIn(duration: 500.ms, delay: 150.ms),
+    );
+  }
+
+  Widget _buildChartSection(
+    ServiceExpertise expertise,
+    ThemeData theme,
+    ResponsiveInfo info,
+  ) {
+    // Déterminer la structure en fonction de l'écran
+    if (info.isWatch || info.isMobile) {
+      // Sur petit écran, empiler la légende au-dessus/en-dessous
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Graphique (laisse l'espace nécessaire)
+          Expanded(
+            child: AspectRatio(
+              aspectRatio: 1.0,
+              child: _buildPieChart(expertise, theme, info),
             ),
-            SizedBox(
-                height: _getSpacing(info, small: 8, medium: 12, large: 16)),
+          ),
+          SizedBox(height: _getSpacing(info, small: 8, medium: 10, large: 12)),
+        ],
+      );
+    }
 
-            // Pie chart + légende
-            info.isMobile
-                ? Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      _buildPieChart(expertise, theme, info),
-                      SizedBox(
-                          height: _getSpacing(info,
-                              small: 8, medium: 12, large: 16)),
-                      _buildLegend(expertise, theme, info),
-                    ],
-                  )
-                : Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                          flex: 3,
-                          child: _buildPieChart(expertise, theme, info)),
-                      SizedBox(
-                          width: _getSpacing(info,
-                              small: 8, medium: 12, large: 16)),
-                      Expanded(
-                          flex: 2, child: _buildLegend(expertise, theme, info)),
-                    ],
-                  ),
-
-            SizedBox(
-                height: _getSpacing(info, small: 8, medium: 10, large: 12)),
-            _buildStats(expertise, theme, info),
-          ],
+    // Tablette et plus (côte à côte)
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        // Légende flexible
+        Expanded(
+          flex: 5,
+          child: _buildLegend(expertise, theme, info)
+              .animate()
+              .fadeIn(delay: 1000.ms, duration: 800.ms)
+              .slideX(begin: -0.2),
         ),
-      ),
+        SizedBox(width: _getSpacing(info, small: 8, medium: 12, large: 16)),
+        // Pie chart
+        Expanded(
+          flex: 5,
+          child: AspectRatio(
+            aspectRatio: 1.0,
+            child: _buildPieChart(expertise, theme, info)
+                .animate()
+                .fadeIn(delay: 1000.ms, duration: 800.ms)
+                .slideX(begin: 0.2),
+          ),
+        ),
+      ],
     );
   }
 
@@ -247,61 +342,141 @@ class ServicesCard extends ConsumerWidget {
       Colors.red.shade600,
     ];
 
-    return PieChart(
-      PieChartData(
-        sectionsSpace: 2,
-        centerSpaceRadius: info.isMobile ? 20 : 30,
-        sections: skills.asMap().entries.map((entry) {
-          final index = entry.key;
-          final skill = entry.value;
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        TweenAnimationBuilder<double>(
+          tween: Tween<double>(begin: 0, end: 360),
+          duration: 1500.ms,
+          curve: Curves.easeInOut,
+          builder: (context, rotation, child) {
+            return PieChart(
+              PieChartData(
+                sectionsSpace: 2,
+                centerSpaceRadius: _getCenterRadius(info),
+                startDegreeOffset: rotation,
+                sections: skills.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final skill = entry.value;
 
-          return PieChartSectionData(
-            color: colors[index % colors.length],
-            value: skill.level * 100,
-            title: info.isMobile ? '' : '${skill.levelPercent}%',
-            radius: 65,
-            titleStyle: TextStyle(
-              fontSize: info.isMobile ? 10 : 12,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-            badgeWidget: ResponsiveBox(
-              padding: const EdgeInsets.all(4),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(8),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.2),
-                    blurRadius: 4,
-                  ),
-                ],
+                  return PieChartSectionData(
+                    color: colors[index % colors.length],
+                    value: skill.level * 100,
+                    title:
+                        _shouldShowTitle(info) ? '${skill.levelPercent}%' : '',
+                    radius: _getRadius(info),
+                    titleStyle: TextStyle(
+                      fontSize:
+                          _getFontSize(info, small: 8, medium: 10, large: 11),
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  );
+                }).toList(),
               ),
-              child: ResponsiveText.bodyMedium(
-                skill.name,
-                style: TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                  color: colors[index % colors.length],
+            );
+          },
+        ),
+        _buildCenterLegend(expertise, theme, info),
+      ],
+    );
+  }
+
+  Widget _buildCenterLegend(
+    ServiceExpertise expertise,
+    ThemeData theme,
+    ResponsiveInfo info,
+  ) {
+    final skills = expertise.topSkills.take(5).toList();
+    if (skills.isEmpty) return const SizedBox.shrink();
+
+    // Utilisation de l'index de l'état local
+    final skill = skills[_currentSkillIndex];
+    final double fontSize = _getFontSize(info, small: 9, medium: 10, large: 12);
+    final double size = _getCenterRadius(info) * 2;
+
+    return SizedBox(
+      width: size,
+      height: size,
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ResponsiveText.bodySmall(
+              'Top ${skills.length} Skills',
+              style: TextStyle(
+                fontSize: fontSize * 0.7,
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 4),
+            SizedBox(
+              // Container de taille fixe pour éviter les sauts
+              height: fontSize * 1.5,
+              child: AnimatedSwitcher(
+                duration: 500.ms, // Temps de la transition
+                transitionBuilder: (Widget child, Animation<double> animation) {
+                  // Effet de transition Slide-Fade
+                  final slideAnimation = Tween<Offset>(
+                    begin: const Offset(0.0, 1.0), // Vient du bas
+                    end: Offset.zero,
+                  ).animate(animation);
+
+                  return SlideTransition(
+                    position: slideAnimation,
+                    child: FadeTransition(
+                      opacity: animation,
+                      child: child,
+                    ),
+                  );
+                },
+                child: ResponsiveText.bodyMedium(
+                  // La clé est essentielle pour forcer AnimatedSwitcher à reconstruire
+                  skill.name,
+                  key: ValueKey(skill.name),
+                  style: TextStyle(
+                    fontSize: fontSize,
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.primary,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ),
-          );
-        }).toList(),
+          ],
+        ),
       ),
     );
+  }
+
+  double _getCenterRadius(ResponsiveInfo info) {
+    if (info.isWatch) return 15;
+    if (info.isMobile) return 20;
+    if (info.isTablet) return 25;
+    return 30;
+  }
+
+  double _getRadius(ResponsiveInfo info) {
+    if (info.isWatch) return 35;
+    if (info.isMobile) return 50;
+    if (info.isTablet) return 55;
+    return 60;
+  }
+
+  bool _shouldShowTitle(ResponsiveInfo info) {
+    return !info.isWatch && !info.isMobile;
   }
 
   /// Légende du graphique
   Widget _buildLegend(
     ServiceExpertise expertise,
     ThemeData theme,
-    ResponsiveInfo info, {
-    double? fontSize,
-  }) {
+    ResponsiveInfo info,
+  ) {
     final skills = expertise.topSkills.take(5).toList();
-    final double size =
-        fontSize ?? _getFontSize(info, small: 10, medium: 12, large: 14);
+    final double size = _getFontSize(info, small: 9, medium: 10, large: 11);
 
     final colors = [
       Colors.blue.shade600,
@@ -311,62 +486,61 @@ class ServicesCard extends ConsumerWidget {
       Colors.red.shade600,
     ];
 
-    return SingleChildScrollView(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: skills.asMap().entries.map((entry) {
-          final index = entry.key;
-          final skill = entry.value;
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: skills.asMap().entries.map((entry) {
+        final index = entry.key;
+        final skill = entry.value;
 
-          return ResponsiveBox(
-            paddingSize: ResponsiveSpacing.s,
-            padding: EdgeInsets.symmetric(
-              vertical: _getSpacing(info, small: 2, medium: 3, large: 4),
-            ),
-            child: Row(
-              children: [
-                ResponsiveBox(
-                  width: _getSpacing(info, small: 8, medium: 10, large: 12),
-                  height: _getSpacing(info, small: 8, medium: 10, large: 12),
-                  decoration: BoxDecoration(
-                    color: colors[index % colors.length],
-                    shape: BoxShape.circle,
-                  ),
+        return Padding(
+          padding: EdgeInsets.symmetric(
+            vertical: _getSpacing(info, small: 2, medium: 3, large: 4),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: _getSpacing(info, small: 8, medium: 10, large: 12),
+                height: _getSpacing(info, small: 8, medium: 10, large: 12),
+                decoration: BoxDecoration(
+                  color: colors[index % colors.length],
+                  shape: BoxShape.circle,
                 ),
-                ResponsiveBox(
-                    width: _getSpacing(info, small: 4, medium: 6, large: 8)),
-                Flexible(
-                  fit: FlexFit.loose,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ResponsiveText.bodySmall(
-                        skill.name,
-                        style: TextStyle(
-                          fontSize: size,
-                          fontWeight: FontWeight.w600,
-                          color: theme.colorScheme.onSurface,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+              ),
+              SizedBox(width: _getSpacing(info, small: 4, medium: 6, large: 8)),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ResponsiveText.bodySmall(
+                      skill.name,
+                      style: TextStyle(
+                        fontSize: size,
+                        fontWeight: FontWeight.w600,
+                        color: theme.colorScheme.onSurface,
                       ),
-                      ResponsiveText.bodySmall(
-                        '${skill.levelPercent}% • ${skill.projectCount} projets',
-                        style: TextStyle(
-                          fontSize: size,
-                          color: theme.colorScheme.onSurface
-                              .withValues(alpha: 0.6),
-                        ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    ResponsiveText.bodySmall(
+                      '${skill.levelPercent}% • ${skill.projectCount} projets',
+                      style: TextStyle(
+                        fontSize: size - 1,
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.6),
                       ),
-                    ],
-                  ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          );
-        }).toList(),
-      ),
+              ),
+            ],
+          ),
+        );
+      }).toList(),
     );
   }
 
@@ -387,7 +561,7 @@ class ServicesCard extends ConsumerWidget {
         ),
         Container(
           width: 1,
-          height: 20,
+          height: _getSpacing(info, small: 16, medium: 18, large: 20),
           color: theme.colorScheme.outline.withValues(alpha: 0.3),
         ),
         _buildStatItem(
@@ -398,7 +572,7 @@ class ServicesCard extends ConsumerWidget {
         ),
         Container(
           width: 1,
-          height: 20,
+          height: _getSpacing(info, small: 16, medium: 18, large: 20),
           color: theme.colorScheme.outline.withValues(alpha: 0.3),
         ),
         _buildStatItem(
@@ -422,14 +596,14 @@ class ServicesCard extends ConsumerWidget {
       children: [
         Icon(
           icon,
-          size: _getFontSize(info, small: 14, medium: 16, large: 18),
+          size: _getFontSize(info, small: 12, medium: 14, large: 16),
           color: color,
         ),
-        ResponsiveBox(width: _getSpacing(info, small: 4, medium: 6, large: 8)),
-        ResponsiveText.bodySmall(
+        SizedBox(width: _getSpacing(info, small: 3, medium: 4, large: 6)),
+        Text(
           label,
           style: TextStyle(
-            fontSize: _getFontSize(info, small: 10, medium: 11, large: 12),
+            fontSize: _getFontSize(info, small: 9, medium: 10, large: 11),
             fontWeight: FontWeight.w600,
             color: color,
           ),
@@ -443,21 +617,21 @@ class ServicesCard extends ConsumerWidget {
   // ============================================================================
 
   Widget _buildBackgroundImage(ThemeData theme) {
-    if (!service.hasValidImage) {
+    if (!widget.service.hasValidImage) {
       return _buildFallbackGradient(theme);
     }
 
     return SmartImage(
-      path: service.cleanedImageUrl!,
+      path: widget.service.cleanedImageUrl!,
       fit: BoxFit.cover,
       responsiveSize: ResponsiveImageSize.medium,
-      fallbackIcon: service.icon,
+      fallbackIcon: widget.service.icon,
       fallbackColor: theme.colorScheme.primary,
     );
   }
 
   Widget _buildOverlay() {
-    return ResponsiveBox(
+    return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -472,7 +646,7 @@ class ServicesCard extends ConsumerWidget {
   }
 
   Widget _buildFallbackGradient(ThemeData theme) {
-    return ResponsiveBox(
+    return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -485,7 +659,7 @@ class ServicesCard extends ConsumerWidget {
       ),
       child: Center(
         child: Icon(
-          service.icon,
+          widget.service.icon,
           size: 120,
           color: Colors.white.withValues(alpha: 0.15),
         ),
@@ -496,8 +670,8 @@ class ServicesCard extends ConsumerWidget {
   Widget _buildIconBadge(ThemeData theme, ResponsiveInfo info) {
     final size = _getIconSize(info);
 
-    return ResponsiveBox(
-      padding: EdgeInsets.all(size * 0.4),
+    return Container(
+      padding: EdgeInsets.all(size * 0.3),
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         gradient: LinearGradient(
@@ -509,20 +683,23 @@ class ServicesCard extends ConsumerWidget {
         boxShadow: [
           BoxShadow(
             color: theme.colorScheme.primary.withValues(alpha: 0.5),
-            blurRadius: 20,
-            spreadRadius: 2,
+            blurRadius: 15,
+            spreadRadius: 1,
           ),
         ],
       ),
-      child: Icon(service.icon, size: size, color: Colors.white),
+      child: Icon(widget.service.icon, size: size, color: Colors.white),
     );
   }
 
-  Widget _buildExpertiseBadge(ServiceExpertise expertise, ThemeData theme) {
+  Widget _buildExpertiseBadge(
+      ServiceExpertise expertise, ThemeData theme, ResponsiveInfo info) {
     final level = (expertise.averageLevel * 100).toInt();
 
-    return ResponsiveBox(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+    return Container(
+      padding: EdgeInsets.symmetric(
+          horizontal: _getSpacing(info, small: 4, medium: 6, large: 8),
+          vertical: _getSpacing(info, small: 4, medium: 6, large: 8)),
       decoration: BoxDecoration(
         color: _getColorForLevel(expertise.averageLevel),
         borderRadius: BorderRadius.circular(20),
@@ -536,18 +713,18 @@ class ServicesCard extends ConsumerWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(
+          Icon(
             Icons.star,
-            size: 16,
+            size: _getFontSize(info, small: 10, medium: 12, large: 14),
             color: Colors.white,
           ),
-          const SizedBox(width: 4),
-          ResponsiveText.headlineSmall(
+          SizedBox(width: _getSpacing(info, small: 3, medium: 4, large: 5)),
+          Text(
             '$level% expertise',
-            style: const TextStyle(
+            style: TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,
-              fontSize: 12,
+              fontSize: _getFontSize(info, small: 9, medium: 10, large: 11),
             ),
           ),
         ],
@@ -563,7 +740,7 @@ class ServicesCard extends ConsumerWidget {
   }
 
   void _showExpertiseDialog(BuildContext context, WidgetRef ref) {
-    final expertise = ref.read(serviceExpertiseProvider(service.id));
+    final expertise = ref.read(serviceExpertiseProvider(widget.service.id));
 
     if (expertise == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -578,9 +755,9 @@ class ServicesCard extends ConsumerWidget {
       context: context,
       builder: (context) => Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        child: ResponsiveBox(
-          paddingSize: ResponsiveSpacing.l,
+        child: Container(
           padding: const EdgeInsets.all(24),
+          constraints: const BoxConstraints(maxWidth: 600, maxHeight: 700),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -590,7 +767,7 @@ class ServicesCard extends ConsumerWidget {
                 children: [
                   Expanded(
                     child: ResponsiveText.headlineSmall(
-                      'Expertise - ${service.title}',
+                      'Expertise - ${widget.service.title}',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                       ),
@@ -602,9 +779,8 @@ class ServicesCard extends ConsumerWidget {
                   ),
                 ],
               ),
-              const ResponsiveBox(height: 24),
+              const SizedBox(height: 16),
               Flexible(
-                fit: FlexFit.tight,
                 child: SingleChildScrollView(
                   child: ServiceExpertiseCard(expertise: expertise),
                 ),

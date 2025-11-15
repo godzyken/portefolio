@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/ui/widgets/responsive_text.dart';
-import 'package:portefolio/features/home/views/widgets/services_card.dart';
+import 'package:portefolio/features/generator/views/generator_widgets_extentions.dart';
 
-import '../../../../core/affichage/screen_size_detector.dart';
 import '../../../../core/provider/json_data_provider.dart';
 
 class ServicesSection extends ConsumerStatefulWidget {
@@ -55,7 +54,6 @@ class _ServicesSectionState extends ConsumerState<ServicesSection>
 
   @override
   Widget build(BuildContext context) {
-    final info = ref.watch(responsiveInfoProvider);
     final theme = Theme.of(context);
     final servicesAsync = ref.watch(servicesJsonProvider);
 
@@ -106,44 +104,7 @@ class _ServicesSectionState extends ConsumerState<ServicesSection>
                 const ResponsiveBox(paddingSize: ResponsiveSpacing.l),
 
                 // ---------- LISTE RESPONSIVE ----------
-                LayoutBuilder(
-                  builder: (context, constraints) {
-                    final double maxW = constraints.maxWidth;
-                    double cardWidth;
-
-                    if (info.isMobile) {
-                      cardWidth = maxW;
-                    } else if (info.isTablet) {
-                      cardWidth = (maxW - 16) / 2;
-                    } else {
-                      final cols = maxW > 1400 ? 4 : 3;
-                      cardWidth = (maxW - (16 * (cols - 1))) / cols;
-                    }
-
-                    return Wrap(
-                      spacing: 16,
-                      runSpacing: 16,
-                      children: services.map((service) {
-                        return SizedBox(
-                          width: cardWidth,
-                          height: info.isMobile ? 400 : 450,
-                          child: ServicesCard(
-                            service: service,
-                            onTap: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: ResponsiveText.bodyMedium(
-                                      'Service : ${service.title}'),
-                                  duration: const Duration(seconds: 2),
-                                ),
-                              );
-                            },
-                          ),
-                        );
-                      }).toList(),
-                    );
-                  },
-                ),
+                const ServicesSlider()
               ],
             );
           },

@@ -1,0 +1,97 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:portefolio/features/home/views/widgets/extentions_widgets.dart';
+
+import '../../../../core/affichage/screen_size_detector.dart';
+import '../../../../core/provider/json_data_provider.dart';
+import '../../../../core/ui/widgets/responsive_text.dart';
+
+class ServicesSlider extends ConsumerStatefulWidget {
+  const ServicesSlider({super.key});
+
+  @override
+  ConsumerState<ServicesSlider> createState() => _ServicesSliderState();
+}
+
+class _ServicesSliderState extends ConsumerState<ServicesSlider> {
+  late final PageController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = PageController(viewportFraction: 0.85);
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // 1. Récupération des données des services (Assumant un provider 'servicesListProvider')
+    // J'utilise ici un provider hypothétique (ajustez le nom du provider si nécessaire)
+    final asyncServices = ref.watch(servicesJsonProvider);
+    final info = ref.watch(responsiveInfoProvider);
+
+    return asyncServices.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, _) =>
+          Center(child: Text('Erreur lors du chargement des services: $e')),
+      data: (services) {
+        if (services.isEmpty) {
+          return const SizedBox.shrink();
+        }
+
+        // 2. Définition de l'Aspect Ratio
+        return AspectRatio(
+          // Ajustez l'aspect ratio pour donner plus de hauteur si nécessaire
+          aspectRatio: info.isMobile ? 1.0 : 1.5,
+          child: PageView.builder(
+            controller: controller,
+            itemCount: services.length,
+            itemBuilder: (context, index) {
+              final service = services[index];
+              // 3. Application de l'effet d'échelle et de transformation (identique à ComparisonStatsView)
+              return AnimatedBuilder(
+                animation: controller,
+                builder: (context, child) {
+                  double value = 1.0;
+
+                  if (controller.position.haveDimensions) {
+                    value = (controller.page! - index).abs();
+                    // Plus de zoom si la valeur est plus proche de 1.0
+                    value = (1 - (value * 0.3)).clamp(0.8, 1.0);
+                  }
+
+                  return Transform.scale(
+                    scale: Curves.easeOut.transform(value),
+                    child: child,
+                  );
+                },
+                // 4. Utilisation de la ServicesCard
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 8.0, vertical: 16.0),
+                  child: ServicesCard(
+                    service: service,
+                    onTap: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: ResponsiveText.bodyMedium(
+                              'Service : ${service.title}'),
+                          duration: const Duration(seconds: 2),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+}
