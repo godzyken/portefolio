@@ -2,13 +2,13 @@ class AssetsConfig {
   // Configuration des assets selon l'environnement
   static const String githubUsername = 'godzyken';
   static const String repoName = 'portefolio';
-  static const String branch = 'raw/refs/heads/master';
+  static const String branch = 'master';
 
   /// URL de base pour les assets sur GitHub
   static String get githubRawBaseUrl =>
-      'https://github.com/$githubUsername/$repoName/$branch';
+      'https://raw.githubusercontent.com/$githubUsername/$repoName/$branch';
 
   /// URL du modèle 3D
   static String get characterModelUrl =>
-      '$githubRawBaseUrl/assets/images/models/perso_samurail.glb';
+      '$githubRawBaseUrl/assets_source/models/perso_samurail.glb';
 }
