@@ -61,6 +61,7 @@ final imageFilesProvider = FutureProvider<List<String>>((ref) async {
         lower.endsWith('.jpg') ||
         lower.endsWith('.jpeg') ||
         lower.endsWith('.webp') ||
+        lower.endsWith('.gltf') ||
         lower.endsWith('.svg');
   }).toList();
 });
@@ -68,6 +69,11 @@ final imageFilesProvider = FutureProvider<List<String>>((ref) async {
 /// Logos de technologies (assets/images/logos/)
 final techLogosAssetsProvider = FutureProvider<List<String>>((ref) async {
   return _loadAssetsFromManifest(filter: 'assets/images/logos/');
+});
+
+/// Models de perso 3D (assets/images/models/)
+final modelsGltfProvider = FutureProvider<List<String>>((ref) async {
+  return _loadAssetsFromManifest(filter: 'assets/images/models/');
 });
 
 /// Images du portfolio (projets, home, etc.)
@@ -152,11 +158,17 @@ final imageCountProvider = FutureProvider<Map<String, int>>((ref) async {
   final images = await ref.watch(imageFilesProvider.future);
   final logos = await ref.watch(techLogosAssetsProvider.future);
   final data = await ref.watch(dataFilesProvider.future);
+  final models = await ref.watch(modelsGltfProvider.future);
 
   return {
     'all': all.length,
     'images': images.length,
     'logos': logos.length,
     'data': data.length,
+    'models': models.length,
   };
+});
+
+final characterModelProvider = Provider<String>((ref) {
+  return 'assets/images/models/perso_samurail.glb';
 });

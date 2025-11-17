@@ -68,7 +68,7 @@ class WakaTimeService {
       final List<WakaTimeProjectDuration> durations = stats.projects
           .map((p) => WakaTimeProjectDuration(
                 name: p.name,
-                totalSeconds: p.totalSeconds.toDouble(),
+                totalSeconds: p.totalSeconds,
               ))
           .toList();
 
@@ -108,7 +108,7 @@ class WakaTimeService {
 //
 
 class WakaTimeStats {
-  final Duration totalSeconds;
+  final double totalSeconds;
   final List<WakaTimeProjectStat> projects;
   final List<WakaTimeLanguage> languages;
   final List<WakaTimeEditor> editors;
@@ -124,7 +124,7 @@ class WakaTimeStats {
 
   factory WakaTimeStats.fromJson(Map<String, dynamic> json) {
     return WakaTimeStats(
-      totalSeconds: Duration(seconds: json['total_seconds'] ?? 0),
+      totalSeconds: (json['total_seconds'] ?? 0.0).toDouble(),
       projects: (json['projects'] as List?)
               ?.map((p) => WakaTimeProjectStat.fromJson(p))
               .toList() ??
@@ -144,7 +144,7 @@ class WakaTimeStats {
 
 class WakaTimeProjectStat {
   final String name;
-  final int totalSeconds;
+  final double totalSeconds;
   final double percent;
   final String digital;
   final String text;
@@ -160,7 +160,7 @@ class WakaTimeProjectStat {
   factory WakaTimeProjectStat.fromJson(Map<String, dynamic> json) {
     return WakaTimeProjectStat(
       name: json['name'] ?? '',
-      totalSeconds: json['total_seconds'] ?? 0,
+      totalSeconds: (json['total_seconds'] ?? 0.0).toDouble(),
       percent: (json['percent'] ?? 0).toDouble(),
       digital: json['digital'] ?? '0:00',
       text: json['text'] ?? '0 secs',
@@ -173,7 +173,7 @@ class WakaTimeProject {
   final String name;
   final String? repository;
   final DateTime createdAt;
-  final DateTime lastHeartbeatAt;
+  final DateTime? lastHeartbeatAt;
 
   WakaTimeProject({
     required this.id,
@@ -186,17 +186,21 @@ class WakaTimeProject {
   factory WakaTimeProject.fromJson(Map<String, dynamic> json) {
     return WakaTimeProject(
       id: json['id'] ?? '',
-      name: json['name'] ?? '',
+      name: json['name'] ?? 'Unknown Project',
       repository: json['repository'],
-      createdAt: DateTime.parse(json['created_at']),
-      lastHeartbeatAt: DateTime.parse(json['last_heartbeat_at']),
+      createdAt: json['created_at'] != null
+          ? DateTime.tryParse(json['created_at']) ?? DateTime.now()
+          : DateTime.now(),
+      lastHeartbeatAt: json['last_heartbeat_at'] != null
+          ? DateTime.tryParse(json['last_heartbeat_at'])
+          : null,
     );
   }
 }
 
 class WakaTimeLanguage {
   final String name;
-  final int totalSeconds;
+  final double totalSeconds;
   final double percent;
 
   WakaTimeLanguage({
@@ -208,7 +212,7 @@ class WakaTimeLanguage {
   factory WakaTimeLanguage.fromJson(Map<String, dynamic> json) {
     return WakaTimeLanguage(
       name: json['name'] ?? '',
-      totalSeconds: json['total_seconds'] ?? 0,
+      totalSeconds: (json['total_seconds'] ?? 0.0).toDouble(),
       percent: (json['percent'] ?? 0).toDouble(),
     );
   }
@@ -216,7 +220,7 @@ class WakaTimeLanguage {
 
 class WakaTimeEditor {
   final String name;
-  final int totalSeconds;
+  final double totalSeconds;
   final double percent;
 
   WakaTimeEditor({
@@ -228,7 +232,7 @@ class WakaTimeEditor {
   factory WakaTimeEditor.fromJson(Map<String, dynamic> json) {
     return WakaTimeEditor(
       name: json['name'] ?? '',
-      totalSeconds: json['total_seconds'] ?? 0,
+      totalSeconds: (json['total_seconds'] ?? 0.0).toDouble(),
       percent: (json['percent'] ?? 0).toDouble(),
     );
   }

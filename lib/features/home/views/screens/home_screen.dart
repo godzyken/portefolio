@@ -23,101 +23,119 @@ class HomeScreen extends ConsumerWidget {
       starCount: 150,
       child: SafeArea(
         child: LayoutBuilder(builder: (context, constraints) {
-          final size = constraints.biggest;
-
-          return SingleChildScrollView(
-            padding: EdgeInsets.symmetric(
-              horizontal: info.isMobile ? 24 : 48,
-              vertical: 16,
-            ),
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: size.height,
-              ),
-              child: info.isPortrait
-                  ? _buildPortraitLayout(context, info, theme)
-                  : _buildLandscapeLayout(context, info, theme),
-            ),
-          );
+          // Pour le mode paysage, on garde un scroll simple.
+          // Pour le mode portrait, on n'utilise plus de SingleChildScrollView ici car le Stack va gérer le contenu scrollable.
+          return info.isPortrait
+              ? _buildPortraitLayout(context, info,
+                  theme) // Le scroll est maintenant à l'intérieur
+              : SingleChildScrollView(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 48, vertical: 32),
+                  child: _buildLandscapeLayout(context, info, theme),
+                );
         }),
       ),
     );
   }
 
-  // ---------- Portrait ----------
+  // ---------- Portrait Layout (avec Stack) ----------
   Widget _buildPortraitLayout(
       BuildContext context, ResponsiveInfo info, ThemeData theme) {
     final imageSize =
         info.isMobile ? info.size.width * 0.7 : info.size.width * 0.5;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
+    return Stack(
       children: [
-        SizedBox(
-          width: imageSize,
-          height: imageSize,
-          child: _buildProfileImage(context, info, theme),
+        // ---- 1. ARRIÈRE-PLAN : LE MODÈLE 3D ----
+        Positioned.fill(
+          child: Align(
+            alignment: Alignment.bottomCenter, // Positionné en bas
+            child: SizedBox(
+              // On lui donne une hauteur fixe pour un bon rendu
+              height: info.size.height * 0.6,
+              child: Opacity(
+                opacity: 0.5, // On le rend un peu transparent
+                child: const CharacterViewer(),
+              ),
+            ),
+          ),
         ),
-        const SizedBox(height: 24),
-        _buildPresentationText(context, theme, info.isMobile),
-        const SizedBox(height: 24),
-        _buildActionButtons(context, theme, info.isMobile),
-        const SizedBox(height: 24),
 
-        // Toujours scrollable si contenu long
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: const [
-            ComparisonStatsView(),
-            SizedBox(height: 24),
-            ServicesSection(),
-          ],
+        // ---- 2. PREMIER PLAN : LE CONTENU SCROLLABLE ----
+        SingleChildScrollView(
+          padding: EdgeInsets.symmetric(
+            horizontal: info.isMobile ? 24 : 48,
+            vertical: 32,
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: imageSize,
+                height: imageSize,
+                child: _buildProfileImage(context, info, theme),
+              ),
+              const SizedBox(height: 32),
+              _buildPresentationText(context, theme, info.isMobile),
+              const SizedBox(height: 32),
+              _buildActionButtons(context, theme, info.isMobile),
+              // On laisse un grand espace pour ne pas superposer le modèle au début
+              SizedBox(height: info.size.height * 0.4),
+              const ComparisonStatsView(),
+              const SizedBox(height: 24),
+              const ServicesSection(),
+            ],
+          ),
         ),
       ],
     );
   }
 
-  // ---------- Landscape ----------
+  // ---------- Landscape Layout (Amélioré) ----------
   Widget _buildLandscapeLayout(
       BuildContext context, ResponsiveInfo info, ThemeData theme) {
-    const imageMaxSize = 400.0;
-
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Image à gauche
-        ConstrainedBox(
-          constraints: const BoxConstraints(
-            maxWidth: imageMaxSize,
-            maxHeight: imageMaxSize,
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+            flex: 4,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxHeight: 250),
+                  child: _buildProfileImage(context, info, theme),
+                ),
+                const SizedBox(height: 16),
+                _buildPresentationText(context, theme, info.isMobile),
+                const SizedBox(height: 32),
+                _buildActionButtons(context, theme, info.isMobile),
+              ],
+            ),
           ),
-          child: _buildProfileImage(context, info, theme),
-        ),
-        const SizedBox(width: 32),
-
-        // Colonne droite totalement scrollable
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildPresentationText(context, theme, info.isMobile),
-              const SizedBox(height: 24),
-              _buildActionButtons(context, theme, info.isMobile),
-              const SizedBox(height: 24),
-
-              // Le reste scroll si nécessaire
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: const [
-                  ComparisonStatsView(),
-                  SizedBox(height: 24),
-                  ServicesSection(),
-                ],
-              ),
-            ],
+          const SizedBox(width: 32),
+          const Expanded(
+            flex: 3,
+            child: CharacterViewer(), // Le modèle 3D prend sa propre colonne
           ),
-        ),
-      ],
+          const SizedBox(width: 32),
+          Expanded(
+            flex: 5,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: const [
+                ComparisonStatsView(),
+                SizedBox(height: 16),
+                ServicesSection(),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -126,23 +144,23 @@ class HomeScreen extends ConsumerWidget {
       BuildContext context, ResponsiveInfo info, ThemeData theme) {
     return Hero(
       tag: 'profile_image',
-      child: ClipOval(
-        child: Container(
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                color: theme.colorScheme.primary.withValues(alpha: 0.4),
-                blurRadius: 40,
-                spreadRadius: 10,
-              ),
-              BoxShadow(
-                color: theme.colorScheme.secondary.withValues(alpha: 0.3),
-                blurRadius: 60,
-                spreadRadius: 15,
-              ),
-            ],
-          ),
+      child: Container(
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: theme.colorScheme.primary.withValues(alpha: 0.4),
+              blurRadius: 40,
+              spreadRadius: 10,
+            ),
+            BoxShadow(
+              color: theme.colorScheme.secondary.withValues(alpha: 0.3),
+              blurRadius: 60,
+              spreadRadius: 15,
+            ),
+          ],
+        ),
+        child: ClipOval(
           child: SmartImage(
             path: 'assets/images/pers_do_am.png',
             fit: BoxFit.cover,
@@ -154,35 +172,40 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  // ---------- Presentation Text ----------
+  // ---------- Presentation Text (avec corrections) ----------
   Widget _buildPresentationText(
       BuildContext context, ThemeData theme, bool isMobile) {
     return Column(
       crossAxisAlignment:
           isMobile ? CrossAxisAlignment.center : CrossAxisAlignment.start,
-      children: const [
-        ResponsiveText.titleLarge(
+      children: [
+        const ResponsiveText.titleLarge(
           'Emryck Doré',
           style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 2),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 12),
         ResponsiveText.headlineSmall(
           'Développeur Flutter & Architecte Logiciel',
-          style: TextStyle(fontWeight: FontWeight.w600),
+          style: const TextStyle(fontWeight: FontWeight.w600),
+          textAlign: isMobile ? TextAlign.center : TextAlign.start,
         ),
-        SizedBox(height: 8),
-        ResponsiveText.bodySmall(
+        const SizedBox(height: 16),
+        ResponsiveText.bodyMedium(
           'Expert en développement mobile cross-platform et solutions digitales. '
           'Spécialisé dans la création d\'applications Flutter performantes, '
           'l\'architecture logicielle et la transformation digitale des entreprises.',
-          maxLines: 4,
+          maxLines: 5,
           overflow: TextOverflow.ellipsis,
+          textAlign: isMobile ? TextAlign.center : TextAlign.start,
+          style: TextStyle(
+              height: 1.5,
+              color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.8)),
         ),
       ],
     );
   }
 
-  // ---------- Action Buttons ----------
+  // ---------- Action Buttons (avec corrections) ----------
   Widget _buildActionButtons(
       BuildContext context, ThemeData theme, bool isMobile) {
     return Wrap(
@@ -199,6 +222,7 @@ class HomeScreen extends ConsumerWidget {
         OutlinedButton.icon(
           onPressed: () => context.go('/contact'),
           icon: const Icon(Icons.mail_outline),
+          // ✅ CORRECTION: Utiliser un style de texte sémantique
           label: const ResponsiveText.bodySmall('Me contacter'),
           style: OutlinedButton.styleFrom(
             padding: EdgeInsets.symmetric(
@@ -216,6 +240,7 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
+  // ---------- Button Style (avec correction) ----------
   ButtonStyle _btnStyle(ThemeData theme, bool isMobile) {
     return ElevatedButton.styleFrom(
       padding: EdgeInsets.symmetric(

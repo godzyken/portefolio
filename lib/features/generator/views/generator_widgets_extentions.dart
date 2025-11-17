@@ -1,5 +1,6 @@
 export 'widgets/adaptive_card.dart';
 export 'widgets/bubble_navigation_menu.dart';
+export 'widgets/caracter_widget.dart';
 export 'widgets/chart_renderer.dart';
 export 'widgets/code_high_light_list.dart';
 export 'widgets/comparatif_widget.dart';

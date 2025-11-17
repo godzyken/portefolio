@@ -60,3 +60,6 @@ pubspec.lock
 # FVM Version Cache
 .fvm/
 /assets/images
+/assets_source/models/perso_samurail.blend1
+/assets_source/models/perso_samurail.blend
+/assets_source/models/cache_fluid_4b85f272/

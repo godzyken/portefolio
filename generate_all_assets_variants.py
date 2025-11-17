@@ -23,7 +23,7 @@ import shutil
 # --- CONFIGURATION DES FORMATS ---
 RASTER_EXTS = {'.png', '.jpg', '.jpeg', '.webp'}  # Formats à redimensionner
 # ✅ Formats à copier directement, sans créer de variantes de taille
-COPY_ONLY_EXTS = {'.svg', '.json'}
+COPY_ONLY_EXTS = {'.svg', '.json', '.gltf', '.bin', '.glb'}
 
 # --- CONFIGURATION DES CHEMINS ET TAILLES ---
 DEFAULT_SOURCE_DIR = Path('assets_source')

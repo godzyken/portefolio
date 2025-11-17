@@ -116,16 +116,33 @@ class _WakaTimeSettingsScreenState
               const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
               statsAsync.when(
                 data: (stats) {
-                  if (stats == null) {
-                    return const Card(
-                      child: Padding(
-                        padding: EdgeInsets.all(16),
-                        child: ResponsiveText.headlineSmall(
-                            'Aucune statistique disponible'),
+                  // Si on a des stats valides, on affiche tout
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const Divider(),
+                      const SizedBox(height: 16),
+                      // ✅ VOICI LA CONFIRMATION VISUELLE
+                      _buildConnectionStatus(
+                          true, "Connexion à WakaTime active."),
+                      const SizedBox(height: 24),
+                      const ResponsiveText.headlineSmall(
+                        'Statistiques (7 derniers jours)',
+                        style: TextStyle(fontWeight: FontWeight.bold),
                       ),
-                    );
-                  }
-                  return _buildStatsCard(stats);
+                      const SizedBox(height: 16),
+                      _buildStatsCard(
+                          stats.projects), // stats ne peut pas être null ici
+                      const SizedBox(height: 24),
+                      const ResponsiveText.headlineSmall(
+                        'Répartition par projet',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 16),
+                      // Vous pouvez passer stats.projects directement ici
+                      _buildProjectsChart(stats.projects),
+                    ],
+                  );
                 },
                 loading: () => const Center(
                   child: Padding(
@@ -158,6 +175,42 @@ class _WakaTimeSettingsScreenState
                 error: (err, _) => _buildErrorCard(err.toString()),
               ),
             ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildConnectionStatus(bool isSuccess, String message) {
+    return Card(
+      elevation: 2,
+      color: isSuccess ? Colors.green.shade50 : Colors.orange.shade50,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(
+          color: isSuccess ? Colors.green.shade300 : Colors.orange.shade300,
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          children: [
+            Icon(
+              isSuccess ? Icons.check_circle : Icons.warning,
+              color: isSuccess ? Colors.green.shade700 : Colors.orange.shade700,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: ResponsiveText.bodyMedium(
+                message,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: isSuccess
+                      ? Colors.green.shade800
+                      : Colors.orange.shade800,
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -342,9 +395,15 @@ class _WakaTimeSettingsScreenState
     );
   }
 
-  String _formatDuration(Duration d) {
-    final hours = d.inHours;
-    final minutes = d.inMinutes.remainder(60);
+  String _formatDuration(double totalSeconds) {
+    // On s'assure que les secondes sont un entier pour créer la Duration
+    final duration = Duration(seconds: totalSeconds.toInt());
+
+    // Le reste de la logique est maintenant correct car 'duration' est bien une Duration
+    final hours = duration.inHours;
+    // On prend le reste des minutes après avoir enlevé les heures
+    final minutes = duration.inMinutes.remainder(60);
+
     return '${hours}h ${minutes}m';
   }
 }

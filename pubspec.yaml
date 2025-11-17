@@ -58,6 +58,7 @@ dependencies:
   fl_chart: ^1.1.1
   lottie: ^3.3.2
   flutter_native_splash: ^2.4.7
+  model_viewer_plus: ^1.9.3
 
 
 dev_dependencies:
@@ -81,6 +82,7 @@ flutter:
     - assets/images/logos/
     - assets/images/animations/
     - assets/images/WorkShop/
+    - assets/images/models/
     - assets/data/
     - assets/fonts/Noto_Sans/
     - assets/fonts/Noto_Sans/static/
