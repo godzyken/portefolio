@@ -132,7 +132,7 @@ class _WakaTimeSettingsScreenState
                       ),
                       const SizedBox(height: 16),
                       _buildStatsCard(
-                          stats.projects), // stats ne peut pas être null ici
+                          stats!), // stats ne peut pas être null ici
                       const SizedBox(height: 24),
                       const ResponsiveText.headlineSmall(
                         'Répartition par projet',
@@ -140,7 +140,7 @@ class _WakaTimeSettingsScreenState
                       ),
                       const SizedBox(height: 16),
                       // Vous pouvez passer stats.projects directement ici
-                      _buildProjectsChart(stats.projects),
+                      _buildProjectsStatChart(stats.projects),
                     ],
                   );
                 },
@@ -330,6 +330,66 @@ class _WakaTimeSettingsScreenState
                       style: const TextStyle(fontWeight: FontWeight.bold)),
                 )),
           ],
+        ]),
+      ),
+    );
+  }
+
+  Widget _buildProjectsStatChart(List<WakaTimeProjectStat> projects) {
+    return Card(
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          const Text('Activité par projet (durée totale estimée)',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 200),
+          SizedBox(
+            height: 200,
+            child: BarChart(
+              BarChartData(
+                alignment: BarChartAlignment.spaceAround,
+                titlesData: FlTitlesData(
+                  leftTitles:
+                      AxisTitles(sideTitles: SideTitles(showTitles: true)),
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      getTitlesWidget: (value, meta) {
+                        final index = value.toInt();
+                        if (index < 0 || index >= projects.length) {
+                          return const SizedBox();
+                        }
+                        return Transform.rotate(
+                          angle: -0.7,
+                          child: Text(
+                            projects[index].name,
+                            style: const TextStyle(fontSize: 10),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                borderData: FlBorderData(show: false),
+                gridData: const FlGridData(show: false),
+                barGroups: projects.take(8).toList().asMap().entries.map((e) {
+                  return BarChartGroupData(
+                    x: e.key,
+                    barRods: [
+                      BarChartRodData(
+                        toY: (e.key + 1) * 3.0,
+                        color: Colors.blueAccent,
+                        width: 14,
+                        borderRadius: BorderRadius.circular(4),
+                      )
+                    ],
+                  );
+                }).toList(),
+              ),
+            ),
+          ),
         ]),
       ),
     );

@@ -1,9 +1,12 @@
 import 'dart:convert';
 import 'dart:developer' as developer;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/constants/app_images.dart';
+
+import '../config/assets_config.dart';
 
 // Cache global pour les assets chargés une seule fois
 final _assetCache = <String, List<String>>{};
@@ -99,20 +102,12 @@ final imagesToPrecacheProvider = FutureProvider<List<String>>((ref) async {
       .toList();
 });
 
-// ============================================================================
-// HELPER: Vérifier si une image existe
-// ============================================================================
-
 /// Vérifie si une image est disponible localement
 final isImageAvailableProvider =
     FutureProvider.family<bool, String>((ref, imagePath) async {
   final images = await ref.watch(allImagesProvider.future);
   return images.contains(imagePath);
 });
-
-// ============================================================================
-// HELPER: Compter les images par catégorie
-// ============================================================================
 
 /// Compte le nombre d'images disponibles
 final imageCountProvider = FutureProvider<Map<String, int>>((ref) async {
@@ -128,5 +123,9 @@ final imageCountProvider = FutureProvider<Map<String, int>>((ref) async {
 });
 
 final characterModelProvider = Provider<String>((ref) {
-  return 'https//godzyken.github.io/portefolio/assets_source/models/perso_samurail.glb';
+  if (kIsWeb) {
+    return AssetsConfig.characterModelUrl;
+  } else {
+    return 'assets/images/models/perso_samurail.glb';
+  }
 });

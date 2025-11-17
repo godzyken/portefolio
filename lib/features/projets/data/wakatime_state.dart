@@ -1,5 +1,3 @@
-// DANS : lib/features/projects/models/wakatime_stats.dart
-
 import 'dart:convert';
 
 // Fonction utilitaire pour décoder la chaîne JSON principale
