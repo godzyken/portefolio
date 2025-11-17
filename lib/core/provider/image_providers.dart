@@ -71,31 +71,6 @@ final techLogosAssetsProvider = FutureProvider<List<String>>((ref) async {
   return _loadAssetsFromManifest(filter: 'assets/images/logos/');
 });
 
-/// Models de perso 3D (assets/images/models/)
-final modelsGltfProvider = FutureProvider<List<String>>((ref) async {
-  return _loadAssetsFromManifest(filter: 'assets/images/models/');
-});
-
-/// Images du portfolio (projets, home, etc.)
-final portfolioImagesProvider = FutureProvider<List<String>>((ref) async {
-  final allImages = await ref.watch(allImagesProvider.future);
-  return allImages.where((path) {
-    final lower = path.toLowerCase();
-    // Exclure les logos pour avoir les images de contenu
-    return !lower.contains('logos/');
-  }).toList();
-});
-
-/// Fichiers JSON (données)
-final dataFilesProvider = FutureProvider<List<String>>((ref) async {
-  return _loadAssetsFromManifest(filter: 'assets/data/');
-});
-
-/// Polices de caractères
-final fontFilesProvider = FutureProvider<List<String>>((ref) async {
-  return _loadAssetsFromManifest(filter: 'assets/fonts/');
-});
-
 /// 🔹 Combine tout (local + réseau)
 final appImagesProvider = FutureProvider<AppImages>((ref) async {
   // Charger les images locales
@@ -119,22 +94,9 @@ final appImagesProvider = FutureProvider<AppImages>((ref) async {
 /// Combine images locales + réseau
 final imagesToPrecacheProvider = FutureProvider<List<String>>((ref) async {
   final appImages = await ref.watch(appImagesProvider.future);
-  return appImages.all;
-});
-
-// ============================================================================
-// PROVIDERS SPÉCIALISÉS (Si besoin de séparation)
-
-/// Uniquement les images PNG haute qualité
-final highQualityImagesProvider = FutureProvider<List<String>>((ref) async {
-  final images = await ref.watch(imageFilesProvider.future);
-  return images.where((path) => path.toLowerCase().endsWith('.png')).toList();
-});
-
-/// Uniquement les images WebP (pour web)
-final webOptimizedImagesProvider = FutureProvider<List<String>>((ref) async {
-  final images = await ref.watch(imageFilesProvider.future);
-  return images.where((path) => path.toLowerCase().endsWith('.webp')).toList();
+  return appImages.all
+      .where((img) => img.contains('logos/') || img.contains('images/'))
+      .toList();
 });
 
 // ============================================================================
@@ -157,18 +119,14 @@ final imageCountProvider = FutureProvider<Map<String, int>>((ref) async {
   final all = await ref.watch(allImagesProvider.future);
   final images = await ref.watch(imageFilesProvider.future);
   final logos = await ref.watch(techLogosAssetsProvider.future);
-  final data = await ref.watch(dataFilesProvider.future);
-  final models = await ref.watch(modelsGltfProvider.future);
 
   return {
     'all': all.length,
     'images': images.length,
     'logos': logos.length,
-    'data': data.length,
-    'models': models.length,
   };
 });
 
 final characterModelProvider = Provider<String>((ref) {
-  return 'assets/images/models/perso_samurail.glb';
+  return 'https//godzyken.github.io/portefolio/assets_source/models/perso_samurail.glb';
 });

@@ -25,11 +25,6 @@ final requestLocationPermissionProvider =
   return await LocationService.instance.requestPermission();
 });
 
-/// 🔹 Provider pour la position actuelle (snapshot unique)
-final currentActuLocationProvider = FutureProvider<LocationData?>((ref) async {
-  return await LocationService.instance.getCurrentLocation();
-});
-
 /// 🔹 Provider pour le flux en temps réel (mise à jour continue)
 final locationStreamProvider = StreamProvider.autoDispose<LocationData>((ref) {
   final service = ref.watch(locationServiceProvider);
