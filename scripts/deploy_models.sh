@@ -1,5 +1,4 @@
 #!/bin/bash
-# deploy_models.sh
 
 echo "🚀 Déploiement des modèles 3D..."
 
