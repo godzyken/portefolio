@@ -2,10 +2,12 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:portefolio/core/provider/image_providers.dart';
 import 'package:portefolio/features/generator/data/extention_models.dart';
 import 'package:portefolio/features/generator/views/widgets/hover_card.dart';
 import 'package:portefolio/features/home/views/widgets/service_expertise_card.dart';
 
+import '../../../../constants/tech_logos.dart';
 import '../../../../core/affichage/screen_size_detector.dart';
 import '../../../../core/provider/expertise_provider.dart';
 import '../../../../core/ui/widgets/ui_widgets_extentions.dart';
@@ -29,6 +31,9 @@ class _ServicesCardState extends ConsumerState<ServicesCard>
   late AnimationController _scrollController;
   late Animation<double> _scrollAnimation;
   int _currentSkillIndex = 0;
+
+  OverlayEntry? _overlayEntry;
+  final GlobalKey _buttonKey = GlobalKey();
 
   @override
   void initState() {
@@ -72,7 +77,95 @@ class _ServicesCardState extends ConsumerState<ServicesCard>
   @override
   void dispose() {
     _scrollController.dispose();
+    _overlayEntry?.remove();
     super.dispose();
+  }
+
+  void _toggleSkillBubbles(ServiceExpertise expertise, ResponsiveInfo info) {
+    if (_overlayEntry == null) {
+      _overlayEntry =
+          _createOverlayEntry(context, expertise.skills, expertise, info);
+      Overlay.of(context).insert(_overlayEntry!);
+    } else {
+      _overlayEntry?.remove();
+      _overlayEntry = null;
+    }
+    setState(() {});
+  }
+
+  OverlayEntry _createOverlayEntry(
+      BuildContext context,
+      List<TechSkill> techSkills,
+      ServiceExpertise expertise,
+      ResponsiveInfo info) {
+    final RenderBox? renderBox =
+        _buttonKey.currentContext?.findRenderObject() as RenderBox?;
+
+    if (renderBox == null || !renderBox.attached) {
+      return OverlayEntry(builder: (_) => const SizedBox.shrink());
+    }
+
+    final buttonPosition = renderBox.localToGlobal(Offset.zero);
+    final topSkills = expertise.topSkills.take(5).toList();
+
+    const double bubbleSize = 70.0; // Taille max de la bulle
+    const double spacing = 8.0;
+    final double overlayWidth = (topSkills.length * (bubbleSize + spacing));
+
+    // Hauteur de l'Overlay: hauteur d'une bulle + un peu de padding
+    final double overlayHeight = bubbleSize + 16.0;
+
+    // 4. DÉTERMINER LE POINT DE DÉPART FINAL (TOP et LEFT)
+    final double top = buttonPosition.dy -
+        overlayHeight; // Place l'Overlay JUSTE AU-DESSUS du bouton 3D
+
+    // Centre l'Overlay horizontalement par rapport au bouton (largeur du bouton ~48px)
+    final double left =
+        buttonPosition.dx - (overlayWidth / 2) + (renderBox.size.width / 2);
+
+    return OverlayEntry(builder: (context) {
+      return Positioned(
+          left: left,
+          top: top,
+          width: overlayWidth,
+          height: overlayHeight,
+          child: Material(
+              color: Colors.transparent,
+              child: Container(
+                  alignment: Alignment.center,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: topSkills.asMap().entries.map((entry) {
+                      final index = entry.key;
+                      final skill = entry.value;
+                      final bool isActive = index == _currentSkillIndex;
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _currentSkillIndex = index;
+                            _overlayEntry?.markNeedsBuild();
+                          });
+                        },
+                        onLongPress: () {
+                          _overlayEntry?.remove();
+                          _overlayEntry = null;
+
+                          _showExpandedDialog(context, expertise, skill);
+                        },
+                        child: Animate(
+                          effects: [
+                            FadeEffect(
+                                delay: (index * 100).ms, duration: 300.ms),
+                            ScaleEffect(
+                                delay: (index * 100).ms, duration: 300.ms),
+                          ],
+                          child: _buildSkillBubble(skill, index, isActive, info,
+                              Theme.of(context), ref),
+                        ),
+                      );
+                    }).toList(),
+                  ))));
+    });
   }
 
   @override
@@ -81,7 +174,7 @@ class _ServicesCardState extends ConsumerState<ServicesCard>
     final info = ref.watch(responsiveInfoProvider);
 
     return GestureDetector(
-      onTap: widget.onTap ?? () => _showExpertiseDialog(context, ref),
+      // onTap: widget.onTap ?? () => _showExpertiseDialog(context, ref),
       child: HoverCard(
         id: widget.service.id,
         child: ClipRRect(
@@ -117,6 +210,119 @@ class _ServicesCardState extends ConsumerState<ServicesCard>
     return info.cardWidth * info.cardHeightRatio;
   }
 
+  Widget _buildExpertiseDialogButton(
+      ThemeData theme, ResponsiveInfo info, WidgetRef ref) {
+    final expertise = ref.watch(serviceExpertiseProvider(widget.service.id));
+    final size = _getIconSize(info) * 1.2;
+
+    return InkWell(
+      key: _buttonKey,
+      onTap: () {
+        if (expertise != null) {
+          _toggleSkillBubbles(expertise, info);
+        }
+      },
+      borderRadius: BorderRadius.circular(size / 2),
+      child: Container(
+        padding: EdgeInsets.all(size * 0.25),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.black.withValues(alpha: 0.6),
+          border: Border.all(color: Colors.white, width: 1.0),
+          boxShadow: [
+            BoxShadow(
+              color: theme.colorScheme.primary.withValues(alpha: 0.5),
+              blurRadius: 10,
+            ),
+          ],
+        ),
+        child: Icon(
+          _overlayEntry != null ? Icons.close : Icons.psychology_outlined,
+          size: size * 0.6,
+          color: Colors.white,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSkillBubble(TechSkill skill, int index, bool isActive,
+      ResponsiveInfo info, ThemeData theme, WidgetRef ref) {
+    final size = info.isMobile ? 50.0 : 70.0;
+    final color = _getColorForIndex(index);
+    final String skillName = skill.name.toLowerCase();
+    final String? logoPath = ref.read(skillLogoPathProvider(skillName));
+
+    final IconData skillIcon = getIconFromName(skillName);
+
+    final Widget centerIcon;
+
+    if (logoPath != null) {
+      centerIcon = SmartImage(
+        path: logoPath,
+        width: size * 0.45,
+        height: size * 0.45,
+        fit: BoxFit.contain,
+        enableShimmer: false,
+        useCache: true, // Utiliser le cache de SmartImage
+        fallbackIcon: skillIcon,
+        fallbackColor: Colors.white,
+      );
+    } else {
+      centerIcon = Icon(
+        skillIcon,
+        size: size * 0.45,
+        color: Colors.white,
+      );
+    }
+
+    return ResponsiveBox(
+      margin: const EdgeInsets.only(right: 8.0),
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: color,
+        border: isActive
+            ? Border.all(
+                color: Colors.white, width: 3) // Highlight l'élément actif
+            : null,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.3),
+            blurRadius: 5,
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Icône (simple)
+          centerIcon,
+          // Niveau
+          ResponsiveText.bodySmall(
+            '${skill.levelPercent}%',
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: info.isMobile ? 10 : 12,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Color _getColorForIndex(int index) {
+    final colors = [
+      Colors.blue.shade600,
+      Colors.green.shade600,
+      Colors.orange.shade600,
+      Colors.purple.shade600,
+      Colors.red.shade600,
+    ];
+    return colors[index % colors.length];
+  }
+
   /// Section supérieure avec image de fond
   Widget _buildTopSection(
     BuildContext context,
@@ -140,14 +346,26 @@ class _ServicesCardState extends ConsumerState<ServicesCard>
           padding: EdgeInsets.all(_getPadding(info)),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               // Badge d'expertise en haut à droite
-              if (expertise != null)
-                Align(
-                  alignment: Alignment.topRight,
-                  child: _buildExpertiseBadge(expertise, theme, info),
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start, // Aligner à droite
+                children: [
+                  // Badge d'expertise (optionnel)
+                  if (expertise != null)
+                    _buildExpertiseBadge(expertise, theme, info),
+
+                  // Espacement si le badge est présent
+                  if (expertise != null)
+                    SizedBox(
+                        width:
+                            _getSpacing(info, small: 8, medium: 10, large: 12)),
+
+                  // Bouton d'expertise 3D simulé
+                  _buildExpertiseDialogButton(theme, info, ref),
+                ],
+              ),
 
               // Titre et icône en bas
               Column(
@@ -243,7 +461,7 @@ class _ServicesCardState extends ConsumerState<ServicesCard>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
-                flex: 1,
+                flex: 2,
                 child: ResponsiveText.titleSmall(
                   'Technologies',
                   style: TextStyle(
@@ -271,7 +489,7 @@ class _ServicesCardState extends ConsumerState<ServicesCard>
                 child: _buildStats(expertise, theme, info),
               ),
             ],
-          )).animate().fadeIn(duration: 500.ms, delay: 150.ms),
+          )).animate().fadeIn(duration: 1000.ms, delay: 150.ms),
     );
   }
 
@@ -415,7 +633,7 @@ class _ServicesCardState extends ConsumerState<ServicesCard>
               // Container de taille fixe pour éviter les sauts
               height: fontSize * 1.5,
               child: AnimatedSwitcher(
-                duration: 500.ms, // Temps de la transition
+                duration: 900.ms, // Temps de la transition
                 transitionBuilder: (Widget child, Animation<double> animation) {
                   // Effet de transition Slide-Fade
                   final slideAnimation = Tween<Offset>(
@@ -488,7 +706,7 @@ class _ServicesCardState extends ConsumerState<ServicesCard>
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
       children: skills.asMap().entries.map((entry) {
         final index = entry.key;
@@ -739,38 +957,32 @@ class _ServicesCardState extends ConsumerState<ServicesCard>
     return Colors.red.shade600;
   }
 
-  void _showExpertiseDialog(BuildContext context, WidgetRef ref) {
-    final expertise = ref.read(serviceExpertiseProvider(widget.service.id));
-
-    if (expertise == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Données d\'expertise non disponibles'),
-        ),
-      );
-      return;
-    }
+  void _showExpandedDialog(BuildContext context, ServiceExpertise expertise,
+      TechSkill? selectedSkill) {
+    final info = ref.read(responsiveInfoProvider);
+    final screenWidth = MediaQuery.of(context).size.width;
+    final dialogWidth = screenWidth * 0.75; // 3/4 de l'écran
 
     showDialog(
       context: context,
       builder: (context) => Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        // ⭐️ Contrainte de taille agrandie
         child: Container(
           padding: const EdgeInsets.all(24),
-          constraints: const BoxConstraints(maxWidth: 600, maxHeight: 700),
+          constraints: BoxConstraints(maxWidth: dialogWidth, maxHeight: 700),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // ... (Titre et bouton de fermeture) ...
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
                     child: ResponsiveText.headlineSmall(
-                      'Expertise - ${widget.service.title}',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
+                      'Détails d\'Expertise - ${widget.service.title}',
+                      style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
                   IconButton(
@@ -779,16 +991,44 @@ class _ServicesCardState extends ConsumerState<ServicesCard>
                   ),
                 ],
               ),
+
               const SizedBox(height: 16),
-              Flexible(
+
+              Expanded(
                 child: SingleChildScrollView(
-                  child: ServiceExpertiseCard(expertise: expertise),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (selectedSkill != null)
+                        _buildSkillDetails(
+                            selectedSkill, info, Theme.of(context)),
+                      const Divider(height: 32),
+                      ServiceExpertiseCard(expertise: expertise),
+                    ],
+                  ),
                 ),
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildSkillDetails(
+      TechSkill skill, ResponsiveInfo info, ThemeData theme) {
+    // Ceci est juste un exemple simple de ce que vous pouvez afficher
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ResponsiveText.titleLarge(skill.name,
+            style: TextStyle(color: theme.colorScheme.primary)),
+        const SizedBox(height: 8),
+        ResponsiveText.bodyLarge('Niveau d\'Expertise: ${skill.levelPercent}%',
+            style: const TextStyle(fontWeight: FontWeight.bold)),
+        ResponsiveText.bodyLarge('Projets Utilisés: ${skill.projectCount}'),
+        // Ajoutez ici des graphiques détaillés ou des descriptions longues si disponibles.
+      ],
     );
   }
 

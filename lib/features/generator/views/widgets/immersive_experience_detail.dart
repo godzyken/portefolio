@@ -3,10 +3,11 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
-import 'package:portefolio/core/ui/widgets/responsive_text.dart';
-import 'package:portefolio/core/ui/widgets/smart_image.dart';
+import 'package:portefolio/core/ui/widgets/ui_widgets_extentions.dart';
 import 'package:portefolio/features/experience/data/experiences_data.dart';
 import 'package:portefolio/features/generator/views/generator_widgets_extentions.dart';
+
+import '../../../../core/provider/image_providers.dart';
 
 /// Écran de détails immersif pour une expérience
 /// Affiche tous les détails avec animations et thème dynamique
@@ -79,6 +80,104 @@ class _ImmersiveExperienceDetailState
     if (tags.contains('Node.js')) return const Color(0xFF68A063);
     if (tags.contains('SIG')) return const Color(0xFF00796B);
     return const Color(0xFF6200EA); // Violet par défaut
+  }
+
+  Widget _build3DIcon({
+    required IconData icon,
+    required Color color,
+    double size = 24.0,
+    double padding = 8.0,
+  }) {
+    final double containerSize = size + padding * 2;
+
+    return Transform(
+      // Ajout de perspective et d'une légère rotation pour l'effet 3D
+      transform: Matrix4.identity()
+        ..setEntry(3, 2, 0.001) // Perspective
+        ..rotateX(0.1) // Tilt up
+        ..rotateY(-0.1), // Tilt left
+      alignment: Alignment.center,
+      child: Container(
+        width: containerSize,
+        height: containerSize,
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.2), // Fond semi-transparent
+          borderRadius: BorderRadius.circular(containerSize / 3),
+          // Ombres pour simuler la profondeur
+          boxShadow: [
+            // Ombre sombre pour la profondeur
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.7),
+              blurRadius: 12,
+              offset: const Offset(4, 4),
+            ),
+            // Highlight pour le relief
+            BoxShadow(
+              color: color.withValues(alpha: 0.6),
+              blurRadius: 6,
+              offset: const Offset(-2, -2),
+            ),
+          ],
+          // Dégradé pour simuler l'éclairage
+          gradient: RadialGradient(
+            center: Alignment.topLeft,
+            radius: 1.2,
+            colors: [
+              Colors.white.withValues(alpha: 0.3), // Source de lumière
+              color.withValues(alpha: 0.3),
+            ],
+          ),
+        ),
+        child: Center(
+          child: Icon(
+            icon,
+            size: size,
+            color: Colors.white, // Icône claire pour le contraste
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLogo3D(String logoPath, Color themeColor, double size) {
+    return Transform(
+      // Transformation 3D pour le logo
+      transform: Matrix4.identity()
+        ..setEntry(3, 2, 0.001) // Perspective
+        ..rotateX(0.08) // Légère inclinaison vers le haut
+        ..rotateY(-0.08), // Légère inclinaison vers la gauche
+      alignment: Alignment.center,
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          color: themeColor.withValues(alpha: 0.3),
+          borderRadius: BorderRadius.circular(20), // Coins arrondis
+          // Ombres pour simuler la profondeur et le relief
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.8),
+              blurRadius: 20,
+              offset: const Offset(8, 8),
+            ),
+            BoxShadow(
+              color: Colors.white.withValues(alpha: 0.3),
+              blurRadius: 10,
+              offset: const Offset(-4, -4),
+            ),
+          ],
+        ),
+        padding: const EdgeInsets.all(16),
+        child: SmartImage(
+          path: logoPath,
+          responsiveSize: ResponsiveImageSize.medium,
+          fit: BoxFit.contain,
+          // Utilise une couleur de filtre basée sur le thème pour l'harmonisation
+          color: Colors.white.withValues(alpha: 0.9),
+          colorBlendMode: BlendMode.modulate,
+        ),
+      ),
+    );
   }
 
   @override
@@ -236,6 +335,8 @@ class _ImmersiveExperienceDetailState
   }
 
   Widget _buildSliverHeader(ResponsiveInfo info, Color themeColor) {
+    final logoSize = info.isMobile ? 100.0 : 150.0;
+
     return SliverAppBar(
       expandedHeight: info.isMobile ? 200 : 300,
       pinned: true,
@@ -268,10 +369,10 @@ class _ImmersiveExperienceDetailState
           ),
           child: widget.experience.logo.isNotEmpty
               ? Center(
-                  child: SmartImage(
-                    path: widget.experience.logo,
-                    responsiveSize: ResponsiveImageSize.medium,
-                    fit: BoxFit.contain,
+                  child: _buildLogo3D(
+                    widget.experience.logo,
+                    themeColor,
+                    logoSize,
                   ),
                 )
               : null,
@@ -296,16 +397,17 @@ class _ImmersiveExperienceDetailState
           if (widget.experience.poste.isNotEmpty) ...[
             Row(
               children: [
-                Icon(
-                  Icons.work_outline,
+                _build3DIcon(
+                  icon: Icons.work_outline,
                   color: theme.colorScheme.primary,
-                  size: 24,
+                  size: 20,
+                  padding: 4,
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 16),
                 Expanded(
-                  child: Text(
+                  child: ResponsiveText.titleLarge(
                     widget.experience.poste,
-                    style: theme.textTheme.titleLarge?.copyWith(
+                    style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
@@ -318,15 +420,16 @@ class _ImmersiveExperienceDetailState
           if (widget.experience.periode.isNotEmpty) ...[
             Row(
               children: [
-                Icon(
-                  Icons.calendar_today,
+                _build3DIcon(
+                  icon: Icons.calendar_today,
                   color: theme.colorScheme.primary.withValues(alpha: 0.7),
-                  size: 20,
+                  size: 26,
+                  padding: 4,
                 ),
-                const SizedBox(width: 12),
-                Text(
+                const SizedBox(width: 16),
+                ResponsiveText.bodyLarge(
                   widget.experience.periode,
-                  style: theme.textTheme.bodyLarge?.copyWith(
+                  style: TextStyle(
                     color: Colors.white.withValues(alpha: 0.8),
                   ),
                 ),
@@ -337,9 +440,9 @@ class _ImmersiveExperienceDetailState
           if (widget.experience.contexte.isNotEmpty) ...[
             const Divider(color: Colors.white24),
             const SizedBox(height: 16),
-            Text(
+            ResponsiveText.bodyMedium(
               widget.experience.contexte,
-              style: theme.textTheme.bodyMedium?.copyWith(
+              style: TextStyle(
                 color: Colors.white.withValues(alpha: 0.9),
                 height: 1.6,
               ),
@@ -403,22 +506,16 @@ class _ImmersiveExperienceDetailState
         children: [
           Row(
             children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  icon,
-                  color: theme.colorScheme.primary,
-                  size: 24,
-                ),
+              _build3DIcon(
+                icon: icon,
+                color: theme.colorScheme.primary,
+                size: 24,
+                padding: 4,
               ),
               const SizedBox(width: 12),
-              Text(
+              ResponsiveText.titleLarge(
                 title,
-                style: theme.textTheme.titleLarge?.copyWith(
+                style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
@@ -442,9 +539,9 @@ class _ImmersiveExperienceDetailState
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: Text(
+                      child: ResponsiveText.bodyMedium(
                         item,
-                        style: theme.textTheme.bodyMedium?.copyWith(
+                        style: TextStyle(
                           color: Colors.white.withValues(alpha: 0.85),
                           height: 1.5,
                         ),
@@ -453,6 +550,97 @@ class _ImmersiveExperienceDetailState
                   ],
                 ),
               )),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTech3DChip(String tech, Color primaryColor, ThemeData theme) {
+    final techLower = tech.toLowerCase();
+    final fallbackIcon = _getTechIcon(tech);
+    final String? logoPath = ref.read(skillLogoPathProvider(techLower));
+    const double logoSize = 20.0;
+    const double containerSize = logoSize + 8.0;
+
+    final Widget logoContent = logoPath != null
+        ? SmartImage(
+            path: logoPath,
+            width: logoSize,
+            height: logoSize,
+            fit: BoxFit.contain,
+            color: Colors.white, // Teinte pour le contraste
+            colorBlendMode: BlendMode.modulate,
+            fallbackIcon: fallbackIcon,
+            useCache: true,
+            enableShimmer: false,
+          )
+        : Icon(
+            fallbackIcon,
+            size: logoSize,
+            color: Colors.white,
+          );
+
+    final Widget logoBubble = Container(
+      width: containerSize,
+      height: containerSize,
+      decoration: BoxDecoration(
+        color: primaryColor.withValues(alpha: 0.6), // Couleur de fond du logo
+        shape: BoxShape.circle,
+        boxShadow: [
+          // Ombre foncée pour la profondeur (bas)
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.7),
+            blurRadius: 8,
+            offset: const Offset(3, 3),
+          ),
+          // Highlight claire pour le relief (haut)
+          BoxShadow(
+            color: Colors.white.withValues(alpha: 0.4),
+            blurRadius: 4,
+            offset: const Offset(-2, -2),
+          ),
+        ],
+        // Dégradé pour simuler la forme sphérique
+        gradient: RadialGradient(
+          center: Alignment.topLeft,
+          radius: 1.5,
+          colors: [
+            Colors.white.withValues(alpha: 0.5),
+            primaryColor.withValues(alpha: 0.6),
+          ],
+        ),
+      ),
+      child: Center(child: logoContent),
+    );
+
+    return Container(
+      margin: const EdgeInsets.only(right: 8, bottom: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: primaryColor.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(color: primaryColor.withValues(alpha: 0.4)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Légère transformation pour simuler le 3D sur l'icône
+          Transform(
+            transform: Matrix4.identity()
+              ..setEntry(3, 2, 0.001)
+              ..rotateX(0.05)
+              ..rotateY(-0.05),
+            alignment: Alignment.center,
+            child: logoBubble,
+          ),
+          const SizedBox(width: 8),
+          ResponsiveText.bodyMedium(
+            tech,
+            style: TextStyle(
+              color: Colors.white.withValues(alpha: 0.9),
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ],
       ),
     );
@@ -475,22 +663,16 @@ class _ImmersiveExperienceDetailState
         children: [
           Row(
             children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  Icons.code,
-                  color: theme.colorScheme.primary,
-                  size: 24,
-                ),
+              _build3DIcon(
+                icon: Icons.code,
+                color: theme.colorScheme.primary,
+                size: 24,
+                padding: 4,
               ),
               const SizedBox(width: 12),
-              Text(
+              ResponsiveText.titleLarge(
                 'Stack Technique',
-                style: theme.textTheme.titleLarge?.copyWith(
+                style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
@@ -502,18 +684,10 @@ class _ImmersiveExperienceDetailState
             spacing: 8,
             runSpacing: 8,
             children: widget.experience.stack.entries
-                .expand((entry) => entry.value.map((tech) => Chip(
-                      avatar: Icon(
-                        _getTechIcon(tech),
-                        size: 16,
-                        color: theme.colorScheme.primary,
-                      ),
-                      label: Text(tech),
-                      backgroundColor:
-                          theme.colorScheme.primary.withValues(alpha: 0.1),
-                      side: BorderSide(
-                        color: theme.colorScheme.primary.withValues(alpha: 0.3),
-                      ),
+                .expand((entry) => entry.value.map((tech) => _buildTech3DChip(
+                      tech,
+                      theme.colorScheme.primary,
+                      theme,
                     )))
                 .toList(),
           ),
@@ -524,6 +698,8 @@ class _ImmersiveExperienceDetailState
 
   IconData _getTechIcon(String tech) {
     final techLower = tech.toLowerCase();
+
+    // Mappage de chaînes de caractères vers un IconData
     if (techLower.contains('flutter') || techLower.contains('dart')) {
       return Icons.phone_android;
     }
@@ -543,6 +719,7 @@ class _ImmersiveExperienceDetailState
         techLower.contains('mongo')) {
       return Icons.storage;
     }
+    // Icône par défaut si aucune correspondance n'est trouvée
     return Icons.star;
   }
 }

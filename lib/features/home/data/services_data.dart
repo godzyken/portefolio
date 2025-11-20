@@ -2,6 +2,8 @@ import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
 
+import '../../../constants/tech_logos.dart';
+
 class Service {
   final String id;
   final String title;
@@ -36,7 +38,7 @@ class Service {
       title: json['title'] as String,
       description: json['description'] as String,
       features: (json['features'] as List?)?.cast<String>() ?? [],
-      icon: _getIconFromName(json['icon'] as String? ?? 'extension'),
+      icon: getIconFromName(json['icon'] as String? ?? 'extension'),
       imageUrl: imageUrl,
       category: _getCategoryFromString(json['category'] as String?),
       priority: json['priority'] as int? ?? 0,
@@ -111,37 +113,6 @@ class Service {
       category: category ?? this.category,
       priority: priority ?? this.priority,
     );
-  }
-
-  static IconData _getIconFromName(String name) {
-    switch (name.toLowerCase()) {
-      case 'phone':
-      case 'mobile':
-        return Icons.phone_android;
-      case 'design':
-      case 'ui':
-      case 'ux':
-        return Icons.design_services;
-      case 'cloud':
-        return Icons.cloud;
-      case 'web':
-      case 'internet':
-        return Icons.web;
-      case 'code':
-      case 'development':
-        return Icons.code;
-      case 'database':
-        return Icons.storage;
-      case 'api':
-        return Icons.api;
-      case 'security':
-        return Icons.security;
-      case 'support':
-      case 'maintenance':
-        return Icons.build;
-      default:
-        return Icons.extension;
-    }
   }
 
   static String _getIconName(IconData icon) {

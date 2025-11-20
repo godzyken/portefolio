@@ -68,7 +68,7 @@
     "stack": {
       "frontend": ["Flutter"],
       "backend": ["Hive", "Firebase"],
-      "devops": ["CI/CD"]
+      "devops": ["CI/CD", "Github-Octocat", "Architect"]
     },
     "periode": "Janvier 2023 - Juillet 2023",
     "lienProjet": "https://www.youtube.com/shorts/h7k462fwrBE?feature=share",
@@ -104,8 +104,8 @@
     "tags": ["Angular", "AMOA", "UI/UX", "Gestion de projet", "Chiffrage", "CI/CD"],
     "stack": {
       "frontend": ["Angular", "Ionic"],
-      "backend": ["Node.js", "Express.js"],
-      "devops": ["Git"]
+      "backend": ["Node.js", "Express.js", "Capacitorjs"],
+      "devops": ["Git", "SonarQube", "CI/CD"]
     },
     "periode": "Avril 2022 – Septembre 2022",
     "lienProjet": "https://play.google.com/store/apps/details?id=com.mipih.medimail&hl=fr",
@@ -140,9 +140,9 @@
     "code": "// Extrait Flutter – écran d’édition de devis avec Riverpod\nclass DevisEditScreen extends ConsumerWidget { /* … */ }",
     "tags": ["Flutter", "Full‑Stack", "Gestion de projet", "Riverpod", "IoT", "VR", "PDF", "BTP"],
     "stack": {
-      "frontend": ["Flutter"],
-      "backend": ["Firebase", "MongoDB"],
-      "devops": ["GitHub Actions", "Firebase Hosting"]
+      "frontend": ["Flutter", "Kotlin", "Swift", "Bootstrap"],
+      "backend": ["Hive", "Firebase", "Supabase", "Goland", "Python"],
+      "devops": ["GitHub Octocat", "Ci-Cd", "Gradle", "Android", "Architect", "Riverpod", "Google Analytics", "Raspberry-Pi", "Pyscript"]
     },
     "periode": "Mars 2021 – Aujourd’hui",
     "lienProjet": "egote_services_v2",
@@ -176,8 +176,8 @@
     "tags": ["Angular", "Flutter", "SIG", "PostGIS", "CI/CD"],
     "stack": {
       "frontend": ["Flutter", "Angular", "Laravel"],
-      "backend": ["Node.js", "PostgreSQL/PostGIS", "API PHP"],
-      "devops": ["GitLab CI"]
+      "backend": ["Node.js", "PostgreSQL", "PHP", "C-Sharp"],
+      "devops": ["GitHub-Octocat", "CI-CD", "Circle-ci"]
     },
     "periode": "Novembre 2020 – Janvier 2021",
     "lienProjet": "https://habitat.urbalyon.org/#c=indicator&i=gip_ops.emmen_recent_aide_logt&s=2022&selcodgeo=69091&view=map13",
@@ -217,8 +217,8 @@
     "tags": ["Angular", "Full‑Stack", "IoT", "Ionic", "CI/CD", "Elasticsearch", "Video‑surveillance"],
     "stack": {
       "frontend": ["Angular", "Ionic"],
-      "backend": ["Node.js", "Express.js"],
-      "devops": ["CI/CD"]
+      "backend": ["Node.js", "Express.js", "Sequelize", "MongoDB", "Elasticsearch"],
+      "devops": ["GitLab CI", "CI/CD"]
     },
     "periode": "Avril 2019 – Décembre 2019",
     "lienProjet": "https://www.jean-claude-aubry.fr/",
@@ -253,9 +253,9 @@
     "code": "// Injection d'un service Angular\nconstructor(private searchService: SearchService) {}",
     "tags": ["Angular", "Full‑Stack", "JavaScript",  "Ionic", "CI/CD", "Node.js", "UX"],
     "stack": {
-      "frontend": ["Angular", "Ionic"],
-      "backend": ["Node.js", "AWS Cloud"],
-      "devops": ["GitLab CI"]
+      "frontend": ["Angular", "Ionic", "JavaScript", "Typescript"],
+      "backend": ["Node.js", "AWS Cloud", "Sequelize", "MongoDB"],
+      "devops": ["GitLab CI", "CI-CD"]
     },
     "periode": "Janvier 2019 – Mars 2019",
     "lienProjet": "https://specialist-wanted.com/",
@@ -541,7 +541,7 @@
     "tags": ["E-commerce", "PrestaShop", "PHP", "Base de données"],
     "stack": {
       "frontend": ["Smarty", "HTML", "CSS", "JavaScript", "jQuery"],
-      "backend": ["PHP", "Prestashop Core", "MySQL"],
+      "backend": ["PHP", "Prestashop", "MySQL"],
       "devops": ["FTP/SSH"]
     },
     "periode": "descembre 2010 - Fevrier 2011",
@@ -591,7 +591,7 @@
     "tags": ["E-commerce", "PrestaShop", "PHP", "Base de données"],
     "stack": {
       "frontend": ["Smarty", "HTML", "CSS", "JavaScript", "jQuery"],
-      "backend": ["PHP", "Prestashop Core", "MySQL"],
+      "backend": ["PHP", "Prestashop", "MySQL"],
       "devops": ["FTP/SSH"]
     },
     "periode": "Mars 2010 - Juin 2012",

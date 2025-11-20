@@ -41,9 +41,6 @@ class HomeScreen extends ConsumerWidget {
   // ---------- Portrait Layout (avec Stack) ----------
   Widget _buildPortraitLayout(
       BuildContext context, ResponsiveInfo info, ThemeData theme) {
-    final imageSize =
-        info.isMobile ? info.size.width * 0.7 : info.size.width * 0.5;
-
     return Stack(
       children: [
         // ---- 1. ARRIÈRE-PLAN : LE MODÈLE 3D ----
@@ -52,12 +49,19 @@ class HomeScreen extends ConsumerWidget {
             alignment: Alignment.bottomCenter, // Positionné en bas
             child: SizedBox(
               // On lui donne une hauteur fixe pour un bon rendu
-              height: info.size.height * 0.6,
+              height: info.size.height * 2,
               child: Opacity(
                 opacity: 0.5, // On le rend un peu transparent
                 child: const CharacterViewer(),
               ),
             ),
+          ),
+        ),
+
+        Positioned(
+          child: Align(
+            alignment: Alignment.topRight, // Positionné en bas
+            child: ComparisonStatsView(),
           ),
         ),
 
@@ -71,18 +75,18 @@ class HomeScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              SizedBox(
+              /* SizedBox(
                 width: imageSize,
                 height: imageSize,
                 child: _buildProfileImage(context, info, theme),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 32),*/
               _buildPresentationText(context, theme, info.isMobile),
               const SizedBox(height: 32),
               _buildActionButtons(context, theme, info.isMobile),
               // On laisse un grand espace pour ne pas superposer le modèle au début
               SizedBox(height: info.size.height * 0.4),
-              const ComparisonStatsView(),
+
               const SizedBox(height: 24),
               const ServicesSection(),
             ],
@@ -128,7 +132,7 @@ class HomeScreen extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: const [
-                ComparisonStatsView(),
+                Center(child: (ComparisonStatsView())),
                 SizedBox(height: 16),
                 ServicesSection(),
               ],

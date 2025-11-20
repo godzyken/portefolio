@@ -1,63 +1,54 @@
-# scripts/fetch_wakatime.py
-
 import os
-import requests
 import json
+import base64
+import requests
 
-# Récupère la clé API depuis les "Secrets" de GitHub Actions.
-# La variable 'WAKATIME_API_KEY' doit être configurée dans les paramètres de votre dépôt.
-API_KEY = os.getenv('WAKATIME_API_KEY')
+# 1. Récupère la clé API de l'environnement
+# C'est la variable fournie par GitHub Actions (WAKATIME_API_KEY: ***)
+WAKATIME_API_KEY = os.environ.get('WAKATIME_API_KEY')
+OUTPUT_FILE = 'assets/data/wakatime_stats.json'
+API_URL = "https://wakatime.com/api/v1/users/current/stats/last_7_days"
 
-# URL de l'API pour les statistiques des 7 derniers jours.
-# Remplacez 'current' par votre nom d'utilisateur WakaTime si nécessaire,
-# mais 'current' fonctionne avec la clé API.
-STATS_URL = 'https://wakatime.com/api/v1/users/current/stats/last_7_days'
+if not WAKATIME_API_KEY:
+    # Cette erreur ne devrait plus se produire si le secret est défini dans GitHub
+    print("Erreur: La variable d'environnement WAKATIME_API_KEY n'est pas définie.")
+    exit(1)
 
-# Chemin où sauvegarder le fichier JSON de sortie.
-# Le script se trouve dans 'scripts/', donc on remonte d'un niveau ('..')
-# pour aller dans 'assets/data/'.
-OUTPUT_PATH = 'assets/data/wakatime_stats.json'
+# --- Authentification WakaTime ---
+# L'API WakaTime utilise l'Authentification Basique (Basic Authentication)
+# Le token est généré à partir de la clé API, encodée en Base64.
+# Format: 'Authorization: Basic <Base64 de la clé API>'
+# WakaTime ne nécessite pas de mot de passe, donc nous encodons seulement la clé.
+# Parfois, l'encodage est 'api_key:password', mais pour WakaTime, c'est souvent juste la clé.
+# Le script standard WakaTime utilise l'en-tête 'Authorization' avec la clé encodée en Base64.
 
-def fetch_and_save_stats():
-    """
-    Récupère les statistiques de WakaTime et les sauvegarde dans un fichier JSON.
-    """
-    if not API_KEY:
-        print("Erreur: La variable d'environnement WAKATIME_API_KEY n'est pas définie.")
-        # On quitte avec un code d'erreur pour que la GitHub Action échoue.
-        exit(1)
+# Encodage de la clé API en Base64
+# Note: La librairie 'requests' gère souvent Basic Auth plus facilement.
+# Si le script utilise Basic Auth (méthode simple):
+try:
+    # Tente d'utiliser l'authentification de base de requests
+    print(f"Appel à l'API WakaTime: {API_URL}")
+    
+    # Utilise la fonction auth=(user, password) où user est la clé API et password est vide
+    response = requests.get(API_URL, auth=(WAKATIME_API_KEY, ''), timeout=10)
 
-    print(f"Appel à l'API WakaTime: {STATS_URL}")
+    # Vérifie si la requête a réussi (code 200 OK) ou échoué (401 Unauthorized)
+    response.raise_for_status() 
 
-    # On ajoute la clé API dans le header de la requête pour l'authentification.
-    headers = {
-        'Authorization': f'Bearer {API_KEY}'
-    }
+    # 2. Traitement des données
+    data = response.json()
+    
+    # 3. Sauvegarde dans un fichier JSON
+    with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:
+        json.dump(data, f, indent=4)
+    
+    print(f"✅ Succès : Statistiques WakaTime enregistrées dans {OUTPUT_FILE}")
 
-    try:
-        # On exécute la requête GET. Le timeout est une bonne pratique.
-        response = requests.get(STATS_URL, headers=headers, timeout=10)
-
-        # Lève une exception si la requête a échoué (ex: 401, 404, 500).
-        response.raise_for_status()
-
-        print("Réponse de l'API reçue avec succès.")
-        stats_data = response.json()
-
-        # Crée les dossiers parents si ils n'existent pas.
-        os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
-
-        # Ouvre le fichier de sortie en mode écriture ('w') et sauvegarde les données.
-        # 'indent=4' formate le JSON pour qu'il soit lisible.
-        with open(OUTPUT_PATH, 'w', encoding='utf-8') as f:
-            json.dump(stats_data, f, ensure_ascii=False, indent=4)
-
-        print(f"Les statistiques ont été sauvegardées avec succès dans: {OUTPUT_PATH}")
-
-    except requests.exceptions.RequestException as e:
-        print(f"Erreur lors de l'appel à l'API WakaTime: {e}")
-        exit(1)
-
-# Point d'entrée du script
-if __name__ == "__main__":
-    fetch_and_save_stats()
+except requests.exceptions.HTTPError as err:
+    # Capture le code 401 UNAUTHORIZED
+    print(f"Erreur lors de l'appel à l'API WakaTime: {err}")
+    # Relance l'erreur pour que GitHub Actions échoue
+    exit(1)
+except requests.exceptions.RequestException as e:
+    print(f"Erreur de connexion à l'API WakaTime: {e}")
+    exit(1)

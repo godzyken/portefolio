@@ -32,40 +32,140 @@ class _ComparisonStatsViewState extends ConsumerState<ComparisonStatsView> {
 
   @override
   Widget build(BuildContext context) {
-    final asyncData = ref.watch(comparaisonsJsonProvider);
     final info = ref.watch(responsiveInfoProvider);
 
-    return asyncData.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Center(child: Text('Erreur: $e')),
-      data: (comparatifs) => AspectRatio(
-        aspectRatio: info.isMobile ? 1.2 : 1.8,
-        child: PageView.builder(
-          controller: controller,
-          itemCount: comparatifs.length,
-          itemBuilder: (context, index) {
-            return AnimatedBuilder(
-              animation: controller,
-              builder: (context, child) {
-                double value = 1.0;
+    return Padding(
+      padding: EdgeInsets.only(
+          left: _getSpacing(info, medium: 16, large: 24),
+          top: _getSpacing(info, medium: 16, large: 24)),
+      child: _buildComparativeDialogButton(context, info),
+    );
+  }
 
-                if (controller.position.haveDimensions) {
-                  value = (controller.page! - index).abs();
-                  value = (1 - (value * 0.3)).clamp(0.8, 1.0);
-                }
+  Widget _buildComparativeDialogButton(
+      BuildContext context, ResponsiveInfo info) {
+    // Une taille d'icône bien visible
+    final size = info.isMobile ? 36.0 : 48.0;
 
-                return Transform.scale(
-                  scale: Curves.easeOut.transform(value),
-                  child: child,
-                );
-              },
-              child: ComparatifCard(comparatif: comparatifs[index]),
-            );
-          },
+    return Tooltip(
+      message: "Pourquoi Flutter ?", // Texte du Tooltip
+      // Le Tooltip doit être au-dessus du reste du contenu
+      preferBelow: false,
+      triggerMode:
+          TooltipTriggerMode.tap, // Permet le trigger au toucher sur mobile
+      child: InkWell(
+        onTap: () {
+          Future.microtask(() {
+            if (context.mounted) {
+              _showFullScreenComparison(context, info);
+            }
+          });
+        },
+        borderRadius: BorderRadius.circular(size / 2),
+        child: Container(
+          width: size,
+          height: size,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            // Gradient pour simuler l'effet de sphère / 3D
+            gradient: LinearGradient(
+              colors: [
+                Colors.indigo.shade400,
+                Colors.cyan.shade300,
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            boxShadow: [
+              // Ombre pour la profondeur
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.4),
+                offset: const Offset(3, 3),
+                blurRadius: 10,
+              ),
+              // Highlight pour la lumière
+              BoxShadow(
+                color: Colors.white.withValues(alpha: 0.3),
+                offset: const Offset(-2, -2),
+                blurRadius: 5,
+              ),
+            ],
+          ),
+          child: Icon(
+            Icons.question_mark_rounded, // Icône de question
+            size: size * 0.6,
+            color: Colors.white,
+          ),
         ),
       ),
     );
   }
+
+  void _showFullScreenComparison(BuildContext context, ResponsiveInfo info) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        final EdgeInsets padding =
+            info.isMobile ? const EdgeInsets.all(4) : const EdgeInsets.all(16);
+
+        return Dialog(
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          insetPadding: padding,
+          child: Container(
+            constraints: const BoxConstraints(maxWidth: 1200, maxHeight: 800),
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ResponsiveText.headlineMedium(
+                      'Comparaison des Technologies',
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                  ],
+                ),
+                const Divider(),
+                Expanded(
+                  child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Consumer(
+                        builder: (context, ref, child) {
+                          final asyncData = ref.watch(comparaisonsJsonProvider);
+                          return asyncData.when(
+                            loading: () => const Center(
+                                child: CircularProgressIndicator()),
+                            error: (e, _) => Center(child: Text('Erreur: $e')),
+                            data: (comparatifs) {
+                              return ListView.builder(
+                                itemCount: comparatifs.length,
+                                itemBuilder: (context, index) {
+                                  return ComparatifCard(
+                                      comparatif: comparatifs[index]);
+                                },
+                              );
+                            },
+                          );
+                        },
+                      )),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  double _getSpacing(ResponsiveInfo info,
+          {double medium = 10, double large = 20}) =>
+      info.isMobile ? 8 : (info.isTablet ? medium : large);
 }
 
 class ComparatifCard extends StatelessWidget {
@@ -75,6 +175,7 @@ class ComparatifCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const double itemHeight = 300.0;
     return Card(
       elevation: 4,
       margin: const EdgeInsets.all(16),
@@ -83,39 +184,48 @@ class ComparatifCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // 1. Titre (Reste en haut)
             ResponsiveText.headlineSmall(comparatif.title),
             const SizedBox(height: 8),
-            Flexible(
-              fit: FlexFit.loose,
-              child: DefaultTabController(
-                length: 4,
-                child: Column(
-                  children: [
-                    const TabBar(
-                      tabs: [
-                        Tab(text: 'Barres'),
-                        Tab(text: 'Radar'),
-                        Tab(text: 'Table'),
-                        Tab(text: 'Recommendation'),
-                      ],
-                    ),
-                    Flexible(
-                      fit: FlexFit.loose,
-                      child: TabBarView(
-                        children: [
-                          _buildBarChart(comparatif),
-                          _buildRadarChart(comparatif),
-                          _buildTableView(comparatif),
-                          _buildRecommendation(comparatif),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+
+            SizedBox(
+              height: itemHeight,
+              child: ListWheelScrollView(
+                itemExtent: itemHeight,
+                diameterRatio: 1.5,
+                offAxisFraction: -0.5,
+                children: [
+                  _wrapViewInSizedBox(
+                      _buildBarChart(comparatif), 'Barres', itemHeight),
+                  _wrapViewInSizedBox(
+                      _buildRadarChart(comparatif), 'Radar', itemHeight),
+                  _wrapViewInSizedBox(
+                      _buildTableView(comparatif), 'Table', itemHeight),
+                  _wrapViewInSizedBox(_buildRecommendation(comparatif),
+                      'Recommendation', itemHeight),
+                ],
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _wrapViewInSizedBox(Widget view, String title, double height) {
+    return SizedBox(
+      height: height,
+      child: Column(
+        children: [
+          // Ajouter un titre visible pour savoir sur quelle vue on est
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: ResponsiveText.titleMedium(title,
+                style: const TextStyle(fontWeight: FontWeight.bold)),
+          ),
+          // La vue elle-même prend le reste de l'espace
+          Expanded(child: view),
+        ],
       ),
     );
   }
@@ -194,36 +304,38 @@ class ComparatifCard extends StatelessWidget {
         .map((e) => e.scoreReactNative.toDouble())
         .toList();
 
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: RadarChart(
-        RadarChartData(
-          dataSets: [
-            RadarDataSet(
-              dataEntries:
-                  flutterScores.map((s) => RadarEntry(value: s)).toList(),
-              borderColor: Colors.blue,
-              fillColor: Colors.blue.withValues(alpha: 0.3),
-              entryRadius: 3,
-            ),
-            RadarDataSet(
-              dataEntries:
-                  reactScores.map((s) => RadarEntry(value: s)).toList(),
-              borderColor: Colors.green,
-              fillColor: Colors.green.withValues(alpha: 0.3),
-              entryRadius: 3,
-            ),
-          ],
-          radarBackgroundColor: Colors.transparent,
-          titleTextStyle: const TextStyle(fontSize: 12),
-          getTitle: (index, angle) {
-            // Retourne un RadarChartTitle pour chaque index
-            return RadarChartTitle(
-              text: categories[index],
-              angle: angle,
-            );
-          },
-          tickCount: 5,
+    return Center(
+      child: AspectRatio(
+        aspectRatio: 1.0,
+        child: RadarChart(
+          RadarChartData(
+            dataSets: [
+              RadarDataSet(
+                dataEntries:
+                    flutterScores.map((s) => RadarEntry(value: s)).toList(),
+                borderColor: Colors.blue,
+                fillColor: Colors.blue.withValues(alpha: 0.3),
+                entryRadius: 3,
+              ),
+              RadarDataSet(
+                dataEntries:
+                    reactScores.map((s) => RadarEntry(value: s)).toList(),
+                borderColor: Colors.green,
+                fillColor: Colors.green.withValues(alpha: 0.3),
+                entryRadius: 3,
+              ),
+            ],
+            radarBackgroundColor: Colors.transparent,
+            titleTextStyle: const TextStyle(fontSize: 12),
+            getTitle: (index, angle) {
+              // Retourne un RadarChartTitle pour chaque index
+              return RadarChartTitle(
+                text: categories[index],
+                angle: angle,
+              );
+            },
+            tickCount: 5,
+          ),
         ),
       ),
     );

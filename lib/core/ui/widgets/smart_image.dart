@@ -97,6 +97,8 @@ class SmartImage extends ConsumerStatefulWidget {
   final bool useCache;
   final bool enableShimmer;
   final Duration fadeDuration;
+  final Color? color;
+  final BlendMode? colorBlendMode;
 
   // 🎨 Nouveau : style visuel
   final BorderRadius? borderRadius;
@@ -116,6 +118,8 @@ class SmartImage extends ConsumerStatefulWidget {
     this.useCache = false,
     this.enableShimmer = true,
     this.fadeDuration = const Duration(milliseconds: 400),
+    this.color,
+    this.colorBlendMode,
     this.borderRadius,
     this.border,
     this.boxShadow,
@@ -207,6 +211,8 @@ class _SmartImageState extends ConsumerState<SmartImage> {
           width: finalWidth,
           height: finalHeight,
           fit: widget.fit,
+          color: widget.color,
+          colorBlendMode: widget.colorBlendMode,
           errorBuilder: (context, _, __) =>
               _buildFallback(context, finalWidth, finalHeight),
         ),
@@ -230,7 +236,7 @@ class _SmartImageState extends ConsumerState<SmartImage> {
     return ClipRRect(
       borderRadius: borderRadius,
       child: Container(
-        decoration: boxDecoration,
+        decoration: boxDecoration.copyWith(boxShadow: null),
         child: child,
       ),
     );
@@ -252,6 +258,8 @@ class _SmartImageState extends ConsumerState<SmartImage> {
       width: w,
       height: h,
       fit: widget.fit,
+      color: widget.color,
+      colorBlendMode: widget.colorBlendMode,
       frameBuilder: (context, child, frame, _) {
         if (frame == null && widget.enableShimmer) {
           return _buildShimmerPlaceholder(w, h);
@@ -316,6 +324,9 @@ class _SmartImageState extends ConsumerState<SmartImage> {
       width: w,
       height: h,
       fit: widget.fit,
+      colorFilter: widget.color != null
+          ? ColorFilter.mode(widget.color!, widget.colorBlendMode!)
+          : null,
       placeholderBuilder: (_) => widget.enableShimmer
           ? _buildShimmerPlaceholder(w, h)
           : ResponsiveBox(
