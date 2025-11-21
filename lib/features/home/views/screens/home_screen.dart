@@ -57,13 +57,6 @@ class HomeScreen extends ConsumerWidget {
           ),
         ),
 
-        Positioned(
-          child: Align(
-            alignment: Alignment.topRight, // Positionné en bas
-            child: ComparisonStatsView(),
-          ),
-        ),
-
         // ---- 2. PREMIER PLAN : LE CONTENU SCROLLABLE ----
         SingleChildScrollView(
           padding: EdgeInsets.symmetric(
@@ -131,8 +124,6 @@ class HomeScreen extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: const [
-                Center(child: (ComparisonStatsView())),
-                SizedBox(height: 16),
                 ServicesSection(),
               ],
             ),

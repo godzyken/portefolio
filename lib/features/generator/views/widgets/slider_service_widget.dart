@@ -4,7 +4,7 @@ import 'package:portefolio/features/home/views/widgets/extentions_widgets.dart';
 
 import '../../../../core/affichage/screen_size_detector.dart';
 import '../../../../core/provider/json_data_provider.dart';
-import '../../../../core/ui/widgets/responsive_text.dart';
+import '../../../../core/ui/widgets/ui_widgets_extentions.dart';
 
 class ServicesSlider extends ConsumerStatefulWidget {
   const ServicesSlider({super.key});
@@ -30,8 +30,6 @@ class _ServicesSliderState extends ConsumerState<ServicesSlider> {
 
   @override
   Widget build(BuildContext context) {
-    // 1. Récupération des données des services (Assumant un provider 'servicesListProvider')
-    // J'utilise ici un provider hypothétique (ajustez le nom du provider si nécessaire)
     final asyncServices = ref.watch(servicesJsonProvider);
     final info = ref.watch(responsiveInfoProvider);
 
@@ -44,16 +42,13 @@ class _ServicesSliderState extends ConsumerState<ServicesSlider> {
           return const SizedBox.shrink();
         }
 
-        // 2. Définition de l'Aspect Ratio
         return AspectRatio(
-          // Ajustez l'aspect ratio pour donner plus de hauteur si nécessaire
           aspectRatio: info.isMobile ? 1.0 : 1.5,
           child: PageView.builder(
             controller: controller,
             itemCount: services.length,
             itemBuilder: (context, index) {
               final service = services[index];
-              // 3. Application de l'effet d'échelle et de transformation (identique à ComparisonStatsView)
               return AnimatedBuilder(
                 animation: controller,
                 builder: (context, child) {
@@ -70,7 +65,6 @@ class _ServicesSliderState extends ConsumerState<ServicesSlider> {
                     child: child,
                   );
                 },
-                // 4. Utilisation de la ServicesCard
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 8.0, vertical: 16.0),

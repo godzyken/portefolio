@@ -99,6 +99,13 @@ class MainScaffold extends ConsumerWidget {
               ),
             ),
           ),
+
+          // BULLE COMPARATIF EN HAUT À DROITE
+          Positioned(
+            top: info.isMobile ? 16 : 24,
+            right: info.isMobile ? 16 : 24,
+            child: ComparisonStatsView(),
+          ),
         ],
       ),
       bottomNavigationBar: const PortfolioFooter(),
