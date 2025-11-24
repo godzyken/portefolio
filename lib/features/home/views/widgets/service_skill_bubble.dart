@@ -23,7 +23,6 @@ class ServiceSkillBubble extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
     final info = ref.watch(responsiveInfoProvider);
     final size = info.isMobile ? 50.0 : 70.0;
     final color = ServiceCardHelpers.getColorForIndex(index);

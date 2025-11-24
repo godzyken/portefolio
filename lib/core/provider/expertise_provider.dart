@@ -16,7 +16,7 @@ final serviceExpertiseProvider = Provider.family<ServiceExpertise?, String>(
   (ref, serviceId) {
     final expertisesAsync = ref.watch(expertisesProvider);
 
-    return expertisesAsync.when(
+    return expertisesAsync.maybeWhen(
       data: (expertises) {
         try {
           return expertises.firstWhere((e) => e.serviceId == serviceId);
@@ -24,8 +24,17 @@ final serviceExpertiseProvider = Provider.family<ServiceExpertise?, String>(
           return null;
         }
       },
-      loading: () => null,
-      error: (_, __) => null,
+      orElse: () {
+        final previousData = expertisesAsync.value;
+        if (previousData != null) {
+          try {
+            return previousData.firstWhere((e) => e.serviceId == serviceId);
+          } catch (_) {
+            return null;
+          }
+        }
+        return null;
+      },
     );
   },
 );

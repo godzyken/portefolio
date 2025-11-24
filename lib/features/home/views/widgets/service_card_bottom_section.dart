@@ -6,10 +6,7 @@ import 'package:portefolio/features/generator/data/extention_models.dart';
 import '../../../../../core/affichage/screen_size_detector.dart';
 import '../../../../../core/provider/expertise_provider.dart';
 import '../../../../../core/ui/widgets/ui_widgets_extentions.dart';
-import 'service_card_helpers.dart';
-import 'service_card_widgets.dart';
-import 'service_chart_legend.dart';
-import 'service_pie_chart.dart';
+import 'extentions_widgets.dart';
 
 class ServiceCardBottomSection extends ConsumerWidget {
   final Service service;
@@ -42,7 +39,7 @@ class ServiceCardBottomSection extends ConsumerWidget {
       );
     }
 
-    return Card(
+    return Container(
       color: theme.colorScheme.surface,
       margin: EdgeInsets.all(ServiceCardHelpers.getPadding(info)),
       child: Padding(
@@ -78,7 +75,9 @@ class ServiceCardBottomSection extends ConsumerWidget {
             ),
             Expanded(
               flex: 5,
-              child: _buildChartSection(expertise, theme, info),
+              child: Center(
+                child: _buildChartSection(expertise, theme, info),
+              ),
             ),
             SizedBox(
               height: ServiceCardHelpers.getSpacing(
@@ -130,8 +129,9 @@ class ServiceCardBottomSection extends ConsumerWidget {
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Expanded(
+        Flexible(
           flex: 5,
           child: ServiceChartLegend(expertise: expertise)
               .animate()
@@ -146,7 +146,7 @@ class ServiceCardBottomSection extends ConsumerWidget {
             large: 16,
           ),
         ),
-        Expanded(
+        Flexible(
           flex: 5,
           child: AspectRatio(
             aspectRatio: 1.0,

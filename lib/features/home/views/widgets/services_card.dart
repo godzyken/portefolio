@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/features/generator/data/extention_models.dart';
-import 'package:portefolio/features/generator/views/widgets/hover_card.dart';
+import 'package:portefolio/features/generator/views/generator_widgets_extentions.dart';
 import 'package:portefolio/features/home/views/widgets/extentions_widgets.dart';
 
 import '../../../../core/affichage/screen_size_detector.dart';
@@ -100,6 +100,7 @@ class _ServicesCardState extends ConsumerState<ServicesCard>
     return GestureDetector(
       child: HoverCard(
         id: widget.service.id,
+        shadowColor: theme.shadowColor,
         child: ClipRRect(
           borderRadius: BorderRadius.circular(_getBorderRadius(info)),
           child: LayoutBuilder(
@@ -115,7 +116,8 @@ class _ServicesCardState extends ConsumerState<ServicesCard>
                       onToggleSkillBubbles: _toggleSkillBubbles,
                     ),
                   ),
-                  Expanded(
+                  SizedBox(
+                    height: _getTopSectionHeight(info),
                     child: ServiceCardBottomSection(
                       service: widget.service,
                       currentSkillIndex: _currentSkillIndex,
@@ -136,7 +138,7 @@ class _ServicesCardState extends ConsumerState<ServicesCard>
   double _getTopSectionHeight(ResponsiveInfo info) {
     if (info.isWatch) return 120;
     if (info.isMobile) return 160;
-    if (info.isTablet) return 180;
+    if (info.isSmallTablet) return 180;
     return info.cardWidth * info.cardHeightRatio;
   }
 
