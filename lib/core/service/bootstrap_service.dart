@@ -42,19 +42,16 @@ class BootstrapService {
     const int basicThemeAdapterId = 10;
 
     try {
-      // Mobile / Desktop: must initialize Hive with a folder
       if (!kIsWeb) {
         final dir = await getApplicationDocumentsDirectory();
         Hive.init(dir.path);
       }
 
-      // Register adapter ONCE only
       if (!Hive.isAdapterRegistered(basicThemeAdapterId)) {
         Hive.registerAdapter<BasicTheme>(BasicThemeAdapter());
         developer.log('👍 BasicThemeAdapter registered.');
       }
 
-      // Open box ONCE only
       if (!Hive.isBoxOpen('themes')) {
         await Hive.openBox<BasicTheme>('themes');
         developer.log("📦 Hive box 'themes' opened.");

@@ -1,7 +1,6 @@
 export 'global_expertise_section.dart';
 export 'precache_wrapper.dart';
 export 'service_card_background.dart';
-export 'service_card_bottom_section.dart';
 export 'service_card_helpers.dart';
 export 'service_card_top_section.dart';
 export 'service_card_widgets.dart';

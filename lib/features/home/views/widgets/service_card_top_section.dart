@@ -5,9 +5,7 @@ import 'package:portefolio/features/generator/data/extention_models.dart';
 import '../../../../../core/affichage/screen_size_detector.dart';
 import '../../../../../core/provider/expertise_provider.dart';
 import '../../../../../core/ui/widgets/ui_widgets_extentions.dart';
-import 'service_card_background.dart';
-import 'service_card_helpers.dart';
-import 'service_card_widgets.dart';
+import 'extentions_widgets.dart';
 
 class ServiceCardTopSection extends ConsumerWidget {
   final Service service;
@@ -41,7 +39,7 @@ class ServiceCardTopSection extends ConsumerWidget {
             children: [
               // Badge d'expertise en haut
               Row(
-                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   if (expertise != null)
                     ServiceCardWidgets.buildExpertiseBadge(

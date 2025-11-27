@@ -22,11 +22,8 @@ class HomeScreen extends ConsumerWidget {
       starCount: 150,
       child: SafeArea(
         child: LayoutBuilder(builder: (context, constraints) {
-          // Pour le mode paysage, on garde un scroll simple.
-          // Pour le mode portrait, on n'utilise plus de SingleChildScrollView ici car le Stack va gérer le contenu scrollable.
           return info.isPortrait
-              ? _buildPortraitLayout(context, info,
-                  theme) // Le scroll est maintenant à l'intérieur
+              ? _buildPortraitLayout(context, info, theme)
               : SingleChildScrollView(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 48, vertical: 32),
@@ -37,12 +34,11 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  // ---------- Portrait Layout (avec Stack) ----------
+  // ---------- Portrait Layout ----------
   Widget _buildPortraitLayout(
       BuildContext context, ResponsiveInfo info, ThemeData theme) {
     return Stack(
       children: [
-        // ---- 1. ARRIÈRE-PLAN : LE MODÈLE 3D ----
         Positioned.fill(
           child: Align(
             alignment: Alignment.bottomCenter, // Positionné en bas
@@ -56,8 +52,6 @@ class HomeScreen extends ConsumerWidget {
             ),
           ),
         ),
-
-        // ---- 2. PREMIER PLAN : LE CONTENU SCROLLABLE ----
         SingleChildScrollView(
           padding: EdgeInsets.symmetric(
             horizontal: info.isMobile ? 24 : 48,
@@ -67,19 +61,10 @@ class HomeScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              /* SizedBox(
-                width: imageSize,
-                height: imageSize,
-                child: _buildProfileImage(context, info, theme),
-              ),
-              const SizedBox(height: 32),*/
               _buildPresentationText(context, theme, info.isMobile),
               const SizedBox(height: 32),
               _buildActionButtons(context, theme, info.isMobile),
-              // On laisse un grand espace pour ne pas superposer le modèle au début
-              SizedBox(height: info.size.height * 0.4),
-
-              const SizedBox(height: 24),
+              SizedBox(height: info.isMobile ? 16 : 32),
               const ServicesSection(),
             ],
           ),
@@ -122,7 +107,7 @@ class HomeScreen extends ConsumerWidget {
             flex: 5,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: const [
                 ServicesSection(),
               ],
@@ -170,8 +155,7 @@ class HomeScreen extends ConsumerWidget {
   Widget _buildPresentationText(
       BuildContext context, ThemeData theme, bool isMobile) {
     return Column(
-      crossAxisAlignment:
-          isMobile ? CrossAxisAlignment.center : CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         const ResponsiveText.titleLarge(
           'Emryck Doré',
@@ -181,7 +165,7 @@ class HomeScreen extends ConsumerWidget {
         ResponsiveText.headlineSmall(
           'Développeur Flutter & Architecte Logiciel',
           style: const TextStyle(fontWeight: FontWeight.w600),
-          textAlign: isMobile ? TextAlign.center : TextAlign.start,
+          textAlign: TextAlign.center,
         ),
         const SizedBox(height: 16),
         ResponsiveText.bodyMedium(
@@ -190,7 +174,7 @@ class HomeScreen extends ConsumerWidget {
           'l\'architecture logicielle et la transformation digitale des entreprises.',
           maxLines: 5,
           overflow: TextOverflow.ellipsis,
-          textAlign: isMobile ? TextAlign.center : TextAlign.start,
+          textAlign: TextAlign.center,
           style: TextStyle(
               height: 1.5,
               color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.8)),
@@ -205,7 +189,7 @@ class HomeScreen extends ConsumerWidget {
     return Wrap(
       spacing: 16,
       runSpacing: 16,
-      alignment: isMobile ? WrapAlignment.center : WrapAlignment.start,
+      alignment: WrapAlignment.center,
       children: [
         ElevatedButton.icon(
           onPressed: () => context.go('/projects'),
@@ -216,7 +200,6 @@ class HomeScreen extends ConsumerWidget {
         OutlinedButton.icon(
           onPressed: () => context.go('/contact'),
           icon: const Icon(Icons.mail_outline),
-          // ✅ CORRECTION: Utiliser un style de texte sémantique
           label: const ResponsiveText.bodySmall('Me contacter'),
           style: OutlinedButton.styleFrom(
             padding: EdgeInsets.symmetric(

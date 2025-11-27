@@ -116,13 +116,6 @@ class _ServicesCardState extends ConsumerState<ServicesCard>
                       onToggleSkillBubbles: _toggleSkillBubbles,
                     ),
                   ),
-                  SizedBox(
-                    height: _getTopSectionHeight(info),
-                    child: ServiceCardBottomSection(
-                      service: widget.service,
-                      currentSkillIndex: _currentSkillIndex,
-                    ),
-                  ),
                 ],
               );
             },
@@ -139,7 +132,8 @@ class _ServicesCardState extends ConsumerState<ServicesCard>
     if (info.isWatch) return 120;
     if (info.isMobile) return 160;
     if (info.isSmallTablet) return 180;
-    return info.cardWidth * info.cardHeightRatio;
+    if (info.isTablet) return 200;
+    return info.cardWidth * info.cardHeightRatio * 0.4;
   }
 
   double _getBorderRadius(ResponsiveInfo info) => info.isWatch
