@@ -11,3 +11,16 @@ final comparatifByIdProvider = Provider.family<Comparatif?, String>((ref, id) {
     return null;
   }
 });
+
+final comparisonBubbleVisibilityProvider = Provider.family<bool, String>(
+  (ref, currentPath) {
+    // Chemins où la bulle ne doit PAS apparaître
+    const excludedPaths = [
+      '/experiences',
+      '/experience',
+    ];
+
+    // Vérifier si le chemin actuel est exclu
+    return !excludedPaths.any((path) => currentPath.contains(path));
+  },
+);

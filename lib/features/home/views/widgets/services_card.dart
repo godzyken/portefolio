@@ -29,6 +29,7 @@ class _ServicesCardState extends ConsumerState<ServicesCard>
 
   OverlayEntry? _overlayEntry;
   final GlobalKey _buttonKey = GlobalKey();
+  final GlobalKey _cardKey = GlobalKey();
 
   @override
   void initState() {
@@ -65,31 +66,45 @@ class _ServicesCardState extends ConsumerState<ServicesCard>
 
   void _toggleSkillBubbles(ServiceExpertise expertise, ResponsiveInfo info) {
     if (_overlayEntry == null) {
-      _overlayEntry = ServiceExpertiseOverlay.createOverlay(
-        context: context,
-        buttonKey: _buttonKey,
-        expertise: expertise,
-        info: info,
-        service: widget.service,
-        currentSkillIndex: _currentSkillIndex,
-        onSkillTap: (index) {
-          setState(() {
-            _currentSkillIndex = index;
-            _overlayEntry?.markNeedsBuild();
-          });
-        },
-        onClose: () {
-          _overlayEntry?.remove();
-          _overlayEntry = null;
+      // *** CORRECTION 1: Gérer l'insertion de l'overlay APRÈS le layout ***
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        // Double vérification au cas où l'état a changé
+        if (!mounted || _overlayEntry != null) return;
+
+        // 2. Création de l'overlay (la clé doit être disponible maintenant)
+        _overlayEntry = ServiceExpertiseOverlay.createOverlay(
+          context: context,
+          buttonKey: _buttonKey,
+          cardKey: _cardKey, // Clé de la carte est passée
+          expertise: expertise,
+          info: info,
+          service: widget.service,
+          currentSkillIndex: _currentSkillIndex,
+          onSkillTap: (index) {
+            setState(() {
+              _currentSkillIndex = index;
+              _overlayEntry?.markNeedsBuild();
+            });
+          },
+          onClose: () {
+            _overlayEntry?.remove();
+            _overlayEntry = null;
+            setState(() {});
+          },
+        );
+
+        // 3. Insertion si la création n'a pas retourné null (e.g. si RenderBox a été trouvé)
+        if (_overlayEntry != null) {
+          Overlay.of(context).insert(_overlayEntry!);
           setState(() {});
-        },
-      );
-      Overlay.of(context).insert(_overlayEntry!);
+        }
+      });
     } else {
+      // Si l'overlay existe, on le retire.
       _overlayEntry?.remove();
       _overlayEntry = null;
+      setState(() {});
     }
-    setState(() {});
   }
 
   @override
@@ -99,6 +114,7 @@ class _ServicesCardState extends ConsumerState<ServicesCard>
 
     return GestureDetector(
       child: HoverCard(
+        key: _cardKey,
         id: widget.service.id,
         shadowColor: theme.shadowColor,
         child: ClipRRect(

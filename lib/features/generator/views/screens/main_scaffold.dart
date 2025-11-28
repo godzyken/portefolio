@@ -5,6 +5,7 @@ import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/provider/providers.dart';
 
 import '../../../../constants/app_tab.dart';
+import '../../../../core/provider/comparatif_provider.dart';
 import '../../../../core/ui/widgets/ui_widgets_extentions.dart';
 import '../../data/bubble_menu_item.dart';
 import '../generator_widgets_extentions.dart';
@@ -20,6 +21,9 @@ class MainScaffold extends ConsumerWidget {
         AppTab.fromLocation(GoRouterState.of(context).uri.toString());
     final config = currentTab.config(context, ref);
     final info = ref.watch(responsiveInfoProvider);
+
+    final shouldShowBubble =
+        ref.watch(comparisonBubbleVisibilityProvider(currentTab.path));
 
     void navigateTo(AppTab tab) {
       ref.read(currentLocationProvider.notifier).setLocation(tab.path);
@@ -101,11 +105,12 @@ class MainScaffold extends ConsumerWidget {
           ),
 
           // BULLE COMPARATIF EN HAUT À DROITE
-          Positioned(
-            top: info.isMobile ? 16 : 24,
-            right: info.isMobile ? 16 : 24,
-            child: ComparisonStatsView(),
-          ),
+          if (shouldShowBubble)
+            Positioned(
+              top: info.isMobile ? 16 : 24,
+              right: info.isMobile ? 16 : 24,
+              child: ComparisonStatsView(),
+            ),
         ],
       ),
       bottomNavigationBar: const PortfolioFooter(),

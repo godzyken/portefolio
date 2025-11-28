@@ -95,6 +95,7 @@ class _ExperienceSlideScreenState extends ConsumerState<ExperienceSlideScreen>
       child: PageView.builder(
         controller: _controller,
         itemCount: widget.experiences.length,
+        physics: const AlwaysScrollableScrollPhysics(),
         itemBuilder: (context, index) {
           return AnimatedBuilder(
             animation: _controller,
@@ -119,18 +120,31 @@ class _ExperienceSlideScreenState extends ConsumerState<ExperienceSlideScreen>
                       width: info.isPortrait
                           ? info.size.width * 0.95
                           : info.size.width * 0.75,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        child: FadeSlideAnimation(
-                          offset: const Offset(0, 0.1),
-                          delay: Duration(milliseconds: index * 100),
-                          child: PokerExperienceCard(
-                            experience: widget.experiences[index],
-                            isCenter: value == 0 ? true : false,
-                            onTap: () => Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => ImmersiveExperienceDetail(
-                                    experience: widget.experiences[index]),
+                      child: MouseRegion(
+                        cursor: SystemMouseCursors.click,
+                        child: GestureDetector(
+                          onTap: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => ImmersiveExperienceDetail(
+                                experience: widget.experiences[index],
+                              ),
+                              fullscreenDialog: true,
+                            ),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            child: FadeSlideAnimation(
+                              offset: const Offset(0, 0.1),
+                              delay: Duration(milliseconds: index * 100),
+                              child: PokerExperienceCard(
+                                experience: widget.experiences[index],
+                                isCenter: value == 0 ? true : false,
+                                onTap: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => ImmersiveExperienceDetail(
+                                        experience: widget.experiences[index]),
+                                  ),
+                                ),
                               ),
                             ),
                           ),

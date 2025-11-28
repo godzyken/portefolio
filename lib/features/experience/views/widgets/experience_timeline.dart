@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,6 +9,7 @@ import 'package:timelines_plus/timelines_plus.dart';
 
 import '../../../../core/affichage/screen_size_detector.dart';
 import '../../../generator/views/generator_widgets_extentions.dart';
+import '../../controllers/providers/timeline_scroll_controller_provider.dart';
 import '../../data/experiences_data.dart';
 
 final fadeCtrlProvider = Provider<AnimationController>((_) {
@@ -23,12 +25,14 @@ class ExperienceTimeline extends ConsumerWidget {
     final info = ref.watch(responsiveInfoProvider);
     final fadeCtrl = ref.watch(fadeCtrlProvider);
 
+    final scrollController = ref.watch(timelineScrollControllerProvider);
+
     // Détermine si le timeline doit être horizontal
     final isWide = info.size.width >= 800;
 
     return ResponsiveBox(
-      height: isWide ? 200 : null, // Hauteur pour horizontal
-      width: isWide ? null : double.infinity, // Largeur pour vertical
+      height: isWide ? 200 : null,
+      width: isWide ? null : double.infinity,
       decoration: const BoxDecoration(
         image: DecorationImage(
           opacity: 0.5,
@@ -38,34 +42,50 @@ class ExperienceTimeline extends ConsumerWidget {
       ),
       child: FadeTransition(
         opacity: fadeCtrl,
-        child: Timeline.tileBuilder(
-          scrollDirection: isWide ? Axis.horizontal : Axis.vertical,
-          shrinkWrap: false,
-          physics: const BouncingScrollPhysics(),
-          builder: TimelineTileBuilder.fromStyle(
-            itemCount: experiences.length,
-            contentsAlign: ContentsAlign.alternating,
-            oppositeContentsBuilder: (context, index) => ResponsiveBox(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: ResponsiveText(
-                experiences[index].periode,
-                style: Theme.of(context).textTheme.labelMedium,
-              ),
-            ),
-            contentsBuilder: (context, index) => GestureDetector(
-              onTap: () =>
-                  _showExperienceModal(context, experiences[index], info),
-              child: ClipOval(
-                child: SmartImage(
-                  path: experiences[index].logo,
-                  responsiveSize: ResponsiveImageSize.medium,
-                  fit: BoxFit.contain,
+        child: Listener(
+          onPointerSignal: (event) {
+            if (event is PointerScrollEvent) {
+              final delta = event.scrollDelta.dy;
+
+              if (scrollController.hasClients) {
+                scrollController.animateTo(
+                  scrollController.offset + delta, // Nouvelle position
+                  duration: const Duration(milliseconds: 100),
+                  curve: Curves.easeOut,
+                );
+              }
+            }
+          },
+          child: Timeline.tileBuilder(
+            controller: scrollController,
+            scrollDirection: isWide ? Axis.horizontal : Axis.vertical,
+            shrinkWrap: false,
+            physics: const BouncingScrollPhysics(),
+            builder: TimelineTileBuilder.fromStyle(
+              itemCount: experiences.length,
+              contentsAlign: ContentsAlign.alternating,
+              oppositeContentsBuilder: (context, index) => ResponsiveBox(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: ResponsiveText(
+                  experiences[index].periode,
+                  style: Theme.of(context).textTheme.labelMedium,
                 ),
               ),
+              contentsBuilder: (context, index) => GestureDetector(
+                onTap: () =>
+                    _showExperienceModal(context, experiences[index], info),
+                child: ClipOval(
+                  child: SmartImage(
+                    path: experiences[index].logo,
+                    responsiveSize: ResponsiveImageSize.medium,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ),
+              indicatorPositionBuilder: (_, __) => 0.5,
+              indicatorStyle: IndicatorStyle.outlined,
+              connectorStyle: ConnectorStyle.solidLine,
             ),
-            indicatorPositionBuilder: (_, __) => 0.5,
-            indicatorStyle: IndicatorStyle.outlined,
-            connectorStyle: ConnectorStyle.solidLine,
           ),
         ),
       ),
@@ -128,6 +148,8 @@ class _ExperienceTimelineWrapperState extends State<ExperienceTimelineWrapper>
     with SingleTickerProviderStateMixin {
   late final AnimationController _fadeCtrl;
 
+  late final ScrollController _scrollController;
+
   @override
   void initState() {
     super.initState();
@@ -135,19 +157,25 @@ class _ExperienceTimelineWrapperState extends State<ExperienceTimelineWrapper>
       vsync: this,
       duration: const Duration(milliseconds: 600),
     );
+    _scrollController = ScrollController();
+
     SchedulerBinding.instance.addPostFrameCallback((_) => _fadeCtrl.forward());
   }
 
   @override
   void dispose() {
     _fadeCtrl.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return ProviderScope(
-      overrides: [fadeCtrlProvider.overrideWithValue(_fadeCtrl)],
+      overrides: [
+        fadeCtrlProvider.overrideWithValue(_fadeCtrl),
+        timelineScrollControllerProvider.overrideWithValue(_scrollController),
+      ],
       child: ExperienceTimeline(experiences: widget.experiences),
     );
   }

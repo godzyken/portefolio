@@ -90,6 +90,7 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
     final isVideoVisible = ref.watch(globalVideoVisibilityProvider);
 
     return MouseRegion(
+      cursor: SystemMouseCursors.click,
       onEnter: (_) => setState(() => _isHovered = true),
       onExit: (_) => setState(() => _isHovered = false),
       child: GestureDetector(
@@ -100,6 +101,7 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
             widget.onTap?.call();
           }
         },
+        onSecondaryTap: widget.isCenter ? _navigateToDetails : widget.onTap,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeOut,
