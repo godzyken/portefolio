@@ -3,30 +3,31 @@
         "id": "78160cb8-4164-4b27-bdfc-e71fd08d425d",
         "user_id": "d44d9645-f329-4729-a92d-c1c4ce039e23",
         "range": "last_7_days",
-        "start": "2025-11-18T23:00:00Z",
-        "end": "2025-11-25T22:59:59Z",
+        "start": "2025-11-19T23:00:00Z",
+        "end": "2025-11-26T22:59:59Z",
         "timeout": 15,
         "writes_only": false,
         "timezone": "Europe/Paris",
-        "holidays": 3,
+        "holidays": 2,
         "status": "pending_update",
         "created_at": "2025-11-18T04:47:49Z",
-        "modified_at": "2025-11-26T03:10:39Z",
+        "modified_at": "2025-11-27T03:07:31Z",
+        "human_readable_total_including_other_language": "37 hrs 43 mins",
         "categories": [
             {
                 "name": "Coding",
-                "total_seconds": 88185.31,
-                "percent": 99.82,
-                "digital": "24:29",
-                "decimal": "24.48",
-                "text": "24 hrs 29 mins",
-                "hours": 24,
-                "minutes": 29
+                "total_seconds": 135665.185,
+                "percent": 99.88,
+                "digital": "37:41",
+                "decimal": "37.68",
+                "text": "37 hrs 41 mins",
+                "hours": 37,
+                "minutes": 41
             },
             {
                 "name": "Writing Docs",
                 "total_seconds": 151.197,
-                "percent": 0.17,
+                "percent": 0.11,
                 "digital": "0:02",
                 "decimal": "0.03",
                 "text": "2 mins",
@@ -36,7 +37,7 @@
             {
                 "name": "Writing Tests",
                 "total_seconds": 6.257,
-                "percent": 0.01,
+                "percent": 0.0,
                 "digital": "0:00",
                 "decimal": "0.00",
                 "text": "0 secs",
@@ -44,27 +45,21 @@
                 "minutes": 0
             }
         ],
-        "human_readable_daily_average": "6 hrs 8 mins",
-        "days_minus_holidays": 4,
-        "human_readable_daily_average_including_other_language": "6 hrs 8 mins",
-        "operating_systems": [
-            {
-                "total_seconds": 88342.764,
-                "name": "Windows",
-                "percent": 100.0,
-                "digital": "24:32",
-                "decimal": "24.53",
-                "text": "24 hrs 32 mins",
-                "hours": 24,
-                "minutes": 32
-            }
-        ],
-        "total_seconds_including_other_language": 88342.764,
         "projects": [
+            {
+                "total_seconds": 77632.46,
+                "name": "egote_services_v4",
+                "percent": 57.16,
+                "digital": "21:33",
+                "decimal": "21.55",
+                "text": "21 hrs 33 mins",
+                "hours": 21,
+                "minutes": 33
+            },
             {
                 "total_seconds": 56964.812,
                 "name": "portefolio",
-                "percent": 64.48,
+                "percent": 41.94,
                 "digital": "15:49",
                 "decimal": "15.82",
                 "text": "15 hrs 49 mins",
@@ -72,19 +67,9 @@
                 "minutes": 49
             },
             {
-                "total_seconds": 30158.989,
-                "name": "egote_services_v4",
-                "percent": 34.14,
-                "digital": "8:22",
-                "decimal": "8.37",
-                "text": "8 hrs 22 mins",
-                "hours": 8,
-                "minutes": 22
-            },
-            {
-                "total_seconds": 1051.555,
+                "total_seconds": 1057.959,
                 "name": "3.35.2",
-                "percent": 1.19,
+                "percent": 0.78,
                 "digital": "0:17",
                 "decimal": "0.28",
                 "text": "17 mins",
@@ -94,7 +79,7 @@
             {
                 "total_seconds": 167.408,
                 "name": "flutter_sdk",
-                "percent": 0.19,
+                "percent": 0.12,
                 "digital": "0:02",
                 "decimal": "0.03",
                 "text": "2 mins",
@@ -102,113 +87,37 @@
                 "minutes": 2
             }
         ],
-        "total_seconds": 88342.764,
-        "editors": [
+        "operating_systems": [
             {
-                "total_seconds": 88342.764,
-                "name": "Android Studio",
+                "total_seconds": 135822.639,
+                "name": "Windows",
                 "percent": 100.0,
-                "digital": "24:32",
-                "decimal": "24.53",
-                "text": "24 hrs 32 mins",
-                "hours": 24,
-                "minutes": 32
+                "digital": "37:43",
+                "decimal": "37.72",
+                "text": "37 hrs 43 mins",
+                "hours": 37,
+                "minutes": 43
             }
         ],
-        "human_readable_total": "24 hrs 32 mins",
-        "is_up_to_date_pending_future": false,
-        "daily_average": 22086.0,
-        "days_including_holidays": 7,
+        "daily_average": 27165.0,
         "is_stuck": false,
-        "daily_average_including_other_language": 22086.0,
-        "human_readable_total_including_other_language": "24 hrs 32 mins",
+        "days_minus_holidays": 5,
         "is_already_updating": false,
-        "best_day": {
-            "date": "2025-11-25",
-            "total_seconds": 31686.607,
-            "text": "8 hrs 48 mins"
-        },
-        "percent_calculated": 100,
-        "dependencies": [
-            {
-                "total_seconds": 4191.35,
-                "name": "\"./flutter.js\"",
-                "percent": 33.11,
-                "digital": "1:09",
-                "decimal": "1.15",
-                "text": "1 hr 9 mins",
-                "hours": 1,
-                "minutes": 9
-            },
-            {
-                "total_seconds": 4191.35,
-                "name": "\"./main.dart.js\"",
-                "percent": 33.11,
-                "digital": "1:09",
-                "decimal": "1.15",
-                "text": "1 hr 9 mins",
-                "hours": 1,
-                "minutes": 9
-            },
-            {
-                "total_seconds": 4191.35,
-                "name": "\"https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js\"",
-                "percent": 33.11,
-                "digital": "1:09",
-                "decimal": "1.15",
-                "text": "1 hr 9 mins",
-                "hours": 1,
-                "minutes": 9
-            },
-            {
-                "total_seconds": 41.624,
-                "name": "json",
-                "percent": 0.33,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
-                "hours": 0,
-                "minutes": 0
-            },
-            {
-                "total_seconds": 41.624,
-                "name": "requests",
-                "percent": 0.33,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
-                "hours": 0,
-                "minutes": 0
-            }
-        ],
-        "machines": [
-            {
-                "total_seconds": 88342.764,
-                "name": "LAPTOP-CUKQT8S6",
-                "machine_name_id": "018e87a1-bc6e-4704-bac3-601dd20fbd21",
-                "percent": 100.0,
-                "digital": "24:32",
-                "decimal": "24.53",
-                "text": "24 hrs 32 mins",
-                "hours": 24,
-                "minutes": 32
-            }
-        ],
         "languages": [
             {
                 "name": "Dart",
-                "total_seconds": 71595.906,
-                "percent": 81.04,
-                "digital": "19:53",
-                "decimal": "19.88",
-                "text": "19 hrs 53 mins",
-                "hours": 19,
-                "minutes": 53
+                "total_seconds": 119044.657,
+                "percent": 87.65,
+                "digital": "33:04",
+                "decimal": "33.07",
+                "text": "33 hrs 4 mins",
+                "hours": 33,
+                "minutes": 4
             },
             {
                 "name": "YAML",
                 "total_seconds": 9998.168,
-                "percent": 11.32,
+                "percent": 7.36,
                 "digital": "2:46",
                 "decimal": "2.77",
                 "text": "2 hrs 46 mins",
@@ -218,7 +127,7 @@
             {
                 "name": "HTML",
                 "total_seconds": 4191.35,
-                "percent": 4.74,
+                "percent": 3.09,
                 "digital": "1:09",
                 "decimal": "1.15",
                 "text": "1 hr 9 mins",
@@ -228,7 +137,7 @@
             {
                 "name": "JSON",
                 "total_seconds": 1206.665,
-                "percent": 1.37,
+                "percent": 0.89,
                 "digital": "0:20",
                 "decimal": "0.33",
                 "text": "20 mins",
@@ -238,7 +147,7 @@
             {
                 "name": "Image (svg)",
                 "total_seconds": 667.073,
-                "percent": 0.76,
+                "percent": 0.49,
                 "digital": "0:11",
                 "decimal": "0.18",
                 "text": "11 mins",
@@ -248,7 +157,7 @@
             {
                 "name": "textmate",
                 "total_seconds": 189.495,
-                "percent": 0.21,
+                "percent": 0.14,
                 "digital": "0:03",
                 "decimal": "0.05",
                 "text": "3 mins",
@@ -258,7 +167,7 @@
             {
                 "name": "Bash",
                 "total_seconds": 169.159,
-                "percent": 0.19,
+                "percent": 0.12,
                 "digital": "0:02",
                 "decimal": "0.03",
                 "text": "2 mins",
@@ -268,7 +177,7 @@
             {
                 "name": "Markdown",
                 "total_seconds": 151.197,
-                "percent": 0.17,
+                "percent": 0.11,
                 "digital": "0:02",
                 "decimal": "0.03",
                 "text": "2 mins",
@@ -277,8 +186,8 @@
             },
             {
                 "name": "Text",
-                "total_seconds": 132.127,
-                "percent": 0.15,
+                "total_seconds": 138.531,
+                "percent": 0.1,
                 "digital": "0:02",
                 "decimal": "0.03",
                 "text": "2 mins",
@@ -288,7 +197,27 @@
             {
                 "name": "Python",
                 "total_seconds": 41.624,
-                "percent": 0.05,
+                "percent": 0.03,
+                "digital": "0:00",
+                "decimal": "0.00",
+                "text": "0 secs",
+                "hours": 0,
+                "minutes": 0
+            },
+            {
+                "name": "Java",
+                "total_seconds": 18.09,
+                "percent": 0.01,
+                "digital": "0:00",
+                "decimal": "0.00",
+                "text": "0 secs",
+                "hours": 0,
+                "minutes": 0
+            },
+            {
+                "name": "Kotlin",
+                "total_seconds": 6.63,
+                "percent": 0.0,
                 "digital": "0:00",
                 "decimal": "0.00",
                 "text": "0 secs",
@@ -297,6 +226,387 @@
             }
         ],
         "is_up_to_date": true,
+        "total_seconds_including_other_language": 135822.639,
+        "dependencies": [
+            {
+                "total_seconds": 4191.35,
+                "name": "\"./flutter.js\"",
+                "percent": 31.78,
+                "digital": "1:09",
+                "decimal": "1.15",
+                "text": "1 hr 9 mins",
+                "hours": 1,
+                "minutes": 9
+            },
+            {
+                "total_seconds": 4191.35,
+                "name": "\"./main.dart.js\"",
+                "percent": 31.78,
+                "digital": "1:09",
+                "decimal": "1.15",
+                "text": "1 hr 9 mins",
+                "hours": 1,
+                "minutes": 9
+            },
+            {
+                "total_seconds": 4191.35,
+                "name": "\"https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js\"",
+                "percent": 31.78,
+                "digital": "1:09",
+                "decimal": "1.15",
+                "text": "1 hr 9 mins",
+                "hours": 1,
+                "minutes": 9
+            },
+            {
+                "total_seconds": 41.624,
+                "name": "json",
+                "percent": 0.32,
+                "digital": "0:00",
+                "decimal": "0.00",
+                "text": "0 secs",
+                "hours": 0,
+                "minutes": 0
+            },
+            {
+                "total_seconds": 41.624,
+                "name": "requests",
+                "percent": 0.32,
+                "digital": "0:00",
+                "decimal": "0.00",
+                "text": "0 secs",
+                "hours": 0,
+                "minutes": 0
+            },
+            {
+                "total_seconds": 24.72,
+                "name": "io.flutter",
+                "percent": 0.19,
+                "digital": "0:00",
+                "decimal": "0.00",
+                "text": "0 secs",
+                "hours": 0,
+                "minutes": 0
+            },
+            {
+                "total_seconds": 18.09,
+                "name": "webrtc.Logging",
+                "percent": 0.14,
+                "digital": "0:00",
+                "decimal": "0.00",
+                "text": "0 secs",
+                "hours": 0,
+                "minutes": 0
+            },
+            {
+                "total_seconds": 18.09,
+                "name": "android.app",
+                "percent": 0.14,
+                "digital": "0:00",
+                "decimal": "0.00",
+                "text": "0 secs",
+                "hours": 0,
+                "minutes": 0
+            },
+            {
+                "total_seconds": 18.09,
+                "name": "webrtc.PeerConnection",
+                "percent": 0.14,
+                "digital": "0:00",
+                "decimal": "0.00",
+                "text": "0 secs",
+                "hours": 0,
+                "minutes": 0
+            },
+            {
+                "total_seconds": 18.09,
+                "name": "webrtc.video",
+                "percent": 0.14,
+                "digital": "0:00",
+                "decimal": "0.00",
+                "text": "0 secs",
+                "hours": 0,
+                "minutes": 0
+            },
+            {
+                "total_seconds": 18.09,
+                "name": "webrtc.MediaStreamTrack",
+                "percent": 0.14,
+                "digital": "0:00",
+                "decimal": "0.00",
+                "text": "0 secs",
+                "hours": 0,
+                "minutes": 0
+            },
+            {
+                "total_seconds": 18.09,
+                "name": "cloudwebrtc.webrtc",
+                "percent": 0.14,
+                "digital": "0:00",
+                "decimal": "0.00",
+                "text": "0 secs",
+                "hours": 0,
+                "minutes": 0
+            },
+            {
+                "total_seconds": 18.09,
+                "name": "androidx.annotation",
+                "percent": 0.14,
+                "digital": "0:00",
+                "decimal": "0.00",
+                "text": "0 secs",
+                "hours": 0,
+                "minutes": 0
+            },
+            {
+                "total_seconds": 18.09,
+                "name": "twilio.audioswitch",
+                "percent": 0.14,
+                "digital": "0:00",
+                "decimal": "0.00",
+                "text": "0 secs",
+                "hours": 0,
+                "minutes": 0
+            },
+            {
+                "total_seconds": 18.09,
+                "name": "android.os",
+                "percent": 0.14,
+                "digital": "0:00",
+                "decimal": "0.00",
+                "text": "0 secs",
+                "hours": 0,
+                "minutes": 0
+            },
+            {
+                "total_seconds": 18.09,
+                "name": "webrtc.MediaStream",
+                "percent": 0.14,
+                "digital": "0:00",
+                "decimal": "0.00",
+                "text": "0 secs",
+                "hours": 0,
+                "minutes": 0
+            },
+            {
+                "total_seconds": 18.09,
+                "name": "webrtc.AudioTrack",
+                "percent": 0.14,
+                "digital": "0:00",
+                "decimal": "0.00",
+                "text": "0 secs",
+                "hours": 0,
+                "minutes": 0
+            },
+            {
+                "total_seconds": 18.09,
+                "name": "android.graphics",
+                "percent": 0.14,
+                "digital": "0:00",
+                "decimal": "0.00",
+                "text": "0 secs",
+                "hours": 0,
+                "minutes": 0
+            },
+            {
+                "total_seconds": 18.09,
+                "name": "webrtc.SdpObserver",
+                "percent": 0.14,
+                "digital": "0:00",
+                "decimal": "0.00",
+                "text": "0 secs",
+                "hours": 0,
+                "minutes": 0
+            },
+            {
+                "total_seconds": 18.09,
+                "name": "android.media",
+                "percent": 0.14,
+                "digital": "0:00",
+                "decimal": "0.00",
+                "text": "0 secs",
+                "hours": 0,
+                "minutes": 0
+            },
+            {
+                "total_seconds": 18.09,
+                "name": "webrtc.EglBase",
+                "percent": 0.14,
+                "digital": "0:00",
+                "decimal": "0.00",
+                "text": "0 secs",
+                "hours": 0,
+                "minutes": 0
+            },
+            {
+                "total_seconds": 18.09,
+                "name": "webrtc.VideoTrack",
+                "percent": 0.14,
+                "digital": "0:00",
+                "decimal": "0.00",
+                "text": "0 secs",
+                "hours": 0,
+                "minutes": 0
+            },
+            {
+                "total_seconds": 18.09,
+                "name": "android.content",
+                "percent": 0.14,
+                "digital": "0:00",
+                "decimal": "0.00",
+                "text": "0 secs",
+                "hours": 0,
+                "minutes": 0
+            },
+            {
+                "total_seconds": 18.09,
+                "name": "webrtc.RtpSender",
+                "percent": 0.14,
+                "digital": "0:00",
+                "decimal": "0.00",
+                "text": "0 secs",
+                "hours": 0,
+                "minutes": 0
+            },
+            {
+                "total_seconds": 18.09,
+                "name": "webrtc.PeerConnectionFactory",
+                "percent": 0.14,
+                "digital": "0:00",
+                "decimal": "0.00",
+                "text": "0 secs",
+                "hours": 0,
+                "minutes": 0
+            },
+            {
+                "total_seconds": 18.09,
+                "name": "webrtc.RtpCapabilities",
+                "percent": 0.14,
+                "digital": "0:00",
+                "decimal": "0.00",
+                "text": "0 secs",
+                "hours": 0,
+                "minutes": 0
+            },
+            {
+                "total_seconds": 18.09,
+                "name": "webrtc.audio",
+                "percent": 0.14,
+                "digital": "0:00",
+                "decimal": "0.00",
+                "text": "0 secs",
+                "hours": 0,
+                "minutes": 0
+            },
+            {
+                "total_seconds": 18.09,
+                "name": "android.hardware",
+                "percent": 0.14,
+                "digital": "0:00",
+                "decimal": "0.00",
+                "text": "0 secs",
+                "hours": 0,
+                "minutes": 0
+            },
+            {
+                "total_seconds": 18.09,
+                "name": "webrtc.DtmfSender",
+                "percent": 0.14,
+                "digital": "0:00",
+                "decimal": "0.00",
+                "text": "0 secs",
+                "hours": 0,
+                "minutes": 0
+            },
+            {
+                "total_seconds": 18.09,
+                "name": "android.util",
+                "percent": 0.14,
+                "digital": "0:00",
+                "decimal": "0.00",
+                "text": "0 secs",
+                "hours": 0,
+                "minutes": 0
+            },
+            {
+                "total_seconds": 18.09,
+                "name": "webrtc.MediaConstraints",
+                "percent": 0.14,
+                "digital": "0:00",
+                "decimal": "0.00",
+                "text": "0 secs",
+                "hours": 0,
+                "minutes": 0
+            },
+            {
+                "total_seconds": 18.09,
+                "name": "webrtc.CryptoOptions",
+                "percent": 0.14,
+                "digital": "0:00",
+                "decimal": "0.00",
+                "text": "0 secs",
+                "hours": 0,
+                "minutes": 0
+            },
+            {
+                "total_seconds": 18.09,
+                "name": "webrtc.IceCandidate",
+                "percent": 0.14,
+                "digital": "0:00",
+                "decimal": "0.00",
+                "text": "0 secs",
+                "hours": 0,
+                "minutes": 0
+            },
+            {
+                "total_seconds": 18.09,
+                "name": "webrtc.SessionDescription",
+                "percent": 0.14,
+                "digital": "0:00",
+                "decimal": "0.00",
+                "text": "0 secs",
+                "hours": 0,
+                "minutes": 0
+            }
+        ],
+        "is_up_to_date_pending_future": false,
+        "total_seconds": 135822.639,
+        "human_readable_total": "37 hrs 43 mins",
+        "days_including_holidays": 7,
+        "human_readable_daily_average_including_other_language": "7 hrs 32 mins",
+        "percent_calculated": 100,
+        "daily_average_including_other_language": 27165.0,
+        "editors": [
+            {
+                "total_seconds": 135822.639,
+                "name": "Android Studio",
+                "percent": 100.0,
+                "digital": "37:43",
+                "decimal": "37.72",
+                "text": "37 hrs 43 mins",
+                "hours": 37,
+                "minutes": 43
+            }
+        ],
+        "best_day": {
+            "date": "2025-11-26",
+            "total_seconds": 47479.875,
+            "text": "13 hrs 11 mins"
+        },
+        "machines": [
+            {
+                "total_seconds": 135822.639,
+                "name": "LAPTOP-CUKQT8S6",
+                "machine_name_id": "018e87a1-bc6e-4704-bac3-601dd20fbd21",
+                "percent": 100.0,
+                "digital": "37:43",
+                "decimal": "37.72",
+                "text": "37 hrs 43 mins",
+                "hours": 37,
+                "minutes": 43
+            }
+        ],
+        "human_readable_daily_average": "7 hrs 32 mins",
         "is_cached": true,
         "username": "addi_kichi",
         "is_including_today": false,
