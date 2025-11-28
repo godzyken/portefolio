@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:developer' as developer;
 
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/features/parametres/themes/provider/theme_repository_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -46,9 +48,15 @@ final wakaTimeServiceProvider = Provider<WakaTimeService?>((ref) {
 /// Provider pour les statistiques WakaTime
 final wakaTimeStatsProvider = FutureProvider.family<WakaTimeStats?, String>(
   (ref, range) async {
-    final service = ref.watch(wakaTimeServiceProvider);
+    /*    final service = ref.watch(wakaTimeServiceProvider);
     if (service == null) return null;
-    return await service.getStats(range: range);
+    return await service.getStats(range: range);*/
+
+    final jsonString =
+        await rootBundle.loadString('assets/data/wakatime_stats.json');
+    final data = jsonDecode(jsonString);
+
+    return WakaTimeStats.fromJson(data['stats'][range]);
   },
 );
 

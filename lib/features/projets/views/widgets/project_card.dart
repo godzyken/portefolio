@@ -50,7 +50,10 @@ class ProjectCard extends ConsumerWidget {
 
   Widget _buildCardContent(BuildContext context, WidgetRef ref, Size size) {
     final pdfService = ref.watch(pdfExportProvider);
+    final isTracked = ref.watch(isProjectTrackedProvider(project.title));
+
     developer.log('Building card for ${project.title}');
+
     return HoverCard(
       id: project.title,
       child: InkWell(
@@ -82,10 +85,12 @@ class ProjectCard extends ConsumerWidget {
               ),
             );
           },
-          badgeBuilder: (context, size) => Padding(
-            padding: const EdgeInsets.all(8),
-            child: WakaTimeDetailedBadge(projectName: project.title),
-          ),
+          badgeBuilder: _hasProgrammingTag() && isTracked
+              ? (context, size) => Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: WakaTimeDetailedBadge(projectName: project.title),
+                  )
+              : null,
         ),
       ),
     );
@@ -122,6 +127,80 @@ class ProjectCard extends ConsumerWidget {
       );
     }
     return const SizedBox.shrink();
+  }
+
+  Widget _buildWakaTimeStats(WidgetRef ref) {
+    final statsAsync = ref.watch(wakaTimeStatsProvider('last_7_days'));
+
+    return statsAsync.when(
+      data: (stats) {
+        if (stats == null) return const SizedBox.shrink();
+
+        final projectStat = stats.projects.firstWhere(
+          (p) => p.name.toLowerCase().contains(project.title.toLowerCase()),
+          orElse: () => stats.projects.first,
+        );
+
+        return Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.blue.withValues(alpha: 0.05),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: Colors.blue.withValues(alpha: 0.2),
+              width: 1,
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.access_time,
+                      color: Colors.blue.shade700, size: 20),
+                  const SizedBox(width: 8),
+                  const ResponsiveText.bodyLarge(
+                    'Statistiques WakaTime (7 jours)',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              _buildStatRow('Temps total', projectStat.text),
+              _buildStatRow(
+                  'Pourcentage', '${projectStat.percent.toStringAsFixed(1)}%'),
+              _buildStatRow('Format', projectStat.digital),
+            ],
+          ),
+        );
+      },
+      loading: () => const Center(
+        child: Padding(
+          padding: EdgeInsets.all(16),
+          child: CircularProgressIndicator(),
+        ),
+      ),
+      error: (_, __) => const SizedBox.shrink(),
+    );
+  }
+
+  Widget _buildStatRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          ResponsiveText.bodyMedium(
+            label,
+            style: const TextStyle(color: Colors.grey),
+          ),
+          ResponsiveText.bodyMedium(
+            value,
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+        ],
+      ),
+    );
   }
 
   AlertDialog buildAlertDialog(
@@ -219,12 +298,13 @@ class ProjectCard extends ConsumerWidget {
             ),
 
             // --- WakaTime badge ---
-            if (_hasProgrammingTag())
-              WakaTimeDetailedBadge(projectName: project.title),
+            if (_hasProgrammingTag() && isTracked) ...[
+              _buildWakaTimeStats(ref),
+              const ResponsiveBox(
+                paddingSize: ResponsiveSpacing.m,
+              ),
+            ],
 
-            const ResponsiveBox(
-              paddingSize: ResponsiveSpacing.m,
-            ),
             if (_hasProgrammingTag())
               CodeHighlightList(items: project.points, tag: '->')
             else

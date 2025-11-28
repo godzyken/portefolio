@@ -1,26 +1,57 @@
 import 'dart:convert';
 import 'dart:developer' as developer;
 
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 /// Service pour interagir avec l'API WakaTime
 class WakaTimeService {
   static const String _baseUrl = 'https://wakatime.com/api/v1';
+
+  // Proxy CORS gratuit pour le web (alternatives: allorigins.win, corsproxy.io)
+  static const String _corsProxy = 'https://api.allorigins.win/raw?url=';
+
   final String apiKey;
 
   WakaTimeService({required this.apiKey});
 
+  String _buildUrl(String endpoint) {
+    final fullUrl = '$_baseUrl$endpoint';
+
+    // Sur le web, utiliser le proxy CORS
+    if (kIsWeb) {
+      return '$_corsProxy${Uri.encodeComponent(fullUrl)}';
+    }
+
+    return fullUrl;
+  }
+
   /// Headers pour les requêtes authentifiées
-  Map<String, String> get _headers => {
-        'Authorization': 'Basic ${base64Encode(utf8.encode('$apiKey:'))}',
-        'Content-Type': 'application/json',
-      };
+  Map<String, String> get _headers {
+    final headers = {
+      'Content-Type': 'application/json',
+    };
+
+    // Sur le web avec proxy, l'auth doit être dans l'URL
+    // Sur mobile/desktop, on peut utiliser les headers normalement
+    if (!kIsWeb) {
+      headers['Authorization'] =
+          'Basic ${base64Encode(utf8.encode('$apiKey:'))}';
+    }
+
+    return headers;
+  }
 
   /// Récupère les statistiques de l'utilisateur
   /// [range] peut être: last_7_days, last_30_days, last_6_months, last_year
   Future<WakaTimeStats?> getStats({String range = 'last_7_days'}) async {
     try {
-      final url = Uri.parse('$_baseUrl/users/current/stats/$range');
+      String endpoint = '/users/current/stats/$range';
+      if (kIsWeb) {
+        endpoint += '?api_key=$apiKey';
+      }
+
+      final url = Uri.parse(_buildUrl(endpoint));
       final response = await http.get(url, headers: _headers);
 
       if (response.statusCode == 200) {
@@ -39,7 +70,12 @@ class WakaTimeService {
   /// Récupère la liste des projets de l'utilisateur
   Future<List<WakaTimeProject>> getProjects() async {
     try {
-      final url = Uri.parse('$_baseUrl/users/current/projects');
+      String endpoint = '/users/current/projects';
+      if (kIsWeb) {
+        endpoint += '?api_key=$apiKey';
+      }
+
+      final url = Uri.parse(_buildUrl(endpoint));
       final response = await http.get(url, headers: _headers);
 
       if (response.statusCode == 200) {
@@ -99,7 +135,24 @@ class WakaTimeService {
   /// Génère l'URL du badge WakaTime pour un projet
   static String getBadgeUrl(String projectName) {
     final encodedName = Uri.encodeComponent(projectName);
-    return 'https://wakatime.com/badge/github/$encodedName.svg';
+    final badgeUrl = 'https://wakatime.com/badge/github/$encodedName.svg';
+
+    // Sur le web, utiliser le proxy pour les badges aussi
+    if (kIsWeb) {
+      return '$_corsProxy${Uri.encodeComponent(badgeUrl)}';
+    }
+
+    return badgeUrl;
+  }
+
+  static String getUserBadgeUrl(String username) {
+    final badgeUrl = 'https://wakatime.com/@$username.svg';
+
+    if (kIsWeb) {
+      return '$_corsProxy${Uri.encodeComponent(badgeUrl)}';
+    }
+
+    return badgeUrl;
   }
 }
 

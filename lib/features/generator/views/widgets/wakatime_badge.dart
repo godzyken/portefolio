@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:portefolio/core/ui/widgets/responsive_text.dart';
 
 import '../../../projets/providers/projects_extentions_providers.dart';
 import '../../services/wakatime_service.dart';
@@ -27,7 +28,7 @@ class WakaTimeBadge extends ConsumerWidget {
       return const SizedBox.shrink();
     }
 
-    return Container(
+    return ResponsiveBox(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: isTracked
@@ -50,7 +51,7 @@ class WakaTimeBadge extends ConsumerWidget {
           const SizedBox(width: 4),
 
           if (showTrackingIndicator)
-            Container(
+            ResponsiveBox(
               width: 8,
               height: 8,
               decoration: BoxDecoration(
@@ -66,7 +67,7 @@ class WakaTimeBadge extends ConsumerWidget {
             timeSpentAsync.when(
               data: (duration) {
                 if (duration == null) {
-                  return Text(
+                  return ResponsiveText.bodySmall(
                     isTracked ? 'Tracké' : 'Non tracké',
                     style: TextStyle(
                       fontSize: 12,
@@ -75,7 +76,7 @@ class WakaTimeBadge extends ConsumerWidget {
                     ),
                   );
                 }
-                return Text(
+                return ResponsiveText.bodySmall(
                   _formatDuration(duration),
                   style: TextStyle(
                     fontSize: 12,
@@ -89,13 +90,13 @@ class WakaTimeBadge extends ConsumerWidget {
                 width: 12,
                 child: CircularProgressIndicator(strokeWidth: 1.5),
               ),
-              error: (err, _) => const Text(
+              error: (err, _) => const ResponsiveText.bodySmall(
                 'Erreur',
                 style: TextStyle(fontSize: 12, color: Colors.red),
               ),
             )
           else
-            Text(
+            ResponsiveText.bodySmall(
               isTracked ? 'Tracké' : 'Non tracké',
               style: TextStyle(
                 fontSize: 12,
