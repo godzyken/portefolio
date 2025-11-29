@@ -161,6 +161,11 @@ enum AppTab {
           title: "Mes Projets",
           actions: [
             IconButton(
+              icon: const Icon(Icons.construction_rounded),
+              tooltip: "Parametres wakatime",
+              onPressed: () => context.pushNamed("wakatime_settings"),
+            ),
+            IconButton(
               icon: const Icon(Icons.select_all),
               tooltip: "Tout sélectionner",
               onPressed: () {

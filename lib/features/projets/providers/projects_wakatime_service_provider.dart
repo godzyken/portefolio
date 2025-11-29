@@ -1,15 +1,13 @@
-import 'dart:convert';
 import 'dart:developer' as developer;
 
 import 'package:flutter/scheduler.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/features/parametres/themes/provider/theme_repository_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/provider/provider_extentions.dart';
+import '../../generator/data/extention_models.dart';
 import '../../generator/services/wakatime_service.dart';
-import '../../projets/data/project_data.dart';
 
 /// Provider pour la clé API WakaTime (stockée localement)
 final wakaTimeApiKeyProvider = FutureProvider<String?>((ref) async {
@@ -48,15 +46,9 @@ final wakaTimeServiceProvider = Provider<WakaTimeService?>((ref) {
 /// Provider pour les statistiques WakaTime
 final wakaTimeStatsProvider = FutureProvider.family<WakaTimeStats?, String>(
   (ref, range) async {
-    /*    final service = ref.watch(wakaTimeServiceProvider);
+    final service = ref.watch(wakaTimeServiceProvider);
     if (service == null) return null;
-    return await service.getStats(range: range);*/
-
-    final jsonString =
-        await rootBundle.loadString('assets/data/wakatime_stats.json');
-    final data = jsonDecode(jsonString);
-
-    return WakaTimeStats.fromJson(data['stats'][range]);
+    return await service.getStats(range: range);
   },
 );
 
@@ -86,6 +78,71 @@ final wakaTimeProjectDurationsProvider =
   return await service.getProjectDurations(range: range);
 });
 
+final wakaTimeProjectProvider =
+    Provider.family<WakaTimeProject?, String>((ref, projectTitle) {
+  final wakaProjectsAsync = ref.watch(wakaTimeProjectsProvider);
+
+  return wakaProjectsAsync.when(
+    data: (wakaProjects) {
+      return _findMatchingProject(projectTitle, wakaProjects);
+    },
+    loading: () => null,
+    error: (_, __) => null,
+  );
+});
+
+WakaTimeProject? _findMatchingProject(
+  String projectTitle,
+  List<WakaTimeProject> wakaProjects,
+) {
+  // Si pas de projets WakaTime, retourner null
+  if (wakaProjects.isEmpty) return null;
+
+  final titleLower = projectTitle.toLowerCase();
+
+  // 1. Correspondance exacte
+  try {
+    final exactMatch = wakaProjects.firstWhere(
+      (p) => p.name.toLowerCase() == titleLower,
+    );
+    return exactMatch;
+  } catch (_) {
+    // Pas de correspondance exacte, continuer
+  }
+
+  // 2. Correspondance partielle bidirectionnelle
+  try {
+    final partialMatch = wakaProjects.firstWhere(
+      (p) {
+        final wakaNameLower = p.name.toLowerCase();
+        return wakaNameLower.contains(titleLower) ||
+            titleLower.contains(wakaNameLower);
+      },
+    );
+    return partialMatch;
+  } catch (_) {
+    // Pas de correspondance partielle, continuer
+  }
+
+  // 3. Correspondance par mots clés
+  try {
+    final keywords = titleLower.split(RegExp(r'[\s_-]'));
+    final keywordMatch = wakaProjects.firstWhere(
+      (p) {
+        final wakaNameLower = p.name.toLowerCase();
+        return keywords.any(
+            (keyword) => keyword.length > 3 && wakaNameLower.contains(keyword));
+      },
+    );
+    return keywordMatch;
+  } catch (_) {
+    // Pas de correspondance par mots-clés
+  }
+
+  // Aucune correspondance trouvée
+  return null;
+}
+
 /// Provider combiné: fusionne projects.json avec données WakaTime
 final enrichedProjectsProvider = FutureProvider<List<ProjectInfo>>((ref) async {
   // 1. Charger les projets depuis le JSON
@@ -107,22 +164,18 @@ final enrichedProjectsProvider = FutureProvider<List<ProjectInfo>>((ref) async {
     durationMap[durationEntry.name.toLowerCase()] =
         Duration(seconds: durationEntry.totalSeconds.round());
   }
-  final wakaProjectMap = {for (var p in wakaProjects) p.name.toLowerCase(): p};
 
   // 4. Enrichir chaque projet JSON avec les données WakaTime
   final enrichedList = jsonProjects.map((project) {
     final projectNameLower = project.title.toLowerCase();
     Duration? timeSpent;
 
-    // Chercher une correspondance dans la map des durées.
-    // Cette logique peut être aussi simple ou complexe que nécessaire.
-    // Ici, on cherche une correspondance exacte ou partielle.
     for (var entry in durationMap.entries) {
       final wakaName = entry.key;
       if (wakaName.contains(projectNameLower) ||
           projectNameLower.contains(wakaName)) {
         timeSpent = entry.value;
-        break; // On a trouvé une correspondance, on arrête la boucle.
+        break;
       }
     }
 
@@ -131,8 +184,6 @@ final enrichedProjectsProvider = FutureProvider<List<ProjectInfo>>((ref) async {
       return project.copyWith(timeSpent: timeSpent);
     }
 
-    // Si le projet existe dans WakaTime, on pourrait ajouter des métadonnées
-    // Pour l'instant, on retourne tel quel
     return project;
   }).toList();
 
@@ -144,45 +195,73 @@ final isProjectTrackedProvider =
     Provider.family<bool, String>((ref, projectTitle) {
   final wakaProjectsAsync = ref.watch(wakaTimeProjectsProvider);
 
-  return wakaProjectsAsync.maybeWhen(
+  return wakaProjectsAsync.when(
     data: (wakaProjects) {
-      final projectNameLower = projectTitle.toLowerCase();
-      return wakaProjects.any(
-        (p) =>
-            p.name.toLowerCase().contains(projectNameLower) ||
-            projectNameLower.contains(p.name.toLowerCase()),
-      );
+      if (wakaProjects.isEmpty) return false;
+      final match = _findMatchingProject(projectTitle, wakaProjects);
+      return match != null;
     },
-    orElse: () => false,
+    loading: () => false,
+    error: (_, __) => false,
   );
+});
+
+final projectTrackingStatusProvider =
+    FutureProvider.family<bool, String>((ref, projectTitle) async {
+  try {
+    final wakaProjects = await ref.watch(wakaTimeProjectsProvider.future);
+    if (wakaProjects.isEmpty) return false;
+    final match = _findMatchingProject(projectTitle, wakaProjects);
+    return match != null;
+  } catch (e) {
+    developer.log('Erreur projectTrackingStatusProvider: $e');
+    return false;
+  }
 });
 
 /// Provider pour le temps total passé sur un projet
 final projectTimeSpentProvider = FutureProvider.family<Duration?, String>(
   (ref, projectTitle) async {
-    final durationsAsync = await ref.watch(
-      wakaTimeProjectDurationsProvider('last_7_days').future,
-    );
-    // Cherche le projet correspondant
-    final projectNameLower = projectTitle.toLowerCase();
+    try {
+      final durationsAsync = await ref.watch(
+        wakaTimeProjectDurationsProvider('last_7_days').future,
+      );
 
-    for (final entry in durationsAsync) {
-      if (entry.name.toLowerCase().contains(projectNameLower) ||
-          projectNameLower.contains(entry.name.toLowerCase())) {
-        // 🔹 Utilise totalSeconds pour une durée plus précise
-        return Duration(seconds: entry.totalSeconds.round());
+      if (durationsAsync.isEmpty) return null;
+
+      final projectNameLower = projectTitle.toLowerCase();
+
+      for (final entry in durationsAsync) {
+        if (entry.name.toLowerCase().contains(projectNameLower) ||
+            projectNameLower.contains(entry.name.toLowerCase())) {
+          return Duration(seconds: entry.totalSeconds.round());
+        }
       }
-    }
 
-    return null;
+      return null;
+    } catch (e) {
+      developer.log('Erreur projectTimeSpentProvider: $e');
+      return null;
+    }
   },
 );
+
+final projectBadgeUrlProvider =
+    Provider.family<String?, String>((ref, projectTitle) {
+  final wakaProject = ref.watch(wakaTimeProjectProvider(projectTitle));
+
+  if (wakaProject == null) return null;
+
+  return WakaTimeService.getBadgeUrl(
+    wakaProject.name,
+    officialBadge: wakaProject.badge,
+  );
+});
 
 /// Notifier pour gérer la clé API
 class WakaTimeApiKeyNotifier extends Notifier<String?> {
   @override
   String? build() {
-    // Charge la clé depuis les préférences
     _loadApiKey();
     return null;
   }
@@ -194,7 +273,6 @@ class WakaTimeApiKeyNotifier extends Notifier<String?> {
       developer
           .log('Charge la clé WakaTime depuis les préférences: $storedKey');
 
-      // ⚠️ Mettre à jour state hors du build
       SchedulerBinding.instance.addPostFrameCallback((_) {
         state = storedKey;
         ref.invalidate(wakaTimeServiceProvider);

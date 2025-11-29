@@ -2,3 +2,4 @@ export '../../experience/data/experiences_data.dart';
 export '../../home/data/services_data.dart';
 export '../../projets/data/project_data.dart';
 export 'chart_data.dart';
+export 'wakatime_models_data.dart';

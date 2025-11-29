@@ -1,10 +1,13 @@
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/ui/widgets/responsive_text.dart';
 
 import '../../../projets/providers/projects_extentions_providers.dart';
+import '../../data/extention_models.dart';
 import '../../services/wakatime_service.dart';
+import '../widgets/wakatime_debug.dart';
 
 class WakaTimeSettingsScreen extends ConsumerStatefulWidget {
   const WakaTimeSettingsScreen({super.key});
@@ -174,6 +177,16 @@ class _WakaTimeSettingsScreenState
                 ),
                 error: (err, _) => _buildErrorCard(err.toString()),
               ),
+            ],
+
+            // Panel de débogage
+            if (kDebugMode) const WakaTimeDebugPanel(),
+
+            // Tests de matching
+            if (kDebugMode) ...[
+              WakaTimeProjectMatcher(projectTitle: 'portefolio'),
+              WakaTimeProjectMatcher(projectTitle: 'Egote Services'),
+              WakaTimeProjectMatcher(projectTitle: 'Portfolio'),
             ],
           ],
         ),

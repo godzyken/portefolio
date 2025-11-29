@@ -1,15 +1,11 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/ui/widgets/responsive_text.dart';
 import 'package:portefolio/core/ui/widgets/smart_image.dart';
 
-import '../../../projets/data/project_data.dart';
-import '../../../projets/providers/projects_wakatime_service_provider.dart';
-import '../../data/chart_data.dart';
-import '../../services/wakatime_service.dart';
+import '../../../projets/providers/projects_extentions_providers.dart';
+import '../../data/extention_models.dart';
 import '../generator_widgets_extentions.dart';
 
 class ImmersiveDetailScreen extends ConsumerStatefulWidget {
@@ -33,9 +29,7 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
   late ScrollController _scrollController;
-  late Timer _imageTimer;
-
-  int _currentImageIndex = 0;
+  late PageController _pageController;
 
   List<ChartData> _charts = [];
 
@@ -44,7 +38,7 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
     super.initState();
 
     _scrollController = ScrollController();
-    _setupImageRotation();
+    _pageController = PageController();
 
     _controller = AnimationController(
       duration: const Duration(milliseconds: 800),
@@ -65,21 +59,7 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
     ));
 
     _controller.forward();
-
     _prepareChartData();
-  }
-
-  void _setupImageRotation() {
-    if (widget.project.image == null || widget.project.image!.length <= 1) {
-      return;
-    }
-    _imageTimer = Timer.periodic(const Duration(seconds: 5), (_) {
-      if (!mounted) return;
-      setState(() {
-        _currentImageIndex =
-            (_currentImageIndex + 1) % widget.project.image!.length;
-      });
-    });
   }
 
   void _prepareChartData() {
@@ -88,7 +68,6 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
       _charts = [];
       return;
     }
-
     _charts = ChartDataFactory.createChartsFromResults(resultats);
   }
 
@@ -96,14 +75,13 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
   void dispose() {
     _controller.dispose();
     _scrollController.dispose();
-    _imageTimer.cancel();
+    _pageController.dispose();
     super.dispose();
   }
 
-  String? _getCurrentImage() {
+  List<String> _getImages() {
     final images = widget.project.cleanedImages ?? widget.project.image;
-    if (images == null || images.isEmpty) return null;
-    return images[_currentImageIndex % images.length];
+    return images ?? [];
   }
 
   bool _hasProgrammingTag() {
@@ -116,25 +94,32 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
   Widget build(BuildContext context) {
     final info = ref.watch(responsiveInfoProvider);
     final theme = Theme.of(context);
-    final randomImage = _getCurrentImage();
-    final isTracked = ref.watch(isProjectTrackedProvider(widget.project.title));
+    final images = _getImages();
 
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Stack(
         children: [
-          if (randomImage != null)
+          // Image de fond
+          if (images.isNotEmpty)
             Positioned.fill(
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 1000),
-                child: SmartImage(
-                  key: UniqueKey(),
-                  path: randomImage,
-                  responsiveSize: ResponsiveImageSize.xlarge,
-                  fit: BoxFit.contain,
-                ),
+              child: PageView.builder(
+                controller: _pageController,
+                itemCount: images.length,
+                onPageChanged: (index) {
+                  // Optionnel: ajouter un callback si nécessaire
+                },
+                itemBuilder: (context, index) {
+                  return SmartImage(
+                    key: ValueKey('bg_image_$index'),
+                    path: images[index],
+                    fit: BoxFit.contain,
+                  );
+                },
               ),
             ),
+
+          // Gradient overlay
           Positioned.fill(
             child: ResponsiveBox(
               decoration: BoxDecoration(
@@ -150,12 +135,29 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
               ),
             ),
           ),
+
+          // Particules
           const Positioned.fill(
-              child: ParticleBackground(
-                  particleCount: 40,
-                  particleColor: Colors.white,
-                  minSize: 1.5,
-                  maxSize: 4.0)),
+            child: ParticleBackground(
+              particleCount: 40,
+              particleColor: Colors.white,
+              minSize: 1.5,
+              maxSize: 4.0,
+            ),
+          ),
+
+          if (images.length > 1)
+            Positioned(
+              bottom: 24,
+              left: 0,
+              right: 0,
+              child: FadeTransition(
+                opacity: _fadeAnimation,
+                child: _buildPageIndicators(images.length),
+              ),
+            ),
+
+          // Contenu principal
           FadeTransition(
             opacity: _fadeAnimation,
             child: SlideTransition(
@@ -168,22 +170,35 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _buildTitle(theme, info),
+
                       ResponsiveBox(height: info.isMobile ? 32 : 48),
 
-                      // 🎯 Section WakaTime si projet de programmation
-                      if (_hasProgrammingTag() && isTracked) ...[
-                        _buildWakaTimeSection(theme, info),
-                        ResponsiveBox(height: 32),
-                      ],
+                      // 🎯 Section WakaTime si projet de programmation (version sécurisée)
+                      WakaTimeConditionalWidget(
+                        projectName: widget.project.title,
+                        builder: (isTracked) {
+                          if (!isTracked || !_hasProgrammingTag()) {
+                            return const SizedBox.shrink();
+                          }
+                          return Column(
+                            children: [
+                              _buildWakaTimeSection(theme, info),
+                              ResponsiveBox(height: 32),
+                            ],
+                          );
+                        },
+                      ),
 
                       _buildSection(
                           "📜 Description", widget.project.points, theme, info),
+
                       if (widget.project.techDetails != null &&
                           widget.project.techDetails!.isNotEmpty) ...[
                         ResponsiveBox(height: 32),
                         _buildTechDetails(
                             widget.project.techDetails!, theme, info),
                       ],
+
                       if (widget.project.results != null &&
                           widget.project.results!.isNotEmpty) ...[
                         ResponsiveBox(height: 32),
@@ -192,6 +207,11 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
                         ResponsiveBox(height: 32),
                         _buildKPISection(theme, info),
                       ],
+
+                      if (images.length > 1)
+                        const SizedBox(
+                          height: 80,
+                        ),
                     ],
                   ),
                 ),
@@ -199,19 +219,27 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
             ),
           ),
 
-          // Badge WakaTime floating en haut à gauche
-          if (_hasProgrammingTag() && isTracked)
-            Positioned(
-              top: 16,
-              left: 16,
-              child: FadeTransition(
-                opacity: _fadeAnimation,
-                child: WakaTimeDetailedBadge(
-                  projectName: widget.project.title,
+          // Badge WakaTime floating en haut à gauche (version sécurisée)
+          WakaTimeConditionalWidget(
+            projectName: widget.project.title,
+            builder: (isTracked) {
+              if (!isTracked || !_hasProgrammingTag()) {
+                return const SizedBox.shrink();
+              }
+              return Positioned(
+                top: 16,
+                left: 16,
+                child: FadeTransition(
+                  opacity: _fadeAnimation,
+                  child: SafeWakaTimeDetailedBadge(
+                    projectName: widget.project.title,
+                  ),
                 ),
-              ),
-            ),
+              );
+            },
+          ),
 
+          // Bouton fermer
           Positioned(
             top: 16,
             right: 16,
@@ -237,7 +265,45 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
     );
   }
 
-  // ----- Widgets de contenu (inchangés) -----
+  Widget _buildPageIndicators(int count) {
+    return AnimatedBuilder(
+      animation: _pageController,
+      builder: (context, child) {
+        final currentPage = _pageController.hasClients
+            ? (_pageController.page ?? 0).round()
+            : 0;
+
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(count, (index) {
+            final isActive = index == currentPage;
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              margin: const EdgeInsets.symmetric(horizontal: 4),
+              height: 8,
+              width: isActive ? 24 : 8,
+              decoration: BoxDecoration(
+                color: isActive
+                    ? Colors.white
+                    : Colors.white.withValues(alpha: 0.3),
+                borderRadius: BorderRadius.circular(4),
+                boxShadow: isActive
+                    ? [
+                        BoxShadow(
+                          color: Colors.white.withValues(alpha: 0.5),
+                          blurRadius: 8,
+                          spreadRadius: 2,
+                        )
+                      ]
+                    : null,
+              ),
+            );
+          }),
+        );
+      },
+    );
+  }
+
   Widget _buildTitle(ThemeData theme, ResponsiveInfo info) {
     return ResponsiveBox(
       padding: EdgeInsets.all(info.isMobile ? 24 : 32),
@@ -247,13 +313,26 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
         border:
             Border.all(color: Colors.white.withValues(alpha: 0.1), width: 2),
       ),
-      child: ResponsiveText.titleLarge(
-        widget.project.title,
-        style: TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
-          fontSize: info.isMobile ? 28 : 48,
-        ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ResponsiveText.titleLarge(
+            widget.project.title,
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: info.isMobile ? 28 : 48,
+            ),
+          ),
+          if (_hasProgrammingTag()) ...[
+            const SizedBox(height: 12),
+            SafeWakaTimeBadge(
+              projectName: widget.project.title,
+              showTimeSpent: true,
+              showTrackingIndicator: true,
+            ),
+          ],
+        ],
       ),
     );
   }

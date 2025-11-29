@@ -57,6 +57,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               name: 'legal',
               builder: (_, __) => const LegalMentionsScreen(),
             ),
+            GoRoute(
+              path: '/wakatime_settings',
+              name: 'wakatime_settings',
+              builder: (_, __) => const WakaTimeSettingsScreen(),
+            ),
           ],
         ),
       ],
