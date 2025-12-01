@@ -1,5 +1,7 @@
 enum SubmitStatus { idle, loading, success, error }
 
+enum Channel { email, whatsapp }
+
 class ContactFormState {
   final String name;
   final String email;

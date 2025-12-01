@@ -2,12 +2,12 @@ import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:portefolio/features/contact/services/google_calendar_service.dart';
 
 import '../../../../core/affichage/screen_size_detector.dart';
 import '../../../../core/ui/widgets/responsive_text.dart';
 import '../../providers/calendar_provider.dart';
 import '../../providers/cv_download_provider.dart';
+import 'calendar_dialog.dart';
 
 class ContactConversionOption extends ConsumerWidget {
   final ResponsiveInfo info;
@@ -81,14 +81,12 @@ class ContactConversionOption extends ConsumerWidget {
     final asyncApi = ref.watch(googleCalendarNotifierProvider);
 
     return asyncApi.when(
-      // Si on a déjà l'API, on propose directement de créer un évènement
       data: (calendarService) {
         if (calendarService == null) {
-          // Pas encore authentifié : bouton pour démarrer l'authentification
           return _buildActionChip(
             theme,
             Icons.calendar_today,
-            'Connecter Google Calendar',
+            'Voir mon Calendrier',
             () async {
               developer.log('🔐 Tentative de connexion...');
 
@@ -101,6 +99,11 @@ class ContactConversionOption extends ConsumerWidget {
 
                 if (context.mounted) {
                   _showSuccessSnackBar(context, 'Connecté avec succès !');
+
+                  await Future.delayed(const Duration(milliseconds: 500));
+                  if (context.mounted) {
+                    showCalendarDialog(context);
+                  }
                 }
               } catch (e) {
                 developer.log('❌ Erreur: $e');
@@ -114,9 +117,9 @@ class ContactConversionOption extends ConsumerWidget {
 
         return _buildActionChip(
           theme,
-          Icons.calendar_today,
+          Icons.event_available,
           'Réserver un créneau',
-          () => _createCalendarEvent(context, ref, calendarService),
+          () => showCalendarDialog(context),
         );
       },
       loading: () => _buildActionChip(
@@ -124,81 +127,21 @@ class ContactConversionOption extends ConsumerWidget {
       error: (err, _) => _buildActionChip(
         theme,
         Icons.error,
-        'Erreur Calendar',
+        'Réessayer la connexion',
         () async {
           await ref
               .read(googleCalendarNotifierProvider.notifier)
               .signInAndInit();
+
+          if (context.mounted) {
+            await Future.delayed(const Duration(milliseconds: 500));
+            if (context.mounted) {
+              showCalendarDialog(context);
+            }
+          }
         },
       ),
     );
-  }
-
-  /// Créer un événement calendar
-  Future<void> _createCalendarEvent(
-    BuildContext context,
-    WidgetRef ref,
-    GoogleCalendarService api,
-  ) async {
-    try {
-      // Sélection date
-      final date = await showDatePicker(
-        context: context,
-        initialDate: DateTime.now().add(const Duration(days: 1)),
-        firstDate: DateTime.now(),
-        lastDate: DateTime.now().add(const Duration(days: 365)),
-        helpText: 'Choisir une date',
-        cancelText: 'Annuler',
-        confirmText: 'Suivant',
-      );
-
-      if (date == null || !context.mounted) return;
-
-      // Sélection heure
-      final time = await showTimePicker(
-        context: context,
-        initialTime: const TimeOfDay(hour: 10, minute: 0),
-        helpText: 'Choisir une heure',
-        cancelText: 'Annuler',
-        confirmText: 'Créer',
-      );
-
-      if (time == null || !context.mounted) return;
-
-      // Créer l'événement
-      final start = DateTime(
-        date.year,
-        date.month,
-        date.day,
-        time.hour,
-        time.minute,
-      );
-      final end = start.add(const Duration(hours: 1));
-
-      developer.log('📅 Création événement: ${start.toIso8601String()}');
-
-      await api.createEvent(
-        summary: 'Discussion avec Emryck Doré',
-        description: 'Café virtuel pour parler de votre projet',
-        start: start,
-        end: end,
-      );
-
-      developer.log('✅ Événement créé');
-
-      if (context.mounted) {
-        _showSuccessSnackBar(
-          context,
-          'Événement créé le ${_formatDate(start)} à ${time.format(context)}',
-        );
-      }
-    } catch (e) {
-      developer.log('❌ Erreur création: $e');
-      if (context.mounted) {
-        _showErrorSnackBar(
-            context, 'Impossible de créer l\'événement. Erreur: $e');
-      }
-    }
   }
 
   /// Chip pour CV avec Riverpod safe
@@ -239,6 +182,14 @@ class ContactConversionOption extends ConsumerWidget {
       shadowColor: theme.colorScheme.primary.withValues(alpha: 0.2),
       labelStyle:
           theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
+    );
+  }
+
+  void showCalendarDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) => const CalendarDialog(),
     );
   }
 
@@ -294,23 +245,5 @@ class ContactConversionOption extends ConsumerWidget {
         backgroundColor: Colors.red,
       ),
     );
-  }
-
-  String _formatDate(DateTime date) {
-    final months = [
-      'janvier',
-      'février',
-      'mars',
-      'avril',
-      'mai',
-      'juin',
-      'juillet',
-      'août',
-      'septembre',
-      'octobre',
-      'novembre',
-      'décembre'
-    ];
-    return '${date.day} ${months[date.month - 1]} ${date.year}';
   }
 }
