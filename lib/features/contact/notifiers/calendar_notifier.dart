@@ -13,10 +13,25 @@ const List<String> scopes = [
 ];
 
 class GoogleCalendarNotifier extends AsyncNotifier<calendar.CalendarApi?> {
+  GoogleSignIn? _googleSignIn;
+
   @override
   Future<calendar.CalendarApi?> build() async {
-    // On initialise sans faire d'auth automatique.
+    _initializeGoogleSignIn();
     return null;
+  }
+
+  void _initializeGoogleSignIn() {
+    _googleSignIn = GoogleSignIn.instance;
+
+    // Configuration via initialize()
+    if (kIsWeb) {
+      _googleSignIn!.initialize(
+        clientId:
+            kIsWeb ? 'VOTRE_WEB_CLIENT_ID.apps.googleusercontent.com' : null,
+        hostedDomain: 'YOUR_HOSTED_DOMAIN',
+      );
+    }
   }
 
   /// Appelé par l'UI (dans un handler d'interaction utilisateur).

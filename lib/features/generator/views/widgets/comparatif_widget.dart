@@ -48,11 +48,9 @@ class _ComparisonStatsViewState extends ConsumerState<ComparisonStatsView> {
     final size = info.isMobile ? 36.0 : 48.0;
 
     return Tooltip(
-      message: "Pourquoi Flutter ?", // Texte du Tooltip
-      // Le Tooltip doit être au-dessus du reste du contenu
+      message: "Pourquoi Flutter ?",
       preferBelow: false,
-      triggerMode:
-          TooltipTriggerMode.tap, // Permet le trigger au toucher sur mobile
+      triggerMode: TooltipTriggerMode.tap,
       child: InkWell(
         onTap: () {
           Future.microtask(() {
@@ -328,7 +326,6 @@ class ComparatifCard extends StatelessWidget {
             radarBackgroundColor: Colors.transparent,
             titleTextStyle: const TextStyle(fontSize: 12),
             getTitle: (index, angle) {
-              // Retourne un RadarChartTitle pour chaque index
               return RadarChartTitle(
                 text: categories[index],
                 angle: angle,

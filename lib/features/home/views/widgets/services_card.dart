@@ -66,16 +66,13 @@ class _ServicesCardState extends ConsumerState<ServicesCard>
 
   void _toggleSkillBubbles(ServiceExpertise expertise, ResponsiveInfo info) {
     if (_overlayEntry == null) {
-      // *** CORRECTION 1: Gérer l'insertion de l'overlay APRÈS le layout ***
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        // Double vérification au cas où l'état a changé
         if (!mounted || _overlayEntry != null) return;
 
-        // 2. Création de l'overlay (la clé doit être disponible maintenant)
         _overlayEntry = ServiceExpertiseOverlay.createOverlay(
           context: context,
           buttonKey: _buttonKey,
-          cardKey: _cardKey, // Clé de la carte est passée
+          cardKey: _cardKey,
           expertise: expertise,
           info: info,
           service: widget.service,
@@ -93,7 +90,6 @@ class _ServicesCardState extends ConsumerState<ServicesCard>
           },
         );
 
-        // 3. Insertion si la création n'a pas retourné null (e.g. si RenderBox a été trouvé)
         if (_overlayEntry != null) {
           Overlay.of(context).insert(_overlayEntry!);
           setState(() {});

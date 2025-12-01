@@ -24,7 +24,7 @@ class ImmersiveDetailScreen extends ConsumerStatefulWidget {
 }
 
 class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
@@ -32,6 +32,8 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
   late PageController _pageController;
 
   List<ChartData> _charts = [];
+
+  late AnimationController _carouselController;
 
   @override
   void initState() {
@@ -42,6 +44,11 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
 
     _controller = AnimationController(
       duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+
+    _carouselController = AnimationController(
+      duration: const Duration(milliseconds: 5900),
       vsync: this,
     );
 
@@ -60,6 +67,31 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
 
     _controller.forward();
     _prepareChartData();
+
+    _startContinuousCarousel();
+  }
+
+  void _startContinuousCarousel() {
+    final images = _getImages();
+    if (images.length <= 1) return;
+
+    _carouselController.addListener(() {
+      if (_carouselController.value > 0.98) {
+        final currentPage =
+            _pageController.hasClients ? _pageController.page?.round() ?? 0 : 0;
+
+        final nextPage = (currentPage + 1) % images.length;
+
+        // Changer la page avec une transition
+        _pageController.animateToPage(
+          nextPage,
+          duration: const Duration(milliseconds: 900),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
+
+    _carouselController.repeat();
   }
 
   void _prepareChartData() {
@@ -73,6 +105,8 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
 
   @override
   void dispose() {
+    _carouselController.dispose();
+
     _controller.dispose();
     _scrollController.dispose();
     _pageController.dispose();
@@ -107,13 +141,16 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
                 controller: _pageController,
                 itemCount: images.length,
                 onPageChanged: (index) {
-                  // Optionnel: ajouter un callback si nécessaire
+                  _carouselController.reset();
+                  _carouselController.repeat();
                 },
                 itemBuilder: (context, index) {
                   return SmartImage(
                     key: ValueKey('bg_image_$index'),
                     path: images[index],
                     fit: BoxFit.contain,
+                    responsiveSize: ResponsiveImageSize.medium,
+                    fallbackIcon: Icons.image_not_supported_outlined,
                   );
                 },
               ),

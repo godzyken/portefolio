@@ -22,12 +22,12 @@
         "icon": "dart"
       },
       {
-        "name": "Riverpod",
+        "name": "Kotlin",
         "level": 0.90,
-        "yearsOfExperience": 4,
+        "yearsOfExperience": 6,
         "projectCount": 8,
-        "category": "state_management",
-        "icon": "riverpod"
+        "category": "language",
+        "icon": "kotlin"
       },
       {
         "name": "Firebase",
@@ -51,7 +51,7 @@
         "yearsOfExperience": 3,
         "projectCount": 4,
         "category": "platform",
-        "icon": "apple"
+        "icon": "swift"
       },
       {
         "name": "REST API",
@@ -59,7 +59,7 @@
         "yearsOfExperience": 6,
         "projectCount": 15,
         "category": "integration",
-        "icon": "api"
+        "icon": "fastapi"
       },
       {
         "name": "Material Design",
@@ -67,7 +67,7 @@
         "yearsOfExperience": 6,
         "projectCount": 12,
         "category": "design",
-        "icon": "material"
+        "icon": "foundation"
       }
     ]
   },
@@ -86,12 +86,12 @@
         "icon": "angular"
       },
       {
-        "name": "TypeScript",
+        "name": "PHP",
         "level": 0.85,
-        "yearsOfExperience": 5,
-        "projectCount": 10,
+        "yearsOfExperience": 8,
+        "projectCount": 5,
         "category": "language",
-        "icon": "typescript"
+        "icon": "php"
       },
       {
         "name": "JavaScript",
@@ -107,7 +107,7 @@
         "yearsOfExperience": 8,
         "projectCount": 20,
         "category": "language",
-        "icon": "html5"
+        "icon": "html-5"
       },
       {
         "name": "Ionic",
@@ -126,12 +126,12 @@
         "icon": "nodejs"
       },
       {
-        "name": "RxJS",
+        "name": "Karma",
         "level": 0.78,
         "yearsOfExperience": 4,
         "projectCount": 7,
-        "category": "library",
-        "icon": "rxjs"
+        "category": "tool",
+        "icon": "karma"
       }
     ]
   },
@@ -142,12 +142,12 @@
     "averageLevel": 0.75,
     "skills": [
       {
-        "name": "Firebase",
+        "name": "Google Cloud Platform",
         "level": 0.85,
         "yearsOfExperience": 5,
         "projectCount": 10,
         "category": "platform",
-        "icon": "firebase"
+        "icon": "google-cloud"
       },
       {
         "name": "AWS Cloud",
@@ -166,12 +166,12 @@
         "icon": "docker"
       },
       {
-        "name": "CI/CD",
+        "name": "Firebase",
         "level": 0.80,
         "yearsOfExperience": 4,
         "projectCount": 8,
         "category": "devops",
-        "icon": "cicd"
+        "icon": "supabase"
       },
       {
         "name": "GitHub Actions",
@@ -179,7 +179,7 @@
         "yearsOfExperience": 3,
         "projectCount": 6,
         "category": "devops",
-        "icon": "github"
+        "icon": "github-actions"
       },
       {
         "name": "MongoDB",
@@ -198,12 +198,12 @@
     "averageLevel": 0.80,
     "skills": [
       {
-        "name": "Debugging",
+        "name": "Ci-CD",
         "level": 0.90,
         "yearsOfExperience": 8,
         "projectCount": 25,
         "category": "skill",
-        "icon": "bug"
+        "icon": "ci-cd"
       },
       {
         "name": "Performance Optimization",
@@ -211,7 +211,7 @@
         "yearsOfExperience": 6,
         "projectCount": 15,
         "category": "skill",
-        "icon": "speed"
+        "icon": "openapi"
       },
       {
         "name": "Git",
@@ -219,15 +219,15 @@
         "yearsOfExperience": 8,
         "projectCount": 25,
         "category": "tool",
-        "icon": "git"
+        "icon": "gitkraken"
       },
       {
-        "name": "Testing",
+        "name": "Security",
         "level": 0.75,
         "yearsOfExperience": 5,
         "projectCount": 12,
         "category": "skill",
-        "icon": "test"
+        "icon": "security"
       },
       {
         "name": "Documentation",
@@ -235,7 +235,7 @@
         "yearsOfExperience": 8,
         "projectCount": 20,
         "category": "skill",
-        "icon": "docs"
+        "icon": "sonarqube"
       },
       {
         "name": "Monitoring",
@@ -243,7 +243,7 @@
         "yearsOfExperience": 4,
         "projectCount": 8,
         "category": "tool",
-        "icon": "monitor"
+        "icon": "datadog"
       }
     ]
   }

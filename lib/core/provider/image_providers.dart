@@ -132,38 +132,27 @@ final characterModelProvider = Provider<String>((ref) {
 
 final skillLogoPathProvider =
     Provider.family<String?, String>((ref, skillName) {
-  // 1. Lire l'état asynchrone de tous les chemins de logos disponibles
   final logoAssetsAsync = ref.watch(techLogosAssetsProvider);
 
-  // 2. Gérer les états de chargement/erreur
   return logoAssetsAsync.when(
-    loading: () =>
-        null, // Encore en chargement, on ne peut pas encore trouver le chemin
+    loading: () => null,
     error: (err, stack) {
       developer.log('Error loading logo assets for $skillName: $err');
-      return null; // Erreur, pas de chemin
+      return null;
     },
     data: (paths) {
-      // 3. Normaliser le nom de la compétence pour la recherche (ex: 'Flutter' -> 'flutter')
       final normalizedName = skillName.toLowerCase();
 
-      // 4. Rechercher un chemin correspondant dans la liste des assets
-      // On cherche un fichier dont le nom commence par le nom de la compétence.
       final path = paths.firstWhere(
         (p) {
-          // Extraire le nom du fichier sans l'extension (ex: 'assets/images/logos/flutter.svg' -> 'flutter')
           final fileNameWithExt = p.split('/').last;
           final fileName = fileNameWithExt.split('.').first;
 
-          // Vérifie si le nom du fichier correspond au nom de la compétence
-          // (permet aussi 'flutter-icon' de matcher 'flutter')
           return fileName.startsWith(normalizedName);
         },
-        orElse: () =>
-            '', // Renvoie une chaîne vide si aucun fichier correspondant n'est trouvé
+        orElse: () => '',
       );
 
-      // 5. Retourner le chemin trouvé ou null
       return path.isEmpty ? null : path;
     },
   );
