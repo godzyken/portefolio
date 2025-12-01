@@ -74,6 +74,11 @@ final wakaTimeApiKeyConfigProvider = Provider<String?>((ref) {
   return config.wakaTimeApiKey;
 });
 
+final googleCalendarClientIdProvider = Provider<String?>((ref) {
+  final config = ref.watch(envConfigProvider);
+  return config.googleCalendarClientId;
+});
+
 /// Provider de validation globale
 final envConfigValidationProvider = Provider<EnvConfigValidation>((ref) {
   final config = ref.watch(envConfigProvider);

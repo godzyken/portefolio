@@ -2,7 +2,7 @@ import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:googleapis/calendar/v3.dart' as calendar;
+import 'package:portefolio/features/contact/services/google_calendar_service.dart';
 
 import '../../../../core/affichage/screen_size_detector.dart';
 import '../../../../core/ui/widgets/responsive_text.dart';
@@ -44,14 +44,14 @@ class ContactConversionOption extends ConsumerWidget {
           Icon(Icons.lightbulb_outline,
               size: 48, color: theme.colorScheme.primary),
           const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
-          ResponsiveText(
+          ResponsiveText.bodySmall(
             'Vous avez une idée de projet ?',
             style: theme.textTheme.titleLarge
                 ?.copyWith(fontWeight: FontWeight.bold),
             textAlign: TextAlign.center,
           ),
           const ResponsiveBox(paddingSize: ResponsiveSpacing.xs),
-          ResponsiveText(
+          ResponsiveText.bodySmall(
             'Discutons-en autour d\'un café virtuel ou réel',
             style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.7)),
@@ -82,8 +82,8 @@ class ContactConversionOption extends ConsumerWidget {
 
     return asyncApi.when(
       // Si on a déjà l'API, on propose directement de créer un évènement
-      data: (calendarApi) {
-        if (calendarApi == null) {
+      data: (calendarService) {
+        if (calendarService == null) {
           // Pas encore authentifié : bouton pour démarrer l'authentification
           return _buildActionChip(
             theme,
@@ -112,12 +112,11 @@ class ContactConversionOption extends ConsumerWidget {
           );
         }
 
-        // Authentifié : bouton pour choisir date/heure et créer l'évènement
         return _buildActionChip(
           theme,
           Icons.calendar_today,
           'Réserver un créneau',
-          () => _createCalendarEvent(context, ref, calendarApi),
+          () => _createCalendarEvent(context, ref, calendarService),
         );
       },
       loading: () => _buildActionChip(
@@ -127,7 +126,6 @@ class ContactConversionOption extends ConsumerWidget {
         Icons.error,
         'Erreur Calendar',
         () async {
-          // Retry / debug : relancer l'auth si l'utilisateur veut réessayer
           await ref
               .read(googleCalendarNotifierProvider.notifier)
               .signInAndInit();
@@ -140,7 +138,7 @@ class ContactConversionOption extends ConsumerWidget {
   Future<void> _createCalendarEvent(
     BuildContext context,
     WidgetRef ref,
-    calendar.CalendarApi api,
+    GoogleCalendarService api,
   ) async {
     try {
       // Sélection date
@@ -179,19 +177,12 @@ class ContactConversionOption extends ConsumerWidget {
 
       developer.log('📅 Création événement: ${start.toIso8601String()}');
 
-      final event = calendar.Event()
-        ..summary = 'Discussion avec Emryck Doré'
-        ..description = 'Café virtuel pour parler de votre projet'
-        ..start = calendar.EventDateTime(
-          dateTime: start,
-          timeZone: 'Europe/Paris',
-        )
-        ..end = calendar.EventDateTime(
-          dateTime: end,
-          timeZone: 'Europe/Paris',
-        );
-
-      await api.events.insert(event, 'primary');
+      await api.createEvent(
+        summary: 'Discussion avec Emryck Doré',
+        description: 'Café virtuel pour parler de votre projet',
+        start: start,
+        end: end,
+      );
 
       developer.log('✅ Événement créé');
 
@@ -204,7 +195,8 @@ class ContactConversionOption extends ConsumerWidget {
     } catch (e) {
       developer.log('❌ Erreur création: $e');
       if (context.mounted) {
-        _showErrorSnackBar(context, 'Impossible de créer l\'événement');
+        _showErrorSnackBar(
+            context, 'Impossible de créer l\'événement. Erreur: $e');
       }
     }
   }

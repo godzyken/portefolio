@@ -16,4 +16,5 @@ class Env {
   static String get whatsappPhone => _instance.whatsappPhone;
   static String get oneDriveUrl => _instance.oneDriveUrl;
   static String? get wakaTimeApiKey => _instance.wakaTimeApiKey;
+  static String? get googleCalendarClientId => _instance.googleCalendarClientId;
 }

@@ -13,6 +13,9 @@ class EnvConfigService {
   // WakaTime (optionnel)
   final String? wakaTimeApiKey;
 
+  // Google Calendar
+  final String? googleCalendarClientId;
+
   const EnvConfigService({
     required this.emailJsServiceId,
     required this.emailJsTemplateId,
@@ -20,6 +23,7 @@ class EnvConfigService {
     required this.whatsappPhone,
     required this.oneDriveUrl,
     this.wakaTimeApiKey,
+    this.googleCalendarClientId,
   });
 
   /// Factory qui charge depuis String.fromEnvironment
@@ -52,6 +56,12 @@ class EnvConfigService {
       ).isNotEmpty
           ? const String.fromEnvironment('WAKATIME_API_KEY')
           : null,
+      googleCalendarClientId: const String.fromEnvironment(
+        'GCC_CLIENT_ID',
+        defaultValue: '',
+      ).isNotEmpty
+          ? const String.fromEnvironment('GCC_CLIENT_ID')
+          : null,
     );
   }
 
@@ -74,6 +84,12 @@ class EnvConfigService {
     if (oneDriveUrl.isEmpty) {
       errors.add('CV_ONEDRIVE_URL manquant');
     }
+    if (wakaTimeApiKey == null || wakaTimeApiKey!.isEmpty) {
+      errors.add('WAKATIME_API_KEY manquant');
+    }
+    if (googleCalendarClientId == null || googleCalendarClientId!.isEmpty) {
+      errors.add('GCC_CLIENT_ID manquant');
+    }
 
     return errors;
   }
@@ -88,6 +104,7 @@ EnvConfigService(
   emailJsPublicKey: ${emailJsPublicKey.isNotEmpty ? '***' : 'MISSING'},
   whatsappPhone: ${whatsappPhone.isNotEmpty ? '***' : 'MISSING'},
   oneDriveUrl: ${oneDriveUrl.isNotEmpty ? '${oneDriveUrl.substring(0, 30)}...' : 'MISSING'},
-  wakaTimeApiKey: ${wakaTimeApiKey != null ? '***' : 'null'},
+  wakaTimeApiKey: ${wakaTimeApiKey != null ? '***' : 'MISSING'},
+  googleCalendarClientId: ${googleCalendarClientId != null ? '***' : 'MISSING'},
 )''';
 }

@@ -4,7 +4,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/calendar/v3.dart' as calendar;
-import 'package:http/http.dart' as http;
+import 'package:portefolio/core/provider/config_env_provider.dart';
+
+import '../services/google_calendar_service.dart';
+import '../services/google_sign_in_service.dart';
 
 // Définir les scopes nécessaires
 const List<String> scopes = [
@@ -12,81 +15,51 @@ const List<String> scopes = [
   calendar.CalendarApi.calendarEventsScope,
 ];
 
-class GoogleCalendarNotifier extends AsyncNotifier<calendar.CalendarApi?> {
+class GoogleCalendarNotifier extends AsyncNotifier<GoogleCalendarService?> {
   GoogleSignIn? _googleSignIn;
 
   @override
-  Future<calendar.CalendarApi?> build() async {
-    _initializeGoogleSignIn();
+  Future<GoogleCalendarService?> build() async {
+    final clientId = ref.read(googleCalendarClientIdProvider);
+
+    if (clientId == null || clientId.isEmpty) {
+      developer.log('⚠️ Google Calendar Client ID non configuré');
+    }
+    _initializeGoogleSignIn(clientId);
     return null;
   }
 
-  void _initializeGoogleSignIn() {
+  void _initializeGoogleSignIn(String? clientId) {
     _googleSignIn = GoogleSignIn.instance;
 
     // Configuration via initialize()
-    if (kIsWeb) {
+    if (kIsWeb && clientId != null) {
       _googleSignIn!.initialize(
-        clientId:
-            kIsWeb ? 'VOTRE_WEB_CLIENT_ID.apps.googleusercontent.com' : null,
-        hostedDomain: 'YOUR_HOSTED_DOMAIN',
+        clientId: clientId,
       );
     }
   }
 
   /// Appelé par l'UI (dans un handler d'interaction utilisateur).
   Future<void> signInAndInit() async {
-    // Indique que l'opération est en cours
     state = const AsyncValue.loading();
-
     try {
-      final signIn = GoogleSignIn.instance;
+      final clientId = ref.read(googleCalendarClientIdProvider);
 
-      // Sur certaines versions / plateformes, initialize() est requis.
-      // On l'appelle si disponible (safe to call).
-
-      await signIn.initialize(
-        clientId:
-            kIsWeb ? 'VOTRE_WEB_CLIENT_ID.apps.googleusercontent.com' : null,
-        hostedDomain: 'YOUR_HOSTED_DOMAIN',
-      );
-
-      GoogleSignInAccount? account =
-          await signIn.attemptLightweightAuthentication();
-
-      // Lancer l'authentification interactive (doit être démarrée depuis une interaction utilisateur)
-      account ??= await signIn.authenticate(
-        scopeHint: scopes,
-      );
-
-      if (account.id.isEmpty) {
-        throw Exception('Authentification annulée ou aucun compte sélectionné');
+      if (clientId == null || clientId.isEmpty) {
+        throw Exception('Google Calendar Client ID non configuré');
       }
 
-      // Récupérer les headers d'autorisation pour les scopes requis
-      final headers =
-          await account.authorizationClient.authorizationHeaders(scopes);
+      // La logique de connexion est maintenant dans le service !
+      final api = await GoogleSignInService.signInAndGetApi(scopes, clientId);
 
-      if (headers == null || headers.isEmpty) {
-        throw Exception('Impossible d’obtenir les headers d’authentification');
-      }
+      // Si la connexion réussit, créez le service d'interaction
+      final service = GoogleCalendarService(api);
 
-      final client = GoogleHttpClient(headers);
-      final api = calendar.CalendarApi(client);
-
-      try {
-        await api.calendarList.list();
-        developer.log('✅ API Calendar accessible');
-      } catch (e) {
-        developer.log('❌ Erreur test API: $e');
-        throw Exception('Impossible d\'accéder à l\'API Calendar: $e');
-      }
-
-      // Stocke l'API en état réussi
-      state = AsyncValue.data(api);
+      state = AsyncValue.data(service);
+      developer.log('✅ Connexion et Service Calendar prêts');
     } catch (e, st) {
-      developer.log('Erreur dans signInAndInit: ${e.toString()}',
-          error: e, stackTrace: st);
+      // Gérer l'erreur
       state = AsyncValue.error(e, st);
     }
   }
@@ -100,24 +73,5 @@ class GoogleCalendarNotifier extends AsyncNotifier<calendar.CalendarApi?> {
       developer.log('⚠️ Erreur déconnexion: $e');
     }
     state = const AsyncValue.data(null);
-  }
-}
-
-class GoogleHttpClient extends http.BaseClient {
-  final Map<String, String> _headers;
-  final http.Client _inner = http.Client();
-
-  GoogleHttpClient(this._headers);
-
-  @override
-  Future<http.StreamedResponse> send(http.BaseRequest request) {
-    request.headers.addAll(_headers);
-    return _inner.send(request);
-  }
-
-  @override
-  void close() {
-    _inner.close();
-    super.close();
   }
 }
