@@ -35,7 +35,7 @@ class CalendarConnectButton extends ConsumerWidget {
             onPressed: () {
               ref.read(googleCalendarNotifierProvider.notifier).signInAndInit();
             },
-            child: const Text('Connecter Google Calendar'),
+            child: const ResponsiveText.bodySmall('Connecter Google Calendar'),
           );
         } else {
           // Connecté et prêt à interagir

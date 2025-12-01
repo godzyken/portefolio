@@ -1,3 +1,5 @@
+import 'dart:developer' as developer;
+
 import 'package:googleapis/calendar/v3.dart' as calendar;
 
 class GoogleCalendarService {
@@ -6,7 +8,12 @@ class GoogleCalendarService {
   GoogleCalendarService(this._api);
 
   Future<calendar.CalendarList> listCalendars() async {
-    return _api.calendarList.list();
+    final result = await _api.calendarList.list();
+    if (result.items == null) {
+      throw Exception('Aucun calendrier trouvé');
+    }
+    developer.log('✅ Calendriers trouvés : ${result.items?.length ?? 0}');
+    return result;
   }
 
   Future<calendar.Event> createEvent({
