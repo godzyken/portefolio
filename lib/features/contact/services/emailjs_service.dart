@@ -69,4 +69,51 @@ class EmailJsService {
       }
     }
   }
+
+  Future<void> sendAppointmentConfirmation({
+    required Map<String, dynamic> appointmentDetails,
+  }) async {
+    // Les clés ici doivent ABSOLUMENT correspondre aux variables de votre template EmailJS.
+    final templateParams = {
+      // Données du contact
+      "user_name": appointmentDetails['attendee'],
+      "user_email": appointmentDetails['email'],
+      "user_message": appointmentDetails['message'],
+
+      // Détails du rendez-vous
+      "appointment_date": appointmentDetails['date'],
+      "appointment_time": appointmentDetails['time'],
+      "appointment_type": appointmentDetails['type'],
+      "appointment_location": appointmentDetails['location'],
+
+      // Vous pouvez ajouter une variable pour l'objet du mail
+      "subject": "Confirmation de Rendez-vous avec votre Portfolio",
+    };
+
+    try {
+      // Utilisation de la méthode EmailJS.send standard
+      // Assurez-vous que cette méthode est disponible dans votre package EmailJS
+      await EmailJS.send(
+        serviceId,
+        templateId,
+        templateParams,
+        EmailJS.Options(
+          publicKey: publicKey,
+          // Le limitRate est une bonne pratique
+          limitRate:
+              const EmailJS.LimitRate(id: 'portfolio_rdv', throttle: 250),
+        ),
+      );
+      developer.log(
+          "✅ EmailJS (Confirmation RDV) envoyé avec succès à ${appointmentDetails['email']}");
+    } catch (e) {
+      if (e is EmailJS.EmailJSResponseStatus) {
+        developer.log("❌ EmailJS error: ${e.status} ::: ${e.text}");
+        throw Exception("Erreur EmailJS lors de l'envoi : ${e.text}");
+      } else {
+        developer.log("❌ EmailJS error: $e");
+        throw Exception("Erreur lors de l'envoi de l'email : $e");
+      }
+    }
+  }
 }

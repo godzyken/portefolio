@@ -2,6 +2,8 @@ import 'dart:developer' as developer;
 
 import 'package:googleapis/calendar/v3.dart' as calendar;
 
+import '../model/state/time_slot_state.dart';
+
 class GoogleCalendarService {
   final calendar.CalendarApi _api;
 
@@ -23,6 +25,8 @@ class GoogleCalendarService {
     String description = 'Rendez-vous créé via le Portfolio',
     String calendarId = 'primary',
   }) async {
+    developer.log('Tentative de création d\'événement : ${summary}');
+
     final newEvent = calendar.Event(
       summary: summary,
       start: calendar.EventDateTime(dateTime: start, timeZone: 'Europe/Paris'),
@@ -195,49 +199,21 @@ class CalendarAvailabilityService {
       throw Exception('Ce créneau n\'est plus disponible');
     }
 
-    // Créer l'événement
-    return await _calendarService.createEvent(
-      summary: summary,
-      start: start,
-      end: end,
-      description: description,
-      calendarId: calendarId,
-    );
+    try {
+      // Créer l'événement
+      final event = await _calendarService.createEvent(
+        summary: summary,
+        start: start,
+        end: end,
+        description: description,
+        calendarId: calendarId,
+      );
+
+      return event;
+    } catch (e) {
+      developer.log(
+          '❌Erreur critique lors de l\'insertion de l\'événement Google : $e');
+      rethrow;
+    }
   }
-}
-
-/// Classe pour représenter un créneau horaire
-class TimeSlot {
-  final int hour;
-  final int minute;
-  final bool isAvailable;
-
-  const TimeSlot({
-    required this.hour,
-    required this.minute,
-    this.isAvailable = true,
-  });
-
-  TimeSlot copyWith({bool? isAvailable}) {
-    return TimeSlot(
-      hour: hour,
-      minute: minute,
-      isAvailable: isAvailable ?? this.isAvailable,
-    );
-  }
-
-  @override
-  String toString() =>
-      '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is TimeSlot &&
-          runtimeType == other.runtimeType &&
-          hour == other.hour &&
-          minute == other.minute;
-
-  @override
-  int get hashCode => hour.hashCode ^ minute.hashCode;
 }

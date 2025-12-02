@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/affichage/screen_size_detector.dart';
 import '../../../../core/ui/widgets/responsive_text.dart';
 import '../../providers/calendar_provider.dart';
+import '../../providers/contact_form_provider.dart';
 import '../../providers/cv_download_provider.dart';
 import 'calendar_dialog.dart';
 
@@ -79,6 +80,7 @@ class ContactConversionOption extends ConsumerWidget {
     BuildContext context,
   ) {
     final asyncApi = ref.watch(googleCalendarNotifierProvider);
+    final contactForm = ref.watch(contactFormProvider);
 
     return asyncApi.when(
       data: (calendarService) {
@@ -102,7 +104,8 @@ class ContactConversionOption extends ConsumerWidget {
 
                   await Future.delayed(const Duration(milliseconds: 500));
                   if (context.mounted) {
-                    showCalendarDialog(context);
+                    _showCalendarDialogWithContactInfo(
+                        context, ref, contactForm);
                   }
                 }
               } catch (e) {
@@ -119,7 +122,7 @@ class ContactConversionOption extends ConsumerWidget {
           theme,
           Icons.event_available,
           'Réserver un créneau',
-          () => showCalendarDialog(context),
+          () => _showCalendarDialogWithContactInfo(context, ref, contactForm),
         );
       },
       loading: () => _buildActionChip(
@@ -136,11 +139,30 @@ class ContactConversionOption extends ConsumerWidget {
           if (context.mounted) {
             await Future.delayed(const Duration(milliseconds: 500));
             if (context.mounted) {
-              showCalendarDialog(context);
+              _showCalendarDialogWithContactInfo(context, ref, contactForm);
             }
           }
         },
       ),
+    );
+  }
+
+  void _showCalendarDialogWithContactInfo(
+    BuildContext context,
+    WidgetRef ref,
+    dynamic contactFormState,
+  ) {
+    // Transférer les informations du formulaire de contact vers l'appointment
+    ref.read(appointmentProvider.notifier).setContactInfo(
+          contactFormState.name.isNotEmpty ? contactFormState.name : '',
+          contactFormState.email.isNotEmpty ? contactFormState.email : '',
+          contactFormState.message.isNotEmpty ? contactFormState.message : '',
+        );
+
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) => const CalendarDialog(),
     );
   }
 
@@ -182,14 +204,6 @@ class ContactConversionOption extends ConsumerWidget {
       shadowColor: theme.colorScheme.primary.withValues(alpha: 0.2),
       labelStyle:
           theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
-    );
-  }
-
-  void showCalendarDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      barrierDismissible: true,
-      builder: (context) => const CalendarDialog(),
     );
   }
 

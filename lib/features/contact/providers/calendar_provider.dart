@@ -1,6 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:googleapis/calendar/v3.dart' as calendar;
 
+import '../model/state/appointment_state.dart';
+import '../model/state/time_slot_state.dart';
+import '../notifiers/appointment_notifier.dart';
 import '../notifiers/calendar_notifier.dart';
 import '../services/google_calendar_service.dart';
 
@@ -61,3 +64,8 @@ final calendarEventsProvider =
 
   return calendarService.listEvents('primary');
 });
+
+final appointmentProvider =
+    NotifierProvider<AppointmentNotifier, AppointmentState>(
+  AppointmentNotifier.new,
+);
