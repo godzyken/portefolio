@@ -20,22 +20,13 @@ class CalendarDialog extends ConsumerStatefulWidget {
 class _CalendarDialogState extends ConsumerState<CalendarDialog> {
   DateTime _focusedMonth = DateTime.now();
   DateTime? _selectedDay;
-  TimeOfDay? _selectedTime;
-
-  // Configuration des créneaux disponibles
-  final List<TimeOfDay> _availableTimeSlots = [
-    const TimeOfDay(hour: 9, minute: 0),
-    const TimeOfDay(hour: 10, minute: 0),
-    const TimeOfDay(hour: 11, minute: 0),
-    const TimeOfDay(hour: 14, minute: 0),
-    const TimeOfDay(hour: 15, minute: 0),
-    const TimeOfDay(hour: 16, minute: 0),
-  ];
+  TimeSlot? _selectedTime;
+  bool _isLoadingSlots = false;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final calendarService = ref.watch(googleCalendarServiceProvider);
+    final availabilityService = ref.watch(calendarAvailabilityServiceProvider);
     final info = ref.watch(responsiveInfoProvider);
 
     return Dialog(
@@ -78,7 +69,7 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
                         ),
                         SizedBox(
                           height: 400,
-                          child: _buildTimeSlots(theme, calendarService),
+                          child: _buildTimeSlots(theme, availabilityService),
                         ),
                       ],
                     ));
@@ -101,7 +92,7 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
                       // Créneaux horaires à droite
                       Expanded(
                         flex: 2,
-                        child: _buildTimeSlots(theme, calendarService),
+                        child: _buildTimeSlots(theme, availabilityService),
                       ),
                     ],
                   );
@@ -287,11 +278,19 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
                 return InkWell(
                   onTap: isDisabled
                       ? null
-                      : () {
+                      : () async {
                           setState(() {
                             _selectedDay = day;
                             _selectedTime = null;
+                            _isLoadingSlots = true;
                           });
+
+                          await Future.delayed(
+                              const Duration(milliseconds: 300));
+
+                          if (mounted) {
+                            setState(() => _isLoadingSlots = false);
+                          }
                         },
                   borderRadius: BorderRadius.circular(8),
                   child: Container(
@@ -339,7 +338,7 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
 
   /// Widget des créneaux horaires
   Widget _buildTimeSlots(
-      ThemeData theme, GoogleCalendarService? calendarService) {
+      ThemeData theme, CalendarAvailabilityService? availabilityService) {
     return ResponsiveBox(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -382,81 +381,22 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
                 ),
               ),
             )
-          else
+          else if (_isLoadingSlots)
             Expanded(
-              child: ListView.builder(
-                itemCount: _availableTimeSlots.length,
-                itemBuilder: (context, index) {
-                  final slot = _availableTimeSlots[index];
-                  final isSelected = _selectedTime == slot;
-
-                  return ResponsiveBox(
-                    margin: const EdgeInsets.only(bottom: 8),
-                    child: Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        onTap: () {
-                          setState(() {
-                            _selectedTime = slot;
-                          });
-                        },
-                        borderRadius: BorderRadius.circular(12),
-                        child: ResponsiveBox(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 16,
-                          ),
-                          decoration: BoxDecoration(
-                            color: isSelected
-                                ? theme.colorScheme.primary
-                                    .withValues(alpha: 0.1)
-                                : theme.colorScheme.surface,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: isSelected
-                                  ? theme.colorScheme.primary
-                                  : theme.colorScheme.onSurface
-                                      .withValues(alpha: 0.2),
-                              width: isSelected ? 2 : 1,
-                            ),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.access_time,
-                                color: isSelected
-                                    ? theme.colorScheme.primary
-                                    : theme.colorScheme.onSurface
-                                        .withValues(alpha: 0.6),
-                              ),
-                              const ResponsiveBox(
-                                  paddingSize: ResponsiveSpacing.s),
-                              ResponsiveText.bodyMedium(
-                                slot.format(context),
-                                style: TextStyle(
-                                  fontWeight: isSelected
-                                      ? FontWeight.bold
-                                      : FontWeight.normal,
-                                  color: isSelected
-                                      ? theme.colorScheme.primary
-                                      : theme.colorScheme.onSurface,
-                                ),
-                              ),
-                              const Spacer(),
-                              if (isSelected)
-                                Icon(
-                                  Icons.check_circle,
-                                  color: theme.colorScheme.primary,
-                                ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                },
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(color: theme.colorScheme.primary),
+                    const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
+                    const ResponsiveText.bodySmall(
+                        'Vérification des disponibilités...'),
+                  ],
+                ),
               ),
-            ),
+            )
+          else
+            _buildAvailableSlotsList(theme, availabilityService),
 
           const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
 
@@ -465,7 +405,7 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
             height: 56,
             child: ElevatedButton.icon(
               onPressed: (_selectedDay != null && _selectedTime != null)
-                  ? () => _confirmBooking(calendarService)
+                  ? () => _confirmBooking(availabilityService)
                   : null,
               icon: const Icon(Icons.check),
               label: const ResponsiveText.bodyMedium(
@@ -488,11 +428,127 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
     );
   }
 
+  Widget _buildAvailableSlotsList(
+      ThemeData theme, CalendarAvailabilityService? availabilityService) {
+    if (_selectedDay == null) return const SizedBox();
+
+    final availableSlotsAsync =
+        ref.watch(availableTimeSlotsProvider(_selectedDay!));
+
+    return availableSlotsAsync.when(
+      loading: () => const Expanded(
+        child: Center(child: CircularProgressIndicator()),
+      ),
+      error: (err, stack) => Expanded(
+        child: Center(
+          child: ResponsiveText.bodySmall(
+            'Erreur de chargement',
+            style: TextStyle(color: theme.colorScheme.error),
+          ),
+        ),
+      ),
+      data: (availableSlots) {
+        if (availableSlots.isEmpty) {
+          return Expanded(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.event_busy,
+                      size: 64,
+                      color: theme.colorScheme.error.withValues(alpha: 0.5)),
+                  const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
+                  ResponsiveText.bodySmall(
+                    'Aucun créneau disponible\nce jour',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.6)),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
+        return Expanded(
+          child: ListView.builder(
+            itemCount: availableSlots.length,
+            itemBuilder: (context, index) {
+              final slot = availableSlots[index];
+              final isSelected = _selectedTime == slot;
+
+              return ResponsiveBox(
+                margin: const EdgeInsets.only(bottom: 8),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () {
+                      setState(() {
+                        _selectedTime = slot;
+                      });
+                    },
+                    borderRadius: BorderRadius.circular(12),
+                    child: ResponsiveBox(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 16),
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? theme.colorScheme.primary.withValues(alpha: 0.1)
+                            : theme.colorScheme.surface,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: isSelected
+                              ? theme.colorScheme.primary
+                              : theme.colorScheme.onSurface
+                                  .withValues(alpha: 0.2),
+                          width: isSelected ? 2 : 1,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.access_time,
+                            color: isSelected
+                                ? theme.colorScheme.primary
+                                : theme.colorScheme.onSurface
+                                    .withValues(alpha: 0.6),
+                          ),
+                          const ResponsiveBox(paddingSize: ResponsiveSpacing.s),
+                          ResponsiveText.bodyMedium(
+                            slot.toString(),
+                            style: TextStyle(
+                              fontWeight: isSelected
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                              color: isSelected
+                                  ? theme.colorScheme.primary
+                                  : theme.colorScheme.onSurface,
+                            ),
+                          ),
+                          const Spacer(),
+                          if (isSelected)
+                            Icon(Icons.check_circle,
+                                color: theme.colorScheme.primary),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+
   /// Confirmer la réservation
-  Future<void> _confirmBooking(GoogleCalendarService? calendarService) async {
+  Future<void> _confirmBooking(
+      CalendarAvailabilityService? availabilityService) async {
     if (_selectedDay == null ||
         _selectedTime == null ||
-        calendarService == null) {
+        availabilityService == null) {
       return;
     }
 
@@ -510,7 +566,7 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
       developer.log('📅 Création RDV: ${start.toIso8601String()}');
 
       // Créer l'événement dans Google Calendar
-      await calendarService.createEvent(
+      await availabilityService.createEventIfAvailable(
         summary: 'Rendez-vous Portfolio - Discussion projet',
         description:
             'Café virtuel pour discuter de votre projet avec Emryck Doré',
@@ -530,7 +586,7 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
                 const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
                 Expanded(
                   child: ResponsiveText.bodyMedium(
-                    'Rendez-vous confirmé le ${_formatDate(_selectedDay!)} à ${_selectedTime!.format(context)} !',
+                    'Rendez-vous confirmé le ${_formatDate(_selectedDay!)} à ${_selectedTime!} !',
                   ),
                 ),
               ],

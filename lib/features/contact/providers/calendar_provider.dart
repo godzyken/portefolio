@@ -13,6 +13,44 @@ final googleCalendarServiceProvider = Provider<GoogleCalendarService?>((ref) {
   return ref.watch(googleCalendarNotifierProvider).value;
 });
 
+final calendarAvailabilityServiceProvider =
+    Provider<CalendarAvailabilityService?>((ref) {
+  final calendarService = ref.watch(googleCalendarServiceProvider);
+
+  if (calendarService == null) {
+    return null;
+  }
+
+  return CalendarAvailabilityService(calendarService);
+});
+
+final availableTimeSlotsProvider =
+    FutureProvider.family<List<TimeSlot>, DateTime>(
+  (ref, day) async {
+    final availabilityService = ref.watch(calendarAvailabilityServiceProvider);
+
+    if (availabilityService == null) {
+      // Retourner tous les créneaux par défaut
+      return _defaultTimeSlots;
+    }
+
+    // Récupérer les créneaux disponibles
+    return await availabilityService.getAvailableTimeSlots(
+      day,
+      _defaultTimeSlots,
+    );
+  },
+);
+
+const List<TimeSlot> _defaultTimeSlots = [
+  TimeSlot(hour: 9, minute: 0),
+  TimeSlot(hour: 10, minute: 0),
+  TimeSlot(hour: 11, minute: 0),
+  TimeSlot(hour: 14, minute: 0),
+  TimeSlot(hour: 15, minute: 0),
+  TimeSlot(hour: 16, minute: 0),
+];
+
 final calendarEventsProvider =
     FutureProvider.autoDispose<calendar.Events>((ref) async {
   final calendarService = ref.watch(googleCalendarNotifierProvider).value;
