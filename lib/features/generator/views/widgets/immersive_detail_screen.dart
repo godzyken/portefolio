@@ -119,9 +119,39 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
   }
 
   bool _hasProgrammingTag() {
-    const programmingTags = ['e-commerce', 'flutter', 'angular', 'digital'];
+    const programmingTags = [
+      'dart',
+      'flutter',
+      'angular',
+      'javascript',
+      'typescript',
+      'java',
+      'python',
+      'c#',
+      'c++',
+      'rust',
+      'github',
+      'git',
+      'go',
+      'php',
+      'swift',
+      'kotlin',
+      'mysql',
+      'prestashop',
+      'magento',
+      'ovh',
+      'html',
+      'css',
+      'Laravel',
+      'e-commerce',
+      'digital'
+    ];
     final titleLower = widget.project.title.toLowerCase();
-    return programmingTags.any((tag) => titleLower.contains(tag));
+    final pointsLower = widget.project.points.map((p) => p.toLowerCase());
+
+    return programmingTags.any((tag) =>
+        titleLower.contains(tag.toLowerCase()) ||
+        pointsLower.any((p) => p.contains(tag.toLowerCase())));
   }
 
   @override
@@ -254,26 +284,6 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
                 ),
               ),
             ),
-          ),
-
-          // Badge WakaTime floating en haut à gauche (version sécurisée)
-          WakaTimeConditionalWidget(
-            projectName: widget.project.title,
-            builder: (isTracked) {
-              if (!isTracked || !_hasProgrammingTag()) {
-                return const SizedBox.shrink();
-              }
-              return Positioned(
-                top: 16,
-                left: 16,
-                child: FadeTransition(
-                  opacity: _fadeAnimation,
-                  child: SafeWakaTimeDetailedBadge(
-                    projectName: widget.project.title,
-                  ),
-                ),
-              );
-            },
           ),
 
           // Bouton fermer

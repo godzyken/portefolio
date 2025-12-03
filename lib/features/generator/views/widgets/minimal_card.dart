@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/ui/widgets/smart_image.dart';
+import 'package:portefolio/features/generator/views/widgets/wakatime_badge.dart';
 import 'package:vector_math/vector_math_64.dart' show Vector3;
 
 import '../../../projets/data/project_data.dart';
@@ -105,6 +106,28 @@ class _MinimalCardState extends ConsumerState<MinimalCard> {
                     ),
                   ),
                 ),
+                Positioned(
+                  right: 16,
+                  bottom: 16,
+                  child: AnimatedDefaultTextStyle(
+                    duration: const Duration(milliseconds: 200),
+                    style: theme.textTheme.titleLarge!.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: _isHovered
+                          ? (info.isMobile ? 18 : 22)
+                          : (info.isMobile ? 16 : 20),
+                      shadows: [
+                        Shadow(
+                          color: Colors.black.withValues(alpha: 0.8),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: _buildWakatimeWidget(),
+                  ),
+                ),
 
                 // Icône plein écran
                 Positioned(
@@ -164,6 +187,24 @@ class _MinimalCardState extends ConsumerState<MinimalCard> {
           color: Colors.white.withValues(alpha: 0.3),
         ),
       ),
+    );
+  }
+
+  Widget _buildWakatimeWidget() {
+    return WakaTimeConditionalWidget(
+      projectName: widget.project.title,
+      builder: (isTracked) {
+        if (!isTracked) {
+          return const SizedBox.shrink();
+        }
+        return Positioned(
+          top: 16,
+          left: 16,
+          child: SafeWakaTimeDetailedBadge(
+            projectName: widget.project.title,
+          ),
+        );
+      },
     );
   }
 

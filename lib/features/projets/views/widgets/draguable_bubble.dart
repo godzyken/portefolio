@@ -169,6 +169,7 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
     final screenHeight = isPortrait
         ? spec.size.height - 2 * spec.bezelSize
         : spec.size.width - 2 * spec.bezelSize;
+
     return ResponsiveBox(
       width: spec.size.width,
       height: spec.size.height,

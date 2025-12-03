@@ -15,7 +15,7 @@ dependencies:
   flutter_riverpod: ^3.0.3
 
   # Navigation
-  go_router: ^16.2.4
+  go_router: ^17.0.0
 
   # UI & Animations
   cupertino_icons: ^1.0.8
