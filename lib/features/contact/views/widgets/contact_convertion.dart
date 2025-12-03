@@ -19,8 +19,6 @@ class ContactConversionOption extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final contactForm = ref.watch(contactFormProvider);
-
     return ResponsiveBox(
       width: double.infinity,
       margin: EdgeInsets.symmetric(
@@ -68,8 +66,6 @@ class ContactConversionOption extends ConsumerWidget {
             children: [
               _buildGoogleCalendarChip(theme, ref, context),
               _buildCvActionChip(theme, ref, context),
-              _buildMailToActionChip(
-                  theme, context, contactForm), // 📧 NOUVELLE CHIP
             ],
           ),
         ],
@@ -151,57 +147,11 @@ class ContactConversionOption extends ConsumerWidget {
     );
   }
 
-  Widget _buildMailToActionChip(
-    ThemeData theme,
-    BuildContext context,
-    dynamic contactFormState,
-  ) {
-    return _buildActionChip(
-      theme,
-      Icons.email,
-      'Envoyer un Email Direct',
-      () async {
-        const targetEmail = 'isgodzy@gmail.com';
-        final name = contactFormState.name.isNotEmpty
-            ? contactFormState.name
-            : 'Utilisateur';
-        final subject = 'Prise de contact depuis le Portfolio - $name';
-        final body = contactFormState.message.isNotEmpty
-            ? contactFormState.message
-            : 'Bonjour, j\'aimerais discuter d\'un projet.';
-
-        final uri = Uri(
-          scheme: 'mailto',
-          path: targetEmail,
-          query:
-              'subject=${Uri.encodeComponent(subject)}&body=${Uri.encodeComponent(body)}',
-        );
-
-        // Cette partie nécessite le package url_launcher
-        // try {
-        //   if (await canLaunchUrl(uri)) {
-        //     await launchUrl(uri);
-        //   } else {
-        //     _showErrorSnackBar(context, 'Impossible d\'ouvrir l\'application email.');
-        //   }
-        // } catch (e) {
-        //   _showErrorSnackBar(context, 'Erreur de lancement: $e');
-        // }
-
-        // Affichage de simulation sans url_launcher
-        developer.log('📧 Tentative de lancement: ${uri.toString()}');
-        _showSuccessSnackBar(
-            context, 'Ouverture du client email vers $targetEmail...');
-      },
-    );
-  }
-
   void _showCalendarDialogWithContactInfo(
     BuildContext context,
     WidgetRef ref,
     dynamic contactFormState,
   ) {
-    // Transférer les informations du formulaire de contact vers l'appointment
     ref.read(appointmentProvider.notifier).setContactInfo(
           contactFormState.name.isNotEmpty ? contactFormState.name : '',
           contactFormState.email.isNotEmpty ? contactFormState.email : '',

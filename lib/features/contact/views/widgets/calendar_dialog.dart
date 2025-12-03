@@ -1,3 +1,5 @@
+import 'dart:developer' as developer;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -31,6 +33,7 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _messageController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -353,66 +356,102 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // === NOUVEAUX CHAMPS ICI ===
-          const ResponsiveText.bodyMedium(
-            '📋 Vos informations',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-          const ResponsiveBox(paddingSize: ResponsiveSpacing.xs),
+          Form(
+              key: _formKey,
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const ResponsiveText.bodyMedium(
+                      '📋 Vos informations',
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    const ResponsiveBox(paddingSize: ResponsiveSpacing.xs),
 
-          // Champ Nom
-          TextField(
-            controller: _nameController,
-            decoration: InputDecoration(
-              labelText: 'Nom complet *',
-              hintText: 'Jean Dupont',
-              prefixIcon: Icon(Icons.person, color: theme.colorScheme.primary),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            ),
-          ),
-          const ResponsiveBox(paddingSize: ResponsiveSpacing.xs),
+                    // Champ Nom
+                    TextFormField(
+                      controller: _nameController,
+                      decoration: InputDecoration(
+                        labelText: 'Nom complet *',
+                        hintText: 'Jean Dupont',
+                        prefixIcon: Icon(Icons.person,
+                            color: theme.colorScheme.primary),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 12),
+                      ),
+                      onChanged: (value) => ref
+                          .read(appointmentProvider.notifier)
+                          .setContactInfo(value, _emailController.text,
+                              _messageController.text),
+                      validator: (value) => value == null || value.isEmpty
+                          ? 'Le nom est requis'
+                          : null,
+                    ),
+                    const ResponsiveBox(paddingSize: ResponsiveSpacing.xs),
 
-          // Champ Email
-          TextField(
-            controller: _emailController,
-            decoration: InputDecoration(
-              labelText: 'Email *',
-              hintText: 'contact@exemple.com',
-              prefixIcon: Icon(Icons.email, color: theme.colorScheme.primary),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            ),
-            keyboardType: TextInputType.emailAddress,
-          ),
-          const ResponsiveBox(paddingSize: ResponsiveSpacing.xs),
+                    // Champ Email
+                    TextFormField(
+                      controller: _emailController,
+                      decoration: InputDecoration(
+                        labelText: 'Email *',
+                        hintText: 'contact@exemple.com',
+                        prefixIcon:
+                            Icon(Icons.email, color: theme.colorScheme.primary),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 12),
+                      ),
+                      keyboardType: TextInputType.emailAddress,
+                      onChanged: (value) => ref
+                          .read(appointmentProvider.notifier)
+                          .setContactInfo(_nameController.text, value,
+                              _messageController.text),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'L\'email est requis';
+                        }
+                        if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                          return 'Format d\'email invalide';
+                        }
+                        return null;
+                      },
+                    ),
+                    const ResponsiveBox(paddingSize: ResponsiveSpacing.xs),
 
-          // Champ Message
-          TextField(
-            controller: _messageController,
-            decoration: InputDecoration(
-              labelText: 'Message *',
-              hintText: 'Décrivez votre projet...',
-              prefixIcon: Padding(
-                padding: const EdgeInsets.only(bottom: 60),
-                child: Icon(Icons.message, color: theme.colorScheme.primary),
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              alignLabelWithHint: true,
-            ),
-            maxLines: 3,
-          ),
-          const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
+                    // Champ Message
+                    TextFormField(
+                      controller: _messageController,
+                      decoration: InputDecoration(
+                        labelText: 'Message *',
+                        hintText: 'Décrivez votre projet...',
+                        prefixIcon: Padding(
+                          padding: const EdgeInsets.only(bottom: 60),
+                          child: Icon(Icons.message,
+                              color: theme.colorScheme.primary),
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 12),
+                        alignLabelWithHint: true,
+                      ),
+                      maxLines: 3,
+                      onChanged: (value) => ref
+                          .read(appointmentProvider.notifier)
+                          .setContactInfo(_nameController.text,
+                              _emailController.text, value), // MAJ du Provider
+                      validator: (value) => value == null || value.isEmpty
+                          ? 'Une description est requise'
+                          : null,
+                    ),
+                    const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
+                  ])),
 
           const Divider(),
           const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
@@ -527,21 +566,29 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
           style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         ),
         const ResponsiveBox(paddingSize: ResponsiveSpacing.xs),
-        TextField(
-          controller: _locationController,
-          decoration: InputDecoration(
-            hintText: 'Ville ou adresse...',
-            prefixIcon:
-                Icon(Icons.location_on, color: theme.colorScheme.primary),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+        TextFormField(
+            controller: _locationController,
+            decoration: InputDecoration(
+              hintText: 'Ville ou adresse...',
+              prefixIcon:
+                  Icon(Icons.location_on, color: theme.colorScheme.primary),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             ),
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          ),
-          onChanged: (value) =>
-              ref.read(appointmentProvider.notifier).setPhysicalLocation(value),
-        ),
+            onChanged: (value) => ref
+                .read(appointmentProvider.notifier)
+                .setPhysicalLocation(value),
+            validator: (value) {
+              final type = ref.read(appointmentProvider).type;
+              if (type == AppointmentType.physical &&
+                  (value == null || value.isEmpty)) {
+                return 'Le lieu est requis pour un rendez-vous physique';
+              }
+              return null;
+            }),
       ],
     );
   }
@@ -674,10 +721,18 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
   }
 
   Widget _buildConfirmButton(ThemeData theme, AppointmentState state) {
+    developer.log('✅ Début de la création du RDV');
+    // 💡 Vérification si le service est prêt
     return ResponsiveBox(
       height: 56,
       child: ElevatedButton.icon(
-        onPressed: state.canConfirm ? () => _confirmAppointment() : null,
+        onPressed: state.canConfirm
+            ? () {
+                if (_formKey.currentState?.validate() ?? false) {
+                  _confirmAppointment();
+                }
+              }
+            : null,
         icon: state.status == AppointmentStatus.loading
             ? const SizedBox(
                 width: 20,
@@ -708,6 +763,26 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
   }
 
   Future<void> _confirmAppointment() async {
+    developer.log('✅ Envoi de la création du RDV');
+
+    if (!(_formKey.currentState?.validate() ?? false)) {
+      return;
+    }
+
+    final appointmentNotifier = ref.read(appointmentProvider.notifier);
+
+    appointmentNotifier.setContactInfo(
+      _nameController.text,
+      _emailController.text,
+      _messageController.text,
+    );
+
+    appointmentNotifier.setPhysicalLocation(_locationController.text);
+
+    if (!ref.read(appointmentProvider).canConfirm) {
+      return;
+    }
+
     final calendarService = ref.watch(calendarAvailabilityServiceProvider);
     final emailService = ref.watch(emailJsProvider);
 
@@ -729,13 +804,14 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
       return;
     }
 
-    final success = await ref
-        .read(appointmentProvider.notifier)
-        .confirmAppointment(calendarService, emailService);
+    final success = await appointmentNotifier.confirmAppointment(
+        calendarService, emailService);
 
     if (!mounted) return;
 
     if (success) {
+      developer.log('✅ Réussite de la création du RDV');
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Row(
@@ -755,6 +831,8 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
       );
       context.pop();
     } else {
+      developer.log('Echec de la création du RDV');
+
       final error = ref.read(appointmentProvider).errorMessage;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

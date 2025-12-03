@@ -40,7 +40,6 @@ class GoogleCalendarNotifier extends AsyncNotifier<GoogleCalendarService?> {
     }
   }
 
-  /// Appelé par l'UI (dans un handler d'interaction utilisateur).
   Future<void> signInAndInit() async {
     state = const AsyncValue.loading();
     try {
@@ -50,10 +49,8 @@ class GoogleCalendarNotifier extends AsyncNotifier<GoogleCalendarService?> {
         throw Exception('Google Calendar Client ID non configuré');
       }
 
-      // La logique de connexion est maintenant dans le service !
       final api = await GoogleSignInService.signInAndGetApi(scopes, clientId);
 
-      // Si la connexion réussit, créez le service d'interaction
       final service = GoogleCalendarService(api);
 
       state = AsyncValue.data(service);
@@ -64,7 +61,6 @@ class GoogleCalendarNotifier extends AsyncNotifier<GoogleCalendarService?> {
     }
   }
 
-  /// Optionnel : déconnecter
   Future<void> signOut() async {
     try {
       await GoogleSignIn.instance.signOut();

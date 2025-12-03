@@ -22,16 +22,21 @@ class GoogleCalendarService {
     required String summary,
     required DateTime start,
     required DateTime end,
+    String? location,
     String description = 'Rendez-vous créé via le Portfolio',
     String calendarId = 'primary',
   }) async {
     developer.log('Tentative de création d\'événement : $summary');
+
+    final locationString =
+        (location != null && location.isNotEmpty) ? location : null;
 
     final newEvent = calendar.Event(
       summary: summary,
       start: calendar.EventDateTime(dateTime: start, timeZone: 'Europe/Paris'),
       end: calendar.EventDateTime(dateTime: end, timeZone: 'Europe/Paris'),
       description: description,
+      location: locationString,
       reminders: calendar.EventReminders(useDefault: true),
     );
 
@@ -85,8 +90,6 @@ class GoogleCalendarService {
 
     return _api.events.update(updatedEvent, calendarId, eventId);
   }
-
-// ... (Autres méthodes : getEvents, deleteEvent, etc.)
 }
 
 class CalendarAvailabilityService {
@@ -240,6 +243,7 @@ class CalendarAvailabilityService {
     required DateTime start,
     required DateTime end,
     required String description,
+    String? location,
     String calendarId = 'primary',
   }) async {
     // Vérifier la disponibilité
@@ -257,12 +261,21 @@ class CalendarAvailabilityService {
         end: end,
         description: description,
         calendarId: calendarId,
+        location: location,
       );
+      developer.log('✅ Événement créé avec succès : ${event.summary}');
+      developer.log('📅 Début : ${event.start?.dateTime}');
+      developer.log('📅 Fin : ${event.end?.dateTime}');
+      developer.log('📍 Lieu : ${event.location}');
+      developer.log('💬 Description : ${event.description}');
 
       return event;
-    } catch (e) {
+    } on calendar.ApiRequestError catch (e, st) {
       developer.log(
-          '❌Erreur critique lors de l\'insertion de l\'événement Google : $e');
+          '❌ Erreur critique lors de l\'insertion de l\'événement Google : $e',
+          stackTrace: st,
+          name: 'GoogleCalendarService');
+
       rethrow;
     }
   }

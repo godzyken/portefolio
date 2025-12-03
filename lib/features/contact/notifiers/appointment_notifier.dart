@@ -1,6 +1,7 @@
 import 'dart:developer' as developer;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:googleapis/calendar/v3.dart' as calendar;
 
 import '../model/state/appointment_state.dart';
 import '../model/state/time_slot_state.dart';
@@ -72,9 +73,17 @@ class AppointmentNotifier extends Notifier<AppointmentState> {
 
       final description = _buildDescription();
 
+      // FIX 1: Gérer la location
+      String? eventLocation;
+      if (state.type == AppointmentType.physical &&
+          state.physicalLocation != null &&
+          state.physicalLocation!.isNotEmpty) {
+        eventLocation = state.physicalLocation;
+      }
+
       developer.log('📅 Création RDV: ${start.toIso8601String()}');
       developer.log('Type: ${state.type}');
-      developer.log('Description: $description');
+      developer.log('Location: $eventLocation');
 
       // Créer l'événement dans Google Calendar
       await calendarService.createEventIfAvailable(
@@ -82,6 +91,7 @@ class AppointmentNotifier extends Notifier<AppointmentState> {
         description: description,
         start: start,
         end: end,
+        location: eventLocation, // FIX 2: Passage de la location
       );
 
       developer.log('✅ Événement créé avec succès');
@@ -92,10 +102,25 @@ class AppointmentNotifier extends Notifier<AppointmentState> {
       state = state.copyWith(status: AppointmentStatus.success);
       return true;
     } catch (e, st) {
-      developer.log('❌ Erreur création RDV: $e', stackTrace: st);
+      final errorType = e.runtimeType.toString();
+      developer.log('❌ Erreur création RDV: $e (Type: $errorType)',
+          stackTrace: st);
+
+      String userMessage =
+          'Une erreur inconnue est survenue lors de la création du RDV.';
+
+      // Tente d'extraire le message d'erreur Google API
+      if (e is calendar.ApiRequestError) {
+        userMessage = 'Erreur Google Calendar: ${e.message}';
+      } else {
+        // Nettoie les messages d'erreur génériques pour l'utilisateur
+        userMessage =
+            'Erreur Type $errorType: ${e.toString().replaceFirst('Exception: ', '').replaceFirst('Instance of ', '')}';
+      }
+
       state = state.copyWith(
         status: AppointmentStatus.error,
-        errorMessage: e.toString(),
+        errorMessage: userMessage, // Affichera le code 403 ou autre
       );
       return false;
     }
@@ -139,20 +164,14 @@ class AppointmentNotifier extends Notifier<AppointmentState> {
         ? 'Rendez-vous virtuel (Teams/Visio)'
         : 'Rendez-vous physique à ${state.physicalLocation}';
 
-    final emailMessage = '''
-Demande de rendez-vous confirmée !
-
-Date: ${_formatDate(appointmentStart)}
-Heure: ${_formatTime(appointmentStart)}
-Type: $typeText
-
-Message:
-${state.message}
-
-Contact:
-Nom: ${state.name}
-Email: ${state.email}
-''';
+    final emailMessage = '''Demande de rendez-vous confirmée !
+    Date: ${_formatDate(appointmentStart)}
+    Heure: ${_formatTime(appointmentStart)}
+    Type: $typeText
+    Message: ${state.message}
+    Contact:
+      Nom: ${state.name}
+      Email: ${state.email}''';
 
     await emailService.sendEmail(
       name: state.name,
