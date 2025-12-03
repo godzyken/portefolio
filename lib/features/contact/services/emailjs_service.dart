@@ -60,12 +60,14 @@ class EmailJsService {
           limitRate: const EmailJS.LimitRate(id: 'portefolio', throttle: 250),
         ),
       );
-      developer.log("EmailJS sent successfully");
+      developer.log("✅ EmailJS sent successfully");
     } catch (e) {
       if (e is EmailJS.EmailJSResponseStatus) {
         developer.log("EmailJS error: ${e.status} ::: ${e.text}");
+        throw Exception("Erreur EmailJS: ${e.text}");
       } else {
         developer.log("EmailJS error: $e");
+        throw Exception("Erreur lors de l'envoi de l'email: $e");
       }
     }
   }

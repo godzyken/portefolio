@@ -1,9 +1,11 @@
+import 'dart:developer' as developer;
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../model/state/appointment_state.dart';
 import '../model/state/time_slot_state.dart';
-import '../providers/calendar_provider.dart';
-import '../providers/emailjs_provider.dart';
+import '../services/emailjs_service.dart';
+import '../services/google_calendar_service.dart';
 
 class AppointmentNotifier extends Notifier<AppointmentState> {
   @override
@@ -11,7 +13,6 @@ class AppointmentNotifier extends Notifier<AppointmentState> {
     return const AppointmentState();
   }
 
-  /// Met à jour le nom, l'email et le message du contact.
   void setContactInfo(String name, String email, String message) {
     state = state.copyWith(
       name: name,
@@ -20,105 +21,171 @@ class AppointmentNotifier extends Notifier<AppointmentState> {
     );
   }
 
-  void setSelectedDate(DateTime? day) {
-    state = state.copyWith(selectedDate: day);
-  }
-
-  /// Définit le type de rendez-vous (virtuel ou physique).
-  void setAppointmentType(AppointmentType type) {
+  void setSelectedDate(DateTime? date) {
     state = state.copyWith(
-      type: type,
-      // Réinitialise la location physique si on passe en virtuel
-      physicalLocation:
-          type == AppointmentType.virtual ? null : state.physicalLocation,
+      selectedDate: date,
+      selectedTime: null, // Reset time when date changes
     );
   }
 
-  void setPhysicalLocation(String? value) {
-    state = state.copyWith(physicalLocation: value);
+  void setSelectedTime(TimeSlot? time) {
+    state = state.copyWith(selectedTime: time);
   }
 
-  /// Définit le créneau horaire sélectionné.
-  void setSelectedTime(TimeSlot? slot) {
-    state = state.copyWith(selectedTime: slot);
+  void setAppointmentType(AppointmentType type) {
+    state = state.copyWith(type: type);
   }
 
-  Future<bool> confirmAppointment() async {
-    final calendarService = ref.read(calendarAvailabilityServiceProvider);
-    final emailService = ref.read(emailJsProvider);
+  void setPhysicalLocation(String? location) {
+    state = state.copyWith(physicalLocation: location);
+  }
 
+  Future<bool> confirmAppointment(
+    CalendarAvailabilityService calendarService,
+    EmailJsService emailService,
+  ) async {
     if (!state.canConfirm) {
       state = state.copyWith(
         status: AppointmentStatus.error,
-        errorMessage:
-            'Veuillez remplir tous les champs obligatoires (date, heure, nom, email, message, et lieu physique si applicable).',
+        errorMessage: 'Veuillez remplir tous les champs requis',
       );
       return false;
     }
 
-    state =
-        state.copyWith(status: AppointmentStatus.loading, errorMessage: null);
+    state = state.copyWith(status: AppointmentStatus.loading);
 
     try {
-      final selectedDate = state.selectedDate!;
-      final selectedTime = state.selectedTime!;
+      // Créer la date complète
+      final start = DateTime(
+        state.selectedDate!.year,
+        state.selectedDate!.month,
+        state.selectedDate!.day,
+        state.selectedTime!.hour,
+        state.selectedTime!.minute,
+      );
+      final end = start.add(const Duration(hours: 1));
 
-      // 1. Construire les objets DateTime de début et de fin
-      final eventStart = DateTime(
-        selectedDate.year,
-        selectedDate.month,
-        selectedDate.day,
-        selectedTime.hour,
-        selectedTime.minute,
+      // Construire le résumé et la description selon le type
+      final summary = state.type == AppointmentType.virtual
+          ? 'Rendez-vous virtuel - ${state.name}'
+          : 'Rendez-vous physique - ${state.name}';
+
+      final description = _buildDescription();
+
+      developer.log('📅 Création RDV: ${start.toIso8601String()}');
+      developer.log('Type: ${state.type}');
+      developer.log('Description: $description');
+
+      // Créer l'événement dans Google Calendar
+      await calendarService.createEventIfAvailable(
+        summary: summary,
+        description: description,
+        start: start,
+        end: end,
       );
 
-      // La durée est implicitement d'une heure, comme défini dans getAvailableTimeSlots
-      final eventEnd = eventStart.add(const Duration(hours: 1));
+      developer.log('✅ Événement créé avec succès');
 
-      // 2. Créer l'événement avec vérification de disponibilité
-      final createdEvent = await calendarService?.createEventIfAvailable(
-        summary: 'RDV - ${state.name} (${state.type.name})',
-        start: eventStart,
-        end: eventEnd,
-        description:
-            'Type: ${state.type.name}\nLieu: ${state.physicalLocation ?? 'Virtuel'}\nMessage: ${state.message}\nEmail: ${state.email}',
-      );
+      // Envoyer l'email de confirmation
+      await _sendConfirmationEmail(emailService, start);
 
-      if (createdEvent == null) {
-        // Si le service renvoie null au lieu de lever une exception
-        throw Exception("La création de l'événement a échoué.");
-      }
-
-      // 3. Préparer les données pour l'email (format lisible)
-      final appointmentDetails = {
-        'date':
-            '${selectedDate.day}/${selectedDate.month}/${selectedDate.year}',
-        'time':
-            '${selectedTime.hour}:${selectedTime.minute.toString().padLeft(2, '0')} - ${(selectedTime.hour + 1).toString()}:${selectedTime.minute.toString().padLeft(2, '0')}',
-        'type': state.type.name,
-        'location': state.physicalLocation ?? 'Virtuel',
-        'attendee': state.name,
-        'email': state.email,
-        'message': state.message,
-      };
-
-      // 4. Envoyer un email de confirmation
-      await emailService.sendAppointmentConfirmation(
-          appointmentDetails: appointmentDetails);
-
-      // Succès
       state = state.copyWith(status: AppointmentStatus.success);
-
-      // Réinitialiser l'état pour une nouvelle réservation
-      state = AppointmentState(name: state.name, email: state.email);
       return true;
-    } catch (e) {
+    } catch (e, st) {
+      developer.log('❌ Erreur création RDV: $e', stackTrace: st);
       state = state.copyWith(
         status: AppointmentStatus.error,
-        errorMessage:
-            'Une erreur est survenue : ${e.toString().contains("plus disponible") ? "Ce créneau n'est malheureusement plus disponible." : e.toString()}',
+        errorMessage: e.toString(),
       );
       return false;
     }
+  }
+
+  String _buildDescription() {
+    final buffer = StringBuffer();
+
+    buffer.writeln('DEMANDE DE RENDEZ-VOUS');
+    buffer.writeln('=' * 50);
+    buffer.writeln();
+
+    buffer.writeln('👤 Contact:');
+    buffer.writeln('Nom: ${state.name}');
+    buffer.writeln('Email: ${state.email}');
+    buffer.writeln();
+
+    buffer.writeln('📍 Type de rendez-vous:');
+    if (state.type == AppointmentType.virtual) {
+      buffer.writeln('Rendez-vous VIRTUEL (Teams/Visio)');
+    } else {
+      buffer.writeln('Rendez-vous PHYSIQUE');
+      buffer.writeln('Lieu: ${state.physicalLocation}');
+    }
+    buffer.writeln();
+
+    buffer.writeln('💬 Message:');
+    buffer.writeln(state.message);
+    buffer.writeln();
+
+    buffer.writeln('⏰ Créé via le Portfolio');
+
+    return buffer.toString();
+  }
+
+  Future<void> _sendConfirmationEmail(
+    EmailJsService emailService,
+    DateTime appointmentStart,
+  ) async {
+    final typeText = state.type == AppointmentType.virtual
+        ? 'Rendez-vous virtuel (Teams/Visio)'
+        : 'Rendez-vous physique à ${state.physicalLocation}';
+
+    final emailMessage = '''
+Demande de rendez-vous confirmée !
+
+Date: ${_formatDate(appointmentStart)}
+Heure: ${_formatTime(appointmentStart)}
+Type: $typeText
+
+Message:
+${state.message}
+
+Contact:
+Nom: ${state.name}
+Email: ${state.email}
+''';
+
+    await emailService.sendEmail(
+      name: state.name,
+      email: state.email,
+      message: emailMessage,
+    );
+
+    developer.log('✅ Email de confirmation envoyé');
+  }
+
+  String _formatDate(DateTime date) {
+    const months = [
+      'janvier',
+      'février',
+      'mars',
+      'avril',
+      'mai',
+      'juin',
+      'juillet',
+      'août',
+      'septembre',
+      'octobre',
+      'novembre',
+      'décembre'
+    ];
+    return '${date.day} ${months[date.month - 1]} ${date.year}';
+  }
+
+  String _formatTime(DateTime date) {
+    return '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
+  }
+
+  void reset() {
+    state = const AppointmentState();
   }
 }

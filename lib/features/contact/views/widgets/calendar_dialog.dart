@@ -6,9 +6,19 @@ import 'package:portefolio/core/ui/widgets/responsive_text.dart';
 import '../../../../core/affichage/screen_size_detector.dart';
 import '../../model/state/appointment_state.dart';
 import '../../providers/calendar_provider.dart';
+import '../../providers/emailjs_provider.dart';
 
 class CalendarDialog extends ConsumerStatefulWidget {
-  const CalendarDialog({super.key});
+  final String? initialName;
+  final String? initialEmail;
+  final String? initialMessage;
+
+  const CalendarDialog({
+    super.key,
+    this.initialName,
+    this.initialEmail,
+    this.initialMessage,
+  });
 
   @override
   ConsumerState<CalendarDialog> createState() => _CalendarDialogState();
@@ -18,10 +28,39 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
   DateTime _focusedMonth = DateTime.now();
   bool _isLoadingSlots = false;
   final _locationController = TextEditingController();
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _messageController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    final appointmentNotifier = ref.read(appointmentProvider.notifier);
+
+    // Initialisation des contrôleurs
+    _nameController.text = widget.initialName ?? '';
+    _emailController.text = widget.initialEmail ?? '';
+    _messageController.text = widget.initialMessage ?? '';
+
+    // 2. Initialisation du provider avec les valeurs initiales
+    if (widget.initialName != null ||
+        widget.initialEmail != null ||
+        widget.initialMessage != null) {
+      appointmentNotifier.setContactInfo(
+        _nameController.text,
+        _emailController.text,
+        _messageController.text,
+      );
+    }
+  }
 
   @override
   void dispose() {
     _locationController.dispose();
+    _nameController.dispose();
+    _emailController.dispose();
+    _messageController.dispose();
     super.dispose();
   }
 
@@ -314,6 +353,69 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          // === NOUVEAUX CHAMPS ICI ===
+          const ResponsiveText.bodyMedium(
+            '📋 Vos informations',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          const ResponsiveBox(paddingSize: ResponsiveSpacing.xs),
+
+          // Champ Nom
+          TextField(
+            controller: _nameController,
+            decoration: InputDecoration(
+              labelText: 'Nom complet *',
+              hintText: 'Jean Dupont',
+              prefixIcon: Icon(Icons.person, color: theme.colorScheme.primary),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            ),
+          ),
+          const ResponsiveBox(paddingSize: ResponsiveSpacing.xs),
+
+          // Champ Email
+          TextField(
+            controller: _emailController,
+            decoration: InputDecoration(
+              labelText: 'Email *',
+              hintText: 'contact@exemple.com',
+              prefixIcon: Icon(Icons.email, color: theme.colorScheme.primary),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            ),
+            keyboardType: TextInputType.emailAddress,
+          ),
+          const ResponsiveBox(paddingSize: ResponsiveSpacing.xs),
+
+          // Champ Message
+          TextField(
+            controller: _messageController,
+            decoration: InputDecoration(
+              labelText: 'Message *',
+              hintText: 'Décrivez votre projet...',
+              prefixIcon: Padding(
+                padding: const EdgeInsets.only(bottom: 60),
+                child: Icon(Icons.message, color: theme.colorScheme.primary),
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              alignLabelWithHint: true,
+            ),
+            maxLines: 3,
+          ),
+          const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
+
+          const Divider(),
+          const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
           // Sélection du type
           _buildTypeSelector(theme, state),
           const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
@@ -606,8 +708,30 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
   }
 
   Future<void> _confirmAppointment() async {
-    final success =
-        await ref.read(appointmentProvider.notifier).confirmAppointment();
+    final calendarService = ref.watch(calendarAvailabilityServiceProvider);
+    final emailService = ref.watch(emailJsProvider);
+
+    if (calendarService == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Row(
+            children: [
+              Icon(Icons.error, color: Colors.white),
+              ResponsiveBox(paddingSize: ResponsiveSpacing.m),
+              Expanded(
+                child: ResponsiveText.bodySmall('Erreur de chargement'),
+              ),
+            ],
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    final success = await ref
+        .read(appointmentProvider.notifier)
+        .confirmAppointment(calendarService, emailService);
 
     if (!mounted) return;
 

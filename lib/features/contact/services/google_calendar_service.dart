@@ -25,7 +25,7 @@ class GoogleCalendarService {
     String description = 'Rendez-vous créé via le Portfolio',
     String calendarId = 'primary',
   }) async {
-    developer.log('Tentative de création d\'événement : ${summary}');
+    developer.log('Tentative de création d\'événement : $summary');
 
     final newEvent = calendar.Event(
       summary: summary,
@@ -47,6 +47,43 @@ class GoogleCalendarService {
       singleEvents: true,
       orderBy: 'startTime',
     );
+  }
+
+  Future<calendar.Event> getEvent(
+    String eventId, {
+    String calendarId = 'primary',
+  }) async {
+    developer.log('Tentative de récupération de l\'événement : $eventId');
+    return _api.events.get(calendarId, eventId);
+  }
+
+  Future<void> deleteEvent(
+    String eventId, {
+    String calendarId = 'primary',
+  }) async {
+    developer.log('Tentative de suppression de l\'événement : $eventId');
+    return _api.events.delete(calendarId, eventId);
+  }
+
+  Future<calendar.Event> updateEvent({
+    required String eventId,
+    required String summary,
+    required DateTime start,
+    required DateTime end,
+    String description = 'Rendez-vous mis à jour via le Portfolio',
+    String calendarId = 'primary',
+  }) async {
+    developer.log('Tentative de mise à jour de l\'événement : $eventId');
+
+    final updatedEvent = calendar.Event(
+      summary: summary,
+      start: calendar.EventDateTime(dateTime: start, timeZone: 'Europe/Paris'),
+      end: calendar.EventDateTime(dateTime: end, timeZone: 'Europe/Paris'),
+      description: description,
+      reminders: calendar.EventReminders(useDefault: true),
+    );
+
+    return _api.events.update(updatedEvent, calendarId, eventId);
   }
 
 // ... (Autres méthodes : getEvents, deleteEvent, etc.)
@@ -71,11 +108,24 @@ class CalendarAvailabilityService {
 
       // Filtrer les événements du jour
       final dayEvents = events.items?.where((event) {
-            if (event.start?.dateTime == null) return false;
+            final start = event.start;
+            if (start == null) return false;
 
-            final eventStart = event.start!.dateTime!;
-            return eventStart.isAfter(startOfDay) &&
-                eventStart.isBefore(endOfDay);
+            if (start.dateTime != null) {
+              // Événement avec heure précise
+              final eventStart = start.dateTime!;
+              // On vérifie que le début de l'événement est dans la journée proposée
+              return eventStart.isAfter(startOfDay) &&
+                  eventStart.isBefore(endOfDay);
+            } else if (start.date != null) {
+              // Événement sur toute la journée (All-Day Event)
+              final eventDate = DateTime.parse(start.date!.toString());
+              // On vérifie si la date de l'événement est le jour recherché
+              return eventDate.year == day.year &&
+                  eventDate.month == day.month &&
+                  eventDate.day == day.day;
+            }
+            return false;
           }).toList() ??
           [];
 
