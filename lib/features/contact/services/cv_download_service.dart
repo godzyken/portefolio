@@ -1,11 +1,14 @@
 import 'dart:developer' as developer;
-import 'dart:js_interop';
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
-import 'package:web/web.dart' as web;
+
+// Import conditionnel pour le web uniquement
+import 'cv_download_service_web.dart'
+    if (dart.library.io) 'cv_download_service_stub.dart' as web_impl;
 
 class CvDownloadService {
   /// Télécharge le CV depuis OneDrive
@@ -73,25 +76,19 @@ class CvDownloadService {
     }
   }
 
-  /// ✅ Téléchargement direct pour le Web (sans ouvrir de navigateur)
+  /// ✅ Téléchargement direct pour le Web (délégué à l'implémentation web)
   Future<void> downloadCvWeb(String url, {String filename = 'CV.pdf'}) async {
-    final response = await http.get(Uri.parse(url));
-    if (response.statusCode != 200) {
-      throw Exception('Erreur HTTP: ${response.statusCode}');
+    if (kIsWeb) {
+      await web_impl.downloadCvWebImpl(url, filename: filename);
+    } else {
+      // Sur mobile/desktop, utiliser url_launcher
+      final uri = Uri.parse(_convertToDirectDownloadUrl(url));
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      } else {
+        throw Exception('Impossible d\'ouvrir le lien');
+      }
     }
-
-    final blob = web.Blob([response.bodyBytes] as JSArray<web.BlobPart>);
-    final blobUrl = web.URL.createObjectURL(blob);
-
-    final anchor = web.HTMLAnchorElement()
-      ..href = blobUrl
-      ..setAttribute('download', filename)
-      ..style.display = 'none';
-
-    web.document.body?.append(anchor);
-    anchor.click();
-    anchor.remove();
-    web.URL.revokeObjectURL(blobUrl);
   }
 
   /// Convertit une URL OneDrive en URL de téléchargement direct

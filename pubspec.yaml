@@ -66,6 +66,7 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^6.0.0
   riverpod_lint: ^3.0.3
+  flutter_launcher_icons: ^0.14.4
 
 dependency_overrides:
   # youtube_player_iframe_web: ^3.1.2
@@ -94,6 +95,33 @@ flutter:
     - family: NotoSansItalic
       fonts:
         - asset: assets/fonts/Noto_Sans/NotoSans-Italic-VariableFont_wdth-wght.ttf
+
+
+flutter_launcher_icons:
+  # Chemin vers votre icône haute résolution
+  image_path: "assets/images/logos/godzyken_icon.png"
+  # Plateformes cibles
+  android: true
+  ios: true
+  # Configuration détaillée (map) requise pour Web, Linux, Windows
+  web:
+    generate: true
+    image_path: "assets/images/logos/godzyken_icon.png"
+  macos:
+    generate: true
+    image_path: "assets/images/logos/godzyken_icon.png"
+  linux:
+    generate: true
+    image_path: "assets/images/logos/godzyken_icon.png"
+  windows:
+    generate: true
+    image_path: "assets/images/logos/godzyken_icon.png"
+    # icon_size: 48 # Optionnel : Spécifie la taille de l'icône Windows
+
+  # OPTIONNEL : Pour garantir une icône adaptative sur Android (recommandé)
+  # Si vous avez deux fichiers (avant-plan et arrière-plan)
+  # adaptive_icon_foreground: "assets/images/logos/godzyken_icon_foreground.png"
+  # adaptive_icon_background: "#FFFFFF" # ou un chemin vers l'image de fond
 
 # 🔍 COMMANDES DE VÉRIFICATION (avec fvm) :
 # flutter pub get
