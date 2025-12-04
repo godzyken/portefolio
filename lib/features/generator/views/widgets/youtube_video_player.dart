@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
@@ -5,8 +6,7 @@ import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 import '../../../../core/provider/providers.dart';
 
 class YoutubeVideoPlayerIframe extends ConsumerStatefulWidget {
-  // ✅ 1. Passer en StatefulWidget
-  final String youtubeVideoId; // ✅ 2. Accepter un ID, pas une URL
+  final String youtubeVideoId;
   final String cardId;
 
   const YoutubeVideoPlayerIframe({
@@ -27,10 +27,9 @@ class _YoutubeVideoPlayerIframeState
   @override
   void initState() {
     super.initState();
-    // ✅ 3. Initialiser le contrôleur ici, avec l'ID
     _controller = YoutubePlayerController.fromVideoId(
       videoId: widget.youtubeVideoId,
-      autoPlay: false, // On contrôle la lecture via le provider
+      autoPlay: false,
       params: const YoutubePlayerParams(
         showControls: true,
         showFullscreenButton: true,
@@ -38,6 +37,18 @@ class _YoutubeVideoPlayerIframeState
         pointerEvents: PointerEvents.auto,
       ),
     );
+
+    if (!kIsWeb) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final isPlaying =
+            ref.read(playingVideoProvider.notifier).isPlaying(widget.cardId);
+        if (isPlaying) {
+          _controller.playVideo();
+        } else {
+          _controller.pauseVideo();
+        }
+      });
+    }
   }
 
   @override
@@ -48,7 +59,6 @@ class _YoutubeVideoPlayerIframeState
 
   @override
   Widget build(BuildContext context) {
-    // ✅ 4. Utiliser ref.listen pour réagir au changement sans causer de rebuild en boucle
     ref.listen<String?>(playingVideoProvider, (previous, next) {
       if (next == widget.cardId) {
         _controller.playVideo();
@@ -63,23 +73,36 @@ class _YoutubeVideoPlayerIframeState
       return const SizedBox.shrink();
     }
 
-    return AbsorbPointer(
-        absorbing: !isVideoVisible,
-        child: GestureDetector(
-          onTap: () {
-            final notifier = ref.read(playingVideoProvider.notifier);
-            if (notifier.isPlaying(widget.cardId)) {
-              notifier.stop();
-            } else {
-              notifier.play(widget.cardId);
-            }
-          },
-          child: YoutubePlayer(
-            controller: _controller,
-            aspectRatio: 16 / 9,
-            key: ValueKey(widget.youtubeVideoId),
-          ),
-        ));
+    if (kIsWeb) {
+      return AbsorbPointer(
+          absorbing: !isVideoVisible,
+          child: GestureDetector(
+            onTap: () {
+              final notifier = ref.read(playingVideoProvider.notifier);
+              if (notifier.isPlaying(widget.cardId)) {
+                notifier.stop();
+              } else {
+                notifier.play(widget.cardId);
+              }
+            },
+            child: YoutubePlayer(
+              controller: _controller,
+              aspectRatio: 16 / 9,
+              key: ValueKey(widget.youtubeVideoId),
+            ),
+          ));
+    } else {
+      return AnimatedOpacity(
+          opacity: isVideoVisible ? 1.0 : 0.0,
+          duration: const Duration(milliseconds: 300),
+          child: IgnorePointer(
+              ignoring: !isVideoVisible,
+              child: YoutubePlayer(
+                controller: _controller,
+                aspectRatio: 16 / 9,
+                key: ValueKey(widget.youtubeVideoId),
+              )));
+    }
   }
 }
 

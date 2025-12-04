@@ -87,8 +87,6 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
     final bool hasVideo = widget.experience.youtubeVideoId?.isNotEmpty ?? false;
     final bool shouldShowVideo = hasVideo && widget.isCenter;
 
-    final isVideoVisible = ref.watch(globalVideoVisibilityProvider);
-
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       onEnter: (_) => setState(() => _isHovered = true),
@@ -142,7 +140,7 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
                     children: [
                       // Média principal
                       IgnorePointer(
-                        ignoring: !isVideoVisible && shouldShowVideo,
+                        ignoring: shouldShowVideo,
                         child: _buildMediaContent(info),
                       ),
 
@@ -219,7 +217,6 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
       final isVideoVisible = ref.watch(globalVideoVisibilityProvider);
       final playingVideo = ref.watch(playingVideoProvider);
 
-      // Affiche la vidéo uniquement si c'est la notre qui joue
       if (isVideoVisible && playingVideo == widget.experience.id) {
         return YoutubeVideoPlayerIframe(
           youtubeVideoId: widget.experience.youtubeVideoId!,
@@ -227,7 +224,6 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
         );
       }
 
-      // Sinon, affiche l'image avec un bouton play
       return Stack(
         fit: StackFit.expand,
         children: [

@@ -41,12 +41,11 @@ class HomeScreen extends ConsumerWidget {
       children: [
         Positioned.fill(
           child: Align(
-            alignment: Alignment.bottomCenter, // Positionné en bas
+            alignment: Alignment.bottomCenter,
             child: SizedBox(
-              // On lui donne une hauteur fixe pour un bon rendu
               height: info.size.height * 2,
               child: Opacity(
-                opacity: 0.5, // On le rend un peu transparent
+                opacity: 0.5,
                 child: const CharacterViewer(),
               ),
             ),
@@ -73,7 +72,7 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  // ---------- Landscape Layout (Amélioré) ----------
+  // ---------- Landscape Layout ----------
   Widget _buildLandscapeLayout(
       BuildContext context, ResponsiveInfo info, ThemeData theme) {
     return IntrinsicHeight(
@@ -100,7 +99,7 @@ class HomeScreen extends ConsumerWidget {
           const SizedBox(width: 32),
           const Expanded(
             flex: 3,
-            child: CharacterViewer(), // Le modèle 3D prend sa propre colonne
+            child: CharacterViewer(),
           ),
           const SizedBox(width: 32),
           Expanded(
@@ -151,7 +150,7 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  // ---------- Presentation Text (avec corrections) ----------
+  // ---------- Presentation Text ----------
   Widget _buildPresentationText(
       BuildContext context, ThemeData theme, bool isMobile) {
     return Column(
@@ -183,7 +182,7 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  // ---------- Action Buttons (avec corrections) ----------
+  // ---------- Action Buttons ----------
   Widget _buildActionButtons(
       BuildContext context, ThemeData theme, bool isMobile) {
     return Wrap(
@@ -217,7 +216,7 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  // ---------- Button Style (avec correction) ----------
+  // ---------- Button Style ----------
   ButtonStyle _btnStyle(ThemeData theme, bool isMobile) {
     return ElevatedButton.styleFrom(
       padding: EdgeInsets.symmetric(

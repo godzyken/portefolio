@@ -117,27 +117,30 @@ class ServiceCardWidgets {
   }) {
     final size = ServiceCardHelpers.getIconSize(info) * 1.2;
 
-    return InkWell(
-      key: buttonKey,
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(size / 2),
-      child: Container(
-        padding: EdgeInsets.all(size * 0.25),
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: Colors.black.withValues(alpha: 0.6),
-          border: Border.all(color: Colors.white, width: 1.0),
-          boxShadow: [
-            BoxShadow(
-              color: theme.colorScheme.primary.withValues(alpha: 0.5),
-              blurRadius: 10,
-            ),
-          ],
-        ),
-        child: Icon(
-          overlayEntry != null ? Icons.close : Icons.psychology_outlined,
-          size: size * 0.6,
-          color: Colors.white,
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: InkWell(
+        key: buttonKey,
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(size / 2),
+        child: Container(
+          padding: EdgeInsets.all(size * 0.25),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.black.withValues(alpha: 0.6),
+            border: Border.all(color: Colors.white, width: 1.0),
+            boxShadow: [
+              BoxShadow(
+                color: theme.colorScheme.primary.withValues(alpha: 0.5),
+                blurRadius: 10,
+              ),
+            ],
+          ),
+          child: Icon(
+            overlayEntry != null ? Icons.close : Icons.psychology_outlined,
+            size: size * 0.6,
+            color: Colors.white,
+          ),
         ),
       ),
     );
