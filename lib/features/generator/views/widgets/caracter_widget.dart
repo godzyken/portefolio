@@ -13,6 +13,7 @@ class CharacterViewer extends ConsumerWidget {
     final modelPathAsync = ref.watch(characterModelProvider);
 
     return ModelViewer(
+      key: ValueKey(modelPathAsync),
       src: modelPathAsync,
       alt: "Mon personnage de portfolio en 3D",
       cameraControls: false,

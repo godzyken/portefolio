@@ -58,8 +58,8 @@ class ProjectCard extends ConsumerWidget {
           title: project.title,
           bulletPoints: project.points,
           imagePath: (project.cleanedImages?.isNotEmpty ?? false)
-              ? project.cleanedImages!.first
-              : project.cleanedImages!.last,
+              ? project.cleanedImages?.first
+              : project.cleanedImages?.last,
           onTap: () => showDialog(
             context: context,
             builder: (_) => buildAlertDialog(context, ref, pdfService),

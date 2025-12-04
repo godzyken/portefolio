@@ -1,6 +1,8 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
+import 'package:portefolio/core/provider/image_providers.dart';
 import 'package:portefolio/core/ui/widgets/responsive_text.dart';
 import 'package:portefolio/core/ui/widgets/smart_image.dart';
 
@@ -160,6 +162,8 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
     final theme = Theme.of(context);
     final images = _getImages();
 
+    final useRowLayout = info.isDesktop || info.isTablet || info.isLandscape;
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Stack(
@@ -236,11 +240,29 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildTitle(theme, info),
-
-                      ResponsiveBox(height: info.isMobile ? 32 : 48),
-
-                      // 🎯 Section WakaTime si projet de programmation (version sécurisée)
+                      if (useRowLayout)
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(child: _buildTitle(theme, info)),
+                            ResponsiveBox(width: info.isDesktop ? 48 : 32),
+                            Expanded(
+                              child: _buildSection("📜 Description",
+                                  widget.project.points, theme, info),
+                            ),
+                          ],
+                        )
+                      else // Affichage en Colonne pour Mobile/Portrait
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildTitle(theme, info),
+                            ResponsiveBox(height: info.isMobile ? 32 : 48),
+                            _buildSection("📜 Description",
+                                widget.project.points, theme, info),
+                          ],
+                        ),
+                      ResponsiveBox(height: 32),
                       WakaTimeConditionalWidget(
                         projectName: widget.project.title,
                         builder: (isTracked) {
@@ -249,23 +271,18 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
                           }
                           return Column(
                             children: [
-                              _buildWakaTimeSection(theme, info),
+                              _buildWakaTimeSection(theme, info, useRowLayout),
                               ResponsiveBox(height: 32),
                             ],
                           );
                         },
                       ),
-
-                      _buildSection(
-                          "📜 Description", widget.project.points, theme, info),
-
                       if (widget.project.techDetails != null &&
                           widget.project.techDetails!.isNotEmpty) ...[
                         ResponsiveBox(height: 32),
                         _buildTechDetails(
                             widget.project.techDetails!, theme, info),
                       ],
-
                       if (widget.project.results != null &&
                           widget.project.results!.isNotEmpty) ...[
                         ResponsiveBox(height: 32),
@@ -274,7 +291,6 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
                         ResponsiveBox(height: 32),
                         _buildKPISection(theme, info),
                       ],
-
                       if (images.length > 1)
                         const SizedBox(
                           height: 80,
@@ -385,7 +401,8 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
   }
 
   // 🎯 Section WakaTime complète
-  Widget _buildWakaTimeSection(ThemeData theme, ResponsiveInfo info) {
+  Widget _buildWakaTimeSection(
+      ThemeData theme, ResponsiveInfo info, bool useRowLayout) {
     final statsAsync = ref.watch(wakaTimeStatsProvider('last_7_days'));
 
     return Column(
@@ -421,6 +438,68 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
                     ),
             );
 
+            Widget timeStatsColumn = Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildWakaTimeStat(
+                  icon: Icons.timer,
+                  label: 'Temps de développement',
+                  value: projectStat.text,
+                  color: Colors.blue,
+                  info: info,
+                ),
+                const SizedBox(height: 16),
+                _buildWakaTimeStat(
+                  icon: Icons.trending_up,
+                  label: 'Part du temps total',
+                  value: '${projectStat.percent.toStringAsFixed(1)}%',
+                  color: Colors.green,
+                  info: info,
+                ),
+                const SizedBox(height: 16),
+                _buildWakaTimeStat(
+                  icon: Icons.schedule,
+                  label: 'Format détaillé',
+                  value: projectStat.digital,
+                  color: Colors.orange,
+                  info: info,
+                ),
+              ],
+            );
+
+            Widget languagesWidget =
+                _buildLanguagesSection(stats.languages, info, useRowLayout);
+
+            Widget content;
+
+            if (useRowLayout && stats.languages.isNotEmpty) {
+              // Alignement CÔTE À CÔTE : Temps (col 1), Graphique (col 2), Légende (col 3)
+              content = Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Col 1: Temps de développement
+                  Expanded(flex: 2, child: timeStatsColumn),
+                  ResponsiveBox(width: 32),
+                  // Col 2 & 3 : Graphique + Légende des langages
+                  Expanded(flex: 3, child: languagesWidget),
+                ],
+              );
+            } else {
+              // Affichage en Colonne (Mobile/Portrait/Pas de langages)
+              content = Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  timeStatsColumn,
+                  if (stats.languages.isNotEmpty) ...[
+                    const SizedBox(height: 24),
+                    const Divider(color: Colors.white24),
+                    const SizedBox(height: 16),
+                    languagesWidget,
+                  ],
+                ],
+              );
+            }
+
             return ResponsiveBox(
               padding: EdgeInsets.all(info.isMobile ? 20 : 32),
               decoration: BoxDecoration(
@@ -431,39 +510,7 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
                   width: 2,
                 ),
               ),
-              child: Column(
-                children: [
-                  _buildWakaTimeStat(
-                    icon: Icons.timer,
-                    label: 'Temps de développement',
-                    value: projectStat.text,
-                    color: Colors.blue,
-                    info: info,
-                  ),
-                  const SizedBox(height: 16),
-                  _buildWakaTimeStat(
-                    icon: Icons.trending_up,
-                    label: 'Part du temps total',
-                    value: '${projectStat.percent.toStringAsFixed(1)}%',
-                    color: Colors.green,
-                    info: info,
-                  ),
-                  const SizedBox(height: 16),
-                  _buildWakaTimeStat(
-                    icon: Icons.schedule,
-                    label: 'Format détaillé',
-                    value: projectStat.digital,
-                    color: Colors.orange,
-                    info: info,
-                  ),
-                  if (stats.languages.isNotEmpty) ...[
-                    const SizedBox(height: 24),
-                    const Divider(color: Colors.white24),
-                    const SizedBox(height: 16),
-                    _buildLanguagesSection(stats.languages, info),
-                  ],
-                ],
-              ),
+              child: content,
             );
           },
           loading: () => ResponsiveBox(
@@ -528,56 +575,203 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
     );
   }
 
-  Widget _buildLanguagesSection(
-      List<WakaTimeLanguage> languages, ResponsiveInfo info) {
-    return Column(
+  Widget _buildLanguagesSection(List<WakaTimeLanguage> languages,
+      ResponsiveInfo info, bool useRowLayout) {
+    final displayLanguages = languages.take(5).toList();
+    final colors = [
+      Colors.blue,
+      Colors.green,
+      Colors.orange,
+      Colors.purple,
+      Colors.pink,
+    ];
+
+    final pieChartWidget = SizedBox(
+      height: useRowLayout ? 250 : 300,
+      width:
+          useRowLayout ? double.infinity : null, // Fixe la largeur en mode Row
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          // Pie Chart
+          PieChart(
+            PieChartData(
+              sectionsSpace: 2,
+              centerSpaceRadius: info.isMobile ? 50 : 70,
+              sections: displayLanguages.asMap().entries.map((entry) {
+                final index = entry.key;
+                final lang = entry.value;
+                final color = colors[index % colors.length];
+
+                return PieChartSectionData(
+                  color: color,
+                  value: lang.percent,
+                  title: '',
+                  radius: info.isMobile ? 60 : 80,
+                );
+              }).toList(),
+            ),
+          ),
+          // Centre du pie chart
+          Container(
+            width: info.isMobile ? 100 : 140,
+            height: info.isMobile ? 100 : 140,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.black.withValues(alpha: 0.6),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.2),
+                width: 2,
+              ),
+            ),
+            child: Center(
+              child: ResponsiveText.bodyMedium(
+                '${displayLanguages.length}\nLangages',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: info.isMobile ? 12 : 14,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    final legendWidget = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ResponsiveText.bodyLarge(
-          'Langages utilisés',
+          'Légende',
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
             fontSize: info.isMobile ? 16 : 18,
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 16),
         Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: languages.take(5).map((lang) {
-            return Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.2),
-                ),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ResponsiveText.bodySmall(
-                    lang.name,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(width: 6),
-                  ResponsiveText.bodySmall(
-                    '${lang.percent.toStringAsFixed(1)}%',
-                    style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.6),
-                    ),
-                  ),
-                ],
-              ),
+          spacing: 12,
+          runSpacing: 12,
+          children: displayLanguages.asMap().entries.map((entry) {
+            final index = entry.key;
+            final lang = entry.value;
+            final color = colors[index % colors.length];
+
+            return _buildLanguageLegendItem(
+              lang: lang,
+              color: color,
+              info: info,
             );
           }).toList(),
         ),
       ],
+    );
+
+    if (useRowLayout) {
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Col 2.1: Pie Chart (prend 40% de l'espace alloué)
+          Expanded(flex: 4, child: pieChartWidget),
+          ResponsiveBox(width: 24),
+          // Col 2.2: Légende des Langages (prend 60% de l'espace alloué)
+          Expanded(flex: 6, child: legendWidget),
+        ],
+      );
+    } else {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ResponsiveText.bodyLarge(
+            'Langages utilisés',
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: info.isMobile ? 16 : 18,
+            ),
+          ),
+          const SizedBox(height: 16),
+          pieChartWidget,
+          const SizedBox(height: 24),
+          legendWidget,
+        ],
+      );
+    }
+  }
+
+  Widget _buildLanguageLegendItem({
+    required WakaTimeLanguage lang,
+    required Color color,
+    required ResponsiveInfo info,
+  }) {
+    return Consumer(
+      builder: (context, ref, child) {
+        final logoPath =
+            ref.watch(skillLogoPathProvider(lang.name.toLowerCase()));
+
+        return Container(
+          padding: EdgeInsets.all(info.isMobile ? 8 : 12),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.15),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: color.withValues(alpha: 0.4),
+              width: 2,
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Logo ou icône
+              if (logoPath != null)
+                SmartImage(
+                  path: logoPath,
+                  width: info.isMobile ? 24 : 32,
+                  height: info.isMobile ? 24 : 32,
+                  fit: BoxFit.contain,
+                  enableShimmer: false,
+                  useCache: true,
+                  fallbackIcon: Icons.code,
+                  fallbackColor: color,
+                )
+              else
+                Icon(
+                  Icons.code,
+                  size: info.isMobile ? 24 : 32,
+                  color: color,
+                ),
+              SizedBox(width: info.isMobile ? 8 : 12),
+              // Nom et pourcentage
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ResponsiveText.bodySmall(
+                    lang.name,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: info.isMobile ? 12 : 14,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  ResponsiveText.bodySmall(
+                    '${lang.percent.toStringAsFixed(1)}%',
+                    style: TextStyle(
+                      color: color,
+                      fontWeight: FontWeight.w600,
+                      fontSize: info.isMobile ? 10 : 12,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
