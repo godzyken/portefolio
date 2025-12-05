@@ -1,80 +1,61 @@
 {
     "data": {
-        "id": "78160cb8-4164-4b27-bdfc-e71fd08d425d",
+        "id": "2bfb5285-0497-48cb-b53c-deb57e518882",
         "user_id": "d44d9645-f329-4729-a92d-c1c4ce039e23",
         "range": "last_7_days",
-        "start": "2025-11-25T23:00:00Z",
-        "end": "2025-12-02T22:59:59Z",
+        "start": "2025-11-27T23:00:00Z",
+        "end": "2025-12-04T22:59:59Z",
         "timeout": 15,
         "writes_only": false,
         "timezone": "Europe/Paris",
         "holidays": 0,
-        "status": "pending_update",
-        "created_at": "2025-11-18T04:47:49Z",
-        "modified_at": "2025-12-03T03:12:49Z",
-        "human_readable_daily_average": "7 hrs 45 mins",
-        "is_up_to_date": true,
-        "days_minus_holidays": 7,
-        "machines": [
-            {
-                "total_seconds": 195481.456,
-                "name": "LAPTOP-CUKQT8S6",
-                "machine_name_id": "018e87a1-bc6e-4704-bac3-601dd20fbd21",
-                "percent": 100.0,
-                "digital": "54:18",
-                "decimal": "54.30",
-                "text": "54 hrs 18 mins",
-                "hours": 54,
-                "minutes": 18
-            }
-        ],
-        "daily_average_including_other_language": 27926.0,
+        "status": "ok",
+        "created_at": "2025-12-05T02:56:49Z",
+        "modified_at": "2025-12-05T02:56:50Z",
+        "human_readable_daily_average": "6 hrs 32 mins",
         "percent_calculated": 100,
-        "best_day": {
-            "date": "2025-11-26",
-            "total_seconds": 47479.875,
-            "text": "13 hrs 11 mins"
-        },
-        "editors": [
+        "human_readable_total_including_other_language": "45 hrs 50 mins",
+        "daily_average_including_other_language": 23573.0,
+        "is_up_to_date": true,
+        "human_readable_daily_average_including_other_language": "6 hrs 32 mins",
+        "operating_systems": [
             {
-                "total_seconds": 195481.456,
-                "name": "Android Studio",
+                "total_seconds": 165013.916,
+                "name": "Windows",
                 "percent": 100.0,
-                "digital": "54:18",
-                "decimal": "54.30",
-                "text": "54 hrs 18 mins",
-                "hours": 54,
-                "minutes": 18
+                "digital": "45:50",
+                "decimal": "45.83",
+                "text": "45 hrs 50 mins",
+                "hours": 45,
+                "minutes": 50
             }
         ],
         "is_already_updating": false,
-        "operating_systems": [
-            {
-                "total_seconds": 195481.456,
-                "name": "Windows",
-                "percent": 100.0,
-                "digital": "54:18",
-                "decimal": "54.30",
-                "text": "54 hrs 18 mins",
-                "hours": 54,
-                "minutes": 18
-            }
-        ],
-        "total_seconds_including_other_language": 195481.456,
+        "human_readable_total": "45 hrs 50 mins",
         "categories": [
             {
                 "name": "Coding",
-                "total_seconds": 195480.511,
-                "percent": 100.0,
-                "digital": "54:18",
-                "decimal": "54.30",
-                "text": "54 hrs 18 mins",
-                "hours": 54,
-                "minutes": 18
+                "total_seconds": 164859.654,
+                "percent": 99.91,
+                "digital": "45:47",
+                "decimal": "45.78",
+                "text": "45 hrs 47 mins",
+                "hours": 45,
+                "minutes": 47
             },
             {
                 "name": "Writing Tests",
-                "total_seconds": 0.945,
+                "total_seconds": 153.266,
+                "percent": 0.09,
+                "digital": "0:02",
+                "decimal": "0.03",
+                "text": "2 mins",
+                "hours": 0,
+                "minutes": 2
+            },
+            {
+                "name": "Writing Docs",
+                "total_seconds": 0.996,
                 "percent": 0.0,
                 "digital": "0:00",
                 "decimal": "0.00",
@@ -83,91 +64,54 @@
                 "minutes": 0
             }
         ],
+        "total_seconds_including_other_language": 165013.916,
         "days_including_holidays": 7,
-        "total_seconds": 195481.456,
-        "human_readable_total": "54 hrs 18 mins",
-        "human_readable_total_including_other_language": "54 hrs 18 mins",
-        "is_stuck": false,
-        "human_readable_daily_average_including_other_language": "7 hrs 45 mins",
-        "is_up_to_date_pending_future": false,
-        "daily_average": 27926.0,
-        "projects": [
-            {
-                "total_seconds": 132919.268,
-                "name": "portefolio",
-                "percent": 68.0,
-                "digital": "36:55",
-                "decimal": "36.92",
-                "text": "36 hrs 55 mins",
-                "hours": 36,
-                "minutes": 55
-            },
-            {
-                "total_seconds": 60089.936,
-                "name": "egote_services_v4",
-                "percent": 30.74,
-                "digital": "16:41",
-                "decimal": "16.68",
-                "text": "16 hrs 41 mins",
-                "hours": 16,
-                "minutes": 41
-            },
-            {
-                "total_seconds": 2308.02,
-                "name": "3.35.2",
-                "percent": 1.18,
-                "digital": "0:38",
-                "decimal": "0.63",
-                "text": "38 mins",
-                "hours": 0,
-                "minutes": 38
-            },
-            {
-                "total_seconds": 164.232,
-                "name": "flutter_sdk",
-                "percent": 0.08,
-                "digital": "0:02",
-                "decimal": "0.03",
-                "text": "2 mins",
-                "hours": 0,
-                "minutes": 2
-            }
-        ],
+        "days_minus_holidays": 7,
         "languages": [
             {
                 "name": "Dart",
-                "total_seconds": 182030.946,
-                "percent": 93.12,
-                "digital": "50:33",
-                "decimal": "50.55",
-                "text": "50 hrs 33 mins",
-                "hours": 50,
-                "minutes": 33
+                "total_seconds": 145468.932,
+                "percent": 88.16,
+                "digital": "40:24",
+                "decimal": "40.40",
+                "text": "40 hrs 24 mins",
+                "hours": 40,
+                "minutes": 24
             },
             {
                 "name": "JSON",
-                "total_seconds": 9000.855,
-                "percent": 4.6,
-                "digital": "2:30",
-                "decimal": "2.50",
-                "text": "2 hrs 30 mins",
+                "total_seconds": 8992.668,
+                "percent": 5.45,
+                "digital": "2:29",
+                "decimal": "2.48",
+                "text": "2 hrs 29 mins",
                 "hours": 2,
-                "minutes": 30
+                "minutes": 29
             },
             {
                 "name": "YAML",
-                "total_seconds": 1699.563,
-                "percent": 0.87,
-                "digital": "0:28",
-                "decimal": "0.47",
-                "text": "28 mins",
+                "total_seconds": 6067.659,
+                "percent": 3.68,
+                "digital": "1:41",
+                "decimal": "1.68",
+                "text": "1 hr 41 mins",
+                "hours": 1,
+                "minutes": 41
+            },
+            {
+                "name": "Kotlin",
+                "total_seconds": 2408.839,
+                "percent": 1.46,
+                "digital": "0:40",
+                "decimal": "0.67",
+                "text": "40 mins",
                 "hours": 0,
-                "minutes": 28
+                "minutes": 40
             },
             {
                 "name": "Bash",
                 "total_seconds": 1585.487,
-                "percent": 0.81,
+                "percent": 0.96,
                 "digital": "0:26",
                 "decimal": "0.43",
                 "text": "26 mins",
@@ -175,39 +119,29 @@
                 "minutes": 26
             },
             {
-                "name": "HTML",
-                "total_seconds": 715.805,
-                "percent": 0.37,
-                "digital": "0:11",
-                "decimal": "0.18",
-                "text": "11 mins",
-                "hours": 0,
-                "minutes": 11
-            },
-            {
                 "name": "Image (svg)",
-                "total_seconds": 243.77,
-                "percent": 0.12,
-                "digital": "0:04",
-                "decimal": "0.07",
-                "text": "4 mins",
+                "total_seconds": 226.086,
+                "percent": 0.14,
+                "digital": "0:03",
+                "decimal": "0.05",
+                "text": "3 mins",
                 "hours": 0,
-                "minutes": 4
+                "minutes": 3
             },
             {
-                "name": "Text",
-                "total_seconds": 111.753,
-                "percent": 0.06,
-                "digital": "0:01",
-                "decimal": "0.02",
-                "text": "1 min",
+                "name": "Java Properties",
+                "total_seconds": 214.888,
+                "percent": 0.13,
+                "digital": "0:03",
+                "decimal": "0.05",
+                "text": "3 mins",
                 "hours": 0,
-                "minutes": 1
+                "minutes": 3
             },
             {
                 "name": "textmate",
-                "total_seconds": 38.834,
-                "percent": 0.02,
+                "total_seconds": 41.858,
+                "percent": 0.03,
                 "digital": "0:00",
                 "decimal": "0.00",
                 "text": "0 secs",
@@ -215,9 +149,9 @@
                 "minutes": 0
             },
             {
-                "name": "Kotlin",
-                "total_seconds": 34.994,
-                "percent": 0.02,
+                "name": "Shell Script",
+                "total_seconds": 3.121,
+                "percent": 0.0,
                 "digital": "0:00",
                 "decimal": "0.00",
                 "text": "0 secs",
@@ -226,8 +160,8 @@
             },
             {
                 "name": "Java",
-                "total_seconds": 18.09,
-                "percent": 0.01,
+                "total_seconds": 1.614,
+                "percent": 0.0,
                 "digital": "0:00",
                 "decimal": "0.00",
                 "text": "0 secs",
@@ -243,328 +177,154 @@
                 "text": "0 secs",
                 "hours": 0,
                 "minutes": 0
+            },
+            {
+                "name": "Markdown",
+                "total_seconds": 0.996,
+                "percent": 0.0,
+                "digital": "0:00",
+                "decimal": "0.00",
+                "text": "0 secs",
+                "hours": 0,
+                "minutes": 0
+            },
+            {
+                "name": "Text",
+                "total_seconds": 0.251,
+                "percent": 0.0,
+                "digital": "0:00",
+                "decimal": "0.00",
+                "text": "0 secs",
+                "hours": 0,
+                "minutes": 0
+            },
+            {
+                "name": "Properties",
+                "total_seconds": 0.158,
+                "percent": 0.0,
+                "digital": "0:00",
+                "decimal": "0.00",
+                "text": "0 secs",
+                "hours": 0,
+                "minutes": 0
+            }
+        ],
+        "is_stuck": false,
+        "total_seconds": 165013.916,
+        "best_day": {
+            "date": "2025-12-01",
+            "total_seconds": 36005.466,
+            "text": "10 hrs"
+        },
+        "machines": [
+            {
+                "total_seconds": 165013.916,
+                "name": "LAPTOP-CUKQT8S6",
+                "machine_name_id": "018e87a1-bc6e-4704-bac3-601dd20fbd21",
+                "percent": 100.0,
+                "digital": "45:50",
+                "decimal": "45.83",
+                "text": "45 hrs 50 mins",
+                "hours": 45,
+                "minutes": 50
+            }
+        ],
+        "editors": [
+            {
+                "total_seconds": 165013.916,
+                "name": "Android Studio",
+                "percent": 100.0,
+                "digital": "45:50",
+                "decimal": "45.83",
+                "text": "45 hrs 50 mins",
+                "hours": 45,
+                "minutes": 50
+            }
+        ],
+        "is_up_to_date_pending_future": false,
+        "daily_average": 23573.0,
+        "projects": [
+            {
+                "total_seconds": 162943.202,
+                "name": "portefolio",
+                "percent": 98.75,
+                "digital": "45:15",
+                "decimal": "45.25",
+                "text": "45 hrs 15 mins",
+                "hours": 45,
+                "minutes": 15
+            },
+            {
+                "total_seconds": 1904.868,
+                "name": "3.35.2",
+                "percent": 1.15,
+                "digital": "0:31",
+                "decimal": "0.52",
+                "text": "31 mins",
+                "hours": 0,
+                "minutes": 31
+            },
+            {
+                "total_seconds": 164.232,
+                "name": "flutter_sdk",
+                "percent": 0.1,
+                "digital": "0:02",
+                "decimal": "0.03",
+                "text": "2 mins",
+                "hours": 0,
+                "minutes": 2
+            },
+            {
+                "total_seconds": 1.614,
+                "name": "Unknown Project",
+                "percent": 0.0,
+                "digital": "0:00",
+                "decimal": "0.00",
+                "text": "0 secs",
+                "hours": 0,
+                "minutes": 0
             }
         ],
         "dependencies": [
             {
-                "total_seconds": 715.805,
-                "name": "\"./flutter.js\"",
-                "percent": 26.72,
-                "digital": "0:11",
-                "decimal": "0.18",
-                "text": "11 mins",
+                "total_seconds": 287.495,
+                "name": "com.android",
+                "percent": 26.39,
+                "digital": "0:04",
+                "decimal": "0.07",
+                "text": "4 mins",
                 "hours": 0,
-                "minutes": 11
+                "minutes": 4
             },
             {
-                "total_seconds": 715.805,
-                "name": "\"./main.dart.js\"",
-                "percent": 26.72,
-                "digital": "0:11",
-                "decimal": "0.18",
-                "text": "11 mins",
-                "hours": 0,
-                "minutes": 11
-            },
-            {
-                "total_seconds": 715.805,
-                "name": "\"https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js\"",
-                "percent": 26.72,
-                "digital": "0:11",
-                "decimal": "0.18",
-                "text": "11 mins",
-                "hours": 0,
-                "minutes": 11
-            },
-            {
-                "total_seconds": 24.72,
-                "name": "io.flutter",
-                "percent": 0.92,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
-                "hours": 0,
-                "minutes": 0
-            },
-            {
-                "total_seconds": 18.09,
-                "name": "webrtc.Logging",
-                "percent": 0.68,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
-                "hours": 0,
-                "minutes": 0
-            },
-            {
-                "total_seconds": 18.09,
-                "name": "android.app",
-                "percent": 0.68,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
-                "hours": 0,
-                "minutes": 0
-            },
-            {
-                "total_seconds": 18.09,
-                "name": "webrtc.PeerConnection",
-                "percent": 0.68,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
-                "hours": 0,
-                "minutes": 0
-            },
-            {
-                "total_seconds": 18.09,
-                "name": "webrtc.video",
-                "percent": 0.68,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
-                "hours": 0,
-                "minutes": 0
-            },
-            {
-                "total_seconds": 18.09,
-                "name": "webrtc.MediaStreamTrack",
-                "percent": 0.68,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
-                "hours": 0,
-                "minutes": 0
-            },
-            {
-                "total_seconds": 18.09,
-                "name": "cloudwebrtc.webrtc",
-                "percent": 0.68,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
-                "hours": 0,
-                "minutes": 0
-            },
-            {
-                "total_seconds": 18.09,
+                "total_seconds": 287.495,
                 "name": "androidx.annotation",
-                "percent": 0.68,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
+                "percent": 26.39,
+                "digital": "0:04",
+                "decimal": "0.07",
+                "text": "4 mins",
                 "hours": 0,
-                "minutes": 0
+                "minutes": 4
             },
             {
-                "total_seconds": 18.09,
-                "name": "twilio.audioswitch",
-                "percent": 0.68,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
+                "total_seconds": 287.495,
+                "name": "org.gradle",
+                "percent": 26.39,
+                "digital": "0:04",
+                "decimal": "0.07",
+                "text": "4 mins",
                 "hours": 0,
-                "minutes": 0
+                "minutes": 4
             },
             {
-                "total_seconds": 18.09,
-                "name": "android.os",
-                "percent": 0.68,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
+                "total_seconds": 227.101,
+                "name": "org.jetbrains",
+                "percent": 20.84,
+                "digital": "0:03",
+                "decimal": "0.05",
+                "text": "3 mins",
                 "hours": 0,
-                "minutes": 0
-            },
-            {
-                "total_seconds": 18.09,
-                "name": "webrtc.MediaStream",
-                "percent": 0.68,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
-                "hours": 0,
-                "minutes": 0
-            },
-            {
-                "total_seconds": 18.09,
-                "name": "webrtc.AudioTrack",
-                "percent": 0.68,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
-                "hours": 0,
-                "minutes": 0
-            },
-            {
-                "total_seconds": 18.09,
-                "name": "android.graphics",
-                "percent": 0.68,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
-                "hours": 0,
-                "minutes": 0
-            },
-            {
-                "total_seconds": 18.09,
-                "name": "webrtc.SdpObserver",
-                "percent": 0.68,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
-                "hours": 0,
-                "minutes": 0
-            },
-            {
-                "total_seconds": 18.09,
-                "name": "android.media",
-                "percent": 0.68,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
-                "hours": 0,
-                "minutes": 0
-            },
-            {
-                "total_seconds": 18.09,
-                "name": "webrtc.EglBase",
-                "percent": 0.68,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
-                "hours": 0,
-                "minutes": 0
-            },
-            {
-                "total_seconds": 18.09,
-                "name": "webrtc.VideoTrack",
-                "percent": 0.68,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
-                "hours": 0,
-                "minutes": 0
-            },
-            {
-                "total_seconds": 18.09,
-                "name": "android.content",
-                "percent": 0.68,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
-                "hours": 0,
-                "minutes": 0
-            },
-            {
-                "total_seconds": 18.09,
-                "name": "webrtc.RtpSender",
-                "percent": 0.68,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
-                "hours": 0,
-                "minutes": 0
-            },
-            {
-                "total_seconds": 18.09,
-                "name": "webrtc.PeerConnectionFactory",
-                "percent": 0.68,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
-                "hours": 0,
-                "minutes": 0
-            },
-            {
-                "total_seconds": 18.09,
-                "name": "webrtc.RtpCapabilities",
-                "percent": 0.68,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
-                "hours": 0,
-                "minutes": 0
-            },
-            {
-                "total_seconds": 18.09,
-                "name": "webrtc.audio",
-                "percent": 0.68,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
-                "hours": 0,
-                "minutes": 0
-            },
-            {
-                "total_seconds": 18.09,
-                "name": "android.hardware",
-                "percent": 0.68,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
-                "hours": 0,
-                "minutes": 0
-            },
-            {
-                "total_seconds": 18.09,
-                "name": "webrtc.DtmfSender",
-                "percent": 0.68,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
-                "hours": 0,
-                "minutes": 0
-            },
-            {
-                "total_seconds": 18.09,
-                "name": "android.util",
-                "percent": 0.68,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
-                "hours": 0,
-                "minutes": 0
-            },
-            {
-                "total_seconds": 18.09,
-                "name": "webrtc.MediaConstraints",
-                "percent": 0.68,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
-                "hours": 0,
-                "minutes": 0
-            },
-            {
-                "total_seconds": 18.09,
-                "name": "webrtc.CryptoOptions",
-                "percent": 0.68,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
-                "hours": 0,
-                "minutes": 0
-            },
-            {
-                "total_seconds": 18.09,
-                "name": "webrtc.IceCandidate",
-                "percent": 0.68,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
-                "hours": 0,
-                "minutes": 0
-            },
-            {
-                "total_seconds": 18.09,
-                "name": "webrtc.SessionDescription",
-                "percent": 0.68,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
-                "hours": 0,
-                "minutes": 0
+                "minutes": 3
             }
         ],
         "is_cached": true,
