@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:portefolio/core/ui/widgets/responsive_text.dart';
+import 'package:portefolio/core/ui/widgets/ui_widgets_extentions.dart';
 
 import '../../../projets/providers/projects_extentions_providers.dart';
 import '../../data/extention_models.dart';
 import '../../services/wakatime_service.dart';
 
-/// Badge WakaTime amélioré avec indicateur de tracking
 class WakaTimeBadge extends ConsumerWidget {
   final String projectName;
   final bool showTimeSpent;
@@ -56,7 +55,6 @@ class WakaTimeBadge extends ConsumerWidget {
             color: isTracked ? Colors.blue : Colors.grey,
           ),
           const SizedBox(width: 4),
-
           if (showTrackingIndicator)
             ResponsiveBox(
               width: 8,
@@ -75,10 +73,7 @@ class WakaTimeBadge extends ConsumerWidget {
                     : null,
               ),
             ),
-
           const SizedBox(width: 4),
-
-          // --- Affichage du temps passé selon l'état asynchrone ---
           if (showTimeSpent)
             timeSpentAsync.when(
               data: (duration) {
@@ -93,7 +88,7 @@ class WakaTimeBadge extends ConsumerWidget {
                   );
                 }
                 return ResponsiveText.bodySmall(
-                  _formatDuration(duration),
+                  DurationFormatter.formatDuration(duration),
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
@@ -149,7 +144,9 @@ class WakaTimeBadge extends ConsumerWidget {
           const SizedBox(width: 4),
           timeSpentAsync.when(
             data: (duration) => Text(
-              duration != null ? _formatDuration(duration) : '0h',
+              duration != null
+                  ? DurationFormatter.formatDuration(duration)
+                  : '0h',
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.bold,
@@ -173,20 +170,8 @@ class WakaTimeBadge extends ConsumerWidget {
       ),
     );
   }
-
-  String _formatDuration(Duration duration) {
-    final hours = duration.inHours;
-    final minutes = duration.inMinutes.remainder(60);
-
-    if (hours > 0) {
-      return '${hours}h ${minutes}min';
-    } else {
-      return '${minutes}min';
-    }
-  }
 }
 
-/// Badge SVG officiel de WakaTime
 class WakaTimeSvgBadge extends StatelessWidget {
   final String projectName;
   final double height;
@@ -249,7 +234,6 @@ class WakaTimeSvgBadge extends StatelessWidget {
   }
 }
 
-/// Widget combiné avec tooltip et stats détaillées
 class WakaTimeDetailedBadge extends ConsumerWidget {
   final String projectName;
   final bool showSvgBadge;
@@ -271,7 +255,6 @@ class WakaTimeDetailedBadge extends ConsumerWidget {
       return const SizedBox.shrink();
     }
 
-    // Si le projet a un badge officiel et qu'on veut l'afficher
     if (showSvgBadge && wakaProject?.badge != null) {
       return Tooltip(
         message: _buildTooltipMessage(isTracked, timeSpentAsync, statsAsync),
@@ -350,7 +333,8 @@ class WakaTimeDetailedBadge extends ConsumerWidget {
 
     timeSpentAsync.whenData((timeSpent) {
       if (timeSpent != null) {
-        buffer.writeln('Temps passé : ${_formatDuration(timeSpent)}');
+        buffer.writeln(
+            'Temps passé : ${DurationFormatter.formatShort(timeSpent)}');
       } else {
         buffer.writeln('Aucune donnée enregistrée');
       }
@@ -375,17 +359,6 @@ class WakaTimeDetailedBadge extends ConsumerWidget {
 
     return buffer.toString().trim();
   }
-
-  String _formatDuration(Duration duration) {
-    final hours = duration.inHours;
-    final minutes = duration.inMinutes.remainder(60);
-
-    if (hours > 0) {
-      return '${hours}h ${minutes}min';
-    } else {
-      return '${minutes}min';
-    }
-  }
 }
 
 class SafeWakaTimeBadge extends ConsumerWidget {
@@ -404,7 +377,6 @@ class SafeWakaTimeBadge extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Utiliser le provider asynchrone
     final trackingStatus =
         ref.watch(projectTrackingStatusProvider(projectName));
 
@@ -463,7 +435,6 @@ class SafeWakaTimeBadge extends ConsumerWidget {
   }
 }
 
-/// Widget détaillé sécurisé
 class SafeWakaTimeDetailedBadge extends ConsumerWidget {
   final String projectName;
   final bool showSvgBadge;
@@ -520,7 +491,6 @@ class SafeWakaTimeDetailedBadge extends ConsumerWidget {
   }
 }
 
-/// Wrapper pour afficher conditionnellement le contenu WakaTime
 class WakaTimeConditionalWidget extends ConsumerWidget {
   final String projectName;
   final Widget Function(bool isTracked) builder;

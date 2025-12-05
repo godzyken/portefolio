@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/ui/widgets/duration_formatter.dart';
 import '../../../projets/providers/projects_extentions_providers.dart';
 
 /// Widget de débogage pour WakaTime
@@ -215,7 +216,7 @@ class WakaTimeProjectMatcher extends ConsumerWidget {
             const SizedBox(height: 4),
             timeSpentAsync.when(
               data: (duration) => Text(
-                '⏱ Temps: ${duration != null ? _formatDuration(duration) : 'N/A'}',
+                '⏱ Temps: ${duration != null ? DurationFormatter.formatDuration(duration) : 'N/A'}',
               ),
               loading: () => const Text('⏱ Temps: Chargement...'),
               error: (e, _) => Text('⏱ Temps: Erreur - $e'),
@@ -224,11 +225,5 @@ class WakaTimeProjectMatcher extends ConsumerWidget {
         ),
       ),
     );
-  }
-
-  String _formatDuration(Duration duration) {
-    final hours = duration.inHours;
-    final minutes = duration.inMinutes.remainder(60);
-    return '${hours}h ${minutes}min';
   }
 }

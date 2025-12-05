@@ -172,7 +172,6 @@ class _ImmersiveExperienceDetailState
           path: logoPath,
           responsiveSize: ResponsiveImageSize.medium,
           fit: BoxFit.contain,
-          // Utilise une couleur de filtre basée sur le thème pour l'harmonisation
           color: Colors.white.withValues(alpha: 0.9),
           colorBlendMode: BlendMode.modulate,
         ),
@@ -187,7 +186,6 @@ class _ImmersiveExperienceDetailState
     final theme = Theme.of(context);
 
     return Theme(
-      // Thème dynamique basé sur l'expérience
       data: theme.copyWith(
         colorScheme: ColorScheme.fromSeed(
           seedColor: themeColor,
@@ -199,7 +197,6 @@ class _ImmersiveExperienceDetailState
         backgroundColor: Colors.transparent,
         body: Stack(
           children: [
-            // Background avec image parallaxe ou particules
             _buildBackground(themeColor),
 
             // Contenu principal
@@ -212,7 +209,6 @@ class _ImmersiveExperienceDetailState
                     controller: _scrollController,
                     physics: const BouncingScrollPhysics(),
                     slivers: [
-                      // Header avec média en arrière-plan
                       _buildSliverHeader(info, themeColor),
 
                       // Contenu détaillé
@@ -309,10 +305,8 @@ class _ImmersiveExperienceDetailState
               ),
             ),
             child: ClipRect(
-              // Le BackdropFilter doit être dans un ClipRect
               child: BackdropFilter(
-                filter: ImageFilter.blur(
-                    sigmaX: 5.0, sigmaY: 5.0), // Ajustez la force du flou
+                filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
                 child: Container(
                   color: Colors.black.withValues(alpha: 0.1),
                 ),
@@ -322,7 +316,6 @@ class _ImmersiveExperienceDetailState
         ],
       ));
     } else {
-      // Fond avec particules animées
       return Positioned.fill(
         child: ParticleBackground(
           particleCount: 50,
@@ -557,7 +550,7 @@ class _ImmersiveExperienceDetailState
 
   Widget _buildTech3DChip(String tech, Color primaryColor, ThemeData theme) {
     final techLower = tech.toLowerCase();
-    final fallbackIcon = _getTechIcon(tech);
+    final fallbackIcon = TechIconHelper.getIconForTech(tech);
     final String? logoPath = ref.read(skillLogoPathProvider(techLower));
     const double logoSize = 20.0;
     const double containerSize = logoSize + 8.0;
@@ -694,32 +687,5 @@ class _ImmersiveExperienceDetailState
         ],
       ),
     );
-  }
-
-  IconData _getTechIcon(String tech) {
-    final techLower = tech.toLowerCase();
-
-    // Mappage de chaînes de caractères vers un IconData
-    if (techLower.contains('flutter') || techLower.contains('dart')) {
-      return Icons.phone_android;
-    }
-    if (techLower.contains('angular') ||
-        techLower.contains('react') ||
-        techLower.contains('vue')) {
-      return Icons.web;
-    }
-    if (techLower.contains('node') || techLower.contains('express')) {
-      return Icons.dns;
-    }
-    if (techLower.contains('firebase') || techLower.contains('cloud')) {
-      return Icons.cloud;
-    }
-    if (techLower.contains('database') ||
-        techLower.contains('sql') ||
-        techLower.contains('mongo')) {
-      return Icons.storage;
-    }
-    // Icône par défaut si aucune correspondance n'est trouvée
-    return Icons.star;
   }
 }

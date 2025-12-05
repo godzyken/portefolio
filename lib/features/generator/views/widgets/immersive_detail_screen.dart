@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/provider/image_providers.dart';
-import 'package:portefolio/core/ui/widgets/responsive_text.dart';
-import 'package:portefolio/core/ui/widgets/smart_image.dart';
+import 'package:portefolio/core/ui/widgets/ui_widgets_extentions.dart';
 
 import '../../../projets/providers/projects_extentions_providers.dart';
 import '../../data/extention_models.dart';
@@ -153,7 +152,10 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
 
     return programmingTags.any((tag) =>
         titleLower.contains(tag.toLowerCase()) ||
-        pointsLower.any((p) => p.contains(tag.toLowerCase())));
+        pointsLower.any((p) {
+          p.contains(tag.toLowerCase());
+          return TechIconHelper.isProgrammingTech(p);
+        }));
   }
 
   @override

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/affichage/screen_size_detector.dart';
-import '../../../../core/ui/widgets/responsive_text.dart';
+import '../../../../core/ui/widgets/ui_widgets_extentions.dart';
 import '../../providers/calendar_provider.dart';
 import '../../providers/contact_form_provider.dart';
 import '../../providers/cv_download_provider.dart';
@@ -92,7 +92,7 @@ class ContactConversionOption extends ConsumerWidget {
             () async {
               developer.log('🔐 Tentative de connexion...');
 
-              _showLoadingSnackBar(context, 'Connexion en cours...');
+              SnackBarHelper.showLoading(context, 'Connexion en cours...');
 
               try {
                 await ref
@@ -100,7 +100,7 @@ class ContactConversionOption extends ConsumerWidget {
                     .signInAndInit();
 
                 if (context.mounted) {
-                  _showSuccessSnackBar(context, 'Connecté avec succès !');
+                  SnackBarHelper.showSuccess(context, 'Connecté avec succès !');
 
                   await Future.delayed(const Duration(milliseconds: 500));
                   if (context.mounted) {
@@ -111,7 +111,7 @@ class ContactConversionOption extends ConsumerWidget {
               } catch (e) {
                 developer.log('❌ Erreur: $e');
                 if (context.mounted) {
-                  _showErrorSnackBar(context, e.toString());
+                  SnackBarHelper.showError(context, e.toString());
                 }
               }
             },
@@ -203,60 +203,6 @@ class ContactConversionOption extends ConsumerWidget {
       shadowColor: theme.colorScheme.primary.withValues(alpha: 0.2),
       labelStyle:
           theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
-    );
-  }
-
-  /// Helpers pour les SnackBars
-  void _showLoadingSnackBar(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            const ResponsiveBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                color: Colors.white,
-              ),
-            ),
-            const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
-            ResponsiveText.headlineMedium(message),
-          ],
-        ),
-        duration: const Duration(seconds: 3),
-      ),
-    );
-  }
-
-  void _showSuccessSnackBar(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            const Icon(Icons.check_circle, color: Colors.white),
-            const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
-            Expanded(child: ResponsiveText.bodyMedium(message)),
-          ],
-        ),
-        backgroundColor: Colors.green,
-        duration: const Duration(seconds: 3),
-      ),
-    );
-  }
-
-  void _showErrorSnackBar(BuildContext context, String error) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            const Icon(Icons.error, color: Colors.white),
-            const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
-            Expanded(child: ResponsiveText.bodySmall('Erreur: $error')),
-          ],
-        ),
-        backgroundColor: Colors.red,
-      ),
     );
   }
 }

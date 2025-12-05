@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/ui/widgets/responsive_text.dart';
 
+import '../../../../core/ui/widgets/duration_formatter.dart';
 import '../../../projets/providers/projects_extentions_providers.dart';
 import '../../data/extention_models.dart';
 import '../../services/wakatime_service.dart';
@@ -320,7 +321,7 @@ class _WakaTimeSettingsScreenState
             leading: const Icon(Icons.timer, color: Colors.blue),
             title: const Text('Temps total de code'),
             trailing: Text(
-              _formatDuration(stats.totalSeconds),
+              DurationFormatter.formatSeconds(stats.totalSeconds),
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ),
@@ -466,18 +467,6 @@ class _WakaTimeSettingsScreenState
         ]),
       ),
     );
-  }
-
-  String _formatDuration(double totalSeconds) {
-    // On s'assure que les secondes sont un entier pour créer la Duration
-    final duration = Duration(seconds: totalSeconds.toInt());
-
-    // Le reste de la logique est maintenant correct car 'duration' est bien une Duration
-    final hours = duration.inHours;
-    // On prend le reste des minutes après avoir enlevé les heures
-    final minutes = duration.inMinutes.remainder(60);
-
-    return '${hours}h ${minutes}m';
   }
 }
 
