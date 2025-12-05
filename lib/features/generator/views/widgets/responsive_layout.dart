@@ -5,6 +5,7 @@ import 'package:portefolio/features/generator/views/generator_widgets_extentions
 
 import '../../../../core/affichage/screen_size_detector.dart';
 import '../../../../core/provider/providers.dart';
+import '../../../../core/ui/widgets/tech_icon.dart';
 
 class ResponsiveLayout extends ConsumerWidget {
   final String title;
@@ -201,34 +202,8 @@ class _TextContent extends StatelessWidget {
   });
 
   bool _hasProgrammingTag() {
-    const programmingTags = [
-      'dart',
-      'flutter',
-      'angular',
-      'javascript',
-      'typescript',
-      'java',
-      'python',
-      'c#',
-      'c++',
-      'rust',
-      'github',
-      'git',
-      'go',
-      'php',
-      'swift',
-      'kotlin',
-      'mysql',
-      'prestashop',
-      'magento',
-      'ovh',
-      'html',
-      'css',
-      'Laravel',
-    ];
-    return bulletPoints.any(
-      (tag) => programmingTags.contains(tag.toLowerCase()),
-    );
+    return TechIconHelper.getProgrammingTags()
+        .any((tag) => bulletPoints.contains(tag));
   }
 
   @override

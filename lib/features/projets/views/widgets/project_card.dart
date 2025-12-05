@@ -26,12 +26,9 @@ class ProjectCard extends ConsumerWidget {
   });
 
   bool _hasProgrammingTag() {
-    const programmingTags = ['e-commerce', 'flutter', 'angular', 'digital'];
     final titleLower = project.title.toLowerCase();
-    return programmingTags.any((tag) {
-      titleLower.contains(tag);
-      return TechIconHelper.isProgrammingTech(titleLower);
-    });
+    return TechIconHelper.getProgrammingTags()
+        .any((tag) => titleLower.contains(tag));
   }
 
   @override

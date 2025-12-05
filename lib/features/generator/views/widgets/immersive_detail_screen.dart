@@ -120,42 +120,16 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
   }
 
   bool _hasProgrammingTag() {
-    const programmingTags = [
-      'dart',
-      'flutter',
-      'angular',
-      'javascript',
-      'typescript',
-      'java',
-      'python',
-      'c#',
-      'c++',
-      'rust',
-      'github',
-      'git',
-      'go',
-      'php',
-      'swift',
-      'kotlin',
-      'mysql',
-      'prestashop',
-      'magento',
-      'ovh',
-      'html',
-      'css',
-      'Laravel',
-      'e-commerce',
-      'digital'
-    ];
     final titleLower = widget.project.title.toLowerCase();
-    final pointsLower = widget.project.points.map((p) => p.toLowerCase());
 
-    return programmingTags.any((tag) =>
-        titleLower.contains(tag.toLowerCase()) ||
-        pointsLower.any((p) {
-          p.contains(tag.toLowerCase());
-          return TechIconHelper.isProgrammingTech(p);
-        }));
+    final titleMatches = TechIconHelper.getProgrammingTags()
+        .any((tag) => titleLower.contains(tag));
+
+    final pointsMatch = widget.project.points.any((p) {
+      return TechIconHelper.isProgrammingTech(p);
+    });
+
+    return titleMatches || pointsMatch;
   }
 
   @override
@@ -421,7 +395,7 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
         const ResponsiveBox(height: 16),
         statsAsync.when(
           data: (stats) {
-            if (stats == null) {
+            if (stats == null || stats.projects.isEmpty) {
               return _buildEmptyWakaTimeCard(info);
             }
 
@@ -429,16 +403,15 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
               (p) => p.name.toLowerCase().contains(
                     widget.project.title.toLowerCase(),
                   ),
-              orElse: () => stats.projects.isNotEmpty
-                  ? stats.projects.first
-                  : WakaTimeProjectStat(
-                      name: widget.project.title,
-                      totalSeconds: 0,
-                      percent: 0,
-                      digital: '0:00',
-                      text: '0 secs',
-                    ),
+              orElse: () => WakaTimeProjectStat(
+                name: widget.project.title,
+                totalSeconds: 0,
+                percent: 0,
+                digital: '0:00',
+                text: '0 secs',
+              ),
             );
+            final languages = stats.languages ?? [];
 
             Widget timeStatsColumn = Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -470,11 +443,11 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
             );
 
             Widget languagesWidget =
-                _buildLanguagesSection(stats.languages, info, useRowLayout);
+                _buildLanguagesSection(languages, info, useRowLayout);
 
             Widget content;
 
-            if (useRowLayout && stats.languages.isNotEmpty) {
+            if (useRowLayout && languages.isNotEmpty) {
               // Alignement CÔTE À CÔTE : Temps (col 1), Graphique (col 2), Légende (col 3)
               content = Row(
                 crossAxisAlignment: CrossAxisAlignment.start,

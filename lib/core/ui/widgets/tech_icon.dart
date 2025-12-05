@@ -1,6 +1,58 @@
 import 'package:flutter/material.dart';
 
 class TechIconHelper {
+  static const List<String> _programmingTags = [
+    'dart',
+    'flutter',
+    'angular',
+    'javascript',
+    'typescript',
+    'java',
+    'python',
+    'c#',
+    'c++',
+    'rust',
+    'github',
+    'git',
+    'go',
+    'php',
+    'swift',
+    'kotlin',
+    'mysql',
+    'prestashop',
+    'magento',
+    'ovh',
+    'html',
+    'css',
+    'laravel',
+    'e-commerce',
+    'digital',
+    'node',
+    'react',
+    'vue',
+    'nodejs',
+    'express',
+    'sql',
+    'database',
+    'mongo',
+    'postgresql',
+    'cloud',
+    'aws',
+    'azure',
+    'gcp',
+    'firebase',
+    'figma',
+    'photoshop',
+    'illustrator',
+    'android',
+    'ios',
+    'woocommerce',
+    'shopify',
+  ];
+
+  /// Expose la liste des tags pour la vérification dans d'autres classes (ex: Project)
+  static List<String> getProgrammingTags() => _programmingTags;
+
   static const Map<String, IconData> _techIconMap = {
     // Mobile
     'flutter': Icons.phone_android,
@@ -124,7 +176,7 @@ class TechIconHelper {
       'vue',
     ];
 
-    final techLower = tech.toLowerCase();
+    final techLower = tech.toLowerCase().trim();
     return programmingTags.any((tag) => techLower.contains(tag));
   }
 
