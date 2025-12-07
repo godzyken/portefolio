@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/ui/widgets/smart_image.dart';
 import 'package:portefolio/features/generator/views/widgets/wakatime_badge.dart';
+import 'package:portefolio/features/generator/views/widgets/wakatime_badge_extensions.dart';
 import 'package:vector_math/vector_math_64.dart' show Vector3;
 
 import '../../../projets/data/project_data.dart';
@@ -191,21 +192,31 @@ class _MinimalCardState extends ConsumerState<MinimalCard> {
   }
 
   Widget _buildWakatimeWidget() {
-    return WakaTimeConditionalWidget(
+    return WakaTimeBadgeWidget(
       projectName: widget.project.title,
-      builder: (isTracked) {
-        if (!isTracked) {
-          return const SizedBox.shrink();
-        }
-        return Positioned(
-          top: 16,
-          left: 16,
-          child: SafeWakaTimeDetailedBadge(
-            projectName: widget.project.title,
-          ),
+      // Le variant détaillé est utilisé ici car l'emplacement est grand
+      variant: WakaTimeBadgeVariant.detailed,
+      // showLoadingFallback à false car nous gérons la condition d'affichage ici
+      showLoadingFallback: false,
+    ).watchTrackingStatus(ref).when(
+          data: (isTracked) {
+            if (!isTracked) {
+              // Si non tracké, on n'affiche rien
+              return const SizedBox.shrink();
+            }
+            // Si tracké, on retourne le badge lui-même (qui gère son état interne)
+            // Note: Le badge complet est placé ici, il prendra l'espace nécessaire.
+            return WakaTimeBadgeWidget(
+              projectName: widget.project.title,
+              variant: WakaTimeBadgeVariant.detailed,
+              showLoadingFallback:
+                  true, // Le badge lui-même doit gérer son chargement/erreur
+            );
+          },
+          // 2. Pendant le chargement ou en cas d'erreur, n'afficher rien pour éviter le CLS (Cumulative Layout Shift)
+          loading: () => const SizedBox.shrink(),
+          error: (err, stack) => const SizedBox.shrink(),
         );
-      },
-    );
   }
 
   void _showImmersiveDetails(BuildContext context) {

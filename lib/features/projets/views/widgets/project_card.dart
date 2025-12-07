@@ -7,6 +7,7 @@ import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/ui/widgets/ui_widgets_extentions.dart';
 import 'package:portefolio/features/generator/services/pdf_export_service.dart';
 import 'package:portefolio/features/generator/views/generator_widgets_extentions.dart';
+import 'package:portefolio/features/generator/views/widgets/wakatime_badge_extensions.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 import '../../../../core/provider/providers.dart';
@@ -27,6 +28,7 @@ class ProjectCard extends ConsumerWidget {
 
   bool _hasProgrammingTag() {
     final titleLower = project.title.toLowerCase();
+    // La logique de détection des tags est conservée
     return TechIconHelper.getProgrammingTags()
         .any((tag) => titleLower.contains(tag));
   }
@@ -81,19 +83,44 @@ class ProjectCard extends ConsumerWidget {
               ),
             );
           },
-          // 🎯 Badge WakaTime sur la carte (version sécurisée)
           badgeBuilder: _hasProgrammingTag()
-              ? (context, size) => Positioned(
-                    top: 12,
-                    right: 12,
-                    child: SafeWakaTimeDetailedBadge(
-                      projectName: project.title,
-                    ),
-                  )
+              ? (context, size) =>
+                  _buildWakaTimeBadge(ref, project.title, isDetailed: true)
               : null,
         ),
       ),
     );
+  }
+
+  Widget _buildWakaTimeBadge(WidgetRef ref, String projectName,
+      {bool isDetailed = false}) {
+    return WakaTimeBadgeWidget(
+      projectName: projectName,
+      variant: isDetailed
+          ? WakaTimeBadgeVariant.detailed
+          : WakaTimeBadgeVariant.simple,
+      showLoadingFallback: false,
+    ).watchTrackingStatus(ref).when(
+          data: (isTracked) {
+            if (!isTracked) {
+              return const SizedBox.shrink();
+            }
+            return Positioned(
+              top: 12,
+              right: 12,
+              child: WakaTimeBadgeWidget(
+                projectName: projectName,
+                variant: isDetailed
+                    ? WakaTimeBadgeVariant.detailed
+                    : WakaTimeBadgeVariant.simple,
+                showTrackingIndicator: true,
+                showLoadingFallback: true,
+              ),
+            );
+          },
+          loading: () => const SizedBox.shrink(),
+          error: (_, __) => const SizedBox.shrink(),
+        );
   }
 
   Widget _buildImage(Size size) {
@@ -146,12 +173,10 @@ class ProjectCard extends ConsumerWidget {
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
-          // 🔹 Badge WakaTime dans le dialogue (version sécurisée)
-          SafeWakaTimeBadge(
+          WakaTimeBadgeWidget(
             projectName: project.title,
-            showTimeSpent: true,
+            variant: WakaTimeBadgeVariant.simple,
             showTrackingIndicator: true,
-            compact: true,
           ),
         ],
       ),
@@ -219,21 +244,26 @@ class ProjectCard extends ConsumerWidget {
               paddingSize: ResponsiveSpacing.m,
             ),
 
-            // --- WakaTime stats détaillées (version sécurisée) ---
-            WakaTimeConditionalWidget(
+            // --- Remplacement de WakaTimeConditionalWidget pour les stats détaillées ---
+            WakaTimeBadgeWidget(
               projectName: project.title,
-              builder: (isTracked) {
-                if (!isTracked || !_hasProgrammingTag()) {
-                  return const SizedBox.shrink();
-                }
-                return Column(
-                  children: [
-                    _buildWakaTimeStats(ref),
-                    const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
-                  ],
-                );
-              },
-            ),
+              variant: WakaTimeBadgeVariant.detailed,
+              showLoadingFallback: false,
+            ).watchTrackingStatus(ref).when(
+                  data: (isTracked) {
+                    if (!isTracked || !_hasProgrammingTag()) {
+                      return const SizedBox.shrink();
+                    }
+                    return Column(
+                      children: [
+                        _buildWakaTimeStats(ref),
+                        const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
+                      ],
+                    );
+                  },
+                  loading: () => const SizedBox.shrink(),
+                  error: (_, __) => const SizedBox.shrink(),
+                ),
 
             if (_hasProgrammingTag())
               CodeHighlightList(items: project.points, tag: '->')

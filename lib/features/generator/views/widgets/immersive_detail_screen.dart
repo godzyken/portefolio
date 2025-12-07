@@ -4,9 +4,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/provider/image_providers.dart';
 import 'package:portefolio/core/ui/widgets/ui_widgets_extentions.dart';
+import 'package:portefolio/features/generator/views/widgets/wakatime_badge_extensions.dart';
 
+import '../../../projets/data/project_data.dart';
 import '../../../projets/providers/projects_extentions_providers.dart';
-import '../../data/extention_models.dart';
+import '../../data/chart_data.dart';
+import '../../data/wakatime_models_data.dart';
 import '../generator_widgets_extentions.dart';
 
 class ImmersiveDetailScreen extends ConsumerStatefulWidget {
@@ -239,20 +242,30 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
                           ],
                         ),
                       ResponsiveBox(height: 32),
-                      WakaTimeConditionalWidget(
+                      WakaTimeBadgeWidget(
                         projectName: widget.project.title,
-                        builder: (isTracked) {
-                          if (!isTracked || !_hasProgrammingTag()) {
-                            return const SizedBox.shrink();
-                          }
-                          return Column(
-                            children: [
-                              _buildWakaTimeSection(theme, info, useRowLayout),
-                              ResponsiveBox(height: 32),
-                            ],
-                          );
-                        },
-                      ),
+                        variant: WakaTimeBadgeVariant.detailed,
+                        showLoadingFallback:
+                            false, // Ne pas montrer de chargement en haut
+                      ).watchTrackingStatus(ref).when(
+                            data: (isTracked) {
+                              // Vérifie si l'on doit afficher la section détaillée
+                              if (!isTracked || !_hasProgrammingTag()) {
+                                return const SizedBox.shrink();
+                              }
+                              return Column(
+                                children: [
+                                  _buildWakaTimeSection(
+                                      theme, info, useRowLayout),
+                                  ResponsiveBox(height: 32),
+                                ],
+                              );
+                            },
+                            loading: () => const SizedBox
+                                .shrink(), // Le badge principal gère le chargement
+                            error: (_, __) =>
+                                const SizedBox.shrink(), // Idem pour l'erreur
+                          ),
                       if (widget.project.techDetails != null &&
                           widget.project.techDetails!.isNotEmpty) ...[
                         ResponsiveBox(height: 32),
@@ -365,10 +378,13 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
           ),
           if (_hasProgrammingTag()) ...[
             const SizedBox(height: 12),
-            SafeWakaTimeBadge(
+            // 🎯 MODIFICATION ICI : Remplacement de SafeWakaTimeBadge
+            WakaTimeBadgeWidget(
               projectName: widget.project.title,
-              showTimeSpent: true,
+              variant: WakaTimeBadgeVariant.simple, // Badge simple en haut
               showTrackingIndicator: true,
+              showLoadingFallback:
+                  true, // Afficher l'état de chargement en haut
             ),
           ],
         ],

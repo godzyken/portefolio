@@ -28,7 +28,6 @@ class CalendarDialog extends ConsumerStatefulWidget {
 
 class _CalendarDialogState extends ConsumerState<CalendarDialog> {
   DateTime _focusedMonth = DateTime.now();
-  bool _isLoadingSlots = false;
   final _locationController = TextEditingController();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -299,12 +298,9 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
                           ref
                               .read(appointmentProvider.notifier)
                               .setSelectedDate(day);
-                          setState(() => _isLoadingSlots = true);
                           await Future.delayed(
                               const Duration(milliseconds: 300));
-                          if (mounted) {
-                            setState(() => _isLoadingSlots = false);
-                          }
+                          ref.read(appointmentProvider).status;
                         },
                   borderRadius: BorderRadius.circular(8),
                   child: Container(

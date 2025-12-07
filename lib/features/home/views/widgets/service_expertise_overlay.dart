@@ -72,13 +72,6 @@ class ServiceExpertiseOverlay {
 
     final safeLeft = leftCenter.clamp(
         screenPadding, screenWidth - overlayWidth - screenPadding);
-
-    debugPrint('[DEBUG OVERLAY] Top corrigé final: ${top.toStringAsFixed(2)}');
-    debugPrint(
-        '[DEBUG OVERLAY] Left (safe) calculé: ${safeLeft.toStringAsFixed(2)}');
-    debugPrint(
-        '[DEBUG OVERLAY] Largeur overlay (avec marge): ${overlayWidth.toStringAsFixed(2)}');
-
     return OverlayEntry(
       builder: (context) {
         return Positioned(

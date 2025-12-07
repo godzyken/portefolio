@@ -107,13 +107,13 @@ class DeviceSpec {
     }
     if (platformsLower.contains('tablet')) return DeviceSpec.tablet();
     if (platformsLower.contains('desktop')) return DeviceSpec.desktop();
-    if (platformsLower.contains('largedesktop'))
+    if (platformsLower.contains('largedesktop')) {
       return DeviceSpec.largeDesktop();
+    }
 
     return DeviceSpec.smartphone();
   }
 
-  /// Génère les détails visuels spécifiques à chaque type d'appareil
   List<Widget> buildDeviceDetails(dynamic widget) {
     switch (type) {
       case DeviceType.watch:
@@ -335,7 +335,6 @@ class DeviceSpec {
   }
 }
 
-/// Types d'appareils supportés
 enum DeviceType {
   watch,
   smartphone,

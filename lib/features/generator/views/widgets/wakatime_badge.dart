@@ -7,177 +7,88 @@ import '../../../projets/providers/projects_extentions_providers.dart';
 import '../../data/extention_models.dart';
 import '../../services/wakatime_service.dart';
 
-class WakaTimeBadge extends ConsumerWidget {
-  final String projectName;
-  final bool showTimeSpent;
-  final bool showTrackingIndicator;
-  final bool compact;
+/// Définition des variantes d'affichage du badge WakaTime.
+enum WakaTimeBadgeVariant {
+  /// Badge simple avec indicateur de suivi et temps total.
+  simple,
 
-  const WakaTimeBadge({
+  /// Badge compact affichant uniquement l'icône et le temps (petit format).
+  compact,
+
+  /// Badge détaillé avec Tooltip (y compris les statistiques sur 7 jours).
+  detailed
+}
+
+class _WakaTimeLoadingIndicator extends StatelessWidget {
+  final bool compact;
+  final bool isError;
+  final bool isSvgFallback;
+  final double height;
+
+  const _WakaTimeLoadingIndicator({
     super.key,
-    required this.projectName,
-    this.showTimeSpent = true,
-    this.showTrackingIndicator = true,
     this.compact = false,
+    this.isError = false,
+    this.isSvgFallback = false,
+    this.height = 20,
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final isTracked = ref.watch(isProjectTrackedProvider(projectName));
-    final timeSpentAsync = ref.watch(projectTimeSpentProvider(projectName));
+  Widget build(BuildContext context) {
+    final color = isError ? Colors.red.shade700 : Colors.grey.shade500;
+    final backgroundColor = isError
+        ? Colors.red.withValues(alpha: 0.1)
+        : Colors.grey.withValues(alpha: 0.1);
 
-    if (!isTracked && !showTrackingIndicator) {
-      return const SizedBox.shrink();
-    }
+    final size = compact ? 12.0 : 16.0;
+    final text =
+        isError ? 'Erreur' : (isSvgFallback ? 'WakaTime' : 'WakaTime...');
+    final icon = isError ? Icons.warning_amber_rounded : Icons.access_time;
 
-    if (compact) {
-      return _buildCompactBadge(context, isTracked, timeSpentAsync);
-    }
-
-    return ResponsiveBox(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: isTracked
-            ? Colors.blue.withValues(alpha: 0.1)
-            : Colors.grey.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: isTracked ? Colors.blue : Colors.grey,
-          width: 1,
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            Icons.access_time,
-            size: 16,
-            color: isTracked ? Colors.blue : Colors.grey,
-          ),
-          const SizedBox(width: 4),
-          if (showTrackingIndicator)
-            ResponsiveBox(
-              width: 8,
-              height: 8,
-              decoration: BoxDecoration(
-                color: isTracked ? Colors.green : Colors.grey,
-                shape: BoxShape.circle,
-                boxShadow: isTracked
-                    ? [
-                        BoxShadow(
-                          color: Colors.green.withValues(alpha: 0.5),
-                          blurRadius: 4,
-                          spreadRadius: 1,
-                        )
-                      ]
-                    : null,
-              ),
-            ),
-          const SizedBox(width: 4),
-          if (showTimeSpent)
-            timeSpentAsync.when(
-              data: (duration) {
-                if (duration == null) {
-                  return ResponsiveText.bodySmall(
-                    isTracked ? 'Tracké' : 'Non tracké',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: isTracked ? Colors.blue : Colors.grey,
-                    ),
-                  );
-                }
-                return ResponsiveText.bodySmall(
-                  DurationFormatter.formatDuration(duration),
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: isTracked ? Colors.blue.shade700 : Colors.grey,
-                  ),
-                );
-              },
-              loading: () => const SizedBox(
-                height: 12,
-                width: 12,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              ),
-              error: (err, _) => const ResponsiveText.bodySmall(
-                'Erreur',
-                style: TextStyle(fontSize: 12, color: Colors.red),
-              ),
-            )
-          else
-            ResponsiveText.bodySmall(
-              isTracked ? 'Tracké' : 'Non tracké',
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: isTracked ? Colors.blue : Colors.grey,
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCompactBadge(
-    BuildContext context,
-    bool isTracked,
-    AsyncValue<Duration?> timeSpentAsync,
-  ) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      height: isSvgFallback ? height : null,
+      padding: EdgeInsets.symmetric(
+        horizontal: compact ? 8 : 12,
+        vertical: compact ? 4 : 6,
+      ),
       decoration: BoxDecoration(
-        color: isTracked
-            ? Colors.blue.withValues(alpha: 0.15)
-            : Colors.grey.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(6),
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(compact ? 6 : 8),
+        border: Border.all(color: color.withValues(alpha: 0.5)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            Icons.access_time,
-            size: 14,
-            color: isTracked ? Colors.blue.shade600 : Colors.grey,
-          ),
-          const SizedBox(width: 4),
-          timeSpentAsync.when(
-            data: (duration) => Text(
-              duration != null
-                  ? DurationFormatter.formatDuration(duration)
-                  : '0h',
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.bold,
-                color: isTracked ? Colors.blue.shade700 : Colors.grey,
+          Icon(icon, size: size, color: color),
+          SizedBox(width: compact ? 4 : 6),
+          if (!isSvgFallback && !isError)
+            SizedBox(
+              width: size,
+              height: size,
+              child: CircularProgressIndicator(
+                strokeWidth: compact ? 1.5 : 2,
+                valueColor: AlwaysStoppedAnimation<Color>(color),
               ),
             ),
-            loading: () => const SizedBox(
-              height: 10,
-              width: 10,
-              child: CircularProgressIndicator(strokeWidth: 1.5),
-            ),
-            error: (_, __) => Text(
-              'N/A',
+          if (isSvgFallback || isError)
+            ResponsiveText.bodySmall(
+              text,
               style: TextStyle(
-                fontSize: 11,
-                color: Colors.grey.shade500,
+                fontSize: compact ? 10 : 12,
+                color: color,
               ),
             ),
-          ),
         ],
       ),
     );
   }
 }
 
-class WakaTimeSvgBadge extends StatelessWidget {
+class _WakaTimeSvgBadge extends StatelessWidget {
   final String projectName;
   final double height;
 
-  const WakaTimeSvgBadge({
-    super.key,
+  const _WakaTimeSvgBadge({
     required this.projectName,
     this.height = 20,
   });
@@ -194,326 +105,268 @@ class WakaTimeSvgBadge extends StatelessWidget {
         height: height,
         width: height * 3,
         child: Center(
-          child: SizedBox(
-            height: height * 0.6,
-            width: height * 0.6,
-            child: const CircularProgressIndicator(
-              strokeWidth: 2,
-            ),
-          ),
+          child: _WakaTimeLoadingIndicator(
+              compact: true, height: height * 0.6, isSvgFallback: true),
         ),
       ),
-      errorBuilder: (context, url, error) => _buildFallbackBadge(),
+      errorBuilder: (context, url, error) => _WakaTimeLoadingIndicator(
+        compact: true,
+        height: height,
+        isSvgFallback: true,
+        isError: true,
+      ),
+    );
+  }
+}
+
+class WakaTimeBadgeWidget extends ConsumerWidget {
+  final String projectName;
+  final WakaTimeBadgeVariant variant;
+  final bool showLoadingFallback;
+  final bool showTrackingIndicator;
+  final double detailedHeight;
+  final bool showSvgBadge;
+
+  const WakaTimeBadgeWidget({
+    super.key,
+    required this.projectName,
+    this.variant = WakaTimeBadgeVariant.simple,
+    this.showLoadingFallback = true,
+    this.showTrackingIndicator = true,
+    this.detailedHeight = 20,
+    this.showSvgBadge = false,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    // 1. Gérer l'état initial du tracking (Safe logic)
+    final trackingStatus =
+        ref.watch(projectTrackingStatusProvider(projectName));
+
+    return trackingStatus.when(
+      data: (isTracked) {
+        // 2. Afficher si tracké ou si l'indicateur est requis même si non tracké (simple/compact)
+        if (!isTracked &&
+            !showTrackingIndicator &&
+            variant != WakaTimeBadgeVariant.detailed) {
+          return const SizedBox.shrink();
+        }
+
+        if (variant == WakaTimeBadgeVariant.detailed) {
+          // La variante Detailed n'affiche rien si non tracké
+          if (!isTracked) return const SizedBox.shrink();
+          return _buildDetailedBadge(ref, isTracked);
+        }
+
+        // Pour Simple et Compact
+        return _buildSimpleOrCompactBadge(ref, isTracked);
+      },
+      loading: () {
+        // 3. Afficher le chargement si requis
+        if (!showLoadingFallback) return const SizedBox.shrink();
+        return _WakaTimeLoadingIndicator(
+          compact: variant == WakaTimeBadgeVariant.compact,
+          height: variant == WakaTimeBadgeVariant.detailed ? 30 : 20,
+        );
+      },
+      error: (_, __) {
+        // 4. Afficher l'erreur si requis (même logique que loading)
+        if (!showLoadingFallback) return const SizedBox.shrink();
+        return _WakaTimeLoadingIndicator(
+          isError: true,
+          compact: variant == WakaTimeBadgeVariant.compact,
+          height: variant == WakaTimeBadgeVariant.detailed ? 30 : 20,
+        );
+      },
     );
   }
 
-  Widget _buildFallbackBadge() {
+  /// ----------------------------------------------------------------------
+  /// LOGIQUE D'AFFICHAGE DES VARIANTES
+  /// ----------------------------------------------------------------------
+
+  Widget _buildSimpleOrCompactBadge(WidgetRef ref, bool isTracked) {
+    final timeSpentAsync = ref.watch(projectTimeSpentProvider(projectName));
+    final compact = variant == WakaTimeBadgeVariant.compact;
+    final color = isTracked ? Colors.blue : Colors.grey;
+
+    // ----- LOGIQUE COMPACTE -----
+    if (compact) {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: isTracked
+              ? Colors.blue.withValues(alpha: 0.15)
+              : Colors.grey.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(6),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.access_time,
+              size: 14,
+              color: isTracked ? Colors.blue.shade600 : Colors.grey,
+            ),
+            const SizedBox(width: 4),
+            timeSpentAsync.when(
+              data: (duration) => Text(
+                duration != null
+                    ? DurationFormatter.formatDuration(duration)
+                    : '0h',
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                  color: isTracked ? Colors.blue.shade700 : Colors.grey,
+                ),
+              ),
+              loading: () => const SizedBox(
+                height: 10,
+                width: 10,
+                child: CircularProgressIndicator(strokeWidth: 1.5),
+              ),
+              error: (_, __) => Text(
+                'N/A',
+                style: TextStyle(
+                  fontSize: 11,
+                  color: Colors.grey.shade500,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // ----- LOGIQUE SIMPLE -----
+    final indicatorColor = isTracked ? Colors.green : Colors.grey;
+
     return ResponsiveBox(
-      height: height,
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.grey.withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(4),
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: color, width: 1),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.access_time, size: height * 0.7, color: Colors.grey),
+          Icon(Icons.access_time, size: 16, color: color),
           const SizedBox(width: 4),
-          ResponsiveText.bodyMedium(
-            'WakaTime',
-            style: TextStyle(
-              fontSize: height * 0.6,
-              color: Colors.grey,
-              fontWeight: FontWeight.w600,
+          if (showTrackingIndicator) ...[
+            ResponsiveBox(
+              width: 8,
+              height: 8,
+              decoration: BoxDecoration(
+                color: indicatorColor,
+                shape: BoxShape.circle,
+                boxShadow: isTracked
+                    ? [
+                        BoxShadow(
+                          color: Colors.green.withValues(alpha: 0.5),
+                          blurRadius: 4,
+                          spreadRadius: 1,
+                        )
+                      ]
+                    : null,
+              ),
+            ),
+            const SizedBox(width: 4),
+          ],
+          timeSpentAsync.when(
+            data: (duration) => ResponsiveText.bodySmall(
+              duration != null
+                  ? DurationFormatter.formatDuration(duration)
+                  : isTracked
+                      ? 'Tracké'
+                      : 'Non tracké',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: color.shade700,
+              ),
+            ),
+            loading: () => const SizedBox(
+              height: 12,
+              width: 12,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
+            error: (err, _) => ResponsiveText.bodySmall(
+              'Erreur',
+              style: TextStyle(fontSize: 12, color: Colors.red),
             ),
           ),
         ],
       ),
     );
   }
-}
 
-class WakaTimeDetailedBadge extends ConsumerWidget {
-  final String projectName;
-  final bool showSvgBadge;
-
-  const WakaTimeDetailedBadge({
-    super.key,
-    required this.projectName,
-    this.showSvgBadge = false,
-  });
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final isTracked = ref.watch(isProjectTrackedProvider(projectName));
+  Widget _buildDetailedBadge(WidgetRef ref, bool isTracked) {
     final timeSpentAsync = ref.watch(projectTimeSpentProvider(projectName));
     final statsAsync = ref.watch(wakaTimeStatsProvider('last_7_days'));
     final wakaProject = ref.watch(wakaTimeProjectProvider(projectName));
 
-    if (!isTracked) {
-      return const SizedBox.shrink();
+    // Détermine le contenu du Tooltip
+    String buildTooltipMessage() {
+      final buffer = StringBuffer('📊 WakaTime - Derniers 7 jours\n');
+
+      timeSpentAsync.whenData((timeSpent) {
+        if (timeSpent != null) {
+          buffer.writeln(
+              'Temps passé : ${DurationFormatter.formatShort(timeSpent)}');
+        } else {
+          buffer.writeln('Aucune donnée enregistrée');
+        }
+      });
+
+      statsAsync.whenData((stats) {
+        if (stats != null) {
+          final projectStat = stats.projects.firstWhere(
+            (p) => p.name.toLowerCase().contains(projectName.toLowerCase()),
+            orElse: () => WakaTimeProjectStat(
+              name: projectName,
+              totalSeconds: 0,
+              percent: 0,
+              digital: '0:00',
+              text: '0 secs',
+            ),
+          );
+          buffer.writeln(
+              'Part du temps total : ${projectStat.percent.toStringAsFixed(1)}%');
+        }
+      });
+
+      return buffer.toString().trim();
     }
 
+    // Affichage SVG si demandé et disponible
     if (showSvgBadge && wakaProject?.badge != null) {
       return Tooltip(
-        message: _buildTooltipMessage(isTracked, timeSpentAsync, statsAsync),
-        child: WakaTimeSvgBadge(projectName: projectName),
+        message: buildTooltipMessage(),
+        child:
+            _WakaTimeSvgBadge(projectName: projectName, height: detailedHeight),
       );
     }
 
+    // Affichage Widget natif
     return Tooltip(
-      message: _buildTooltipMessage(isTracked, timeSpentAsync, statsAsync),
+      message: buildTooltipMessage(),
       child: AnimatedSwitcher(
         duration: const Duration(milliseconds: 300),
         child: timeSpentAsync.when(
-          data: (timeSpent) => WakaTimeBadge(
-            key: ValueKey('badge_${projectName}_data'),
-            projectName: projectName,
-            showTimeSpent: true,
-            showTrackingIndicator: true,
-          ),
-          loading: () => Container(
+          data: (timeSpent) => _buildSimpleOrCompactBadge(ref, isTracked),
+          loading: () => _WakaTimeLoadingIndicator(
             key: ValueKey('badge_${projectName}_loading'),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: Colors.blue.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.blue, width: 1.5),
-            ),
-            child: const SizedBox(
-              height: 18,
-              width: 18,
-              child: CircularProgressIndicator(strokeWidth: 2),
-            ),
+            compact: false,
+            height: detailedHeight * 1.5,
           ),
-          error: (err, _) => Container(
+          error: (err, _) => _WakaTimeLoadingIndicator(
             key: ValueKey('badge_${projectName}_error'),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: Colors.orange.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.orange, width: 1.5),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.warning_amber_rounded,
-                  color: Colors.orange.shade700,
-                  size: 18,
-                ),
-                const SizedBox(width: 6),
-                Text(
-                  'WakaTime indisponible',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.orange.shade700,
-                  ),
-                ),
-              ],
-            ),
+            isError: true,
+            height: detailedHeight * 1.5,
           ),
         ),
       ),
-    );
-  }
-
-  String _buildTooltipMessage(
-    bool isTracked,
-    AsyncValue<Duration?> timeSpentAsync,
-    AsyncValue<WakaTimeStats?> statsAsync,
-  ) {
-    if (!isTracked) {
-      return '⏱ Ce projet n\'est pas tracké sur WakaTime';
-    }
-
-    final buffer = StringBuffer('📊 WakaTime - Derniers 7 jours\n');
-
-    timeSpentAsync.whenData((timeSpent) {
-      if (timeSpent != null) {
-        buffer.writeln(
-            'Temps passé : ${DurationFormatter.formatShort(timeSpent)}');
-      } else {
-        buffer.writeln('Aucune donnée enregistrée');
-      }
-    });
-
-    statsAsync.whenData((stats) {
-      if (stats != null) {
-        final projectStat = stats.projects.firstWhere(
-          (p) => p.name.toLowerCase().contains(projectName.toLowerCase()),
-          orElse: () => WakaTimeProjectStat(
-            name: projectName,
-            totalSeconds: 0,
-            percent: 0,
-            digital: '0:00',
-            text: '0 secs',
-          ),
-        );
-        buffer.writeln(
-            'Part du temps total : ${projectStat.percent.toStringAsFixed(1)}%');
-      }
-    });
-
-    return buffer.toString().trim();
-  }
-}
-
-class SafeWakaTimeBadge extends ConsumerWidget {
-  final String projectName;
-  final bool showTimeSpent;
-  final bool showTrackingIndicator;
-  final bool compact;
-
-  const SafeWakaTimeBadge({
-    super.key,
-    required this.projectName,
-    this.showTimeSpent = true,
-    this.showTrackingIndicator = true,
-    this.compact = false,
-  });
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final trackingStatus =
-        ref.watch(projectTrackingStatusProvider(projectName));
-
-    return trackingStatus.when(
-      data: (isTracked) {
-        if (!isTracked && !showTrackingIndicator) {
-          return const SizedBox.shrink();
-        }
-
-        return WakaTimeBadge(
-          projectName: projectName,
-          showTimeSpent: showTimeSpent,
-          showTrackingIndicator: showTrackingIndicator,
-          compact: compact,
-        );
-      },
-      loading: () => _buildLoadingBadge(),
-      error: (_, __) => const SizedBox.shrink(),
-    );
-  }
-
-  Widget _buildLoadingBadge() {
-    if (!showTrackingIndicator) {
-      return const SizedBox.shrink();
-    }
-
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: compact ? 8 : 12,
-        vertical: compact ? 4 : 6,
-      ),
-      decoration: BoxDecoration(
-        color: Colors.grey.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(compact ? 6 : 8),
-        border: Border.all(color: Colors.grey.withValues(alpha: 0.3)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SizedBox(
-            width: compact ? 12 : 16,
-            height: compact ? 12 : 16,
-            child: const CircularProgressIndicator(strokeWidth: 2),
-          ),
-          SizedBox(width: compact ? 4 : 6),
-          Text(
-            'WakaTime...',
-            style: TextStyle(
-              fontSize: compact ? 10 : 12,
-              color: Colors.grey,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class SafeWakaTimeDetailedBadge extends ConsumerWidget {
-  final String projectName;
-  final bool showSvgBadge;
-
-  const SafeWakaTimeDetailedBadge({
-    super.key,
-    required this.projectName,
-    this.showSvgBadge = false,
-  });
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final trackingStatus =
-        ref.watch(projectTrackingStatusProvider(projectName));
-
-    return trackingStatus.when(
-      data: (isTracked) {
-        if (!isTracked) return const SizedBox.shrink();
-
-        return WakaTimeDetailedBadge(
-          projectName: projectName,
-          showSvgBadge: showSvgBadge,
-        );
-      },
-      loading: () => _buildLoadingIndicator(),
-      error: (_, __) => const SizedBox.shrink(),
-    );
-  }
-
-  Widget _buildLoadingIndicator() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.grey.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey.withValues(alpha: 0.3)),
-      ),
-      child: const Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SizedBox(
-            width: 16,
-            height: 16,
-            child: CircularProgressIndicator(strokeWidth: 2),
-          ),
-          SizedBox(width: 8),
-          Text(
-            'Chargement WakaTime...',
-            style: TextStyle(fontSize: 12, color: Colors.grey),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class WakaTimeConditionalWidget extends ConsumerWidget {
-  final String projectName;
-  final Widget Function(bool isTracked) builder;
-  final Widget? loadingWidget;
-  final Widget? errorWidget;
-
-  const WakaTimeConditionalWidget({
-    super.key,
-    required this.projectName,
-    required this.builder,
-    this.loadingWidget,
-    this.errorWidget,
-  });
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final trackingStatus =
-        ref.watch(projectTrackingStatusProvider(projectName));
-
-    return trackingStatus.when(
-      data: (isTracked) => builder(isTracked),
-      loading: () => loadingWidget ?? const SizedBox.shrink(),
-      error: (_, __) => errorWidget ?? const SizedBox.shrink(),
     );
   }
 }
