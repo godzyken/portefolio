@@ -28,7 +28,6 @@ class ProjectCard extends ConsumerWidget {
 
   bool _hasProgrammingTag() {
     final titleLower = project.title.toLowerCase();
-    // La logique de détection des tags est conservée
     return TechIconHelper.getProgrammingTags()
         .any((tag) => titleLower.contains(tag));
   }

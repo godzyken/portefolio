@@ -6,10 +6,8 @@ import 'package:portefolio/core/provider/image_providers.dart';
 import 'package:portefolio/core/ui/widgets/ui_widgets_extentions.dart';
 import 'package:portefolio/features/generator/views/widgets/wakatime_badge_extensions.dart';
 
-import '../../../projets/data/project_data.dart';
 import '../../../projets/providers/projects_extentions_providers.dart';
-import '../../data/chart_data.dart';
-import '../../data/wakatime_models_data.dart';
+import '../../data/extention_models.dart';
 import '../generator_widgets_extentions.dart';
 
 class ImmersiveDetailScreen extends ConsumerStatefulWidget {
@@ -427,7 +425,7 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
                 text: '0 secs',
               ),
             );
-            final languages = stats.languages ?? [];
+            final languages = stats.languages;
 
             Widget timeStatsColumn = Column(
               crossAxisAlignment: CrossAxisAlignment.start,

@@ -192,8 +192,6 @@ class MyFullApp extends ConsumerWidget {
           : ThemeMode.light,
       debugShowCheckedModeBanner: false,
       routerConfig: router,
-
-      /// Le builder te permet d’intercepter tous les widgets
       builder: (context, child) {
         final globalError = ref.watch(globalErrorProvider);
 
@@ -212,7 +210,6 @@ class MyFullApp extends ConsumerWidget {
           );
         }
 
-        // On centralise ici la gestion des erreurs globales :
         return ErrorBoundary(
           contextLabel: 'MyFullApp',
           child: PrecacheWrapper(
