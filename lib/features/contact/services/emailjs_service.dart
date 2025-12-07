@@ -88,13 +88,11 @@ class EmailJsService {
       "appointment_type": appointmentDetails['type'],
       "appointment_location": appointmentDetails['location'],
 
-      // Vous pouvez ajouter une variable pour l'objet du mail
+      // Sujet du message
       "subject": "Confirmation de Rendez-vous avec votre Portfolio",
     };
 
     try {
-      // Utilisation de la méthode EmailJS.send standard
-      // Assurez-vous que cette méthode est disponible dans votre package EmailJS
       await EmailJS.send(
         serviceId,
         templateId,

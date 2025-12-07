@@ -64,7 +64,6 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
     // Cache et arrête la vidéo avant la navigation
     ref.read(globalVideoVisibilityProvider.notifier).hide();
 
-    // Navigation vers l'écran de détails
     await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => ImmersiveExperienceDetail(
@@ -160,7 +159,7 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
                         ),
                       ),
 
-                      // Badge du poste (en haut)
+                      // Badge du poste
                       if (widget.experience.poste.isNotEmpty)
                         Positioned(
                           top: 16,
@@ -191,7 +190,7 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
                           bottom: 16,
                           left: 16,
                           right: 16,
-                          child: _buildEntrepriseLabel(theme),
+                          child: buildCompanyLabel(theme),
                         ),
                     ],
                   ),
@@ -350,7 +349,7 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
     );
   }
 
-  Widget _buildEntrepriseLabel(ThemeData theme) {
+  Widget buildCompanyLabel(ThemeData theme) {
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0.0, end: 1.0),
       duration: const Duration(milliseconds: 600),

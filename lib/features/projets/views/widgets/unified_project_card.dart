@@ -9,7 +9,6 @@ import 'package:vector_math/vector_math_64.dart' show Vector3;
 
 import '../../../../core/provider/providers.dart';
 
-/// Style de carte unifié
 enum ProjectCardStyle {
   /// Style adaptatif avec layout responsive
   adaptive,
@@ -24,7 +23,6 @@ enum ProjectCardStyle {
   compact,
 }
 
-/// Configuration de la carte
 class ProjectCardConfig {
   final ProjectCardStyle style;
   final bool enableHover;
@@ -73,7 +71,6 @@ class ProjectCardConfig {
   }
 }
 
-/// Carte de projet unifiée - remplace AdaptiveCard, MinimalCard, HoverCard
 class UnifiedProjectCard extends ConsumerStatefulWidget {
   final ProjectInfo project;
   final ProjectCardConfig config;
@@ -84,7 +81,6 @@ class UnifiedProjectCard extends ConsumerStatefulWidget {
     this.config = const ProjectCardConfig(),
   });
 
-  // Factory constructors pour faciliter la migration
   factory UnifiedProjectCard.adaptive({
     required ProjectInfo project,
     VoidCallback? onTap,
@@ -756,7 +752,6 @@ class _UnifiedProjectCardState extends ConsumerState<UnifiedProjectCard> {
   }
 }
 
-/// Dialog de détails du projet
 class _ProjectDialog extends StatelessWidget {
   final ProjectInfo project;
 
