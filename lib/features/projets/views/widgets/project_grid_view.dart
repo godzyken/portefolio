@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/affichage/device_spec.dart';
 import '../../data/project_data.dart';
 import '../../providers/projet_providers.dart';
 import 'draguable_bubble.dart';
