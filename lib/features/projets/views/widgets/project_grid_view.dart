@@ -109,7 +109,6 @@ class _ProjectGridViewState extends ConsumerState<ProjectGridView> {
     );
   }
 
-  /// Obtient la taille réelle d'une bulle selon le type d'appareil
   Size _getBubbleSize(DeviceSpec deviceSpec, double baseSize) {
     // Les specs du device sont en taille fixe, on les scale selon baseSize
     final scale =
@@ -120,7 +119,6 @@ class _ProjectGridViewState extends ConsumerState<ProjectGridView> {
     );
   }
 
-  /// Détermine le type d'appareil pour un projet
   DeviceSpec _getDeviceSpecForProject(ProjectInfo project) {
     final platforms =
         project.platform?.map((e) => e.toLowerCase()).toList() ?? [];
@@ -132,7 +130,6 @@ class _ProjectGridViewState extends ConsumerState<ProjectGridView> {
     return DeviceSpec.smartphone();
   }
 
-  /// Calcule la disposition optimale des bulles selon la taille d'écran
   BubbleLayoutSpec _calculateBubbleLayout(Size screenSize, int projectCount) {
     final isSmallScreen = screenSize.width < 600;
     final isMediumScreen = screenSize.width < 900;
@@ -173,7 +170,6 @@ class _ProjectGridViewState extends ConsumerState<ProjectGridView> {
     );
   }
 
-  /// Calcule le nombre optimal de colonnes
   int _calculateColumns(
       double screenWidth, double bubbleSize, int projectCount) {
     if (screenWidth < 500) return 2;
@@ -187,7 +183,6 @@ class _ProjectGridViewState extends ConsumerState<ProjectGridView> {
         maxCols, math.max(5, (math.sqrt(projectCount * 1.5)).ceil()));
   }
 
-  /// Obtient la position initiale pour une bulle selon une grille
   Offset _getInitialPosition(
     int index,
     int totalCount,
@@ -229,7 +224,6 @@ class _ProjectGridViewState extends ConsumerState<ProjectGridView> {
     );
   }
 
-  /// Limite la position pour qu'elle reste dans l'écran
   Offset _clampPosition(Offset position, Size screenSize, Size bubbleSize) {
     return Offset(
       position.dx.clamp(0.0, math.max(0, screenSize.width - bubbleSize.width)),
@@ -238,7 +232,6 @@ class _ProjectGridViewState extends ConsumerState<ProjectGridView> {
     );
   }
 
-  /// Redistribue toutes les bulles lors du redimensionnement
   void _redistributeBubbles(Size newSize) {
     final bubbleSpecs = _calculateBubbleLayout(
       newSize,
@@ -261,7 +254,6 @@ class _ProjectGridViewState extends ConsumerState<ProjectGridView> {
         bubbleSize,
       );
 
-      // Résoudre les collisions avec les bulles déjà placées
       newPosition = _resolveCollisions(
         newPosition,
         bubbleSize,

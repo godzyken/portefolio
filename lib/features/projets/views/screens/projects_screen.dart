@@ -21,7 +21,6 @@ class _ProjectsScreenState extends ConsumerState<ProjectsScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    // On s’assure de ne lancer le provider qu’après la première frame
     if (!_initialized) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         ref.read(enrichedProjectsProvider.future);
