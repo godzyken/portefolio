@@ -26,7 +26,6 @@ class WakaTimeService {
     return fullUrl;
   }
 
-  /// Headers pour les requêtes authentifiées
   Map<String, String> get _headers {
     final headers = {
       'Content-Type': 'application/json',
@@ -51,19 +50,28 @@ class WakaTimeService {
       final response = await http.get(url, headers: _headers);
 
       if (response.statusCode == 200) {
+        if (response.body.isEmpty) {
+          developer.log('⚠️ WakaTime Stats: Réponse vide reçue.',
+              name: 'WakaTimeService');
+          return null;
+        }
         final data = jsonDecode(response.body);
         return WakaTimeStats.fromJson(data['data']);
       } else {
-        developer.log('❌ Erreur WakaTime Stats: ${response.statusCode}');
+        developer.log('❌ Erreur WakaTime Stats HTTP ${response.statusCode}',
+            name: 'WakaTimeService', error: response.body);
         return null;
       }
+    } on http.ClientException catch (e, stack) {
+      developer.log('❌ Exception WakaTime Stats (Client/Network)',
+          name: 'WakaTimeService', error: e, stackTrace: stack);
+      return null;
     } catch (e, stack) {
       developer.log('❌ Exception WakaTime Stats', error: e, stackTrace: stack);
       return null;
     }
   }
 
-  /// Récupère la liste des projets de l'utilisateur
   Future<List<WakaTimeProject>> getProjects() async {
     try {
       String endpoint = '/users/current/projects';
@@ -75,13 +83,23 @@ class WakaTimeService {
       final response = await http.get(url, headers: _headers);
 
       if (response.statusCode == 200) {
+        if (response.body.isEmpty) {
+          developer.log('⚠️ WakaTime Projects: Réponse vide reçue.',
+              name: 'WakaTimeService');
+          return [];
+        }
         final data = jsonDecode(response.body);
         final List<dynamic> projects = data['data'] ?? [];
         return projects.map((json) => WakaTimeProject.fromJson(json)).toList();
       } else {
-        developer.log('❌ Erreur WakaTime Projects: ${response.statusCode}');
+        developer.log('❌ Erreur WakaTime Projects HTTP ${response.statusCode}',
+            name: 'WakaTimeService', error: response.body);
         return [];
       }
+    } on http.ClientException catch (e, stack) {
+      developer.log('❌ Exception WakaTime Projects (Client/Network)',
+          name: 'WakaTimeService', error: e, stackTrace: stack);
+      return [];
     } catch (e, stack) {
       developer.log('❌ Exception WakaTime Projects',
           error: e, stackTrace: stack);
@@ -110,7 +128,6 @@ class WakaTimeService {
     }
   }
 
-  /// Récupère les langages utilisés par projet (simplifié)
   Future<Map<String, List<String>>> getProjectLanguages() async {
     try {
       final stats = await getStats(range: 'last_30_days');
@@ -153,7 +170,3 @@ class WakaTimeService {
     return badgeUrl;
   }
 }
-
-//
-// ------------------ MODÈLES ------------------
-//

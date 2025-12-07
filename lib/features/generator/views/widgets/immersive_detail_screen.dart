@@ -243,11 +243,9 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
                       WakaTimeBadgeWidget(
                         projectName: widget.project.title,
                         variant: WakaTimeBadgeVariant.detailed,
-                        showLoadingFallback:
-                            false, // Ne pas montrer de chargement en haut
+                        showLoadingFallback: false,
                       ).watchTrackingStatus(ref).when(
                             data: (isTracked) {
-                              // Vérifie si l'on doit afficher la section détaillée
                               if (!isTracked || !_hasProgrammingTag()) {
                                 return const SizedBox.shrink();
                               }
@@ -259,10 +257,8 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
                                 ],
                               );
                             },
-                            loading: () => const SizedBox
-                                .shrink(), // Le badge principal gère le chargement
-                            error: (_, __) =>
-                                const SizedBox.shrink(), // Idem pour l'erreur
+                            loading: () => const SizedBox.shrink(),
+                            error: (_, __) => const SizedBox.shrink(),
                           ),
                       if (widget.project.techDetails != null &&
                           widget.project.techDetails!.isNotEmpty) ...[
@@ -376,13 +372,11 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
           ),
           if (_hasProgrammingTag()) ...[
             const SizedBox(height: 12),
-            // 🎯 MODIFICATION ICI : Remplacement de SafeWakaTimeBadge
             WakaTimeBadgeWidget(
               projectName: widget.project.title,
-              variant: WakaTimeBadgeVariant.simple, // Badge simple en haut
+              variant: WakaTimeBadgeVariant.simple,
               showTrackingIndicator: true,
-              showLoadingFallback:
-                  true, // Afficher l'état de chargement en haut
+              showLoadingFallback: true,
             ),
           ],
         ],
@@ -390,7 +384,6 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
     );
   }
 
-  // 🎯 Section WakaTime complète
   Widget _buildWakaTimeSection(
       ThemeData theme, ResponsiveInfo info, bool useRowLayout) {
     final statsAsync = ref.watch(wakaTimeStatsProvider('last_7_days'));
@@ -577,8 +570,7 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
 
     final pieChartWidget = SizedBox(
       height: useRowLayout ? 250 : 300,
-      width:
-          useRowLayout ? double.infinity : null, // Fixe la largeur en mode Row
+      width: useRowLayout ? double.infinity : null,
       child: Stack(
         alignment: Alignment.center,
         children: [

@@ -88,6 +88,8 @@ class UnifiedProjectCard extends ConsumerStatefulWidget {
   factory UnifiedProjectCard.adaptive({
     required ProjectInfo project,
     VoidCallback? onTap,
+    double? width,
+    double? height,
   }) {
     return UnifiedProjectCard(
       project: project,
