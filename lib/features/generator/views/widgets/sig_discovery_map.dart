@@ -201,7 +201,7 @@ class _SigDiscoveryMapState extends ConsumerState<SigDiscoveryMap>
 
   Widget _buildMap(LocationData pos) {
     final userPos = LatLng(pos.latitude, pos.longitude);
-    final sigPoints = ref.watch(positionProvider).value ?? [];
+    final sigPoints = ref.watch(nearbySigPointsProvider).value ?? [];
     final followUser = ref.watch(followUserProvider);
     final mapController = ref.read(mapControllerProvider);
     final mapOptionsFactory = ref.watch(mapConfigProvider);
@@ -299,9 +299,9 @@ class _SigDiscoveryMapState extends ConsumerState<SigDiscoveryMap>
       );
 
   Widget _buildError(Object e) {
-    final isPermissionError = e.toString().contains('permission') ||
-        e.toString().contains('Permission');
-    final isGpsError = e.toString().contains('localisation est désactivé');
+    final isPermissionError = e.toString().contains('permission');
+    final isGpsError =
+        e.toString().contains('désactivé') || e.toString().contains('service');
 
     return Container(
       color: Colors.red.shade50,
@@ -339,7 +339,14 @@ class _SigDiscoveryMapState extends ConsumerState<SigDiscoveryMap>
                 if (isPermissionError)
                   ElevatedButton.icon(
                     onPressed: () async {
-                      await ref.read(userLocationProvider.notifier).refresh();
+                      final status = await ref
+                          .read(requestLocationPermissionProvider.future);
+
+                      // Si elle est accordée, invalide pour relancer la carte
+                      if (status == LocationPermissionStatus.whileInUse ||
+                          status == LocationPermissionStatus.always) {
+                        ref.invalidate(userLocationProvider);
+                      }
                     },
                     icon: const Icon(Icons.settings),
                     label: const ResponsiveText.headlineMedium(
@@ -364,7 +371,8 @@ class _SigDiscoveryMapState extends ConsumerState<SigDiscoveryMap>
                 ElevatedButton.icon(
                   onPressed: () => ref.invalidate(userLocationProvider),
                   icon: const Icon(Icons.refresh),
-                  label: const ResponsiveText.headlineMedium('Réessayer'),
+                  label: const ResponsiveText.headlineMedium(
+                      'Réinitialiser le Flux'),
                 ),
               ],
             ),

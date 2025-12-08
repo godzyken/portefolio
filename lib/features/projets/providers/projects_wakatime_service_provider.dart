@@ -179,7 +179,6 @@ final enrichedProjectsProvider = FutureProvider<List<ProjectInfo>>((ref) async {
       }
     }
 
-    // Si on a trouvé une durée, on crée une copie enrichie du projet.
     if (timeSpent != null) {
       return project.copyWith(timeSpent: timeSpent);
     }

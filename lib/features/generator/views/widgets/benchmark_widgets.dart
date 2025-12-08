@@ -1,6 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:portefolio/constants/benchmark_colors.dart';
+import 'package:portefolio/core/affichage/colors_spec.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/ui/widgets/responsive_text.dart';
 
@@ -21,7 +21,7 @@ class BenchmarkGlobalWidget extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(info.isMobile ? 20 : 24),
       decoration: BoxDecoration(
-        color: BenchmarkColors.darkBg.withValues(alpha: 0.5),
+        color: ColorHelpers.darkBg.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
           color: Colors.white.withValues(alpha: 0.1),
@@ -54,13 +54,13 @@ class BenchmarkGlobalWidget extends StatelessWidget {
                     sections: [
                       PieChartSectionData(
                         value: benchmark.scoreGlobal.toDouble(),
-                        color: BenchmarkColors.green,
+                        color: ColorHelpers.green,
                         radius: 30,
                         title: '',
                       ),
                       PieChartSectionData(
                         value: (100 - benchmark.scoreGlobal).toDouble(),
-                        color: BenchmarkColors.gray,
+                        color: ColorHelpers.gray,
                         radius: 30,
                         title: '',
                       ),
@@ -76,7 +76,7 @@ class BenchmarkGlobalWidget extends StatelessWidget {
                   ResponsiveText.displaySmall(
                     '${benchmark.scoreGlobal}/100',
                     style: TextStyle(
-                      color: BenchmarkColors.green,
+                      color: ColorHelpers.green,
                       fontSize: info.isMobile ? 32 : 48,
                       fontWeight: FontWeight.bold,
                     ),
@@ -85,7 +85,7 @@ class BenchmarkGlobalWidget extends StatelessWidget {
                   ResponsiveText.bodyMedium(
                     'Score global',
                     style: TextStyle(
-                      color: BenchmarkColors.textGray,
+                      color: ColorHelpers.textGray,
                       fontSize: info.isMobile ? 14 : 16,
                     ),
                   ),
@@ -124,7 +124,7 @@ class BenchmarkComparisonWidget extends StatelessWidget {
       final maxValues = [30.0, 30.0, 30.0, 10.0];
       rods.add(BarChartRodData(
         toY: maxValues[i],
-        color: BenchmarkColors.gridColor,
+        color: ColorHelpers.gridColor,
         width: info.isMobile ? 12 : 16,
       ));
 
@@ -140,7 +140,7 @@ class BenchmarkComparisonWidget extends StatelessWidget {
 
         rods.add(BarChartRodData(
           toY: values[i],
-          color: BenchmarkColors.getProjectColor(j),
+          color: ColorHelpers.getProjectColor(j),
           width: info.isMobile ? 12 : 16,
         ));
       }
@@ -155,7 +155,7 @@ class BenchmarkComparisonWidget extends StatelessWidget {
     return ResponsiveBox(
       padding: EdgeInsets.all(info.isMobile ? 20 : 24),
       decoration: BoxDecoration(
-        color: BenchmarkColors.darkBg.withValues(alpha: 0.5),
+        color: ColorHelpers.darkBg.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
           color: Colors.white.withValues(alpha: 0.1),
@@ -186,7 +186,7 @@ class BenchmarkComparisonWidget extends StatelessWidget {
                   drawVerticalLine: false,
                   horizontalInterval: 10,
                   getDrawingHorizontalLine: (value) => FlLine(
-                    color: BenchmarkColors.gridColor,
+                    color: ColorHelpers.gridColor,
                     strokeWidth: 1,
                     dashArray: [3, 3],
                   ),
@@ -204,7 +204,7 @@ class BenchmarkComparisonWidget extends StatelessWidget {
                             child: ResponsiveText.displayMedium(
                               labels[value.toInt()],
                               style: TextStyle(
-                                color: BenchmarkColors.textGray,
+                                color: ColorHelpers.textGray,
                                 fontSize: info.isMobile ? 10 : 12,
                               ),
                             ),
@@ -222,7 +222,7 @@ class BenchmarkComparisonWidget extends StatelessWidget {
                         return ResponsiveText.displaySmall(
                           value.toInt().toString(),
                           style: TextStyle(
-                            color: BenchmarkColors.textGray,
+                            color: ColorHelpers.textGray,
                             fontSize: info.isMobile ? 10 : 12,
                           ),
                         );
@@ -269,11 +269,11 @@ class BenchmarkComparisonWidget extends StatelessWidget {
             runSpacing: 8,
             alignment: WrapAlignment.center,
             children: [
-              _buildLegendItem('Maximum', BenchmarkColors.gridColor),
+              _buildLegendItem('Maximum', ColorHelpers.gridColor),
               ...benchmarks.asMap().entries.map((entry) {
                 return _buildLegendItem(
                   entry.value.projectTitle,
-                  BenchmarkColors.getProjectColor(entry.key),
+                  ColorHelpers.getProjectColor(entry.key),
                 );
               }),
             ],
@@ -299,7 +299,7 @@ class BenchmarkComparisonWidget extends StatelessWidget {
         ResponsiveText.bodyMedium(
           label,
           style: TextStyle(
-            color: BenchmarkColors.textGray,
+            color: ColorHelpers.textGray,
             fontSize: 12,
           ),
         ),
@@ -317,7 +317,7 @@ class BenchmarkRadarWidget extends StatelessWidget {
     super.key,
     required this.benchmark,
     required this.info,
-    this.color = BenchmarkColors.purple,
+    this.color = ColorHelpers.purple,
   });
 
   @override
@@ -325,7 +325,7 @@ class BenchmarkRadarWidget extends StatelessWidget {
     return ResponsiveBox(
       padding: EdgeInsets.all(info.isMobile ? 20 : 24),
       decoration: BoxDecoration(
-        color: BenchmarkColors.darkBg.withValues(alpha: 0.5),
+        color: ColorHelpers.darkBg.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
           color: Colors.white.withValues(alpha: 0.1),
@@ -350,19 +350,19 @@ class BenchmarkRadarWidget extends StatelessWidget {
               RadarChartData(
                 radarShape: RadarShape.polygon,
                 radarBorderData: BorderSide(
-                  color: BenchmarkColors.gridColor,
+                  color: ColorHelpers.gridColor,
                   width: 2,
                 ),
                 gridBorderData: BorderSide(
-                  color: BenchmarkColors.gridColor,
+                  color: ColorHelpers.gridColor,
                   width: 1,
                 ),
                 tickBorderData: BorderSide(
-                  color: BenchmarkColors.gridColor.withValues(alpha: 0.5),
+                  color: ColorHelpers.gridColor.withValues(alpha: 0.5),
                 ),
                 tickCount: 4,
                 ticksTextStyle: TextStyle(
-                  color: BenchmarkColors.textGray,
+                  color: ColorHelpers.textGray,
                   fontSize: 10,
                 ),
                 radarBackgroundColor: Colors.transparent,
@@ -390,7 +390,7 @@ class BenchmarkRadarWidget extends StatelessWidget {
                   );
                 },
                 titleTextStyle: TextStyle(
-                  color: BenchmarkColors.textGray,
+                  color: ColorHelpers.textGray,
                   fontSize: info.isMobile ? 12 : 14,
                 ),
                 titlePositionPercentageOffset: 0.2,
@@ -420,7 +420,7 @@ class BenchmarkTableWidget extends StatelessWidget {
     return ResponsiveBox(
       padding: EdgeInsets.all(info.isMobile ? 16 : 24),
       decoration: BoxDecoration(
-        color: BenchmarkColors.darkBg.withValues(alpha: 0.5),
+        color: ColorHelpers.darkBg.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
           color: Colors.white.withValues(alpha: 0.1),
@@ -447,7 +447,7 @@ class BenchmarkTableWidget extends StatelessWidget {
               ),
               dataRowColor: WidgetStateProperty.resolveWith((states) {
                 return states.contains(WidgetState.selected)
-                    ? BenchmarkColors.purple.withValues(alpha: 0.1)
+                    ? ColorHelpers.purple.withValues(alpha: 0.1)
                     : null;
               }),
               border: TableBorder.all(
@@ -469,7 +469,7 @@ class BenchmarkTableWidget extends StatelessWidget {
                   label: ResponsiveText.displayMedium(
                     'Maximum',
                     style: TextStyle(
-                      color: BenchmarkColors.textGray,
+                      color: ColorHelpers.textGray,
                       fontWeight: FontWeight.bold,
                       fontSize: info.isMobile ? 12 : 14,
                     ),
@@ -518,14 +518,14 @@ class BenchmarkTableWidget extends StatelessWidget {
         )),
         DataCell(ResponsiveText.displaySmall(
           max.toString(),
-          style: TextStyle(color: BenchmarkColors.textGray),
+          style: TextStyle(color: ColorHelpers.textGray),
           textAlign: TextAlign.center,
         )),
         ...benchmarks.asMap().entries.map((entry) {
           return DataCell(ResponsiveText.displaySmall(
             getValue(entry.value).toString(),
             style: TextStyle(
-              color: BenchmarkColors.getProjectColor(entry.key),
+              color: ColorHelpers.getProjectColor(entry.key),
               fontWeight: FontWeight.bold,
             ),
             textAlign: TextAlign.center,
@@ -549,7 +549,7 @@ class BenchmarkTableWidget extends StatelessWidget {
         DataCell(ResponsiveText.displayMedium(
           '100',
           style: TextStyle(
-            color: BenchmarkColors.textGray,
+            color: ColorHelpers.textGray,
             fontWeight: FontWeight.bold,
           ),
           textAlign: TextAlign.center,
@@ -558,7 +558,7 @@ class BenchmarkTableWidget extends StatelessWidget {
           return DataCell(ResponsiveText.displayMedium(
             entry.value.scoreGlobal.toString(),
             style: TextStyle(
-              color: BenchmarkColors.getProjectColor(entry.key),
+              color: ColorHelpers.getProjectColor(entry.key),
               fontWeight: FontWeight.bold,
               fontSize: 18,
             ),
@@ -588,7 +588,7 @@ class BenchmarkRecommendationsWidget extends StatelessWidget {
 
     return Column(
       children: limitedBenchmarks.asMap().entries.map((entry) {
-        final gradient = BenchmarkColors.getProjectGradient(entry.key);
+        final gradient = ColorHelpers.getProjectGradient(entry.key);
 
         return ResponsiveBox(
           padding: const EdgeInsets.only(bottom: 16),

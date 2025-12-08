@@ -1,9 +1,9 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:portefolio/constants/benchmark_colors.dart';
 import 'package:portefolio/features/generator/data/chart_data.dart';
 import 'package:portefolio/features/generator/views/widgets/benchmark_widgets.dart';
 
+import '../../../../core/affichage/colors_spec.dart';
 import '../../../../core/affichage/screen_size_detector.dart';
 import '../../../../core/ui/widgets/responsive_text.dart';
 
@@ -95,7 +95,7 @@ class ChartRenderer {
           return BenchmarkRadarWidget(
             benchmark: chart.benchmarkInfo!,
             info: info,
-            color: BenchmarkColors.purple,
+            color: ColorHelpers.purple,
           );
         }
         return const SizedBox.shrink();
@@ -386,7 +386,7 @@ extension ChartRendererBenchmark on ChartRenderer {
             width: double.infinity,
             padding: EdgeInsets.all(info.isMobile ? 24 : 48),
             decoration: BoxDecoration(
-              gradient: BenchmarkColors.bgGradient,
+              gradient: ColorHelpers.bgGradient,
               borderRadius: BorderRadius.circular(32),
               border: Border.all(
                 color: Colors.white.withValues(alpha: 0.1),
@@ -458,7 +458,7 @@ extension ChartRendererBenchmark on ChartRenderer {
       case ChartType.benchmarkRadar:
         if (chart.benchmarkInfo != null) {
           // Déterminer la couleur selon l'index
-          final colors = [BenchmarkColors.purple, BenchmarkColors.pink];
+          final colors = [ColorHelpers.purple, ColorHelpers.pink];
           return BenchmarkRadarWidget(
             benchmark: chart.benchmarkInfo!,
             info: info,

@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../service/config_env_service.dart';
 
-/// Provider principal du service de configuration
 final envConfigProvider = Provider<EnvConfigService>((ref) {
   final config = EnvConfigService.fromEnvironment();
 
@@ -21,9 +20,6 @@ final envConfigProvider = Provider<EnvConfigService>((ref) {
 
   return config;
 });
-
-/// Providers spécifiques pour chaque service
-/// ✅ Permet l'injection de dépendance fine
 
 // EmailJS
 final emailJsServiceIdProvider = Provider<String>((ref) {
@@ -68,7 +64,7 @@ final cvOneDriveUrlProvider = Provider<String>((ref) {
   return config.oneDriveUrl;
 });
 
-// WakaTime (optionnel)
+// WakaTime
 final wakaTimeApiKeyConfigProvider = Provider<String?>((ref) {
   final config = ref.watch(envConfigProvider);
   return config.wakaTimeApiKey;

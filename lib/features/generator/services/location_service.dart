@@ -11,8 +11,8 @@ abstract class LocationService {
 
   Future<LocationPermissionStatus> checkPermission();
   Future<LocationPermissionStatus> requestPermission();
-  Future<LocationData?> getCurrentLocation();
-  Stream<LocationData> getLocationStream();
+  Future<LocationData?> getCurrentLocation({Map<String, dynamic>? settings});
+  Stream<LocationData> getLocationStream({Map<String, dynamic>? settings});
   Future<bool> isLocationEnabled();
   void dispose();
 }
@@ -50,10 +50,12 @@ class _PlatformLocationService extends LocationService {
       _impl.requestPermission();
 
   @override
-  Future<LocationData?> getCurrentLocation() => _impl.getCurrentLocation();
+  Future<LocationData?> getCurrentLocation({Map<String, dynamic>? settings}) =>
+      _impl.getCurrentLocation(settings: settings);
 
   @override
-  Stream<LocationData> getLocationStream() => _impl.getLocationStream();
+  Stream<LocationData> getLocationStream({Map<String, dynamic>? settings}) =>
+      _impl.getLocationStream(settings: settings);
 
   @override
   Future<bool> isLocationEnabled() => _impl.isLocationEnabled();
@@ -87,17 +89,18 @@ class _GeolocatorLocationService extends LocationService {
   }
 
   @override
-  Future<LocationData?> getCurrentLocation() async {
+  Future<LocationData?> getCurrentLocation(
+      {Map<String, dynamic>? settings}) async {
     try {
       if (!await Geolocator.isLocationServiceEnabled()) {
         developer.log('GPS désactivé, position simulée renvoyée');
         return null;
       }
+
+      final locationSettings = _parseSettings(settings);
+
       final pos = await Geolocator.getCurrentPosition(
-        locationSettings: LocationSettings(
-          accuracy: LocationAccuracy.best,
-          distanceFilter: 5,
-        ),
+        locationSettings: locationSettings,
       );
       return _toLocationData(pos);
     } on PermissionDeniedException catch (e) {
@@ -110,12 +113,11 @@ class _GeolocatorLocationService extends LocationService {
   }
 
   @override
-  Stream<LocationData> getLocationStream() {
+  Stream<LocationData> getLocationStream({Map<String, dynamic>? settings}) {
+    final locationSettings = _parseSettings(settings);
+
     final stream = Geolocator.getPositionStream(
-      locationSettings: const LocationSettings(
-        accuracy: LocationAccuracy.best,
-        distanceFilter: 5,
-      ),
+      locationSettings: locationSettings,
     );
 
     return stream.map(_toLocationData);
@@ -150,6 +152,35 @@ class _GeolocatorLocationService extends LocationService {
         timestamp: pos.timestamp,
       );
 
+  LocationSettings _parseSettings(Map<String, dynamic>? settings) {
+    if (settings == null) {
+      return const LocationSettings(
+          accuracy: LocationAccuracy.best, distanceFilter: 5);
+    }
+
+    // Extraction des paramètres
+    final accuracy = settings['accuracy'] == 'high'
+        ? LocationAccuracy.best
+        : LocationAccuracy.low;
+    final distanceFilter = (settings['distanceFilter'] as int?) ?? 5;
+
+    // Pour Web (et autres), on peut aussi extraire maximumAge, timeout, etc.
+    final intervalDuration =
+        settings['intervalDuration'] as int?; // Pour Android
+
+    // Note: Pour les autres paramètres spécifiques (activityType, etc.),
+    // il faudrait une logique plus complexe si geolocator les prend en charge.
+
+    return LocationSettings(
+      accuracy: accuracy,
+      distanceFilter: distanceFilter,
+      // Pour Android seulement, peut être ignoré sur d'autres
+      timeLimit: intervalDuration != null
+          ? Duration(milliseconds: intervalDuration)
+          : null,
+    );
+  }
+
   @override
   void dispose() {}
 }
@@ -169,13 +200,15 @@ class _StubLocationService extends LocationService {
   }
 
   @override
-  Future<LocationData?> getCurrentLocation() async {
+  Future<LocationData?> getCurrentLocation(
+      {Map<String, dynamic>? settings}) async {
     developer.log('🖥️ Stub: Pas de géolocalisation disponible');
     return null;
   }
 
   @override
-  Stream<LocationData> getLocationStream() async* {
+  Stream<LocationData> getLocationStream(
+      {Map<String, dynamic>? settings}) async* {
     developer.log('🖥️ Stub: Stream vide');
   }
 
@@ -212,13 +245,14 @@ class _SimulatedLocationService extends LocationService {
   }
 
   @override
-  Future<LocationData?> getCurrentLocation() async {
+  Future<LocationData?> getCurrentLocation(
+      {Map<String, dynamic>? settings}) async {
     developer.log('📱 LocationService: Position simulée (Paris)');
     return _createFakeLocation();
   }
 
   @override
-  Stream<LocationData> getLocationStream() {
+  Stream<LocationData> getLocationStream({Map<String, dynamic>? settings}) {
     _controller ??= StreamController<LocationData>.broadcast(
       onListen: _startEmitting,
       onCancel: _stopEmitting,
