@@ -220,10 +220,10 @@ class _ThemeSelectorState extends ConsumerState<ThemeSelector>
           child: ElevatedButton.icon(
             onPressed: () {
               // Ouvrir le dialog de création
-              // showDialog(context: context, builder: (_) => ThemeEditorDialog(...))
+              // showDialog(context: context, builder: (_) => ThemeEditorDialog())
             },
             icon: const Icon(Icons.add),
-            label: const Text('Créer un nouveau thème'),
+            label: const ResponsiveText.bodySmall('Créer un nouveau thème'),
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
             ),
@@ -398,7 +398,7 @@ class _ThemeSelectorState extends ConsumerState<ThemeSelector>
                       ),
                       const SizedBox(height: 8),
                       // Mode
-                      Container(
+                      ResponsiveBox(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 8,
                           vertical: 4,

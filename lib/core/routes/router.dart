@@ -7,6 +7,7 @@ import '../../features/contact/views/screens/contact_screen.dart';
 import '../../features/experience/views/screens/experiences_screen.dart';
 import '../../features/generator/views/screens/generator_extentions_screens.dart';
 import '../../features/home/views/screens/home_screen.dart';
+import '../../features/parametres/themes/views/screens/theme_settings_page.dart';
 import '../../features/projets/views/screens/projects_screen.dart';
 import '../affichage/navigator_key_provider.dart';
 import '../notifier/notifiers.dart';
@@ -56,6 +57,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               path: '/legal',
               name: 'legal',
               builder: (_, __) => const LegalMentionsScreen(),
+            ),
+            GoRoute(
+              path: '/theme_settings',
+              name: 'theme_settings',
+              builder: (_, __) => const ThemeSettingsPage(),
             ),
             GoRoute(
               path: '/wakatime_settings',

@@ -6,7 +6,6 @@ import 'package:portefolio/core/ui/widgets/responsive_text.dart';
 import '../core/provider/json_data_provider.dart';
 import '../core/provider/providers.dart';
 import '../features/experience/views/widgets/experience_filter_chips.dart';
-import '../features/parametres/themes/views/widgets/theme_selector.dart';
 import '../features/projets/data/project_data.dart';
 import '../features/projets/providers/projet_providers.dart';
 
@@ -53,11 +52,7 @@ enum AppTab {
           IconButton(
             icon: const Icon(Icons.palette_outlined),
             tooltip: 'Personnaliser le thème',
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const ThemeSelector()),
-              );
-            },
+            onPressed: () => context.pushNamed('theme_settings'),
           ),
           SizedBox.shrink(),
         ]);
