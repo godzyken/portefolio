@@ -69,6 +69,15 @@ class EnhancedBasicTheme extends BasicTheme {
     final primaryDark = ColorHelpers.darken(primaryColor, 0.2);
     final primaryContrast = ColorHelpers.getContrastColor(primaryColor);
 
+    final harmoniousPalette =
+        ColorHelpers.createHarmoniousPalette(primaryColor, count: 5);
+
+    final labelColors = [
+      harmoniousPalette[1], // Couleur accentuée 1
+      harmoniousPalette[2], // Couleur accentuée 2
+      harmoniousPalette[3], // Couleur accentuée 3
+    ];
+
     final colorScheme = ColorScheme.fromSeed(
       seedColor: primaryColor,
       brightness: brightness,
@@ -95,18 +104,34 @@ class EnhancedBasicTheme extends BasicTheme {
         shadowColor: primaryColor,
       ),
 
+      chipTheme: ChipThemeData(
+          backgroundColor: labelColors[0].withValues(alpha: 0.1),
+          selectedColor: labelColors[1].withValues(alpha: 0.1),
+          labelStyle: TextStyle(color: labelColors[0]),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+            side: BorderSide(color: labelColors[0]),
+          )),
+
+      dividerTheme: DividerThemeData(
+        color: harmoniousPalette.last.withValues(alpha: 0.4),
+        thickness: 1,
+        space: 30,
+      ),
+
       // Gradient harmonieux pour les boutons
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: primaryColor,
-          foregroundColor: primaryContrast,
-          elevation: 2,
-          shadowColor: ColorHelpers.withAlpha(primaryColor, 0.3),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
+            backgroundColor: primaryColor,
+            foregroundColor: primaryContrast,
+            elevation: 2,
+            shadowColor: ColorHelpers.withAlpha(primaryColor, 0.3),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            overlayColor: primaryLight,
+            surfaceTintColor: primaryLight),
       ),
 
       // Effet glow sur FAB
@@ -117,6 +142,58 @@ class EnhancedBasicTheme extends BasicTheme {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
+      ),
+
+      inputDecorationTheme: InputDecorationTheme(
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: isDark
+                  ? primaryLight.withAlpha(primaryColorValue)
+                  : primaryDark.withAlpha(primaryColorValue),
+            ),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: isDark ? primaryLight : primaryDark,
+              width: 2,
+            ),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          fillColor: isDark
+              ? ColorHelpers.withAlpha(primaryDark, 0.05)
+              : ColorHelpers.withAlpha(primaryLight, 0.05),
+          filled: true,
+          errorBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: isDark ? primaryLight : primaryDark,
+            ),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: isDark ? primaryLight : primaryDark,
+            ),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          labelStyle: TextStyle(
+            color: isDark ? primaryLight : primaryDark,
+          )),
+
+      textTheme: TextTheme(
+        labelLarge: TextStyle(color: primaryLight),
+        bodySmall: TextStyle(color: isDark ? primaryLight : primaryDark),
+        bodyMedium: TextStyle(color: isDark ? primaryLight : primaryDark),
+        bodyLarge: TextStyle(color: primaryLight),
+      ),
+
+      scrollbarTheme: ScrollbarThemeData(
+        thumbColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.hovered)) {
+            return primaryColor;
+          }
+          return isDark ? primaryDark : primaryLight;
+        }),
       ),
 
       // Splash avec ColorHelpers
