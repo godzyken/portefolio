@@ -9,7 +9,7 @@
         "writes_only": false,
         "timezone": "Europe/Paris",
         "holidays": 0,
-        "status": "ok",
+        "status": "pending_update",
         "created_at": "2025-12-05T02:56:49Z",
         "modified_at": "2025-12-10T02:49:31Z",
         "total_seconds_including_other_language": 116299.152,
