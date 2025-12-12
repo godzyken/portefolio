@@ -33,9 +33,7 @@ class _ThemeSelectorState extends ConsumerState<ThemeSelector>
   }
 
   @override
-  Widget build(
-    BuildContext context,
-  ) {
+  Widget build(BuildContext context) {
     final current = ref.watch(themeControllerProvider);
     final controller = ref.read(themeControllerProvider.notifier);
     final customThemes = ref.watch(customThemesProvider);

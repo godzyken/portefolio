@@ -7,6 +7,11 @@
 
   <!-- IMPORTANT: base relative pour GitHub Pages -->
 
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;
+               img-src * data: blob: https://*.basemaps.cartocdn.com;
+               connect-src * https://*.basemaps.cartocdn.com wss:;">
+
   <!-- Configuration Flutter obligatoire -->
   <script>
     window._flutter = {

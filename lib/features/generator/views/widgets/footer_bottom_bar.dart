@@ -2,19 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
-import 'package:portefolio/core/ui/widgets/responsive_text.dart';
-import 'package:portefolio/core/ui/widgets/ui_widgets_extentions.dart'; // Import pour ResponsiveBox/Spacing
+import 'package:portefolio/core/ui/widgets/ui_widgets_extentions.dart';
 
 class PortfolioFooter extends ConsumerWidget {
-  // 1. Changé en ConsumerWidget
   const PortfolioFooter({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // 2. Ajout de WidgetRef ref
     final theme = Theme.of(context);
-    final info = ref
-        .watch(responsiveInfoProvider); // 3. Récupération des infos responsive
+    final info = ref.watch(responsiveInfoProvider);
     final isMobile = info.isMobile;
 
     return Padding(
@@ -98,10 +94,8 @@ class PortfolioFooter extends ConsumerWidget {
       ],
     );
 
-    // Si non cliquable, on renvoie le contenu brut
     if (route == null) return content;
 
-    // Version cliquable avec effet hover pour Flutter Web
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       child: InkWell(

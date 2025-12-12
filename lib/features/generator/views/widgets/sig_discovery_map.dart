@@ -245,10 +245,12 @@ class _SigDiscoveryMapState extends ConsumerState<SigDiscoveryMap>
           subdomains: const ['a', 'b', 'c'],
           userAgentPackageName: 'com.godzyken.portfolio',
           tileProvider: NetworkTileProvider(),
+          maxZoom: 19,
         ),
         TileLayer(
           urlTemplate:
               'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+          subdomains: const ['a', 'b', 'c'],
           userAgentPackageName: 'com.godzyken.portfolio',
           tileProvider: NetworkTileProvider(),
         ),

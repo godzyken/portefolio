@@ -73,6 +73,7 @@ class ServiceExpertiseOverlay {
     final safeLeft = leftCenter.clamp(
         screenPadding, screenWidth - overlayWidth - screenPadding);
     return OverlayEntry(
+      opaque: false,
       builder: (context) {
         return Positioned(
           left: safeLeft,

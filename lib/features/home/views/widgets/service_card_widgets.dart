@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:portefolio/core/ui/widgets/responsive_text.dart';
 import 'package:portefolio/features/generator/data/extention_models.dart';
 
 import '../../../../../core/affichage/screen_size_detector.dart';
@@ -13,7 +14,7 @@ class ServiceCardWidgets {
   ) {
     final size = ServiceCardHelpers.getIconSize(info);
 
-    return Container(
+    return ResponsiveBox(
       padding: EdgeInsets.all(size * 0.3),
       decoration: BoxDecoration(
         shape: BoxShape.circle,
@@ -43,7 +44,7 @@ class ServiceCardWidgets {
   ) {
     final level = (expertise.averageLevel * 100).toInt();
 
-    return Container(
+    return ResponsiveBox(
       padding: EdgeInsets.symmetric(
         horizontal: ServiceCardHelpers.getSpacing(
           info,
@@ -89,7 +90,7 @@ class ServiceCardWidgets {
               large: 5,
             ),
           ),
-          Text(
+          ResponsiveText.bodySmall(
             '$level% expertise',
             style: TextStyle(
               color: Colors.white,
@@ -119,10 +120,9 @@ class ServiceCardWidgets {
 
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: InkWell(
+      child: GestureDetector(
         key: buttonKey,
         onTap: onTap,
-        borderRadius: BorderRadius.circular(size / 2),
         child: Container(
           padding: EdgeInsets.all(size * 0.25),
           decoration: BoxDecoration(
@@ -174,7 +174,7 @@ class ServiceCardWidgets {
             large: 6,
           ),
         ),
-        Text(
+        ResponsiveText.displaySmall(
           label,
           style: TextStyle(
             fontSize: ServiceCardHelpers.getFontSize(
