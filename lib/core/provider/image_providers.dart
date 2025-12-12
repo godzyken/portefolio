@@ -92,16 +92,6 @@ final appImagesProvider = FutureProvider<AppImages>((ref) async {
 
 // ============================================================================
 // PROVIDER POUR LE PRÉCACHE (Utilisé au démarrage)
-
-/// Liste de toutes les images pour le précache
-/// Combine images locales + réseau
-final imagesToPrecacheProvider = FutureProvider<List<String>>((ref) async {
-  final appImages = await ref.watch(appImagesProvider.future);
-  return appImages.all
-      .where((img) => img.contains('logos/') || img.contains('images/'))
-      .toList();
-});
-
 /// Vérifie si une image est disponible localement
 final isImageAvailableProvider =
     FutureProvider.family<bool, String>((ref, imagePath) async {

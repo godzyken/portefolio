@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:portefolio/core/provider/precache_providers.dart';
+import 'package:portefolio/core/ui/widgets/responsive_text.dart';
 
-import '../../../../core/provider/precache_providers.dart';
 import '../screens/splash_screen.dart';
 
 /// Widget qui gère le précache des assets avec options
@@ -9,7 +10,7 @@ class PrecacheWrapper extends ConsumerStatefulWidget {
   final Widget? child;
 
   /// Si true, utilise le précache parallèle (plus rapide mais plus de charge)
-  final bool useParallelPrecache;
+  //final bool useParallelPrecache;
 
   /// Durée max d'attente avant de continuer même si le précache n'est pas terminé
   final Duration? maxWaitDuration;
@@ -17,7 +18,6 @@ class PrecacheWrapper extends ConsumerStatefulWidget {
   const PrecacheWrapper({
     super.key,
     required this.child,
-    this.useParallelPrecache = false,
     this.maxWaitDuration = const Duration(seconds: 30),
   });
 
@@ -53,11 +53,8 @@ class _PrecacheWrapperState extends ConsumerState<PrecacheWrapper> {
     }
 
     // Choisir le bon provider selon la configuration
-    final precacheProvider = widget.useParallelPrecache
-        ? precacheAllAssetsParallelProvider(context)
-        : precacheAllAssetsProvider(context);
 
-    final precacheAsync = ref.watch(precacheProvider);
+    final precacheAsync = ref.watch(precacheNotifierProvider);
 
     return precacheAsync.when(
       data: (_) {
@@ -81,7 +78,7 @@ class _PrecacheWrapperState extends ConsumerState<PrecacheWrapper> {
               children: [
                 const CircularProgressIndicator(),
                 const SizedBox(height: 24),
-                const Text(
+                const ResponsiveText.displaySmall(
                   'Chargement...',
                   style: TextStyle(
                     color: Colors.white,
@@ -91,7 +88,7 @@ class _PrecacheWrapperState extends ConsumerState<PrecacheWrapper> {
                 const SizedBox(height: 16),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 32),
-                  child: Text(
+                  child: ResponsiveText.displaySmall(
                     'Certaines ressources n\'ont pas pu être chargées.\n'
                     'L\'application continuera avec les ressources disponibles.',
                     style: TextStyle(
@@ -109,7 +106,7 @@ class _PrecacheWrapperState extends ConsumerState<PrecacheWrapper> {
                     });
                   },
                   icon: const Icon(Icons.skip_next),
-                  label: const Text('Continuer quand même'),
+                  label: const ResponsiveText.bodySmall('Continuer quand même'),
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 24,
@@ -121,7 +118,7 @@ class _PrecacheWrapperState extends ConsumerState<PrecacheWrapper> {
                 TextButton.icon(
                   onPressed: () {
                     // Réessayer le précache
-                    ref.invalidate(precacheProvider);
+                    ref.invalidate(precacheNotifierProvider);
                   },
                   icon: const Icon(Icons.refresh),
                   label: const Text('Réessayer'),
@@ -143,13 +140,12 @@ class FastPrecacheWrapper extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final precacheAsync = ref.watch(precacheAllAssetsParallelProvider(context));
+    final precacheAsync = ref.watch(precacheNotifierProvider);
 
     return precacheAsync.when(
       data: (_) => child ?? const SizedBox.shrink(),
       loading: () => const SplashScreen(),
-      error: (_, __) =>
-          child ?? const SizedBox.shrink(), // Continue même avec erreur
+      error: (_, __) => child ?? const SizedBox.shrink(),
     );
   }
 }

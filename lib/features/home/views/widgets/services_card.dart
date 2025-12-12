@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/features/generator/data/extention_models.dart';
@@ -31,6 +32,11 @@ class _ServicesCardState extends ConsumerState<ServicesCard>
   final GlobalKey _buttonKey = GlobalKey();
   final GlobalKey _cardKey = GlobalKey();
 
+  bool _isTogglingOverlay = false;
+
+  DateTime? _lastUpdate;
+  static const _throttleDuration = Duration(milliseconds: 100);
+
   @override
   void initState() {
     super.initState();
@@ -43,64 +49,119 @@ class _ServicesCardState extends ConsumerState<ServicesCard>
       duration: 2500.ms,
     )..repeat();
 
-    _scrollController.addListener(() {
-      final expertise = ref.read(serviceExpertiseProvider(widget.service.id));
-      final skillCount = expertise?.topSkills.take(5).length ?? 0;
+    _scrollController.addListener(_onAnimationTick);
+  }
 
-      if (skillCount > 0) {
-        final newIndex =
-            (_scrollController.value * skillCount).floor() % skillCount;
-        if (newIndex != _currentSkillIndex) {
-          setState(() => _currentSkillIndex = newIndex);
-        }
+  void _onAnimationTick() {
+    if (!mounted) return;
+
+    final now = DateTime.now();
+    if (_lastUpdate != null &&
+        now.difference(_lastUpdate!) < _throttleDuration) {
+      return;
+    }
+
+    final expertise = ref.read(serviceExpertiseProvider(widget.service.id));
+    final skillCount = expertise?.topSkills.take(5).length ?? 0;
+
+    if (skillCount > 0) {
+      final newIndex =
+          (_scrollController.value * skillCount).floor() % skillCount;
+      if (newIndex != _currentSkillIndex && mounted) {
+        _lastUpdate = now;
+        setState(() => _currentSkillIndex = newIndex);
       }
-    });
+    }
   }
 
   @override
   void dispose() {
+    _scrollController.removeListener(_onAnimationTick);
     _scrollController.dispose();
-    _overlayEntry?.remove();
+    _removeOverlay();
     super.dispose();
   }
 
+  void _removeOverlay() {
+    if (_overlayEntry != null) {
+      _overlayEntry?.remove();
+      _overlayEntry?.dispose();
+      _overlayEntry = null;
+      debugPrint('[CARD] ✅ Overlay retiré');
+    }
+  }
+
   void _toggleSkillBubbles(ServiceExpertise expertise, ResponsiveInfo info) {
-    if (_overlayEntry == null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted || _overlayEntry != null) return;
+    // Éviter les appels multiples
+    if (_isTogglingOverlay) {
+      debugPrint('[CARD] ⚠️ Toggle déjà en cours...');
+      return;
+    }
 
-        _overlayEntry = ServiceExpertiseOverlay.createOverlay(
-          context: context,
-          buttonKey: _buttonKey,
-          cardKey: _cardKey,
-          expertise: expertise,
-          info: info,
-          service: widget.service,
-          currentSkillIndex: _currentSkillIndex,
-          onSkillTap: (index) {
+    _isTogglingOverlay = true;
+
+    if (_overlayEntry != null) {
+      // Fermer l'overlay existant
+      _removeOverlay();
+      setState(() {});
+      _isTogglingOverlay = false;
+      return;
+    }
+
+    // ✅ Attendre que le contexte soit prêt
+    Future.delayed(const Duration(milliseconds: 50), () {
+      if (!mounted) {
+        _isTogglingOverlay = false;
+        return;
+      }
+
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) {
+          _isTogglingOverlay = false;
+          return;
+        }
+
+        try {
+          final newOverlay = ServiceExpertiseOverlay.createOverlay(
+            context: context,
+            buttonKey: _buttonKey,
+            cardKey: _cardKey,
+            expertise: expertise,
+            info: info,
+            service: widget.service,
+            currentSkillIndex: _currentSkillIndex,
+            onSkillTap: (index) {
+              if (!mounted) return;
+              setState(() {
+                _currentSkillIndex = index;
+                // Force le rebuild de l'overlay
+                _overlayEntry?.markNeedsBuild();
+              });
+            },
+            onClose: () {
+              if (!mounted) return;
+              _removeOverlay();
+              setState(() {});
+            },
+          );
+
+          if (newOverlay != null && mounted) {
+            Overlay.of(context).insert(newOverlay);
             setState(() {
-              _currentSkillIndex = index;
-              _overlayEntry?.markNeedsBuild();
+              _overlayEntry = newOverlay;
             });
-          },
-          onClose: () {
-            _overlayEntry?.remove();
-            _overlayEntry = null;
-            setState(() {});
-          },
-        );
-
-        if (_overlayEntry != null) {
-          Overlay.of(context).insert(_overlayEntry!);
-          setState(() {});
+            debugPrint('[CARD] ✅ Overlay inséré avec succès');
+          } else {
+            debugPrint('[CARD] ❌ Échec de création de l\'overlay');
+          }
+        } catch (e, stack) {
+          debugPrint('[CARD] ❌ Erreur lors de la création de l\'overlay: $e');
+          debugPrint('Stack: $stack');
+        } finally {
+          _isTogglingOverlay = false;
         }
       });
-    } else {
-      // Si l'overlay existe, on le retire.
-      _overlayEntry?.remove();
-      _overlayEntry = null;
-      setState(() {});
-    }
+    });
   }
 
   @override
@@ -108,29 +169,31 @@ class _ServicesCardState extends ConsumerState<ServicesCard>
     final theme = Theme.of(context);
     final info = ref.watch(responsiveInfoProvider);
 
-    return GestureDetector(
-      child: HoverCard(
-        key: _cardKey,
-        id: widget.service.id,
-        shadowColor: theme.shadowColor,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(_getBorderRadius(info)),
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              return Column(
-                children: [
-                  SizedBox(
-                    height: _getTopSectionHeight(info),
-                    child: ServiceCardTopSection(
-                      service: widget.service,
-                      buttonKey: _buttonKey,
-                      overlayEntry: _overlayEntry,
-                      onToggleSkillBubbles: _toggleSkillBubbles,
+    return RepaintBoundary(
+      child: GestureDetector(
+        child: HoverCard(
+          key: _cardKey,
+          id: widget.service.id,
+          shadowColor: theme.shadowColor,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(_getBorderRadius(info)),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return Column(
+                  children: [
+                    SizedBox(
+                      height: _getTopSectionHeight(info),
+                      child: ServiceCardTopSection(
+                        service: widget.service,
+                        buttonKey: _buttonKey,
+                        overlayEntry: _overlayEntry,
+                        onToggleSkillBubbles: _toggleSkillBubbles,
+                      ),
                     ),
-                  ),
-                ],
-              );
-            },
+                  ],
+                );
+              },
+            ),
           ),
         ),
       ),

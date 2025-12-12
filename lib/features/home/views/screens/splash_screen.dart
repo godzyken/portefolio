@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:portefolio/core/ui/widgets/responsive_text.dart';
 
 import '../../../../core/provider/precache_providers.dart';
 import '../../../../core/routes/router.dart';
@@ -53,10 +54,13 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    final precacheAsync = ref.watch(precacheAllAssetsProvider(context));
+    ref.watch(precacheNotifierProvider.notifier);
+
+    // 2. Écoute de l'état
+    final precacheState = ref.watch(precacheNotifierProvider);
 
     // 🔹 Une fois terminé, on redirige vers la Home
-    precacheAsync.whenData((_) async {
+    precacheState.whenData((_) async {
       await Future.delayed(const Duration(milliseconds: 800));
       if (mounted) {
         final router = ref.read(goRouterProvider);
@@ -144,7 +148,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                   animation: _fadeAnimation,
                   builder: (context, child) =>
                       Opacity(opacity: _fadeAnimation.value, child: child),
-                  child: const Text(
+                  child: const ResponsiveText.displaySmall(
                     'Godzyken',
                     style: TextStyle(
                       fontSize: 32,
@@ -162,7 +166,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                   animation: _fadeAnimation,
                   builder: (context, child) =>
                       Opacity(opacity: _fadeAnimation.value, child: child),
-                  child: Text(
+                  child: ResponsiveText.titleMedium(
                     'Portfolio',
                     style: TextStyle(
                       fontSize: 16,
@@ -196,7 +200,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                 // Texte de chargement
                 FadeTransition(
                   opacity: _fadeAnimation,
-                  child: Text(
+                  child: ResponsiveText.bodySmall(
                     'Chargement des ressources...',
                     style: TextStyle(
                       fontSize: 14,
@@ -213,7 +217,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
             bottom: 40,
             left: 0,
             right: 0,
-            child: const _AppVersionText(), // Widget séparé pour la clarté
+            child: const _AppVersionText(),
           ),
         ],
       ),
@@ -240,7 +244,7 @@ class _AppVersionText extends StatelessWidget {
       future: _getAppVersion(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return const SizedBox.shrink();
-        return Text(
+        return ResponsiveText.bodySmall(
           snapshot.data!,
           textAlign: TextAlign.center,
           style: TextStyle(

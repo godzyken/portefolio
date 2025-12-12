@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:portefolio/core/ui/widgets/ui_widgets_extentions.dart';
 import 'package:portefolio/features/generator/data/extention_models.dart';
-
-import '../../../../core/ui/widgets/smart_image.dart';
 
 class ServiceCardBackground extends StatelessWidget {
   final Service service;
@@ -35,6 +34,8 @@ class ServiceCardBackground extends StatelessWidget {
       responsiveSize: ResponsiveImageSize.medium,
       fallbackIcon: service.icon,
       fallbackColor: theme.colorScheme.primary,
+      useCache: true,
+      enableShimmer: false,
     );
   }
 
@@ -54,22 +55,24 @@ class ServiceCardBackground extends StatelessWidget {
   }
 
   Widget _buildFallbackGradient(ThemeData theme) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            theme.colorScheme.primary.withValues(alpha: 0.4),
-            theme.colorScheme.secondary.withValues(alpha: 0.3),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+    return RepaintBoundary(
+      child: ResponsiveBox(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              theme.colorScheme.primary.withValues(alpha: 0.4),
+              theme.colorScheme.secondary.withValues(alpha: 0.3),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
         ),
-      ),
-      child: Center(
-        child: Icon(
-          service.icon,
-          size: 120,
-          color: Colors.white.withValues(alpha: 0.15),
+        child: Center(
+          child: Icon(
+            service.icon,
+            size: 120,
+            color: Colors.white.withValues(alpha: 0.15),
+          ),
         ),
       ),
     );

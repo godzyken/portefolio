@@ -4,6 +4,7 @@ import 'dart:developer' as developer;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:portefolio/core/exceptions/handler/global_exeption_handler.dart';
@@ -107,6 +108,9 @@ void main() {
 
       // ✅ Patch pour le bug du MouseTracker au démarrage web
       if (kIsWeb) await Future.delayed(const Duration(milliseconds: 100));
+
+      configurePerformance();
+
       // ⚡ Bootstrap avant le runApp
       final bootstrap = await BootstrapService.initialize();
       developer.log(
@@ -115,9 +119,9 @@ void main() {
       setUrlStrategy(const HashUrlStrategy());
 
       // Debug Flutter
-      debugProfileBuildsEnabled = true;
-      debugProfilePaintsEnabled = true;
-      debugProfileLayoutsEnabled = true;
+      debugProfileBuildsEnabled = false;
+      debugProfilePaintsEnabled = false;
+      debugProfileLayoutsEnabled = false;
 
       // Capturer les erreurs Flutter
       FlutterError.onError = (details) {
@@ -172,6 +176,30 @@ void main() {
   );
 }
 
+void configurePerformance() {
+  // Désactiver les checks de debug pour de meilleures performances
+  debugProfileBuildsEnabled = false;
+  debugProfilePaintsEnabled = false;
+  debugProfileLayoutsEnabled = false;
+
+  // ✅ Activer le cache des images
+  PaintingBinding.instance.imageCache.maximumSize = 100;
+  PaintingBinding.instance.imageCache.maximumSizeBytes =
+      50 * 1024 * 1024; // 50MB
+
+  // ✅ Configurer le scheduleur
+  SchedulerBinding.instance.addTimingsCallback((timings) {
+    for (final timing in timings) {
+      final frameTime = timing.totalSpan.inMilliseconds;
+      if (frameTime > 16) {
+        debugPrint('⚠️ Frame lente détectée: ${frameTime}ms');
+      }
+    }
+  });
+
+  debugPrint('✅ Configuration de performance appliquée');
+}
+
 class MyFullApp extends ConsumerWidget {
   final BootstrapService bootstrap;
   const MyFullApp({super.key, required this.bootstrap});
@@ -213,7 +241,6 @@ class MyFullApp extends ConsumerWidget {
         return ErrorBoundary(
           contextLabel: 'MyFullApp',
           child: PrecacheWrapper(
-            useParallelPrecache: true,
             maxWaitDuration: const Duration(seconds: 20),
             child: content,
           ),

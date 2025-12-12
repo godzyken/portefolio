@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:portefolio/features/generator/data/extention_models.dart';
 import 'package:portefolio/features/home/views/widgets/extentions_widgets.dart';
@@ -7,7 +8,7 @@ import '../../../../../core/affichage/screen_size_detector.dart';
 
 class ServiceExpertiseOverlay {
   /// Crée un overlay avec les bulles de compétences
-  static OverlayEntry createOverlay({
+  static OverlayEntry? createOverlay({
     required BuildContext context,
     required GlobalKey buttonKey,
     required GlobalKey cardKey,
@@ -18,117 +19,68 @@ class ServiceExpertiseOverlay {
     required Function(int) onSkillTap,
     required VoidCallback onClose,
   }) {
-    final RenderBox? cardRenderBox =
-        cardKey.currentContext?.findRenderObject() as RenderBox?;
-
-    if (cardRenderBox == null || !cardRenderBox.attached) {
-      debugPrint('[DEBUG OVERLAY] ❌ RenderBox de la carte non trouvée.');
-      return OverlayEntry(builder: (_) => const SizedBox.shrink());
+    if (!context.mounted) {
+      debugPrint('[OVERLAY] ❌ Context non monté');
+      return null;
     }
 
-    final cardPosition = cardRenderBox.localToGlobal(Offset.zero);
-    final cardHeight = cardRenderBox.size.height;
-    final cardWidth = cardRenderBox.size.width;
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      if (!context.mounted) return;
 
-    final topSkills = expertise.topSkills.take(5).toList();
-    if (topSkills.isEmpty) {
-      debugPrint('[DEBUG OVERLAY] ❌ La liste topSkills est vide.');
-      return OverlayEntry(builder: (_) => const SizedBox.shrink());
-    }
+      final RenderBox? cardRenderBox =
+          cardKey.currentContext?.findRenderObject() as RenderBox?;
+      final RenderBox? buttonRenderBox =
+          buttonKey.currentContext?.findRenderObject() as RenderBox?;
 
-    const double bubbleSize = 70.0;
-    const double spacing = 8.0;
-
-    final double numBubbles = topSkills.length.toDouble();
-    // Largeur = (N * taille bulle) + ((N-1) * espacement)
-    final double baseContentWidth =
-        (numBubbles * bubbleSize) + ((numBubbles - 1) * spacing);
-
-    const double overflowSafetyMargin = 50.0;
-    final double overlayWidth = baseContentWidth + overflowSafetyMargin;
-    const double overlayHeight = bubbleSize + 16.0;
-
-    const double verticalMargin = 8.0;
-    double top = cardPosition.dy + cardHeight + verticalMargin;
-
-    final scrollable = Scrollable.maybeOf(context);
-    if (scrollable != null) {
-      final RenderBox? viewport =
-          scrollable.context.findRenderObject() as RenderBox?;
-      if (viewport != null) {
-        final Offset viewportOffset = viewport.localToGlobal(Offset.zero);
-
-        top = cardPosition.dy + cardHeight + verticalMargin - viewportOffset.dy;
-        debugPrint(
-            '[DEBUG OVERLAY] Décalage Viewport appliqué: ${viewportOffset.dy.toStringAsFixed(2)}');
+      if (cardRenderBox == null || !cardRenderBox.hasSize) {
+        debugPrint('[OVERLAY] ❌ Card RenderBox invalide');
+        return;
       }
-    }
 
-    final double leftCenter =
-        cardPosition.dx + (cardWidth / 2) - (overlayWidth / 2);
+      if (buttonRenderBox == null || !buttonRenderBox.hasSize) {
+        debugPrint('[OVERLAY] ❌ Button RenderBox invalide');
+        return;
+      }
 
-    final screenWidth = MediaQuery.of(context).size.width;
-    const double screenPadding = 16.0;
+      final cardPosition = cardRenderBox.localToGlobal(Offset.zero);
+      final cardSize = cardRenderBox.size;
 
-    final safeLeft = leftCenter.clamp(
-        screenPadding, screenWidth - overlayWidth - screenPadding);
+      debugPrint('[OVERLAY] ✅ Card position: $cardPosition, size: $cardSize');
+    });
+
+    return _createOverlayEntry(
+      context: context,
+      cardKey: cardKey,
+      expertise: expertise,
+      info: info,
+      service: service,
+      currentSkillIndex: currentSkillIndex,
+      onSkillTap: onSkillTap,
+      onClose: onClose,
+    );
+  }
+
+  static OverlayEntry _createOverlayEntry({
+    required BuildContext context,
+    required GlobalKey cardKey,
+    required ServiceExpertise expertise,
+    required ResponsiveInfo info,
+    required Service service,
+    required int currentSkillIndex,
+    required Function(int) onSkillTap,
+    required VoidCallback onClose,
+  }) {
     return OverlayEntry(
       opaque: false,
-      builder: (context) {
-        return Positioned(
-          left: safeLeft,
-          top: top,
-          width: overlayWidth,
-          height: overlayHeight,
-          child: Material(
-            color: Colors.transparent,
-            elevation: 4,
-            borderRadius: BorderRadius.circular(12),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              alignment: Alignment.center,
-              child: Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: topSkills.asMap().entries.map((entry) {
-                  final index = entry.key;
-                  final skill = entry.value;
-                  final bool isActive = index == currentSkillIndex;
-
-                  return Padding(
-                    padding: index < topSkills.length - 1
-                        ? const EdgeInsets.only(right: spacing)
-                        : EdgeInsets.zero,
-                    child: GestureDetector(
-                      onTap: () => onSkillTap(index),
-                      onLongPress: () {
-                        onClose();
-                        _showExpandedDialog(
-                          context,
-                          expertise,
-                          skill,
-                          service,
-                          info,
-                        );
-                      },
-                      child: Animate(
-                        effects: [
-                          FadeEffect(delay: (index * 100).ms, duration: 300.ms),
-                          ScaleEffect(
-                              delay: (index * 100).ms, duration: 300.ms),
-                        ],
-                        child: ServiceSkillBubble(
-                          skill: skill,
-                          index: index,
-                          isActive: isActive,
-                        ),
-                      ),
-                    ),
-                  );
-                }).toList(),
-              ),
-            ),
-          ),
+      builder: (overlayContext) {
+        return _OverlayContent(
+          cardKey: cardKey,
+          expertise: expertise,
+          info: info,
+          service: service,
+          currentSkillIndex: currentSkillIndex,
+          onSkillTap: onSkillTap,
+          onClose: onClose,
         );
       },
     );
@@ -227,6 +179,184 @@ class ServiceExpertiseOverlay {
         Text('Projets Utilisés: ${skill.projectCount}'),
         Text('Années d\'expérience: ${skill.yearsOfExperience}'),
       ],
+    );
+  }
+}
+
+class _OverlayContent extends StatefulWidget {
+  final GlobalKey cardKey;
+  final ServiceExpertise expertise;
+  final ResponsiveInfo info;
+  final Service service;
+  final int currentSkillIndex;
+  final Function(int) onSkillTap;
+  final VoidCallback onClose;
+
+  const _OverlayContent({
+    required this.cardKey,
+    required this.expertise,
+    required this.info,
+    required this.service,
+    required this.currentSkillIndex,
+    required this.onSkillTap,
+    required this.onClose,
+  });
+
+  @override
+  State<_OverlayContent> createState() => _OverlayContentState();
+}
+
+class _OverlayContentState extends State<_OverlayContent> {
+  Offset? _position;
+  Size? _size;
+  bool _isReady = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // ✅ Calculer la position après le premier frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _calculatePosition();
+    });
+  }
+
+  void _calculatePosition() {
+    if (!mounted) return;
+
+    final RenderBox? cardRenderBox =
+        widget.cardKey.currentContext?.findRenderObject() as RenderBox?;
+
+    if (cardRenderBox == null || !cardRenderBox.hasSize) {
+      // ✅ Réessayer après un délai
+      Future.delayed(const Duration(milliseconds: 50), () {
+        if (mounted) _calculatePosition();
+      });
+      return;
+    }
+
+    final cardPosition = cardRenderBox.localToGlobal(Offset.zero);
+    final cardSize = cardRenderBox.size;
+
+    // ✅ Configuration des bulles
+    final topSkills = widget.expertise.topSkills.take(5).toList();
+    const double bubbleSize = 70.0;
+    const double spacing = 8.0;
+    const double padding = 16.0;
+
+    final double numBubbles = topSkills.length.toDouble();
+    final double contentWidth =
+        (numBubbles * bubbleSize) + ((numBubbles - 1) * spacing);
+    final double overlayWidth = contentWidth + (padding * 2);
+    const double overlayHeight = bubbleSize + (padding * 2);
+
+    // ✅ Position centrée sous la carte
+    const double verticalMargin = 8.0;
+    double top = cardPosition.dy + cardSize.height + verticalMargin;
+
+    // ✅ Ajustement pour le scroll
+    final scrollable = Scrollable.maybeOf(context);
+    if (scrollable != null) {
+      final RenderBox? viewport =
+          scrollable.context.findRenderObject() as RenderBox?;
+      if (viewport != null) {
+        final viewportOffset = viewport.localToGlobal(Offset.zero);
+        top -= viewportOffset.dy;
+      }
+    }
+
+    // ✅ Centrage horizontal
+    final screenWidth = MediaQuery.of(context).size.width;
+    final double leftCenter =
+        cardPosition.dx + (cardSize.width / 2) - (overlayWidth / 2);
+    const double screenPadding = 16.0;
+
+    final safeLeft = leftCenter.clamp(
+      screenPadding,
+      screenWidth - overlayWidth - screenPadding,
+    );
+
+    setState(() {
+      _position = Offset(safeLeft, top);
+      _size = Size(overlayWidth, overlayHeight);
+      _isReady = true;
+    });
+
+    debugPrint('[OVERLAY] ✅ Position calculée: $_position, Size: $_size');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // ✅ Afficher un loader pendant le calcul
+    if (!_isReady || _position == null || _size == null) {
+      return const SizedBox.shrink();
+    }
+
+    final topSkills = widget.expertise.topSkills.take(5).toList();
+
+    return Positioned(
+      left: _position!.dx,
+      top: _position!.dy,
+      width: _size!.width,
+      height: _size!.height,
+      child: Material(
+        color: Colors.transparent,
+        elevation: 8,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.all(16.0),
+          decoration: BoxDecoration(
+            color:
+                Theme.of(context).colorScheme.surface.withValues(alpha: 0.95),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color:
+                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
+              width: 2,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.3),
+                blurRadius: 15,
+                spreadRadius: 2,
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: topSkills.asMap().entries.map((entry) {
+              final index = entry.key;
+              final skill = entry.value;
+              final bool isActive = index == widget.currentSkillIndex;
+
+              return GestureDetector(
+                onTap: () => widget.onSkillTap(index),
+                onLongPress: () {
+                  widget.onClose();
+                  ServiceExpertiseOverlay._showExpandedDialog(
+                    context,
+                    widget.expertise,
+                    skill,
+                    widget.service,
+                    widget.info,
+                  );
+                },
+                child: Animate(
+                  effects: [
+                    FadeEffect(delay: (index * 100).ms, duration: 300.ms),
+                    ScaleEffect(delay: (index * 100).ms, duration: 300.ms),
+                  ],
+                  child: ServiceSkillBubble(
+                    skill: skill,
+                    index: index,
+                    isActive: isActive,
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+      ),
     );
   }
 }
