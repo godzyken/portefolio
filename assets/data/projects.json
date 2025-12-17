@@ -208,6 +208,76 @@
   },
   {
     "id": "projet_5",
+    "title": "bat_track_v1",
+    "points": [
+      "🏗️ Application Flutter complète dédiée à la Construction 4.0",
+      "🧩 Gestion centralisée des chantiers, clients, techniciens et interventions",
+      "🧾 Génération automatique de documents PDF (devis, factures, comptes rendus)",
+      "📸 Capture photo et signature client directement depuis le mobile",
+      "🌐 Synchronisation temps réel via Firebase et WebSocket simulé",
+      "📶 Mode hors-ligne avec stockage local (Hive / Drift) et resynchronisation automatique",
+      "🛰️ Intégration IoT simulée : capteurs de température, consommation et état des équipements",
+      "🧱 Visualisation 3D de maquettes (.glTF, .OBJ) et zones d’intervention",
+      "🕶️ Expérience VR mobile compatible Cardboard et gyroscope",
+      "🎨 Interface responsive Material 3 optimisée pour tablette, desktop et mobile"
+    ],
+    "image": [
+      "assets/images/bat_track_dashboard.png",
+      "assets/images/bat_track_vr_mode.jpg",
+      "assets/images/bat_track_form_intervention.png",
+      "assets/images/bat_track_pdf_preview.png",
+      "assets/images/bat_track_iot_mock.png"
+    ],
+    "platform": ["Smartphone", "Tablet", "Desktop", "WebVR"],
+    "tags": ["Flutter", "Firebase", "Hive", "IoT", "3D", "VR", "PDF", "Construction4.0"],
+    "results": [
+      "🚀 Centralisation complète des interventions et documents sur une seule plateforme",
+      "📊 Réduction de 60% du temps administratif sur la gestion de chantier",
+      "🔗 Synchronisation multi-appareils sans perte de données (offline-first)",
+      "👷 Communication fluide entre clients, techniciens et direction",
+      "🧭 Suivi en temps réel des états d’équipements grâce aux données IoT simulées",
+      "🎮 Immersion 3D/VR facilitant la compréhension des zones d’intervention",
+      "🧾 Automatisation de la documentation PDF réduisant les erreurs de saisie",
+      "⚡ Optimisation des délais d’intervention de -45%"
+    ],
+    "resultsMap": {
+      "roi": "210%",
+      "timeSaved": "10h/semaine",
+      "clients": "120+",
+      "projects": "80+",
+      "satisfaction": "4.8/5",
+      "efficiency": "+40%",
+      "deployment": "-90%",
+      "compliance": "100%",
+      "iotUpdates": "1.2k+/jour",
+      "pdfGenerated": "3k+/mois",
+      "visualizations3D": "500+",
+      "demonstrations": [
+        {"mois": "Jan", "evenements": 3},
+        {"mois": "Fév", "evenements": 6},
+        {"mois": "Mar", "evenements": 9},
+        {"mois": "Avr", "evenements": 14},
+        {"mois": "Mai", "evenements": 18},
+        {"mois": "Juin", "evenements": 21}
+      ],
+      "videos": [
+        {"titre": "Présentation du module IoT", "vues": 1900},
+        {"titre": "Démo du mode VR chantier", "vues": 3100},
+        {"titre": "Tutoriel PDF automatique", "vues": 2600},
+        {"titre": "Workshop Construction 4.0", "vues": 4200},
+        {"titre": "BatTrack en action", "vues": 5500}
+      ],
+      "benchmark": {
+        "score": "75/100",
+        "performances": "22/30",
+        "seo": "28/30",
+        "mobile": "20/30",
+        "sécurité": "5/10"
+      }
+    }
+  },
+  {
+    "id": "projet_6",
     "title": "Angular & Ionic",
     "points": [
       "👨‍💻 Architecte & Lead Developer sur des applications mobiles et web hybrides",
@@ -228,7 +298,7 @@
     "tags": ["UX/UI", "Digitalisation", "AWS Cloud"]
   },
   {
-    "id": "projet_6",
+    "id": "projet_7",
     "title": "Chef de Projet Digital",
     "subtitle": "Transformation numérique & pilotage d’innovations",
     "points": [
@@ -248,7 +318,7 @@
     "tags": ["Flutter", "Firebase", "IoT", "VR", "Management", "UX/UI", "Digitalisation"]
   },
   {
-    "id": "projet_7",
+    "id": "projet_8",
     "title": "portefolio",
     "points": [
       "🔗 Présentation de mon parcours pro et académique",
@@ -276,7 +346,7 @@
     "tags": ["WordPress", "Github Octocat", "Github Actions", "Unity", "Flutter"]
   },
   {
-    "id": "projet_8",
+    "id": "projet_9",
     "title": "Réseau Éducatif Résilient - Projet Workshop Ultron",
     "points": [
       "🛰️ Projet Workshop EPSI-WIS 2025-2026 – Campus Montpellier",
@@ -313,7 +383,7 @@
     "tags": ["Flutter", "Raspberry Pi", "ESP8266", "LAN", "Offline Sync", "Education", "IoT"]
   },
   {
-    "id": "projet_9",
+    "id": "projet_10",
     "title": "Accompagnement digital – Clip musical d’artiste indépendant",
     "points": [
       "🎤 Enregistrement et accompagnement vocal de l’artiste sur les instrumentaux.",

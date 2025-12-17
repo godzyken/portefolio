@@ -10,5 +10,6 @@ export 'location_providers.dart';
 export 'location_settings_provider.dart';
 export 'precache_providers.dart';
 export 'providers.dart';
+export 'sensor_provider.dart';
 export 'service_providers.dart';
 export 'visited_page_provider.dart';
