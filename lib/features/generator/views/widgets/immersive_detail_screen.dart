@@ -7,6 +7,7 @@ import 'package:portefolio/core/ui/widgets/ui_widgets_extentions.dart';
 import 'package:portefolio/features/generator/views/widgets/wakatime_badge_extensions.dart';
 
 import '../../../projets/providers/projects_extentions_providers.dart';
+import '../../../projets/views/screens/iot_dashboard_screen.dart';
 import '../../data/extention_models.dart';
 import '../generator_widgets_extentions.dart';
 
@@ -133,6 +134,31 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
     return titleMatches || pointsMatch;
   }
 
+  bool _hasIoTFeatures() {
+    final titleLower = widget.project.title.toLowerCase();
+    final pointsText = widget.project.points.join(' ').toLowerCase();
+
+    // Détection de mots-clés IoT
+    final iotKeywords = [
+      'iot',
+      'capteur',
+      'sensor',
+      'température',
+      'consommation',
+      'vibration',
+      'humidité',
+      'esp8266',
+      'raspberry',
+      'temps réel',
+      'monitoring',
+      'surveillance',
+      'chantier'
+    ];
+
+    return iotKeywords.any((keyword) =>
+        titleLower.contains(keyword) || pointsText.contains(keyword));
+  }
+
   @override
   Widget build(BuildContext context) {
     final info = ref.watch(responsiveInfoProvider);
@@ -140,6 +166,7 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
     final images = _getImages();
 
     final useRowLayout = info.isDesktop || info.isTablet || info.isLandscape;
+    final hasIoT = _hasIoTFeatures();
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -239,6 +266,11 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
                                 widget.project.points, theme, info),
                           ],
                         ),
+                      // ⚡ NOUVEAU : Section IoT Dashboard
+                      if (hasIoT) ...[
+                        ResponsiveBox(height: 32),
+                        _buildIoTDashboardSectionWithTabs(theme, info),
+                      ],
                       ResponsiveBox(height: 32),
                       WakaTimeBadgeWidget(
                         projectName: widget.project.title,
@@ -919,5 +951,180 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
 
     return ChartRendererBenchmark.renderChartsWithBenchmarks(
         _charts, info, yLabel);
+  }
+
+  Widget _buildIoTDashboardSectionWithTabs(
+      ThemeData theme, ResponsiveInfo info) {
+    return DefaultTabController(
+      length: 2,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ResponsiveText.titleLarge(
+            "🛰️ Données du projet",
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: info.isMobile ? 20 : 24,
+            ),
+          ),
+          const ResponsiveBox(height: 16),
+
+          // Tabs
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.05),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: TabBar(
+              indicator: BoxDecoration(
+                color: Colors.cyan.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              labelColor: Colors.white,
+              unselectedLabelColor: Colors.white.withValues(alpha: 0.6),
+              tabs: const [
+                Tab(
+                  icon: Icon(Icons.dashboard_outlined),
+                  text: 'Dashboard IoT',
+                ),
+                Tab(
+                  icon: Icon(Icons.show_chart),
+                  text: 'Statistiques',
+                ),
+              ],
+            ),
+          ),
+
+          const ResponsiveBox(height: 16),
+
+          // Tab Views
+          SizedBox(
+            height: info.isMobile ? 450 : 550,
+            child: TabBarView(
+              children: [
+                // Tab 1: IoT Dashboard
+                ResponsiveBox(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: Colors.cyan.withValues(alpha: 0.3),
+                      width: 2,
+                    ),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(18),
+                    child: const EnhancedIotDashboardScreen(),
+                  ),
+                ),
+
+                // Tab 2: Statistiques
+                ResponsiveBox(
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.03),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.08),
+                    ),
+                  ),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ResponsiveText.bodyLarge(
+                          'Statistiques détaillées',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        _buildStatCard(
+                          'Capteurs actifs',
+                          '4/4',
+                          Icons.sensors,
+                          Colors.green,
+                          info,
+                        ),
+                        const SizedBox(height: 12),
+                        _buildStatCard(
+                          'Dernière mise à jour',
+                          'Il y a 2s',
+                          Icons.update,
+                          Colors.blue,
+                          info,
+                        ),
+                        const SizedBox(height: 12),
+                        _buildStatCard(
+                          'Alertes actives',
+                          '0',
+                          Icons.warning_amber,
+                          Colors.orange,
+                          info,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatCard(
+    String label,
+    String value,
+    IconData icon,
+    Color color,
+    ResponsiveInfo info,
+  ) {
+    return Container(
+      padding: EdgeInsets.all(info.isMobile ? 16 : 20),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: color.withValues(alpha: 0.3),
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(icon, color: color, size: 24),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ResponsiveText.bodyMedium(
+                  label,
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.7),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                ResponsiveText.titleMedium(
+                  value,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
