@@ -6,6 +6,7 @@ import 'package:portefolio/core/provider/image_providers.dart';
 import 'package:portefolio/core/ui/widgets/ui_widgets_extentions.dart';
 import 'package:portefolio/features/generator/views/widgets/wakatime_badge_extensions.dart';
 
+import '../../../../core/provider/sensor_provider.dart';
 import '../../../projets/providers/projects_extentions_providers.dart';
 import '../../../projets/views/screens/iot_dashboard_screen.dart';
 import '../../data/extention_models.dart';
@@ -989,6 +990,10 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
                   text: 'Dashboard IoT',
                 ),
                 Tab(
+                  icon: Icon(Icons.history),
+                  text: 'Historique',
+                ),
+                Tab(
                   icon: Icon(Icons.show_chart),
                   text: 'Statistiques',
                 ),
@@ -1018,7 +1023,10 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
                   ),
                 ),
 
-                // Tab 2: Statistiques
+                // Tab 2: Historiques
+                _buildHistoricalChartsView(theme, info),
+
+                // Tab 3: Statistiques
                 ResponsiveBox(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
@@ -1068,6 +1076,206 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
                   ),
                 ),
               ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHistoricalChartsView(ThemeData theme, ResponsiveInfo info) {
+    return Consumer(
+      builder: (context, ref, child) {
+        final sensors = ref.watch(sensorProvider);
+
+        return ResponsiveBox(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.03),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.08),
+            ),
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ResponsiveText.titleMedium(
+                  'Évolution des capteurs (dernières 24h)',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // Graphique température
+                _buildHistoricalChart(
+                  'Température',
+                  sensors['Température'] ?? 0,
+                  '°C',
+                  Colors.orangeAccent,
+                  info,
+                ),
+                const SizedBox(height: 24),
+
+                // Graphique consommation
+                _buildHistoricalChart(
+                  'Consommation',
+                  sensors['Consommation'] ?? 0,
+                  'kWh',
+                  Colors.yellowAccent,
+                  info,
+                ),
+                const SizedBox(height: 24),
+
+                // Graphique humidité
+                _buildHistoricalChart(
+                  'Humidité',
+                  sensors['Humidité'] ?? 0,
+                  '%',
+                  Colors.cyanAccent,
+                  info,
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildHistoricalChart(
+    String label,
+    double currentValue,
+    String unit,
+    Color color,
+    ResponsiveInfo info,
+  ) {
+    // Génération de données historiques simulées
+    final historicalData = List.generate(24, (index) {
+      final baseValue = currentValue;
+      final variance = (index - 12).abs() * 0.5;
+      return FlSpot(
+        index.toDouble(),
+        (baseValue + variance + (index % 3) * 2).clamp(0, 100),
+      );
+    });
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: color.withValues(alpha: 0.2),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              ResponsiveText.bodyLarge(
+                label,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: ResponsiveText.bodyMedium(
+                  '${currentValue.toStringAsFixed(1)} $unit',
+                  style: TextStyle(
+                    color: color,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            height: info.isMobile ? 150 : 200,
+            child: LineChart(
+              LineChartData(
+                gridData: FlGridData(
+                  show: true,
+                  drawVerticalLine: false,
+                  horizontalInterval: 20,
+                  getDrawingHorizontalLine: (value) => FlLine(
+                    color: Colors.white.withValues(alpha: 0.1),
+                    strokeWidth: 1,
+                  ),
+                ),
+                titlesData: FlTitlesData(
+                  leftTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 40,
+                      getTitlesWidget: (value, meta) => Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: ResponsiveText.bodySmall(
+                          value.toInt().toString(),
+                          style: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.6),
+                            fontSize: 10,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  rightTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  topTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      interval: 6,
+                      getTitlesWidget: (value, meta) => Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: ResponsiveText.bodySmall(
+                          '${value.toInt()}h',
+                          style: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.6),
+                            fontSize: 10,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                borderData: FlBorderData(show: false),
+                minX: 0,
+                maxX: 23,
+                minY: 0,
+                maxY: 100,
+                lineBarsData: [
+                  LineChartBarData(
+                    spots: historicalData,
+                    isCurved: true,
+                    color: color,
+                    barWidth: 3,
+                    isStrokeCapRound: true,
+                    dotData: const FlDotData(show: false),
+                    belowBarData: BarAreaData(
+                      show: true,
+                      color: color.withValues(alpha: 0.1),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
