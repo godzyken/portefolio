@@ -1,5 +1,10 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:portefolio/constants/tech_logos.dart';
+import 'package:portefolio/core/affichage/colors_spec.dart';
+import 'package:portefolio/features/generator/views/generator_widgets_extentions.dart';
+
+import '../../../core/ui/widgets/responsive_text.dart';
 
 /// Représente un type de chart à afficher
 enum ChartType {
@@ -235,10 +240,9 @@ class ChartDataFactory {
 
     // 3. Clients (PieChart)
     if (resultsMap.containsKey('clients') && resultsMap['clients'] is List) {
-      final pieData = _createPieChart(
-        'Répartition des clients par âge',
-        resultsMap['clients'] as List<dynamic>,
-      );
+      final pieData = _createPieChart('Répartition des clients par âge',
+          resultsMap['clients'] as List<dynamic>,
+          labelKey: 'age', valueKey: 'nombre');
       if (pieData != null) charts.add(pieData);
     }
 
@@ -304,10 +308,8 @@ class ChartDataFactory {
     // 9. Followers (PieChart)
     if (resultsMap.containsKey('followers')) {
       final pieData = _createPieChart(
-        'Followers par plateforme',
-        resultsMap['followers'],
-        labelKey: 'plateforme',
-      );
+          'Followers par plateforme', resultsMap['followers'],
+          labelKey: 'plateforme', valueKey: 'nombre');
       if (pieData != null) charts.add(pieData);
     }
 
@@ -410,15 +412,24 @@ class ChartDataFactory {
     String valueKey = 'nombre',
   }) {
     if (data.isEmpty) return null;
+    final mix = ColorHelpers.chartColors;
 
     final sections = data.asMap().entries.map((entry) {
       final item = entry.value;
+      final color = mix[entry.key % mix.length];
+
       return PieChartSectionData(
         value: (item[valueKey] as num).toDouble(),
         title: item[labelKey]?.toString() ?? '',
-        color: Colors.primaries[entry.key % Colors.primaries.length],
+        color: color.withValues(alpha: 0.7),
         radius: 50,
         titleStyle: const TextStyle(color: Colors.white, fontSize: 12),
+        borderSide: BorderSide(color: color, width: 2),
+        badgeWidget: ThreeDTechIcon(
+            logoPath: item['logo'],
+            icon: getIconFromName(item[labelKey]),
+            color: color),
+        badgePositionPercentageOffset: 1.4,
       );
     }).toList();
 
@@ -455,6 +466,52 @@ class ChartDataFactory {
       xLabels: labels,
       lineColor: color,
       xLabelStep: xLabelStep,
+    );
+  }
+
+  static Widget? _buildFuturisticBadge(String label, String value, Color color,
+      {String? logoPath, IconData? icon}) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 500),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color:
+            Colors.black.withValues(alpha: 0.6), // Fond sombre semi-transparent
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: color.withValues(alpha: 0.8), width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: color.withValues(alpha: 0.4),
+            blurRadius: 8,
+            spreadRadius: 1,
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ThreeDTechIcon(
+            logoPath: logoPath,
+            icon: icon,
+            color: color,
+          ),
+          ResponsiveBox(
+            width: 6,
+            height: 6,
+            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+          ),
+          const SizedBox(width: 6),
+          ResponsiveText(
+            "$label: $value",
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 0.5,
+              fontFamily: 'Orbitron', // Optionnel : pour le look "code"
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

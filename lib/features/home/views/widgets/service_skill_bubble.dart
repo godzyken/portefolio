@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:portefolio/core/provider/image_providers.dart';
 import 'package:portefolio/features/generator/data/extention_models.dart';
+import 'package:portefolio/features/generator/views/generator_widgets_extentions.dart';
 import 'package:portefolio/features/home/views/widgets/extentions_widgets.dart';
 
-import '../../../../../constants/tech_logos.dart';
 import '../../../../../core/affichage/screen_size_detector.dart';
 import '../../../../../core/ui/widgets/ui_widgets_extentions.dart';
+import '../../../../constants/tech_logos.dart';
+import '../../../../core/provider/image_providers.dart';
 
 /// Widget représentant une bulle de compétence avec icône/logo
 class ServiceSkillBubble extends ConsumerWidget {
@@ -26,6 +27,9 @@ class ServiceSkillBubble extends ConsumerWidget {
     final info = ref.watch(responsiveInfoProvider);
     final size = info.isMobile ? 50.0 : 70.0;
     final color = ServiceCardHelpers.getColorForIndex(index);
+    final String skillName = skill.name.toLowerCase();
+    final String? logoPath = ref.watch(skillLogoPathProvider(skillName));
+    final IconData skillIcon = getIconFromName(skillName);
 
     return ResponsiveBox(
       margin: const EdgeInsets.only(right: 8.0),
@@ -42,45 +46,29 @@ class ServiceSkillBubble extends ConsumerWidget {
           ),
         ],
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      child: Stack(
+        alignment: Alignment.center,
         children: [
-          _buildSkillIcon(ref, size, info),
-          ResponsiveText.bodySmall(
-            '${skill.levelPercent}%',
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: info.isMobile ? 10 : 12,
-            ),
+          ThreeDTechIcon(
+            icon: skillIcon,
+            logoPath: logoPath,
+            color: Colors.white,
+            size: size,
           ),
+          Positioned(
+              bottom: 4,
+              child: ResponsiveText.bodySmall(
+                '${skill.levelPercent}%',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: info.isMobile ? 10 : 12,
+                    shadows: [
+                      const Shadow(blurRadius: 4, color: Colors.black)
+                    ]),
+              )),
         ],
       ),
-    );
-  }
-
-  Widget _buildSkillIcon(WidgetRef ref, double size, ResponsiveInfo info) {
-    final String skillName = skill.name.toLowerCase();
-    final String? logoPath = ref.watch(skillLogoPathProvider(skillName));
-    final IconData skillIcon = getIconFromName(skillName);
-
-    if (logoPath != null) {
-      return SmartImage(
-        path: logoPath,
-        width: size * 0.45,
-        height: size * 0.45,
-        fit: BoxFit.contain,
-        enableShimmer: false,
-        useCache: true,
-        fallbackIcon: skillIcon,
-        fallbackColor: Colors.white,
-      );
-    }
-
-    return Icon(
-      skillIcon,
-      size: size * 0.45,
-      color: Colors.white,
     );
   }
 }

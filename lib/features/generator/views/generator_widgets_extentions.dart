@@ -14,5 +14,6 @@ export 'widgets/responsive_layout.dart';
 export 'widgets/responsive_scope.dart';
 export 'widgets/sig_discovery_map.dart';
 export 'widgets/slider_service_widget.dart';
+export 'widgets/three_d_tech_icon.dart';
 export 'widgets/wakatime_badge.dart';
 export 'widgets/youtube_video_player.dart';

@@ -9,183 +9,169 @@ import '../../../../core/ui/widgets/responsive_text.dart';
 
 class ChartRenderer {
   /// Rend tous les charts de manière uniforme
+  static Widget renderChartsWithBenchmarks(
+    List<ChartData> charts,
+    ResponsiveInfo info,
+    Widget Function(double) yLabel,
+  ) {
+    if (charts.isEmpty) return const SizedBox.shrink();
+
+    final benchmarkCharts = charts
+        .where((c) => [
+              ChartType.benchmarkGlobal,
+              ChartType.benchmarkComparison,
+              ChartType.benchmarkRadar,
+              ChartType.benchmarkTable
+            ].contains(c.type))
+        .toList();
+
+    final otherCharts =
+        charts.where((c) => !benchmarkCharts.contains(c)).toList();
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (benchmarkCharts.isNotEmpty) ...[
+          Container(
+            padding: EdgeInsets.all(info.isMobile ? 12 : 20),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.03),
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ResponsiveText.titleMedium('📊 Analyse des Benchmarks',
+                    style: const TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 16),
+                ...benchmarkCharts.map((chart) => Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: _renderBenchmarkChart(chart, info),
+                    )),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+        ],
+        if (otherCharts.isNotEmpty) renderCharts(otherCharts, info, yLabel),
+      ],
+    );
+  }
+
   static Widget renderCharts(
     List<ChartData> charts,
     ResponsiveInfo info,
     Widget Function(double) yLabelBuilder,
   ) {
-    if (charts.isEmpty) {
-      return ResponsiveText.bodyMedium(
-        "Aucune donnée de performance à afficher pour ce projet.",
-        style: const TextStyle(color: Colors.white60),
-      );
-    }
-
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: charts.map((chart) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildChartTitle(chart.title, info),
-            const ResponsiveBox(height: 16),
-            _buildChartContent(chart, info, yLabelBuilder),
-            const ResponsiveBox(height: 32),
-          ],
+      mainAxisSize: MainAxisSize.min,
+      children: charts
+          .map((chart) => Padding(
+                padding: const EdgeInsets.only(bottom: 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(chart.title,
+                        style: TextStyle(
+                            color: Colors.white70,
+                            fontSize: info.isMobile ? 14 : 16,
+                            fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 12),
+                    _buildChartContent(chart, info, yLabelBuilder),
+                  ],
+                ),
+              ))
+          .toList(),
+    );
+  }
+
+  static Widget _buildChartContent(ChartData chart, ResponsiveInfo info,
+      Widget Function(double) yLabelBuilder) {
+    // REDUCTION DE LA HAUTEUR : 130px sur mobile, 180px sur desktop
+    final double h = info.isMobile ? 130 : 180;
+
+    switch (chart.type) {
+      case ChartType.kpiCards:
+        return _buildKPICardsCompact(chart.kpiValues!, info);
+      case ChartType.barChart:
+        return SizedBox(
+            height: h,
+            child: _buildBarChart(chart.barGroups!, info, yLabelBuilder));
+      case ChartType.lineChart:
+        return SizedBox(
+            height: h,
+            child: _buildLineChart(chart.lineSpots!, chart.xLabels!,
+                chart.lineColor!, chart.xLabelStep!, info, yLabelBuilder));
+      case ChartType.pieChart:
+        return SizedBox(
+            height: h, child: _buildPieChart(chart.pieSections!, info));
+
+      default:
+        return const SizedBox.shrink();
+    }
+  }
+
+  static Widget _buildKPICardsCompact(
+      Map<String, String> kpis, ResponsiveInfo info) {
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      alignment: WrapAlignment.center,
+      children: kpis.entries.map((entry) {
+        return Container(
+          width: info.isMobile ? (info.size.width / 2) - 30 : 140,
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.05),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: Colors.white10),
+          ),
+          child: Column(
+            children: [
+              Text(entry.key,
+                  style: const TextStyle(color: Colors.white60, fontSize: 10),
+                  textAlign: TextAlign.center,
+                  maxLines: 1),
+              Text(entry.value,
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: info.isMobile ? 15 : 18,
+                      fontWeight: FontWeight.bold)),
+            ],
+          ),
         );
       }).toList(),
     );
   }
 
-  static Widget _buildChartTitle(String title, ResponsiveInfo info) {
-    return ResponsiveText.headlineMedium(
-      title,
-      style: TextStyle(
-        color: Colors.white70,
-        fontSize: info.isMobile ? 16 : 18,
-        fontWeight: FontWeight.w600,
-      ),
-    );
-  }
-
-  static Widget _buildChartContent(
-    ChartData chart,
-    ResponsiveInfo info,
-    Widget Function(double) yLabelBuilder,
-  ) {
-    switch (chart.type) {
-      case ChartType.kpiCards:
-        return _buildKPICards(chart.kpiValues!, info);
-
-      case ChartType.barChart:
-        return _buildBarChart(chart.barGroups!, info, yLabelBuilder);
-
-      case ChartType.pieChart:
-        return _buildPieChart(chart.pieSections!);
-
-      case ChartType.lineChart:
-        return _buildLineChart(
-          chart.lineSpots!,
-          chart.xLabels!,
-          chart.lineColor!,
-          chart.xLabelStep!,
-          info,
-          yLabelBuilder,
-        );
-      case ChartType.benchmarkGlobal:
-        if (chart.benchmarkInfo != null) {
-          return BenchmarkGlobalWidget(
-            benchmark: chart.benchmarkInfo!,
-            info: info,
-          );
-        }
-        return const SizedBox.shrink();
-
-      case ChartType.benchmarkComparison:
-        if (chart.benchmarkComparison != null) {
-          return BenchmarkComparisonWidget(
-            benchmarks: chart.benchmarkComparison!,
-            info: info,
-          );
-        }
-        return const SizedBox.shrink();
-
-      case ChartType.benchmarkRadar:
-        if (chart.benchmarkInfo != null) {
-          return BenchmarkRadarWidget(
-            benchmark: chart.benchmarkInfo!,
-            info: info,
-            color: ColorHelpers.purple,
-          );
-        }
-        return const SizedBox.shrink();
-
-      case ChartType.benchmarkTable:
-        if (chart.benchmarkComparison != null) {
-          return BenchmarkTableWidget(
-            benchmarks: chart.benchmarkComparison!,
-            info: info,
-          );
-        }
-        return const SizedBox.shrink();
+  // --- Helper Methods (Benchmark) ---
+  static Widget _renderBenchmarkChart(ChartData chart, ResponsiveInfo info) {
+    if (chart.type == ChartType.benchmarkGlobal) {
+      return BenchmarkGlobalWidget(benchmark: chart.benchmarkInfo!, info: info);
     }
+    if (chart.type == ChartType.benchmarkComparison) {
+      return BenchmarkComparisonWidget(
+          benchmarks: chart.benchmarkComparison!, info: info);
+    }
+    return const SizedBox.shrink();
   }
 
-  static Widget _buildKPICards(Map<String, String> kpis, ResponsiveInfo info) {
-    // Calcul du nombre de colonnes selon l'écran
-    final crossAxisCount = info.isDesktop ? 4 : (info.isTablet ? 3 : 2);
+  // ============================================
+  // PIE CHART
+  // ============================================
 
-    return ResponsiveBox(
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      child: GridView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: crossAxisCount,
-          childAspectRatio: info.isMobile ? 1.2 : 1.5,
-          crossAxisSpacing: 16,
-          mainAxisSpacing: 16,
-        ),
-        itemCount: kpis.length,
-        itemBuilder: (context, index) {
-          final entry = kpis.entries.elementAt(index);
-          return _buildKPICard(entry.key, entry.value, info);
-        },
-      ),
-    );
-  }
+  static Widget _buildPieChart(
+      List<PieChartSectionData> sections, ResponsiveInfo info) {
+    if (sections.isEmpty) return const Center(child: Text("Pas de données"));
 
-  static Widget _buildKPICard(String label, String value, ResponsiveInfo info) {
-    return ResponsiveBox(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Colors.white.withValues(alpha: 0.08),
-            Colors.white.withValues(alpha: 0.03),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.15),
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.2),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: EdgeInsets.all(info.isMobile ? 12 : 16),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            ResponsiveText.bodySmall(
-              label,
-              style: TextStyle(
-                color: Colors.white70,
-                fontSize: info.isMobile ? 12 : 14,
-                fontWeight: FontWeight.w500,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const ResponsiveBox(height: 8),
-            ResponsiveText.titleLarge(
-              value,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: info.isMobile ? 20 : 28,
-                fontWeight: FontWeight.bold,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
+    return PieChart(
+      PieChartData(
+        sections: sections,
+        centerSpaceRadius: info.isMobile ? 30 : 40, // Ajuste selon l'écran
+        sectionsSpace: 2,
+        // Assurez-vous que les sections ont des couleurs
       ),
     );
   }
@@ -230,23 +216,6 @@ class ChartRenderer {
             show: true,
             border: Border.all(color: Colors.white24),
           ),
-        ),
-      ),
-    );
-  }
-
-  // ============================================
-  // PIE CHART
-  // ============================================
-
-  static Widget _buildPieChart(List<PieChartSectionData> sections) {
-    return ResponsiveBox(
-      height: 200,
-      child: PieChart(
-        PieChartData(
-          sections: sections,
-          centerSpaceRadius: 40,
-          sectionsSpace: 2,
         ),
       ),
     );
@@ -378,39 +347,41 @@ extension ChartRendererBenchmark on ChartRenderer {
         .toList();
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
         // Section Benchmark avec titre et fond spécial
         if (benchmarkCharts.isNotEmpty) ...[
           ResponsiveBox(
-            width: double.infinity,
-            padding: EdgeInsets.all(info.isMobile ? 24 : 48),
+            padding: EdgeInsets.all(info.isMobile ? 12 : 24),
             decoration: BoxDecoration(
               gradient: ColorHelpers.bgGradient,
               borderRadius: BorderRadius.circular(32),
               border: Border.all(
-                color: Colors.white.withValues(alpha: 0.1),
+                color: Colors.white.withValues(alpha: 0.08),
                 width: 2,
               ),
             ),
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 // Titre de section
                 ResponsiveText.titleLarge(
                   '📊 Analyse des Benchmarks',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: info.isMobile ? 28 : 36,
+                    fontSize: info.isMobile ? 20 : 24,
                     fontWeight: FontWeight.bold,
                   ),
                   textAlign: TextAlign.center,
                 ),
-                ResponsiveBox(height: info.isMobile ? 32 : 48),
+                ResponsiveBox(
+                  paddingSize: ResponsiveSpacing.s,
+                ),
 
                 // Rendre les charts de benchmark
                 ...benchmarkCharts.map((chart) {
                   return ResponsiveBox(
-                    padding: const EdgeInsets.only(bottom: 24),
+                    padding: const EdgeInsets.only(bottom: 12),
                     child: _renderBenchmarkChart(chart, info),
                   );
                 }),
@@ -418,13 +389,17 @@ extension ChartRendererBenchmark on ChartRenderer {
                 // Recommandations si on a des comparaisons
                 if (benchmarkCharts
                     .any((c) => c.type == ChartType.benchmarkComparison)) ...[
-                  ResponsiveBox(height: info.isMobile ? 24 : 32),
+                  ResponsiveBox(
+                    paddingSize: ResponsiveSpacing.s,
+                  ),
                   _renderBenchmarkRecommendations(benchmarkCharts, info),
                 ],
               ],
             ),
           ),
-          ResponsiveBox(height: info.isMobile ? 32 : 48),
+          ResponsiveBox(
+            paddingSize: ResponsiveSpacing.s,
+          ),
         ],
 
         // Autres charts (KPI, ventes, etc.)
