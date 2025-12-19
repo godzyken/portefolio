@@ -812,14 +812,19 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
       return PieChartSectionData(
           color: color,
           value: lang.percent,
-          title: '',
+          showTitle: false,
           radius: info.isMobile ? 50 : 65,
+          borderSide: BorderSide(
+              width: 2,
+              color: color.withValues(alpha: 0.03),
+              style: BorderStyle.solid,
+              strokeAlign: 2.0),
           badgeWidget: ThreeDTechIcon(
             logoPath: lang.name,
             color: color,
             size: info.isMobile ? 38 : 48,
           ),
-          badgePositionPercentageOffset: 1.5);
+          badgePositionPercentageOffset: info.isMobile ? 0.5 : 1.5);
     }).toList();
 
     final pieChartWidget = SizedBox(
@@ -830,10 +835,21 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
           // Pie Chart
           PieChart(
             PieChartData(
-              sectionsSpace: 2,
-              centerSpaceRadius: info.isMobile ? 40 : 55,
-              sections: sections,
-            ),
+                sectionsSpace: 4,
+                centerSpaceRadius: info.isMobile ? 40 : 55,
+                sections: sections,
+                borderData: FlBorderData(
+                    show: false,
+                    border: Border(
+                        bottom: BorderSide(
+                      color: Colors.white.withValues(alpha: 0.1),
+                      width: 2,
+                    ))),
+                startDegreeOffset: 20,
+                pieTouchData: PieTouchData(
+                    touchCallback: (FlTouchEvent event, pieTouchResponse) {}),
+                titleSunbeamLayout: true),
+            curve: Curves.bounceInOut,
           ),
           // Centre du pie chart
           Container(

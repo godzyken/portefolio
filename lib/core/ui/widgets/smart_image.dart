@@ -134,11 +134,23 @@ class _SmartImageState extends ConsumerState<SmartImage> {
   bool _hasError = false;
   bool _isLoading = false;
   bool _isLoaded = false;
+  bool _hasPrecachingStarted = false;
 
   @override
   void initState() {
     super.initState();
     if (widget.useCache) _loadImage();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // ✅ Le contexte est maintenant prêt pour precacheImage()
+    if (widget.useCache && !_hasPrecachingStarted) {
+      _hasPrecachingStarted = true;
+      _loadImage();
+    }
   }
 
   @override
