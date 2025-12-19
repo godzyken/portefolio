@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:portefolio/core/affichage/colors_spec.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/provider/image_providers.dart';
 import 'package:portefolio/core/ui/widgets/ui_widgets_extentions.dart';
@@ -801,13 +802,25 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
   Widget _buildLanguagesSection(List<WakaTimeLanguage> languages,
       ResponsiveInfo info, bool useRowLayout) {
     final displayLanguages = languages.take(5).toList();
-    final colors = [
-      Colors.blue,
-      Colors.green,
-      Colors.orange,
-      Colors.purple,
-      Colors.pink,
-    ];
+    final colors = ColorHelpers.chartColors;
+
+    final sections = displayLanguages.asMap().entries.map((entry) {
+      final index = entry.key;
+      final lang = entry.value;
+      final color = colors[index % colors.length];
+
+      return PieChartSectionData(
+          color: color,
+          value: lang.percent,
+          title: '',
+          radius: info.isMobile ? 50 : 65,
+          badgeWidget: ThreeDTechIcon(
+            logoPath: lang.name,
+            color: color,
+            size: info.isMobile ? 38 : 48,
+          ),
+          badgePositionPercentageOffset: 1.5);
+    }).toList();
 
     final pieChartWidget = SizedBox(
       height: useRowLayout ? 200 : 220,
@@ -819,18 +832,7 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
             PieChartData(
               sectionsSpace: 2,
               centerSpaceRadius: info.isMobile ? 40 : 55,
-              sections: displayLanguages.asMap().entries.map((entry) {
-                final index = entry.key;
-                final lang = entry.value;
-                final color = colors[index % colors.length];
-
-                return PieChartSectionData(
-                  color: color,
-                  value: lang.percent,
-                  title: '',
-                  radius: info.isMobile ? 50 : 65,
-                );
-              }).toList(),
+              sections: sections,
             ),
           ),
           // Centre du pie chart

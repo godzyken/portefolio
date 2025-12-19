@@ -21,6 +21,11 @@ class ThreeDTechIcon extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    if (logoPath == null || logoPath!.isEmpty) {
+      return Icon(icon, size: size, color: color);
+    }
+
+    // Récupère le logo depuis le provider
     final String skillName = logoPath!.toLowerCase();
     final String? path = ref.watch(skillLogoPathProvider(skillName));
     final IconData skillIcon = getIconFromName(skillName);
@@ -41,43 +46,37 @@ class ThreeDTechIcon extends ConsumerWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Colors.white.withValues(alpha: 0.4), // Reflet de brillance
-              color.withValues(alpha: 0.2),
+              Colors.white.withValues(alpha: 0.6), // Reflet de brillance
+              color.withValues(alpha: 0.3),
             ],
           ),
           boxShadow: [
-            // Ombre portée pour l'effet de profondeur
+            // Effet Néon (Glow)
             BoxShadow(
-              color: color.withValues(alpha: 0.5),
-              blurRadius: 10,
-              offset: const Offset(-2, 4),
+              color: color.withValues(alpha: 0.6),
+              blurRadius: 12,
+              spreadRadius: 2,
             ),
-            // Glow interne
             BoxShadow(
-              color: color.withValues(alpha: 0.2),
-              spreadRadius: -2,
+              color: Colors.black26,
+              offset: const Offset(2, 4),
               blurRadius: 5,
             ),
           ],
         ),
         child: Center(
-          child: logoPath != null
-              ? SmartImage(
-                  path: path!,
-                  width: size * 0.45,
-                  height: size * 0.45,
-                  fit: BoxFit.contain,
-                  enableShimmer: false,
-                  useCache: true,
-                  fallbackIcon: skillIcon,
-                  fallbackColor: Colors.white,
-                )
-              : Icon(
-                  icon,
-                  size: size * 0.6,
-                  color: Colors.white,
-                ),
-        ),
+            child: path != null && path.isNotEmpty
+                ? SmartImage(
+                    path: path,
+                    width: size * 0.45,
+                    height: size * 0.45,
+                    fit: BoxFit.contain,
+                    enableShimmer: false,
+                    useCache: true,
+                    fallbackIcon: skillIcon,
+                    fallbackColor: Colors.white,
+                  )
+                : Icon(skillIcon, size: size * 0.45, color: Colors.white)),
       ),
     );
   }

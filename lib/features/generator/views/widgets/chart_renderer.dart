@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:portefolio/features/generator/data/chart_data.dart';
 import 'package:portefolio/features/generator/views/widgets/benchmark_widgets.dart';
+import 'package:portefolio/features/generator/views/widgets/three_d_tech_icon.dart';
 
 import '../../../../core/affichage/colors_spec.dart';
 import '../../../../core/affichage/screen_size_detector.dart';
@@ -166,12 +167,31 @@ class ChartRenderer {
       List<PieChartSectionData> sections, ResponsiveInfo info) {
     if (sections.isEmpty) return const Center(child: Text("Pas de données"));
 
-    return PieChart(
-      PieChartData(
-        sections: sections,
-        centerSpaceRadius: info.isMobile ? 30 : 40, // Ajuste selon l'écran
-        sectionsSpace: 2,
-        // Assurez-vous que les sections ont des couleurs
+    // 1. Transformation des sections pour injecter le badge futuriste
+    final futuristicSections = sections.map((section) {
+      return section.copyWith(
+        showTitle: false,
+        radius: info.isMobile ? 40 : 55,
+        badgeWidget: ThreeDTechIcon(
+          logoPath: section.title,
+          color: section.color,
+          size: info.isMobile ? 38 : 48,
+        ),
+        badgePositionPercentageOffset: 1.1,
+      );
+    }).toList();
+
+    return Center(
+      child: AspectRatio(
+        aspectRatio: 1, // Maintient un cercle parfait
+        child: PieChart(
+          PieChartData(
+            sections: futuristicSections,
+            centerSpaceRadius: info.isMobile ? 30 : 45,
+            sectionsSpace: 4,
+            pieTouchData: PieTouchData(enabled: true),
+          ),
+        ),
       ),
     );
   }

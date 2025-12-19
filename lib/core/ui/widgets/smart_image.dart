@@ -170,7 +170,7 @@ class _SmartImageState extends ConsumerState<SmartImage> {
         });
       }
     } catch (e) {
-      debugPrint('❌ SmartImage precache error: ${widget.path}');
+      debugPrint('❌ SmartImage precache error: ${widget.path}, $e');
       if (mounted) {
         setState(() {
           _isLoading = false;

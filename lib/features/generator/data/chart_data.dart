@@ -1,10 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:portefolio/constants/tech_logos.dart';
 import 'package:portefolio/core/affichage/colors_spec.dart';
-import 'package:portefolio/features/generator/views/generator_widgets_extentions.dart';
-
-import '../../../core/ui/widgets/responsive_text.dart';
 
 /// Représente un type de chart à afficher
 enum ChartType {
@@ -417,19 +413,16 @@ class ChartDataFactory {
     final sections = data.asMap().entries.map((entry) {
       final item = entry.value;
       final color = mix[entry.key % mix.length];
+      final label = item[labelKey]?.toString() ?? '';
 
       return PieChartSectionData(
         value: (item[valueKey] as num).toDouble(),
-        title: item[labelKey]?.toString() ?? '',
-        color: color.withValues(alpha: 0.7),
-        radius: 50,
-        titleStyle: const TextStyle(color: Colors.white, fontSize: 12),
+        title: label,
+        color: color.withValues(alpha: 0.8),
+        radius: 60,
+        showTitle: false,
         borderSide: BorderSide(color: color, width: 2),
-        badgeWidget: ThreeDTechIcon(
-            logoPath: item['logo'],
-            icon: getIconFromName(item[labelKey]),
-            color: color),
-        badgePositionPercentageOffset: 1.4,
+        // badgePositionPercentageOffset: 1.4,
       );
     }).toList();
 
@@ -466,52 +459,6 @@ class ChartDataFactory {
       xLabels: labels,
       lineColor: color,
       xLabelStep: xLabelStep,
-    );
-  }
-
-  static Widget? _buildFuturisticBadge(String label, String value, Color color,
-      {String? logoPath, IconData? icon}) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 500),
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color:
-            Colors.black.withValues(alpha: 0.6), // Fond sombre semi-transparent
-        borderRadius: BorderRadius.circular(4),
-        border: Border.all(color: color.withValues(alpha: 0.8), width: 1.5),
-        boxShadow: [
-          BoxShadow(
-            color: color.withValues(alpha: 0.4),
-            blurRadius: 8,
-            spreadRadius: 1,
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ThreeDTechIcon(
-            logoPath: logoPath,
-            icon: icon,
-            color: color,
-          ),
-          ResponsiveBox(
-            width: 6,
-            height: 6,
-            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-          ),
-          const SizedBox(width: 6),
-          ResponsiveText(
-            "$label: $value",
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 0.5,
-              fontFamily: 'Orbitron', // Optionnel : pour le look "code"
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
