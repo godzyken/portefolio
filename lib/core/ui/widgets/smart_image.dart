@@ -3,14 +3,14 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:portefolio/core/ui/widgets/responsive_text.dart';
+import 'package:portefolio/core/provider/smart_image_cache_provider.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../responsive_constants.dart';
 
 enum ResponsiveImageSize { small, medium, large, xlarge }
 
-// 🔹 Transparent pixel
+// Transparent pixel placeholder
 const kTransparentImage = <int>[
   0x89,
   0x50,
@@ -84,7 +84,6 @@ const kTransparentImage = <int>[
 
 final Uint8List transparentImage = Uint8List.fromList(kTransparentImage);
 
-/// 🧠 Image universelle : responsive, stylée, avec cache, shimmer et fade
 class SmartImage extends ConsumerStatefulWidget {
   final String path;
   final double? width;
@@ -92,15 +91,12 @@ class SmartImage extends ConsumerStatefulWidget {
   final BoxFit fit;
   final IconData? fallbackIcon;
   final Color? fallbackColor;
-  final Duration? cacheTimeout;
   final ResponsiveImageSize? responsiveSize;
   final bool useCache;
   final bool enableShimmer;
   final Duration fadeDuration;
   final Color? color;
   final BlendMode? colorBlendMode;
-
-  // 🎨 Nouveau : style visuel
   final BorderRadius? borderRadius;
   final BoxBorder? border;
   final List<BoxShadow>? boxShadow;
@@ -113,9 +109,8 @@ class SmartImage extends ConsumerStatefulWidget {
     this.fit = BoxFit.cover,
     this.fallbackIcon,
     this.fallbackColor,
-    this.cacheTimeout = const Duration(days: 7),
     this.responsiveSize,
-    this.useCache = false,
+    this.useCache = true,
     this.enableShimmer = true,
     this.fadeDuration = const Duration(milliseconds: 400),
     this.color,
@@ -130,66 +125,27 @@ class SmartImage extends ConsumerStatefulWidget {
 }
 
 class _SmartImageState extends ConsumerState<SmartImage> {
-  ImageProvider? _cachedProvider;
+  ImageProvider? _imageProvider;
   bool _hasError = false;
-  bool _isLoading = false;
   bool _isLoaded = false;
-  bool _hasPrecachingStarted = false;
-
-  @override
-  void initState() {
-    super.initState();
-    if (widget.useCache) _loadImage();
-  }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-
-    // ✅ Le contexte est maintenant prêt pour precacheImage()
-    if (widget.useCache && !_hasPrecachingStarted) {
-      _hasPrecachingStarted = true;
-      _loadImage();
+    if (widget.useCache) {
+      final cacheNotifier = ref.read(smartImageCacheNotifierProvider.notifier);
+      cacheNotifier.setContext(context);
+      // Précharge en arrière-plan sans await
+      cacheNotifier.preloadImage(widget.path);
     }
   }
 
   @override
-  void didUpdateWidget(SmartImage oldWidget) {
+  void didUpdateWidget(covariant SmartImage oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.useCache && oldWidget.path != widget.path) {
-      _loadImage();
-    }
-  }
-
-  Future<void> _loadImage() async {
-    setState(() {
-      _isLoading = true;
-      _isLoaded = false;
-    });
-
-    try {
-      final isNetwork = widget.path.startsWith('http');
-      _cachedProvider = isNetwork
-          ? NetworkImage(widget.path)
-          : AssetImage(widget.path) as ImageProvider;
-
-      await precacheImage(_cachedProvider!, context);
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-          _isLoaded = true;
-          _hasError = false;
-        });
-      }
-    } catch (e) {
-      debugPrint('❌ SmartImage precache error: ${widget.path}, $e');
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-          _isLoaded = false;
-          _hasError = true;
-        });
-      }
+    if (widget.path != oldWidget.path && widget.useCache) {
+      final cacheNotifier = ref.read(smartImageCacheNotifierProvider.notifier);
+      cacheNotifier.preloadImage(widget.path);
     }
   }
 
@@ -200,7 +156,7 @@ class _SmartImageState extends ConsumerState<SmartImage> {
 
     if (widget.responsiveSize != null) {
       final constants = ref.watch(responsiveConstantsProvider);
-      final size = _getImageSize(constants, widget.responsiveSize!);
+      final size = _getResponsiveSize(constants, widget.responsiveSize!);
       finalWidth ??= size;
       finalHeight ??= size;
     }
@@ -212,37 +168,21 @@ class _SmartImageState extends ConsumerState<SmartImage> {
       boxShadow: widget.boxShadow,
     );
 
+    // Détecte le type d'image
+    final isSvg = widget.path.toLowerCase().endsWith('.svg');
+    final isNetwork = widget.path.startsWith('http');
+    final useShimmer = widget.enableShimmer;
+
     Widget child;
 
-    if (widget.useCache && _cachedProvider != null && !_hasError) {
-      child = AnimatedOpacity(
-        opacity: _isLoaded ? 1 : 0,
-        duration: widget.fadeDuration,
-        child: Image(
-          image: _cachedProvider!,
-          width: finalWidth,
-          height: finalHeight,
-          fit: widget.fit,
-          color: widget.color,
-          colorBlendMode: widget.colorBlendMode,
-          errorBuilder: (context, _, __) =>
-              _buildFallback(context, finalWidth, finalHeight),
-        ),
-      );
-    } else if (widget.enableShimmer &&
-        (widget.useCache && (_isLoading || !_isLoaded))) {
-      child = _buildShimmerPlaceholder(finalWidth, finalHeight);
+    if (_hasError) {
+      child = _buildFallback(finalWidth, finalHeight);
+    } else if (isSvg) {
+      child = _buildSvg(finalWidth, finalHeight, isNetwork);
+    } else if (isNetwork) {
+      child = _buildNetworkImage(finalWidth, finalHeight, useShimmer);
     } else {
-      final isSvg = widget.path.toLowerCase().endsWith('.svg');
-      final isNetwork = widget.path.startsWith('http');
-
-      if (isSvg) {
-        child = _buildSvgImage(context, finalWidth, finalHeight);
-      } else if (isNetwork) {
-        child = _buildNetworkImage(context, finalWidth, finalHeight);
-      } else {
-        child = _buildAssetImage(context, finalWidth, finalHeight);
-      }
+      child = _buildAssetImage(finalWidth, finalHeight);
     }
 
     return ClipRRect(
@@ -254,7 +194,7 @@ class _SmartImageState extends ConsumerState<SmartImage> {
     );
   }
 
-  double _getImageSize(
+  double _getResponsiveSize(
       ResponsiveConstants constants, ResponsiveImageSize size) {
     return switch (size) {
       ResponsiveImageSize.small => constants.avatarS,
@@ -264,56 +204,7 @@ class _SmartImageState extends ConsumerState<SmartImage> {
     };
   }
 
-  Widget _buildNetworkImage(BuildContext context, double? w, double? h) {
-    return Image.network(
-      widget.path,
-      width: w,
-      height: h,
-      fit: widget.fit,
-      color: widget.color,
-      colorBlendMode: widget.colorBlendMode,
-      frameBuilder: (context, child, frame, _) {
-        if (frame == null && widget.enableShimmer) {
-          return _buildShimmerPlaceholder(w, h);
-        }
-        return AnimatedOpacity(
-          opacity: 1,
-          duration: widget.fadeDuration,
-          child: child,
-        );
-      },
-      errorBuilder: (_, __, ___) => _buildFallback(context, w, h),
-    );
-  }
-
-  Widget _buildAssetImage(BuildContext context, double? w, double? h) {
-    final cleanPath = widget.path.replaceFirst('assets/assets/', 'assets/');
-    return FadeInImage(
-      placeholder: MemoryImage(transparentImage),
-      image: AssetImage(cleanPath),
-      width: w,
-      height: h,
-      fit: widget.fit,
-      fadeInDuration: widget.fadeDuration,
-      imageErrorBuilder: (_, __, ___) => _buildFallback(context, w, h),
-    );
-  }
-
-  Widget _buildShimmerPlaceholder(double? w, double? h) {
-    final baseColor = Colors.grey.withValues(alpha: 0.2);
-    final highlightColor = Colors.grey.withValues(alpha: 0.4);
-    return Shimmer.fromColors(
-      baseColor: baseColor,
-      highlightColor: highlightColor,
-      child: Container(
-        width: w ?? 100,
-        height: h ?? 100,
-        color: baseColor,
-      ),
-    );
-  }
-
-  Widget _buildFallback(BuildContext context, double? w, double? h) {
+  Widget _buildFallback(double? w, double? h) {
     final color = widget.fallbackColor ?? Theme.of(context).colorScheme.primary;
     return Container(
       width: w,
@@ -328,24 +219,65 @@ class _SmartImageState extends ConsumerState<SmartImage> {
     );
   }
 
-  Widget _buildSvgImage(BuildContext context, double? w, double? h) {
-    final isNetwork = widget.path.startsWith('http');
+  Widget _buildShimmer(double? w, double? h) {
+    final baseColor = Colors.grey.withValues(alpha: 0.2);
+    final highlightColor = Colors.grey.withValues(alpha: 0.4);
+    return Shimmer.fromColors(
+      baseColor: baseColor,
+      highlightColor: highlightColor,
+      child: Container(
+        width: w ?? 100,
+        height: h ?? 100,
+        color: baseColor,
+      ),
+    );
+  }
+
+  Widget _buildAssetImage(double? w, double? h) {
+    _imageProvider ??= AssetImage(widget.path);
+    return FadeInImage(
+      placeholder: MemoryImage(transparentImage),
+      image: _imageProvider!,
+      width: w,
+      height: h,
+      fit: widget.fit,
+      fadeInDuration: widget.fadeDuration,
+      imageErrorBuilder: (_, __, ___) => _buildFallback(w, h),
+    );
+  }
+
+  Widget _buildNetworkImage(double? w, double? h, bool shimmer) {
+    _imageProvider ??= NetworkImage(widget.path);
+    return Image(
+      image: _imageProvider!,
+      width: w,
+      height: h,
+      fit: widget.fit,
+      color: widget.color,
+      colorBlendMode: widget.colorBlendMode,
+      frameBuilder: (context, child, frame, _) {
+        if (frame == null && shimmer) return _buildShimmer(w, h);
+        return AnimatedOpacity(
+            opacity: 1, duration: widget.fadeDuration, child: child);
+      },
+      errorBuilder: (_, __, ___) => _buildFallback(w, h),
+    );
+  }
+
+  Widget _buildSvg(double? w, double? h, bool isNetwork) {
     final builder = isNetwork ? SvgPicture.network : SvgPicture.asset;
     return builder(
       widget.path,
       width: w,
       height: h,
       fit: widget.fit,
-      colorFilter: widget.color != null
+      colorFilter: (widget.color != null && widget.colorBlendMode != null)
           ? ColorFilter.mode(widget.color!, widget.colorBlendMode!)
           : null,
       placeholderBuilder: (_) => widget.enableShimmer
-          ? _buildShimmerPlaceholder(w, h)
-          : ResponsiveBox(
-              width: w,
-              height: h,
-            ),
-      errorBuilder: (_, __, ___) => _buildFallback(context, w, h),
+          ? _buildShimmer(w, h)
+          : SizedBox(width: w, height: h),
+      errorBuilder: (_, __, ___) => _buildFallback(w, h),
     );
   }
 }

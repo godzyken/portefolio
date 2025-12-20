@@ -175,21 +175,29 @@ class ChartRenderer {
         badgeWidget: ThreeDTechIcon(
           logoPath: section.title,
           color: section.color,
-          size: info.isMobile ? 38 : 48,
+          size: info.isMobile ? 34 : 44,
         ),
-        badgePositionPercentageOffset: 1.1,
+        badgePositionPercentageOffset: 1.2,
       );
     }).toList();
 
     return Center(
       child: AspectRatio(
-        aspectRatio: 1, // Maintient un cercle parfait
+        aspectRatio: 1.3, // Maintient un cercle parfait
         child: PieChart(
           PieChartData(
             sections: futuristicSections,
             centerSpaceRadius: info.isMobile ? 30 : 45,
             sectionsSpace: 4,
-            pieTouchData: PieTouchData(enabled: true),
+            pieTouchData: PieTouchData(
+                enabled: true,
+                touchCallback: (FlTouchEvent event, pieTouchResponse) {
+                  if (!event.isInterestedForInteractions ||
+                      pieTouchResponse == null ||
+                      pieTouchResponse.touchedSection == null) {
+                    return;
+                  }
+                }),
           ),
         ),
       ),

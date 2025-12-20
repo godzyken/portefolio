@@ -22,7 +22,7 @@ class ThreeDTechIcon extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (logoPath == null || logoPath!.isEmpty) {
-      return Icon(icon, size: size, color: color);
+      return Icon(icon ?? Icons.code, size: size, color: color);
     }
 
     // Récupère le logo depuis le provider
@@ -45,9 +45,10 @@ class ThreeDTechIcon extends ConsumerWidget {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
+            tileMode: TileMode.mirror,
             colors: [
-              Colors.white.withValues(alpha: 0.6), // Reflet de brillance
-              color.withValues(alpha: 0.3),
+              Colors.white.withValues(alpha: 0.8), // Reflet de brillance
+              color.withValues(alpha: 0.2),
             ],
           ),
           boxShadow: [
