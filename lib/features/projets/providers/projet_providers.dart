@@ -10,7 +10,11 @@ final projectPositionsProvider =
     NotifierProvider<ProjectPositionsNotifier, Map<String, Offset>>(
         ProjectPositionsNotifier.new);
 
-/// 🔹 Liste des projets sélectionnés
+/// Liste des projets sélectionnés
 final selectedProjectsProvider =
     NotifierProvider<SelectedProjectsNotifier, List<ProjectInfo>>(
         SelectedProjectsNotifier.new);
+
+/// SECTION ACTIVE
+final activeSectionProvider =
+    NotifierProvider<ActiveSectionNotifier, String>(ActiveSectionNotifier.new);

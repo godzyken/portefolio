@@ -3,13 +3,14 @@ import 'dart:ui';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:portefolio/core/affichage/colors_spec.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
-import 'package:portefolio/core/provider/image_providers.dart';
 import 'package:portefolio/core/ui/widgets/ui_widgets_extentions.dart';
 
+import '../../../../core/affichage/colors_spec.dart';
+import '../../../../core/provider/image_providers.dart';
 import '../../../projets/providers/projects_extentions_providers.dart';
 import '../../../projets/views/screens/iot_dashboard_screen.dart';
+import '../../../projets/views/widgets/project_section.dart';
 import '../../data/extention_models.dart';
 import '../generator_widgets_extentions.dart';
 
@@ -29,42 +30,30 @@ class ImmersiveDetailScreen extends ConsumerStatefulWidget {
 }
 
 class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
-    with TickerProviderStateMixin {
-  late PageController _verticalController;
-  late PageController _imageCarouselController;
-  late AnimationController _autoPlayController;
-
+    with SingleTickerProviderStateMixin {
+  late AnimationController _transitionController;
   List<ChartData> _charts = [];
-
-  int _currentPage = 0;
 
   @override
   void initState() {
     super.initState();
-
-    _verticalController = PageController();
-    _imageCarouselController = PageController();
-
-    _autoPlayController = AnimationController(
-      duration: const Duration(milliseconds: 800),
+    _transitionController = AnimationController(
       vsync: this,
+      duration: const Duration(milliseconds: 400),
     );
+    _prepareChartData();
 
-    _autoPlayController.addListener(() {
-      if (_autoPlayController.value > 0.99 &&
-          _imageCarouselController.hasClients) {
-        final images = _getImages();
-        if (images.length > 1) {
-          int next =
-              (_imageCarouselController.page!.round() + 1) % images.length;
-          _imageCarouselController.animateToPage(next,
-              duration: const Duration(milliseconds: 800),
-              curve: Curves.easeInOut);
-        }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        ref.read(activeSectionProvider.notifier).update('hero');
       }
     });
+  }
 
-    _prepareChartData();
+  @override
+  void dispose() {
+    _transitionController.dispose();
+    super.dispose();
   }
 
   void _prepareChartData() {
@@ -76,12 +65,53 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
     _charts = ChartDataFactory.createChartsFromResults(resultats);
   }
 
-  @override
-  void dispose() {
-    _imageCarouselController.dispose();
-    _verticalController.dispose();
-    _autoPlayController.dispose();
-    super.dispose();
+  List<ProjectSection> _buildSections() {
+    final sections = <ProjectSection>[
+      ProjectSection(
+        id: 'hero',
+        title: 'Présentation',
+        icon: Icons.home,
+        builder: _buildHeroContent,
+      ),
+    ];
+
+    if (_hasProgrammingTag()) {
+      sections.add(ProjectSection(
+        id: 'wakatime',
+        title: 'Développement',
+        icon: Icons.code,
+        builder: _buildWakaTimeContent,
+      ));
+    }
+
+    if (_hasIoTFeatures()) {
+      sections.add(ProjectSection(
+        id: 'iot',
+        title: 'IoT',
+        icon: Icons.sensors,
+        builder: _buildIoTContent,
+      ));
+    }
+
+    if (widget.project.techDetails?.isNotEmpty ?? false) {
+      sections.add(ProjectSection(
+        id: 'tech',
+        title: 'Techniques',
+        icon: Icons.settings,
+        builder: _buildTechDetailsContent,
+      ));
+    }
+
+    if (widget.project.results?.isNotEmpty ?? false) {
+      sections.add(ProjectSection(
+        id: 'results',
+        title: 'Résultats',
+        icon: Icons.assessment,
+        builder: _buildResultsContent,
+      ));
+    }
+
+    return sections;
   }
 
   List<String> _getImages() {
@@ -130,255 +160,853 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
   @override
   Widget build(BuildContext context) {
     final info = ref.watch(responsiveInfoProvider);
-    final theme = Theme.of(context);
-    final pages = _buildPages(info, theme);
+    final sections = _buildSections();
+    final activeSection = ref.watch(activeSectionProvider);
+    final showSidebar = info.size.width > 1200;
 
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Stack(
         children: [
-          // Image de fond
+          // Fond
           _buildBackground(info),
 
-          // Contenu principal
-          PageView.builder(
-            controller: _verticalController,
-            scrollDirection: Axis.vertical,
-            itemCount: pages.length,
-            onPageChanged: (index) => setState(() => _currentPage = index),
-            itemBuilder: (context, index) =>
-                _buildPageWrapper(pages[index], info),
+          // Layout principal
+          Positioned.fill(
+            child: Row(
+              children: [
+                // Sidebar de navigation (desktop uniquement)
+                if (showSidebar)
+                  _buildNavigationSidebar(sections, activeSection, info),
+
+                // Contenu principal
+                Expanded(
+                  child: _buildMainContent(sections, activeSection, info),
+                ),
+              ],
+            ),
           ),
 
-          // Indicateurs de navigation (Points)
-          if (pages.length > 1)
-            Positioned(
-              right: 24,
-              top: 0,
-              bottom: 0,
-              child: _buildSideNavigator(pages.length),
-            ),
-
+          // Bouton fermer
           Positioned(
             top: 24,
             right: 24,
             child: _buildCloseButton(),
           ),
 
-          if (_currentPage == 0)
-            const Positioned(
-              bottom: 30,
+          // Navigation mobile (bottom)
+          if (!showSidebar && sections.length > 1)
+            Positioned(
               left: 0,
               right: 0,
-              child: Icon(Icons.keyboard_arrow_down,
-                  color: Colors.white54, size: 40),
+              bottom: 0,
+              child: _buildBottomNavigation(sections, activeSection, info),
             ),
         ],
       ),
     );
   }
 
-  List<Widget> _buildPages(ResponsiveInfo info, ThemeData theme) {
-    List<Widget> pages = [];
+  // ==========================================================================
+  // COMPOSANTS DE NAVIGATION
+  // ==========================================================================
 
-    // Page 1: Hero (Titre + Description + Images)
-    pages.add(_buildHeroSection(info, theme));
-
-    // Page 2: WakaTime
-    if (_hasProgrammingTag()) pages.add(_buildWakaTimeSectionPage(info, theme));
-
-    // Page 3: IoT
-    if (_hasIoTFeatures()) pages.add(_buildIoTSectionPage(info, theme));
-
-    // Page 4: Tech Details
-    if (widget.project.techDetails?.isNotEmpty ?? false) {
-      pages.add(_buildTechDetailsSectionPage(info, theme));
-    }
-
-    // Page 5: Résultats
-    if (widget.project.results?.isNotEmpty ?? false) {
-      pages.add(_buildResultsSectionPage(info, theme));
-    }
-
-    return pages;
-  }
-
-  // Wrapper pour centrer et limiter la largeur (L'aspect "Justifié")
-  Widget _buildPageWrapper(Widget page, ResponsiveInfo info) {
-    return Center(
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          maxWidth: 1200, // Largeur max pour que ce soit joli sur Desktop
-          maxHeight: info.isMobile ? double.infinity : 900,
+  Widget _buildNavigationSidebar(
+    List<ProjectSection> sections,
+    String activeSection,
+    ResponsiveInfo info,
+  ) {
+    return Container(
+      width: 280,
+      margin: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Colors.black.withValues(alpha: 0.7),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.1),
+          width: 1,
         ),
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: info.isMobile ? 24 : 48),
-          child: page,
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Column(
+            children: [
+              // Header avec titre du projet
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: Colors.white.withValues(alpha: 0.1),
+                    ),
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ResponsiveText.titleMedium(
+                      widget.project.title,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: 2,
+                    ),
+                    const SizedBox(height: 8),
+                    if (_hasProgrammingTag())
+                      WakaTimeBadgeWidget(
+                        projectName: widget.project.title,
+                        variant: WakaTimeBadgeVariant.compact,
+                      ),
+                  ],
+                ),
+              ),
+
+              // Liste des sections
+              Expanded(
+                child: ListView.builder(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  itemCount: sections.length,
+                  itemBuilder: (context, index) {
+                    final section = sections[index];
+                    final isActive = section.id == activeSection;
+
+                    return _buildSidebarItem(
+                      section: section,
+                      isActive: isActive,
+                      onTap: () {
+                        Future.microtask(() {
+                          if (mounted) {
+                            _navigateToSection(section.id);
+                          }
+                        });
+                      },
+                    );
+                  },
+                ),
+              ),
+
+              // Indicateur de navigation
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  border: Border(
+                    top: BorderSide(
+                      color: Colors.white.withValues(alpha: 0.1),
+                    ),
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.swipe,
+                      size: 16,
+                      color: Colors.white.withValues(alpha: 0.5),
+                    ),
+                    const SizedBox(width: 8),
+                    ResponsiveText.bodySmall(
+                      'Glissez pour naviguer',
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.5),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildHeroSection(ResponsiveInfo info, ThemeData theme) {
-    final images = _getImages();
-    final useRow = info.isDesktop && !info.isMobile;
-
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        _buildCompactTitle(theme, info),
-        const SizedBox(height: 40),
-        if (useRow)
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
+  Widget _buildSidebarItem({
+    required ProjectSection section,
+    required bool isActive,
+    required VoidCallback onTap,
+  }) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      decoration: BoxDecoration(
+        color:
+            isActive ? Colors.blue.withValues(alpha: 0.3) : Colors.transparent,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isActive
+              ? Colors.blue.withValues(alpha: 0.5)
+              : Colors.transparent,
+          width: 1,
+        ),
+      ),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Row(
             children: [
-              Expanded(flex: 4, child: _buildCompactDescription(theme, info)),
-              const SizedBox(width: 48),
-              if (images.isNotEmpty)
-                Expanded(
-                    flex: 6, child: _buildImageCarousel(images, info, theme)),
+              Icon(
+                section.icon,
+                color: isActive ? Colors.blue : Colors.white70,
+                size: 20,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: ResponsiveText.bodyMedium(
+                  section.title,
+                  style: TextStyle(
+                    color: isActive ? Colors.white : Colors.white70,
+                    fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+                  ),
+                ),
+              ),
+              if (isActive)
+                Icon(
+                  Icons.arrow_forward_ios,
+                  size: 12,
+                  color: Colors.blue.withValues(alpha: 0.7),
+                ),
             ],
-          )
-        else
-          Column(
-            children: [
-              if (images.isNotEmpty) _buildImageCarousel(images, info, theme),
-              const SizedBox(height: 24),
-              _buildCompactDescription(theme, info),
-            ],
-          ),
-      ],
-    );
-  }
-
-  Widget _buildWakaTimeSectionPage(ResponsiveInfo info, ThemeData theme) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        _buildPageHeader("⏱️ Statistiques de développement", info, theme),
-        const SizedBox(height: 32),
-        _buildWakaTimeContent(info, theme, info.isDesktop),
-      ],
-    );
-  }
-
-  Widget _buildIoTSectionPage(ResponsiveInfo info, ThemeData theme) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        _buildPageHeader("🛰️ Données du projet", info, theme),
-        const SizedBox(height: 24),
-        Container(
-          height: info.isMobile ? 500 : 600,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(24),
-            border:
-                Border.all(color: Colors.cyan.withValues(alpha: 0.3), width: 2),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(22),
-            child: const EnhancedIotDashboardScreen(),
           ),
         ),
-      ],
+      ),
     );
   }
 
-  Widget _buildResultsSectionPage(ResponsiveInfo info, ThemeData theme) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        _buildPageHeader("🏁 Résultats & Impact", info, theme),
-        const SizedBox(height: 20),
-        Flexible(
-            child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          child: Column(
-            children: [
-              // 1. Liste des livrables (ex: les 13 vidéos)
-              _buildCompactBulletList(widget.project.results!, info),
-
-              const SizedBox(height: 32),
-
-              // 2. Les Graphiques (ChartRenderer)
-              // On lui donne une contrainte de largeur pour éviter l'effet "géant"
-              ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 800),
-                child: ChartRenderer.renderChartsWithBenchmarks(
-                    _charts,
-                    info,
-                    (v) => Text("${v.toInt()}",
-                        style: const TextStyle(fontSize: 10))),
-              ),
-              const SizedBox(height: 40), // Marge de confort en bas
-            ],
-          ),
-        )),
-      ],
-    );
-  }
-
-  // Widget pour rendre les listes de résultats (les strings dans ton JSON)
-  Widget _buildCompactBulletList(List<String> results, ResponsiveInfo info) {
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      alignment: WrapAlignment.center,
-      children: results
-          .map((res) => Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.05),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.white10),
+  Widget _buildBottomNavigation(
+    List<ProjectSection> sections,
+    String activeSection,
+    ResponsiveInfo info,
+  ) {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.black.withValues(alpha: 0.8),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.2),
+          width: 1,
+        ),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: sections.map((section) {
+              final isActive = section.id == activeSection;
+              return Expanded(
+                child: InkWell(
+                  onTap: () {
+                    Future.microtask(() {
+                      if (mounted) {
+                        _navigateToSection(section.id);
+                      }
+                    });
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          color: isActive ? Colors.blue : Colors.transparent,
+                          width: 2,
+                        ),
+                      ),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          section.icon,
+                          color: isActive ? Colors.blue : Colors.white60,
+                          size: 24,
+                        ),
+                        const SizedBox(height: 4),
+                        ResponsiveText.bodySmall(
+                          section.title,
+                          style: TextStyle(
+                            color: isActive ? Colors.blue : Colors.white60,
+                            fontSize: 10,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
+              );
+            }).toList(),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ==========================================================================
+  // CONTENU PRINCIPAL
+  // ==========================================================================
+
+  Widget _buildMainContent(
+    List<ProjectSection> sections,
+    String activeSection,
+    ResponsiveInfo info,
+  ) {
+    final section = sections.firstWhere(
+      (s) => s.id == activeSection,
+      orElse: () => sections.first,
+    );
+
+    final currentIndex = sections.indexOf(section);
+    final canGoBack = currentIndex > 0;
+    final canGoForward = currentIndex < sections.length - 1;
+
+    return GestureDetector(
+      onHorizontalDragEnd: (details) {
+        if (details.primaryVelocity! > 0 && canGoBack) {
+          // Swipe vers la droite = précédent
+          Future.microtask(() {
+            if (mounted) {
+              _navigateToSection(sections[currentIndex - 1].id);
+            }
+          });
+        } else if (details.primaryVelocity! < 0 && canGoForward) {
+          // Swipe vers la gauche = suivant
+          Future.microtask(() {
+            if (mounted) {
+              _navigateToSection(sections[currentIndex + 1].id);
+            }
+          });
+        }
+      },
+      child: Stack(
+        children: [
+          // Contenu de la section
+          Center(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: info.size.width > 1200 ? 1000 : double.infinity,
+              ),
+              child: Padding(
+                padding: EdgeInsets.all(info.isMobile ? 16 : 32),
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  switchInCurve: Curves.easeInOut,
+                  switchOutCurve: Curves.easeInOut,
+                  transitionBuilder: (child, animation) {
+                    return FadeTransition(
+                      opacity: animation,
+                      child: SlideTransition(
+                        position: Tween<Offset>(
+                          begin: const Offset(0.1, 0),
+                          end: Offset.zero,
+                        ).animate(animation),
+                        child: child,
+                      ),
+                    );
+                  },
+                  child: Container(
+                    key: ValueKey(activeSection),
+                    child: section.builder(context, info),
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          // Flèches de navigation (desktop)
+          if (info.size.width > 1200) ...[
+            if (canGoBack)
+              Positioned(
+                left: 24,
+                top: 0,
+                bottom: 0,
+                child: Center(
+                  child: _buildNavigationArrow(
+                    icon: Icons.arrow_back_ios,
+                    onTap: () {
+                      Future.microtask(() {
+                        if (mounted) {
+                          _navigateToSection(sections[currentIndex - 1].id);
+                        }
+                      });
+                    },
+                  ),
+                ),
+              ),
+            if (canGoForward)
+              Positioned(
+                right: 24,
+                top: 0,
+                bottom: 0,
+                child: Center(
+                  child: _buildNavigationArrow(
+                    icon: Icons.arrow_forward_ios,
+                    onTap: () {
+                      Future.microtask(() {
+                        if (mounted) {
+                          _navigateToSection(sections[currentIndex + 1].id);
+                        }
+                      });
+                    },
+                  ),
+                ),
+              ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNavigationArrow({
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.black.withValues(alpha: 0.5),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: Colors.white.withValues(alpha: 0.2),
+          ),
+        ),
+        child: Icon(
+          icon,
+          color: Colors.white70,
+          size: 24,
+        ),
+      ),
+    );
+  }
+
+  void _navigateToSection(String sectionId) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        ref.read(activeSectionProvider.notifier).update(sectionId);
+      }
+    });
+  }
+
+  // ==========================================================================
+  // CONSTRUCTION DES SECTIONS
+  // ==========================================================================
+
+  Widget _buildHeroContent(BuildContext context, ResponsiveInfo info) {
+    final images = _getImages();
+    final useRowLayout = info.size.width > 900;
+
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Titre avec WakaTime
+          _buildCompactHeader(info),
+          const SizedBox(height: 24),
+
+          if (useRowLayout)
+            IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Description à gauche
+                  Expanded(
+                    flex: 4,
+                    child: _buildDescription(info),
+                  ),
+                  const SizedBox(width: 24),
+                  // Carousel à droite (taille optimale)
+                  if (images.isNotEmpty)
+                    Expanded(
+                      flex: 6,
+                      child: _buildOptimizedCarousel(images, info),
+                    ),
+                ],
+              ),
+            )
+          else
+            Column(
+              children: [
+                if (images.isNotEmpty) _buildOptimizedCarousel(images, info),
+                const SizedBox(height: 24),
+                _buildDescription(info),
+              ],
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCompactHeader(ResponsiveInfo info) {
+    return Row(
+      children: [
+        Expanded(
+          child: ResponsiveText.titleLarge(
+            widget.project.title,
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: info.isMobile ? 20 : 28,
+            ),
+          ),
+        ),
+        if (_hasProgrammingTag()) ...[
+          const SizedBox(width: 16),
+          WakaTimeBadgeWidget(
+            projectName: widget.project.title,
+            variant: WakaTimeBadgeVariant.compact,
+            showTrackingIndicator: true,
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildOptimizedCarousel(List<String> images, ResponsiveInfo info) {
+    return AspectRatio(
+      aspectRatio: 16 / 9, // Ratio standard pour éviter l'étirement
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.4),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: PageView.builder(
+            itemCount: images.length,
+            itemBuilder: (context, index) {
+              return SmartImage(
+                path: images[index],
+                fit: BoxFit.contain, // Contient l'image sans déformation
+                responsiveSize: ResponsiveImageSize.large,
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDescription(ResponsiveInfo info) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ResponsiveText.titleMedium(
+            '📜 Description',
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 16),
+          ...widget.project.points.map((text) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
                 child: Row(
-                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(Icons.check_circle_outline,
-                        size: 14, color: Colors.greenAccent),
+                    Icon(
+                      Icons.check_circle_outline,
+                      size: 16,
+                      color: Colors.greenAccent,
+                    ),
                     const SizedBox(width: 8),
-                    Flexible(
-                      child: Text(
-                        res,
+                    Expanded(
+                      child: ResponsiveText.bodyMedium(
+                        text,
                         style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: info.isMobile ? 11 : 13),
+                          color: Colors.white.withValues(alpha: 0.9),
+                          height: 1.4,
+                        ),
                       ),
                     ),
                   ],
                 ),
-              ))
-          .toList(),
+              )),
+        ],
+      ),
     );
   }
 
-  // --- PETITS COMPOSANTS ---
+  Widget _buildWakaTimeContent(BuildContext context, ResponsiveInfo info) {
+    final statsAsync = ref.watch(wakaTimeStatsProvider('last_7_days'));
 
-  Widget _buildSideNavigator(int total) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(total, (index) {
-        bool isActive = _currentPage == index;
-        return GestureDetector(
-          onTap: () => _verticalController.animateToPage(index,
-              duration: const Duration(milliseconds: 600),
-              curve: Curves.easeInOutCubic),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            margin: const EdgeInsets.symmetric(vertical: 8),
-            height: isActive ? 30 : 8,
-            width: 8,
-            decoration: BoxDecoration(
-              color: isActive ? Colors.blueAccent : Colors.white24,
-              borderRadius: BorderRadius.circular(4),
-            ),
+    return statsAsync.when(
+      data: (stats) {
+        if (stats == null || stats.projects.isEmpty) {
+          return _buildEmptyWakaTimeCard(info);
+        }
+
+        return SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxHeight: info.size.height * 0.7),
+            child: _buildCompactWakaTimeStats(stats, info),
           ),
         );
-      }),
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (_, __) => _buildErrorWakaTimeCard(info),
     );
   }
+
+  Widget _buildCompactWakaTimeStats(WakaTimeStats stats, ResponsiveInfo info) {
+    final projectStat = stats.projects.firstWhere(
+        (p) => p.name.toLowerCase().contains(
+              widget.project.title.toLowerCase(),
+            ),
+        orElse: () => WakaTimeProjectStat(
+              name: widget.project.title,
+              totalSeconds: 0,
+              percent: 0,
+              digital: '0:00',
+              text: '0 secs',
+            ));
+
+    final languages = stats.languages;
+
+    return Row(
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ResponsiveText.titleMedium(
+              '⏱️ Statistiques de développement',
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // Stats compactes
+            _buildStatCard(
+                'Temps de développement', projectStat.text, Icons.timer),
+            const SizedBox(height: 12),
+            _buildStatCard(
+              'Part du temps total',
+              '${projectStat.percent.toStringAsFixed(1)}%',
+              Icons.trending_up,
+            ),
+            const SizedBox(height: 12),
+            _buildStatCard(
+              'Format détaillé',
+              projectStat.digital,
+              Icons.schedule,
+            ),
+          ],
+        ),
+        SizedBox(width: info.isMobile ? 16 : 24),
+        if (languages.isNotEmpty)
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              ResponsiveText.titleMedium(
+                '⏱️ Statistiques de développement',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 24),
+              _buildLanguagesSection(languages, info),
+            ],
+          )
+      ],
+    );
+  }
+
+  Widget _buildStatCard(String label, String value, IconData icon) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.blue.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.blue.withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: Colors.blue, size: 24),
+          const SizedBox(width: 16),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ResponsiveText.bodySmall(
+                label,
+                style: const TextStyle(color: Colors.white70),
+              ),
+              const SizedBox(height: 4),
+              ResponsiveText.titleMedium(
+                value,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildIoTContent(BuildContext context, ResponsiveInfo info) {
+    return Container(
+      height: info.isMobile ? 400 : 500,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.cyan.withValues(alpha: 0.3)),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: const EnhancedIotDashboardScreen(),
+      ),
+    );
+  }
+
+  Widget _buildTechDetailsContent(BuildContext context, ResponsiveInfo info) {
+    final techDetails = widget.project.techDetails!;
+
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ResponsiveText.titleMedium(
+            '⚙️ Détails techniques',
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 24),
+          Wrap(
+            spacing: 16,
+            runSpacing: 16,
+            children: techDetails.entries.map((entry) {
+              return Container(
+                width: info.isMobile ? double.infinity : 200,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.blue.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.blue.withValues(alpha: 0.3)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ResponsiveText.bodySmall(
+                      entry.key.toUpperCase(),
+                      style: const TextStyle(
+                        color: Colors.blue,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    ResponsiveText.bodyMedium(
+                      '${entry.value}',
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildResultsContent(BuildContext context, ResponsiveInfo info) {
+    return SingleChildScrollView(
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxHeight: info.size.height * 0.75),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ResponsiveText.titleMedium(
+              '🏁 Résultats & Impact',
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Liste compacte des résultats
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: widget.project.results!.map((result) {
+                return _buildResultBadge(result);
+              }).toList(),
+            ),
+
+            const SizedBox(height: 16),
+
+            // Charts optimisés
+            if (_charts.isNotEmpty)
+              Expanded(
+                child: ChartRenderer.renderChartsWithBenchmarks(
+                  _charts,
+                  info,
+                  (v) => Text(
+                    "${v.toInt()}",
+                    style: const TextStyle(fontSize: 10, color: Colors.white70),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Container _buildResultBadge(String result) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 12,
+        vertical: 6,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.green.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.green.withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.check, size: 14, color: Colors.green),
+          const SizedBox(width: 6),
+          ResponsiveText.bodySmall(
+            result,
+            style: const TextStyle(color: Colors.white),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ==========================================================================
+  // HELPERS
+  // ==========================================================================
 
   Widget _buildBackground(ResponsiveInfo info) {
     final images = _getImages();
@@ -401,8 +1029,8 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
                   end: Alignment.bottomCenter,
                   colors: [
                     Colors.black,
-                    Colors.black.withValues(alpha: 0.8),
-                    Colors.black
+                    Colors.black.withValues(alpha: 0.85),
+                    Colors.black,
                   ],
                 ),
               ),
@@ -428,379 +1056,8 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
     );
   }
 
-  // Composants compacts
-  Widget _buildCompactTitle(ThemeData theme, ResponsiveInfo info) {
-    return Container(
-      padding: EdgeInsets.all(info.isMobile ? 16 : 20),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(16),
-        border:
-            Border.all(color: Colors.white.withValues(alpha: 0.1), width: 1.5),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ResponsiveText(
-            widget.project.title,
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: info.isMobile ? 20 : (info.isTablet ? 24 : 28),
-            ),
-          ),
-          if (_hasProgrammingTag()) ...[
-            const SizedBox(height: 8),
-            WakaTimeBadgeWidget(
-              projectName: widget.project.title,
-              variant: WakaTimeBadgeVariant.simple,
-              showTrackingIndicator: true,
-              showLoadingFallback: true,
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCompactDescription(ThemeData theme, ResponsiveInfo info) {
-    return Container(
-      padding: EdgeInsets.all(info.isMobile ? 16 : 20),
-      constraints: BoxConstraints(
-        maxHeight: info.isMobile ? 300 : 400,
-      ),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ResponsiveText(
-            "📜 Description",
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 16),
-          ...widget.project.points.take(4).map((text) {
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: ResponsiveText(
-                text,
-                style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.9),
-                  height: 1.4,
-                ),
-              ),
-            );
-          }),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildImageCarousel(
-      List<String> images, ResponsiveInfo info, ThemeData theme) {
-    return Container(
-      constraints: BoxConstraints(
-        maxHeight: info.isMobile ? 250 : 400,
-      ),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.3),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: Stack(
-          children: [
-            PageView.builder(
-              controller: _imageCarouselController,
-              itemCount: images.length,
-              itemBuilder: (context, index) {
-                return SmartImage(
-                  key: ValueKey('carousel_image_$index'),
-                  path: images[index],
-                  fit: BoxFit.cover,
-                  responsiveSize: ResponsiveImageSize.large,
-                  fallbackIcon: Icons.image_not_supported_outlined,
-                );
-              },
-            ),
-            if (images.length > 1)
-              Positioned(
-                bottom: 16,
-                left: 0,
-                right: 0,
-                child: _buildCarouselIndicators(images.length, theme),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCarouselIndicators(int count, ThemeData theme) {
-    return AnimatedBuilder(
-      animation: _imageCarouselController,
-      builder: (context, child) {
-        final currentPage = _imageCarouselController.hasClients
-            ? (_imageCarouselController.page ?? 0).round()
-            : 0;
-
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(count, (index) {
-            final isActive = index == currentPage;
-            return AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              margin: const EdgeInsets.symmetric(horizontal: 3),
-              height: 6,
-              width: isActive ? 20 : 6,
-              decoration: BoxDecoration(
-                color: isActive
-                    ? Colors.white
-                    : Colors.white.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(3),
-              ),
-            );
-          }),
-        );
-      },
-    );
-  }
-
-  Widget _buildPageHeader(String title, ResponsiveInfo info, ThemeData theme) {
-    return ResponsiveText(
-      title,
-      style: TextStyle(
-        color: Colors.white,
-        fontWeight: FontWeight.bold,
-        fontSize: info.isMobile ? 18 : (info.isTablet ? 22 : 26),
-      ),
-    );
-  }
-
-  Widget _buildCompactTechDetails(
-      Map<String, dynamic> details, ThemeData theme, ResponsiveInfo info) {
-    return Wrap(
-      spacing: 16,
-      runSpacing: 16,
-      alignment: WrapAlignment.center,
-      children: details.entries.map((entry) {
-        return Container(
-          width: info.isMobile ? (info.size.width / 2) - 32 : 220,
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          decoration: BoxDecoration(
-            color: Colors.blue.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.blue.withValues(alpha: 0.3)),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // LABEL (ex: "STACK", "DB", "OS")
-              ResponsiveText(
-                entry.key.toUpperCase(),
-                style: TextStyle(
-                  color: Colors.blue.shade300,
-                  fontWeight: FontWeight.w900,
-                  fontSize: 10,
-                  letterSpacing: 1.1,
-                ),
-              ),
-              const SizedBox(height: 6),
-              // VALEUR (ex: "Flutter", "MySQL")
-              ResponsiveText.displaySmall(
-                "${entry.value}",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w500,
-                  fontSize: info.isMobile ? 13 : 15,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
-          ),
-        );
-      }).toList(),
-    );
-  }
-
-  Widget _buildWakaTimeContent(
-      ResponsiveInfo info, ThemeData theme, bool useRowLayout) {
-    final statsAsync = ref.watch(wakaTimeStatsProvider('last_7_days'));
-
-    return statsAsync.when(
-      data: (stats) {
-        if (stats == null || stats.projects.isEmpty) {
-          return _buildEmptyWakaTimeCard(info);
-        }
-
-        final projectStat = stats.projects.firstWhere(
-          (p) => p.name.toLowerCase().contains(
-                widget.project.title.toLowerCase(),
-              ),
-          orElse: () => WakaTimeProjectStat(
-            name: widget.project.title,
-            totalSeconds: 0,
-            percent: 0,
-            digital: '0:00',
-            text: '0 secs',
-          ),
-        );
-        final languages = stats.languages;
-
-        return Container(
-          padding: EdgeInsets.all(info.isMobile ? 16 : 24),
-          decoration: BoxDecoration(
-            color: Colors.blue.withValues(alpha: 0.08),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: Colors.blue.withValues(alpha: 0.3),
-              width: 1.5,
-            ),
-          ),
-          child: useRowLayout && languages.isNotEmpty
-              ? IntrinsicHeight(
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Expanded(
-                        flex: 4,
-                        child: _buildWakaTimeStats(projectStat, info),
-                      ),
-                      SizedBox(width: info.isMobile ? 16 : 24),
-                      Expanded(
-                        flex: 6,
-                        child: _buildLanguagesSection(
-                            languages, info, useRowLayout),
-                      ),
-                    ],
-                  ),
-                )
-              : Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildWakaTimeStats(projectStat, info),
-                    if (languages.isNotEmpty) ...[
-                      const SizedBox(height: 20),
-                      const Divider(color: Colors.white24),
-                      const SizedBox(height: 16),
-                      _buildLanguagesSection(languages, info, useRowLayout),
-                    ],
-                  ],
-                ),
-        );
-      },
-      loading: () => Container(
-        padding: EdgeInsets.all(info.isMobile ? 16 : 24),
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.05),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
-        ),
-        child: const Center(
-          child: CircularProgressIndicator(color: Colors.white),
-        ),
-      ),
-      error: (err, _) => _buildErrorWakaTimeCard(info),
-    );
-  }
-
-  Widget _buildWakaTimeStats(
-      WakaTimeProjectStat projectStat, ResponsiveInfo info) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        _buildWakaTimeStat(
-          icon: Icons.timer,
-          label: 'Temps de développement',
-          value: projectStat.text,
-          color: Colors.blue,
-          info: info,
-        ),
-        const SizedBox(height: 12),
-        _buildWakaTimeStat(
-          icon: Icons.trending_up,
-          label: 'Part du temps total',
-          value: '${projectStat.percent.toStringAsFixed(1)}%',
-          color: Colors.green,
-          info: info,
-        ),
-        const SizedBox(height: 12),
-        _buildWakaTimeStat(
-          icon: Icons.schedule,
-          label: 'Format détaillé',
-          value: projectStat.digital,
-          color: Colors.orange,
-          info: info,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildWakaTimeStat({
-    required IconData icon,
-    required String label,
-    required String value,
-    required Color color,
-    required ResponsiveInfo info,
-  }) {
-    return Row(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.2),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Icon(icon, color: color.withValues(alpha: 0.8), size: 20),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ResponsiveText(
-                label,
-                style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.7),
-                  fontSize: info.isMobile ? 12 : 13,
-                ),
-              ),
-              const SizedBox(height: 2),
-              ResponsiveText(
-                value,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: info.isMobile ? 16 : 18,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildLanguagesSection(List<WakaTimeLanguage> languages,
-      ResponsiveInfo info, bool useRowLayout) {
+  Widget _buildLanguagesSection(
+      List<WakaTimeLanguage> languages, ResponsiveInfo info) {
     final displayLanguages = languages.take(5).toList();
     final colors = ColorHelpers.chartColors;
 
@@ -828,7 +1085,7 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
     }).toList();
 
     final pieChartWidget = SizedBox(
-      height: useRowLayout ? 200 : 220,
+      height: info.isLandscape ? 200 : 220,
       child: Stack(
         alignment: Alignment.center,
         children: [
@@ -895,7 +1152,7 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
       }).toList(),
     );
 
-    if (useRowLayout) {
+    if (info.isLandscape) {
       return Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -1050,38 +1307,5 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
         ],
       ),
     );
-  }
-
-  Widget _buildTechDetailsSectionPage(ResponsiveInfo info, ThemeData theme) {
-    return SingleChildScrollView(
-        // Sécurité anti-débordement
-        physics: const BouncingScrollPhysics(),
-        child: Column(
-          mainAxisAlignment:
-              MainAxisAlignment.center, // Centre le contenu verticalement
-          children: [
-            // En-tête de section cohérent avec le reste
-            const SizedBox(height: 60),
-            _buildPageHeader("⚙️ Détails techniques", info, theme),
-            const SizedBox(height: 8),
-            ResponsiveText(
-              "Stack logicielle et environnement système",
-              style: TextStyle(
-                color: Colors.white.withValues(alpha: 0.5),
-                fontSize: info.isMobile ? 12 : 14,
-              ),
-            ),
-            const SizedBox(height: 30),
-
-            // Conteneur du contenu technique
-            ConstrainedBox(
-              constraints: const BoxConstraints(
-                  maxWidth: 1000), // Empêche l'étalement excessif
-              child: _buildCompactTechDetails(
-                  widget.project.techDetails!, theme, info),
-            ),
-            const SizedBox(height: 60),
-          ],
-        ));
   }
 }

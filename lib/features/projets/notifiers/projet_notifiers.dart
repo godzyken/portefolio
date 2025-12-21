@@ -47,3 +47,9 @@ class SelectedProjectsNotifier extends Notifier<List<ProjectInfo>> {
 
   void clear() => state = [];
 }
+
+class ActiveSectionNotifier extends Notifier<String> {
+  @override
+  String build() => 'home';
+  void update(String section) => state = section;
+}
