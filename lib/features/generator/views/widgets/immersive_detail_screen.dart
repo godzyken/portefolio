@@ -42,12 +42,6 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
       duration: const Duration(milliseconds: 400),
     );
     _prepareChartData();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        ref.read(activeSectionProvider.notifier).update('hero');
-      }
-    });
   }
 
   @override
@@ -63,6 +57,15 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
       return;
     }
     _charts = ChartDataFactory.createChartsFromResults(resultats);
+  }
+
+  void _navigateToSection(String sectionId) {
+    // On s'assure que la modification se fait en dehors du build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        ref.read(activeSectionProvider.notifier).update(sectionId);
+      }
+    });
   }
 
   List<ProjectSection> _buildSections() {
@@ -466,98 +469,99 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
     final canGoForward = currentIndex < sections.length - 1;
 
     return GestureDetector(
+      behavior: HitTestBehavior.opaque, // Améliore la détection du swipe
       onHorizontalDragEnd: (details) {
         if (details.primaryVelocity! > 0 && canGoBack) {
-          // Swipe vers la droite = précédent
-          Future.microtask(() {
-            if (mounted) {
-              _navigateToSection(sections[currentIndex - 1].id);
-            }
-          });
+          _navigateToSection(sections[currentIndex - 1].id);
         } else if (details.primaryVelocity! < 0 && canGoForward) {
-          // Swipe vers la gauche = suivant
-          Future.microtask(() {
-            if (mounted) {
-              _navigateToSection(sections[currentIndex + 1].id);
-            }
-          });
+          _navigateToSection(sections[currentIndex + 1].id);
         }
       },
       child: Stack(
         children: [
-          // Contenu de la section
-          Center(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                maxWidth: info.size.width > 1200 ? 1000 : double.infinity,
-              ),
-              child: Padding(
-                padding: EdgeInsets.all(info.isMobile ? 16 : 32),
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 300),
-                  switchInCurve: Curves.easeInOut,
-                  switchOutCurve: Curves.easeInOut,
-                  transitionBuilder: (child, animation) {
-                    return FadeTransition(
-                      opacity: animation,
-                      child: SlideTransition(
-                        position: Tween<Offset>(
-                          begin: const Offset(0.1, 0),
-                          end: Offset.zero,
-                        ).animate(animation),
-                        child: child,
-                      ),
-                    );
-                  },
-                  child: Container(
-                    key: ValueKey(activeSection),
-                    child: section.builder(context, info),
+          // CONTENU PRINCIPAL
+          Positioned.fill(
+            // Utilise tout l'espace disponible
+            child: Center(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: info.size.width > 1200 ? 1000 : double.infinity,
+                  // On force la hauteur à prendre tout l'espace disponible moins les paddings
+                  maxHeight: info.size.height,
+                ),
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(
+                    info.isMobile
+                        ? 16
+                        : 60, // Plus de padding sur les côtés pour les flèches
+                    info.isMobile ? 16 : 32,
+                    info.isMobile ? 16 : 60,
+                    info.isMobile ? 16 : 32,
+                  ),
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    // Important pour que le switcher prenne toute la place
+                    layoutBuilder:
+                        (Widget? currentChild, List<Widget> previousChildren) {
+                      return Stack(
+                        children: <Widget>[
+                          ...previousChildren,
+                          if (currentChild != null) currentChild,
+                        ],
+                      );
+                    },
+                    transitionBuilder: (child, animation) {
+                      return FadeTransition(
+                        opacity: animation,
+                        child: SlideTransition(
+                          position: Tween<Offset>(
+                            begin: const Offset(
+                                0.05, 0), // Translation plus subtile
+                            end: Offset.zero,
+                          ).animate(animation),
+                          child: child,
+                        ),
+                      );
+                    },
+                    child: SizedBox.expand(
+                      // Force la section à remplir l'espace
+                      key: ValueKey(activeSection),
+                      child: section.builder(context, info),
+                    ),
                   ),
                 ),
               ),
             ),
           ),
 
-          // Flèches de navigation (desktop)
+          // FLÈCHES DE NAVIGATION (Desktop)
           if (info.size.width > 1200) ...[
             if (canGoBack)
-              Positioned(
-                left: 24,
-                top: 0,
-                bottom: 0,
-                child: Center(
-                  child: _buildNavigationArrow(
-                    icon: Icons.arrow_back_ios,
-                    onTap: () {
-                      Future.microtask(() {
-                        if (mounted) {
-                          _navigateToSection(sections[currentIndex - 1].id);
-                        }
-                      });
-                    },
-                  ),
-                ),
-              ),
+              _buildFixedArrow(Icons.arrow_back_ios, true, () {
+                _navigateToSection(sections[currentIndex - 1].id);
+              }),
             if (canGoForward)
-              Positioned(
-                right: 24,
-                top: 0,
-                bottom: 0,
-                child: Center(
-                  child: _buildNavigationArrow(
-                    icon: Icons.arrow_forward_ios,
-                    onTap: () {
-                      Future.microtask(() {
-                        if (mounted) {
-                          _navigateToSection(sections[currentIndex + 1].id);
-                        }
-                      });
-                    },
-                  ),
-                ),
-              ),
+              _buildFixedArrow(Icons.arrow_forward_ios, false, () {
+                _navigateToSection(sections[currentIndex + 1].id);
+              }),
           ],
         ],
+      ),
+    );
+  }
+
+// Helper pour les flèches pour éviter la répétition de code
+  Widget _buildFixedArrow(IconData icon, bool isLeft, VoidCallback onTap) {
+    return Positioned(
+      left: isLeft ? 24 : null,
+      right: isLeft ? null : 24,
+      top: 0,
+      bottom: 0,
+      child: Center(
+        child: _buildNavigationArrow(
+          icon: icon,
+          onTap: onTap,
+        ),
       ),
     );
   }
@@ -585,14 +589,6 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
         ),
       ),
     );
-  }
-
-  void _navigateToSection(String sectionId) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        ref.read(activeSectionProvider.notifier).update(sectionId);
-      }
-    });
   }
 
   // ==========================================================================
@@ -770,16 +766,25 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
 
   Widget _buildCompactWakaTimeStats(WakaTimeStats stats, ResponsiveInfo info) {
     final projectStat = stats.projects.firstWhere(
-        (p) => p.name.toLowerCase().contains(
-              widget.project.title.toLowerCase(),
-            ),
-        orElse: () => WakaTimeProjectStat(
-              name: widget.project.title,
+      (p) {
+        final cleanApiName =
+            p.name.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '');
+        final cleanLocalName = widget.project.title
+            .toLowerCase()
+            .replaceAll(RegExp(r'[^a-z0-9]'), '');
+        return cleanApiName.contains(cleanLocalName) ||
+            cleanLocalName.contains(cleanApiName);
+      },
+      orElse: () => stats.projects.isNotEmpty
+          ? stats.projects
+              .first // Fallback sur le premier projet pour éviter le vide
+          : WakaTimeProjectStat(
+              name: 'N/A',
               totalSeconds: 0,
               percent: 0,
-              digital: '0:00',
-              text: '0 secs',
-            ));
+              digital: '0s',
+              text: '0s'),
+    );
 
     final languages = stats.languages;
 
@@ -935,66 +940,63 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
   }
 
   Widget _buildResultsContent(BuildContext context, ResponsiveInfo info) {
-    return SingleChildScrollView(
-      child: ConstrainedBox(
-        constraints: BoxConstraints(maxHeight: info.size.height * 0.75),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ResponsiveText.titleMedium(
-              '🏁 Résultats & Impact',
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Liste compacte des résultats
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: widget.project.results!.map((result) {
-                return _buildResultBadge(result);
-              }).toList(),
-            ),
-
-            const SizedBox(height: 16),
-
-            // Charts optimisés
-            if (_charts.isNotEmpty)
-              Expanded(
-                child: ChartRenderer.renderChartsWithBenchmarks(
-                  _charts,
-                  info,
-                  (v) => Text(
-                    "${v.toInt()}",
-                    style: const TextStyle(fontSize: 10, color: Colors.white70),
-                  ),
-                ),
-              ),
-          ],
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ResponsiveText.titleMedium(
+          '🏁 Résultats & Impact',
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
         ),
-      ),
+        const SizedBox(height: 16),
+
+        // Liste compacte des résultats
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: widget.project.results!.map((result) {
+            return _buildResultBadge(result);
+          }).toList(),
+        ),
+
+        const SizedBox(height: 16),
+
+        // Charts optimisés
+        if (_charts.isNotEmpty)
+          Expanded(
+              child: Container(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: ChartRenderer.renderChartsWithBenchmarks(
+              _charts,
+              info,
+              (v) => Text(
+                "${v.toInt()}",
+                style: const TextStyle(fontSize: 10, color: Colors.white70),
+              ),
+            ),
+          )),
+      ],
     );
   }
 
-  Container _buildResultBadge(String result) {
+  Widget _buildResultBadge(String result) {
     return Container(
       padding: const EdgeInsets.symmetric(
-        horizontal: 12,
-        vertical: 6,
+        horizontal: 10,
+        vertical: 5,
       ),
       decoration: BoxDecoration(
         color: Colors.green.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.green.withValues(alpha: 0.3)),
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: Colors.green.withValues(alpha: 0.2)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.check, size: 14, color: Colors.green),
-          const SizedBox(width: 6),
+          const Icon(Icons.check, size: 12, color: Colors.green),
+          const SizedBox(width: 4),
           ResponsiveText.bodySmall(
             result,
             style: const TextStyle(color: Colors.white),

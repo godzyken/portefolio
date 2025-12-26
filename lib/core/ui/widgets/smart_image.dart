@@ -132,18 +132,28 @@ class _SmartImageState extends ConsumerState<SmartImage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (widget.useCache) {
-      final cacheNotifier = ref.read(smartImageCacheNotifierProvider.notifier);
-      cacheNotifier.setContext(context);
-      // Précharge en arrière-plan sans await
-      cacheNotifier.preloadImage(widget.path);
+    final isSvg = widget.path.toLowerCase().endsWith('.svg');
+
+    if (widget.useCache && !isSvg) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        try {
+          final cacheNotifier =
+              ref.read(smartImageCacheNotifierProvider.notifier);
+          cacheNotifier.setContext(context);
+          cacheNotifier.preloadImage(widget.path);
+        } catch (e) {
+          debugPrint('❌ SmartImage precache suppressed: ${widget.path}');
+        }
+      });
     }
   }
 
   @override
   void didUpdateWidget(covariant SmartImage oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.path != oldWidget.path && widget.useCache) {
+    final isSvg = widget.path.toLowerCase().endsWith('.svg');
+    if (widget.path != oldWidget.path && widget.useCache && !isSvg) {
       final cacheNotifier = ref.read(smartImageCacheNotifierProvider.notifier);
       cacheNotifier.preloadImage(widget.path);
     }
