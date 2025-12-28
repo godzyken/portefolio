@@ -607,6 +607,26 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
           _buildCompactHeader(info),
           const SizedBox(height: 24),
 
+          /*     // ✅ AJOUT : Afficher les stats WakaTime si le projet est tracké
+          if (_hasProgrammingTag()) ...[
+            Consumer(
+              builder: (context, ref, child) {
+                final isTracked =
+                    ref.watch(isProjectTrackedProvider(widget.project.title));
+
+                if (isTracked) {
+                  return Column(
+                    children: [
+                      _buildWakaTimeContent(context, info),
+                      const SizedBox(height: 24),
+                    ],
+                  );
+                }
+                return const SizedBox.shrink();
+              },
+            ),
+          ],*/
+
           if (useRowLayout)
             IntrinsicHeight(
               child: Row(
@@ -752,10 +772,30 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
           return _buildEmptyWakaTimeCard(info);
         }
 
+        final projectStat =
+            stats.projects.cast<WakaTimeProjectStat?>().firstWhere(
+          (p) {
+            if (p == null) return false;
+            final cleanApiName =
+                p.name.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '');
+            final cleanLocalName = widget.project.title
+                .toLowerCase()
+                .replaceAll(RegExp(r'[^a-z0-9]'), '');
+            return cleanApiName.contains(cleanLocalName) ||
+                cleanLocalName.contains(cleanApiName);
+          },
+          orElse: () => null, // ✅ Retourner null au lieu du premier projet
+        );
+
+        // Si aucun projet trouvé, afficher le message approprié
+        if (projectStat == null) {
+          return _buildEmptyWakaTimeCard(info);
+        }
+
         return SingleChildScrollView(
           child: ConstrainedBox(
             constraints: BoxConstraints(maxHeight: info.size.height * 0.7),
-            child: _buildCompactWakaTimeStats(stats, info),
+            child: _buildCompactWakaTimeStats(stats, projectStat, info),
           ),
         );
       },
@@ -764,65 +804,16 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
     );
   }
 
-  Widget _buildCompactWakaTimeStats(WakaTimeStats stats, ResponsiveInfo info) {
-    final projectStat = stats.projects.firstWhere(
-      (p) {
-        final cleanApiName =
-            p.name.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '');
-        final cleanLocalName = widget.project.title
-            .toLowerCase()
-            .replaceAll(RegExp(r'[^a-z0-9]'), '');
-        return cleanApiName.contains(cleanLocalName) ||
-            cleanLocalName.contains(cleanApiName);
-      },
-      orElse: () => stats.projects.isNotEmpty
-          ? stats.projects
-              .first // Fallback sur le premier projet pour éviter le vide
-          : WakaTimeProjectStat(
-              name: 'N/A',
-              totalSeconds: 0,
-              percent: 0,
-              digital: '0s',
-              text: '0s'),
-    );
-
+  Widget _buildCompactWakaTimeStats(WakaTimeStats stats,
+      WakaTimeProjectStat projectStat, ResponsiveInfo info) {
     final languages = stats.languages;
 
     return Row(
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ResponsiveText.titleMedium(
-              '⏱️ Statistiques de développement',
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            // Stats compactes
-            _buildStatCard(
-                'Temps de développement', projectStat.text, Icons.timer),
-            const SizedBox(height: 12),
-            _buildStatCard(
-              'Part du temps total',
-              '${projectStat.percent.toStringAsFixed(1)}%',
-              Icons.trending_up,
-            ),
-            const SizedBox(height: 12),
-            _buildStatCard(
-              'Format détaillé',
-              projectStat.digital,
-              Icons.schedule,
-            ),
-          ],
-        ),
-        SizedBox(width: info.isMobile ? 16 : 24),
-        if (languages.isNotEmpty)
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+        Expanded(
+          flex: info.isMobile ? 1 : 2,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ResponsiveText.titleMedium(
                 '⏱️ Statistiques de développement',
@@ -832,9 +823,43 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
                 ),
               ),
               const SizedBox(height: 24),
-              _buildLanguagesSection(languages, info),
+
+              // Stats compactes
+              _buildStatCard(
+                  'Temps de développement', projectStat.text, Icons.timer),
+              const SizedBox(height: 12),
+              _buildStatCard(
+                'Part du temps total',
+                '${projectStat.percent.toStringAsFixed(1)}%',
+                Icons.trending_up,
+              ),
+              const SizedBox(height: 12),
+              _buildStatCard(
+                'Format détaillé',
+                projectStat.digital,
+                Icons.schedule,
+              ),
             ],
-          )
+          ),
+        ),
+        SizedBox(width: info.isMobile ? 16 : 24),
+        if (languages.isNotEmpty)
+          Expanded(
+              flex: info.isMobile ? 1 : 3,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  ResponsiveText.titleMedium(
+                    '⏱️ Statistiques de développement',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  _buildLanguagesSection(languages, info),
+                ],
+              ))
       ],
     );
   }

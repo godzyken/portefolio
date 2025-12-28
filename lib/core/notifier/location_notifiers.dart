@@ -70,15 +70,15 @@ class UserLocationNotifier extends StreamNotifier<LocationData> {
       }
 
       // 2. Vérifie les permissions
-      final permission = await service.checkPermission();
+      var permission = await service.checkPermission();
       developer.log('📋 Permission actuelle: $permission');
 
       if (permission == LocationPermissionStatus.denied ||
           permission == LocationPermissionStatus.deniedForever) {
         // Demande la permission
-        final requested = await service.requestPermission();
-        if (requested != LocationPermissionStatus.granted &&
-            requested != LocationPermissionStatus.whileInUse) {
+        permission = await service.requestPermission();
+        if (permission != LocationPermissionStatus.granted &&
+            permission != LocationPermissionStatus.whileInUse) {
           throw Exception(
               'Permission de localisation refusée. Autorisez l\'accès dans les paramètres.');
         }
