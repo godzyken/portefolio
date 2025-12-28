@@ -13,6 +13,7 @@ import '../../../projets/views/screens/iot_dashboard_screen.dart';
 import '../../../projets/views/widgets/project_section.dart';
 import '../../data/extention_models.dart';
 import '../generator_widgets_extentions.dart';
+import 'benchmark_widgets.dart';
 
 class ImmersiveDetailScreen extends ConsumerStatefulWidget {
   final ProjectInfo project;
@@ -977,32 +978,414 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
         ),
         const SizedBox(height: 16),
 
-        // Liste compacte des résultats
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: widget.project.results!.map((result) {
-            return _buildResultBadge(result);
-          }).toList(),
-        ),
-
-        const SizedBox(height: 16),
-
-        // Charts optimisés
-        if (_charts.isNotEmpty)
-          Expanded(
-              child: Container(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: ChartRenderer.renderChartsWithBenchmarks(
-              _charts,
-              info,
-              (v) => Text(
-                "${v.toInt()}",
-                style: const TextStyle(fontSize: 10, color: Colors.white70),
-              ),
+        // Liste compacte des résultats (badges horizontaux)
+        if (widget.project.results != null &&
+            widget.project.results!.isNotEmpty)
+          Container(
+            height: 60, // Hauteur fixe pour le scroll horizontal
+            margin: const EdgeInsets.only(bottom: 16),
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: widget.project.results!.length,
+              separatorBuilder: (_, __) => const SizedBox(width: 8),
+              itemBuilder: (context, index) {
+                return _buildResultBadge(widget.project.results![index]);
+              },
             ),
-          )),
+          ),
+
+        // Graphiques en grille compacte avec scroll
+        Expanded(
+          child: _charts.isEmpty
+              ? Center(
+                  child: ResponsiveText.bodyMedium(
+                    'Aucun graphique disponible',
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.6),
+                    ),
+                  ),
+                )
+              : _buildCompactChartsGrid(info),
+        ),
       ],
+    );
+  }
+
+  // 🆕 Grille de graphiques compacte avec gestion responsive
+  Widget _buildCompactChartsGrid(ResponsiveInfo info) {
+    // Déterminer le nombre de colonnes selon la taille d'écran
+    final crossAxisCount = info.isMobile ? 1 : (info.isTablet ? 2 : 3);
+
+    // Hauteur adaptative selon le type de chart
+    double getChartHeight(ChartData chart) {
+      switch (chart.type) {
+        case ChartType.kpiCards:
+          return info.isMobile ? 120 : 140;
+        case ChartType.benchmarkGlobal:
+        case ChartType.benchmarkRadar:
+          return info.isMobile ? 250 : 300;
+        case ChartType.benchmarkComparison:
+        case ChartType.benchmarkTable:
+          return info.isMobile ? 350 : 400;
+        default:
+          return info.isMobile ? 200 : 250;
+      }
+    }
+
+    return GridView.builder(
+      padding: const EdgeInsets.only(bottom: 16),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: crossAxisCount,
+        childAspectRatio: info.isMobile ? 1.2 : 1.5,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+      ),
+      itemCount: _charts.length,
+      itemBuilder: (context, index) {
+        final chart = _charts[index];
+        return _buildChartCard(chart, info, getChartHeight(chart));
+      },
+    );
+  }
+
+// 🆕 Card individuelle pour chaque graphique
+  Widget _buildChartCard(ChartData chart, ResponsiveInfo info, double height) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.1),
+          width: 1,
+        ),
+      ),
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Titre du chart
+          Row(
+            children: [
+              Expanded(
+                child: ResponsiveText.bodyLarge(
+                  chart.title,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              // Bouton pour voir en plein écran
+              IconButton(
+                icon: const Icon(Icons.fullscreen, size: 18),
+                color: Colors.white70,
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+                onPressed: () => _showChartFullscreen(chart, info),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+
+          // Contenu du chart (limité en hauteur)
+          Expanded(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return SizedBox(
+                  height: constraints.maxHeight,
+                  child: _buildChartContent(chart, info),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+// 🆕 Contenu du graphique optimisé
+  Widget _buildChartContent(ChartData chart, ResponsiveInfo info) {
+    switch (chart.type) {
+      case ChartType.kpiCards:
+        return _buildCompactKPICards(chart.kpiValues!, info);
+
+      case ChartType.benchmarkGlobal:
+        return BenchmarkGlobalWidget(
+          benchmark: chart.benchmarkInfo!,
+          info: info,
+        );
+
+      case ChartType.benchmarkComparison:
+        return BenchmarkComparisonWidget(
+          benchmarks: chart.benchmarkComparison!,
+          info: info,
+        );
+
+      case ChartType.benchmarkRadar:
+        return BenchmarkRadarWidget(
+          benchmark: chart.benchmarkInfo!,
+          info: info,
+        );
+
+      case ChartType.benchmarkTable:
+        return SingleChildScrollView(
+          child: BenchmarkTableWidget(
+            benchmarks: chart.benchmarkComparison!,
+            info: info,
+          ),
+        );
+
+      case ChartType.barChart:
+        return _buildCompactBarChart(chart.barGroups!, info);
+
+      case ChartType.lineChart:
+        return _buildCompactLineChart(
+          chart.lineSpots!,
+          chart.xLabels!,
+          chart.lineColor!,
+          info,
+        );
+
+      case ChartType.pieChart:
+        return _buildCompactPieChart(chart.pieSections!, info);
+    }
+  }
+
+// 🆕 KPI Cards version compacte
+  Widget _buildCompactKPICards(Map<String, String> kpis, ResponsiveInfo info) {
+    return GridView.builder(
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: info.isMobile ? 2 : 3,
+        childAspectRatio: 2,
+        crossAxisSpacing: 8,
+        mainAxisSpacing: 8,
+      ),
+      itemCount: kpis.length,
+      itemBuilder: (context, index) {
+        final entry = kpis.entries.elementAt(index);
+        return Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Colors.blue.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Colors.blue.withValues(alpha: 0.3)),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ResponsiveText.bodySmall(
+                entry.key,
+                style: const TextStyle(
+                  color: Colors.white70,
+                  fontSize: 10,
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 4),
+              ResponsiveText.titleMedium(
+                entry.value,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+// 🆕 BarChart version compacte
+  Widget _buildCompactBarChart(
+      List<BarChartGroupData> barGroups, ResponsiveInfo info) {
+    return BarChart(
+      BarChartData(
+        barGroups: barGroups,
+        alignment: BarChartAlignment.spaceAround,
+        titlesData: FlTitlesData(
+          show: true,
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 28,
+              getTitlesWidget: (value, meta) {
+                return ResponsiveText.bodySmall(
+                  value.toInt().toString(),
+                  style: const TextStyle(
+                    color: Colors.white70,
+                    fontSize: 10,
+                  ),
+                );
+              },
+            ),
+          ),
+          bottomTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+          rightTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+          topTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+        ),
+        gridData: FlGridData(
+          show: true,
+          drawVerticalLine: false,
+          horizontalInterval: 5,
+          getDrawingHorizontalLine: (value) {
+            return FlLine(
+              color: Colors.white.withValues(alpha: 0.1),
+              strokeWidth: 1,
+            );
+          },
+        ),
+        borderData: FlBorderData(show: false),
+      ),
+    );
+  }
+
+// 🆕 LineChart version compacte
+  Widget _buildCompactLineChart(
+    List<FlSpot> spots,
+    List<Widget> xLabels,
+    Color color,
+    ResponsiveInfo info,
+  ) {
+    return LineChart(
+      LineChartData(
+        lineBarsData: [
+          LineChartBarData(
+            spots: spots,
+            isCurved: true,
+            color: color,
+            barWidth: 2,
+            dotData: const FlDotData(show: false),
+            belowBarData: BarAreaData(
+              show: true,
+              color: color.withValues(alpha: 0.2),
+            ),
+          ),
+        ],
+        titlesData: FlTitlesData(
+          show: true,
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 28,
+              getTitlesWidget: (value, meta) {
+                return ResponsiveText.bodySmall(
+                  value.toInt().toString(),
+                  style: const TextStyle(
+                    color: Colors.white70,
+                    fontSize: 10,
+                  ),
+                );
+              },
+            ),
+          ),
+          bottomTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+          rightTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+          topTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+        ),
+        gridData: FlGridData(
+          show: true,
+          drawVerticalLine: false,
+          getDrawingHorizontalLine: (value) {
+            return FlLine(
+              color: Colors.white.withValues(alpha: 0.1),
+              strokeWidth: 1,
+            );
+          },
+        ),
+        borderData: FlBorderData(show: false),
+      ),
+    );
+  }
+
+// 🆕 PieChart version compacte
+  Widget _buildCompactPieChart(
+      List<PieChartSectionData> sections, ResponsiveInfo info) {
+    return PieChart(
+      PieChartData(
+        sections: sections,
+        sectionsSpace: 2,
+        centerSpaceRadius: info.isMobile ? 25 : 35,
+        pieTouchData: PieTouchData(
+          touchCallback: (FlTouchEvent event, pieTouchResponse) {
+            // Optionnel: ajouter une interaction
+          },
+        ),
+      ),
+    );
+  }
+
+// 🆕 Afficher un graphique en plein écran
+  void _showChartFullscreen(ChartData chart, ResponsiveInfo info) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.all(16),
+        child: Container(
+          constraints: BoxConstraints(
+            maxWidth: info.size.width * 0.9,
+            maxHeight: info.size.height * 0.8,
+          ),
+          decoration: BoxDecoration(
+            color: const Color(0xFF1E293B),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.2),
+              width: 2,
+            ),
+          ),
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: ResponsiveText.titleLarge(
+                      chart.title,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close, color: Colors.white),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Expanded(
+                child: _buildChartContent(chart, info),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
