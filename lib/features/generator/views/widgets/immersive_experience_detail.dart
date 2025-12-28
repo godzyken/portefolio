@@ -32,6 +32,7 @@ class _ImmersiveExperienceDetailState
   late Animation<Offset> _slideAnimation;
   late ScrollController _scrollController;
   double _scrollOffset = 0.0;
+  bool _isExiting = false;
 
   @override
   void initState() {
@@ -67,6 +68,7 @@ class _ImmersiveExperienceDetailState
 
   @override
   void dispose() {
+    _controller.stop();
     _controller.dispose();
     _scrollController.dispose();
     super.dispose();
@@ -202,37 +204,40 @@ class _ImmersiveExperienceDetailState
             // Contenu principal
             FadeTransition(
               opacity: _fadeAnimation,
-              child: SlideTransition(
-                position: _slideAnimation,
-                child: SafeArea(
-                  child: CustomScrollView(
-                    controller: _scrollController,
-                    physics: const BouncingScrollPhysics(),
-                    slivers: [
-                      _buildSliverHeader(info, themeColor),
+              child: IgnorePointer(
+                  ignoring: _isExiting ||
+                      _controller.status == AnimationStatus.reverse,
+                  child: SlideTransition(
+                    position: _slideAnimation,
+                    child: SafeArea(
+                      child: CustomScrollView(
+                        controller: _scrollController,
+                        physics: const BouncingScrollPhysics(),
+                        slivers: [
+                          _buildSliverHeader(info, themeColor),
 
-                      // Contenu détaillé
-                      SliverPadding(
-                        padding: EdgeInsets.all(info.isMobile ? 24 : 48),
-                        sliver: SliverList(
-                          delegate: SliverChildListDelegate([
-                            _buildInfoCard(theme, info),
-                            const SizedBox(height: 24),
-                            _buildObjectifsSection(theme),
-                            const SizedBox(height: 24),
-                            _buildMissionsSection(theme),
-                            const SizedBox(height: 24),
-                            _buildStackSection(theme, info),
-                            const SizedBox(height: 24),
-                            _buildResultatsSection(theme),
-                            const SizedBox(height: 100),
-                          ]),
-                        ),
+                          // Contenu détaillé
+                          SliverPadding(
+                            padding: EdgeInsets.all(info.isMobile ? 24 : 48),
+                            sliver: SliverList(
+                              delegate: SliverChildListDelegate([
+                                _buildInfoCard(theme, info),
+                                const SizedBox(height: 24),
+                                _buildObjectifsSection(theme),
+                                const SizedBox(height: 24),
+                                _buildMissionsSection(theme),
+                                const SizedBox(height: 24),
+                                _buildStackSection(theme, info),
+                                const SizedBox(height: 24),
+                                _buildResultatsSection(theme),
+                                const SizedBox(height: 100),
+                              ]),
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
-              ),
+                    ),
+                  )),
             ),
 
             // Bouton fermer
@@ -249,6 +254,9 @@ class _ImmersiveExperienceDetailState
                       foregroundColor: Colors.white,
                     ),
                     onPressed: () {
+                      setState(() {
+                        _isExiting = true;
+                      });
                       _controller.reverse().then((_) {
                         if (mounted) Navigator.of(context).pop();
                       });
@@ -264,15 +272,26 @@ class _ImmersiveExperienceDetailState
   }
 
   Widget _buildBackground(Color themeColor) {
+    if (_isExiting) return Container(color: Colors.black);
     final hasSIG = widget.experience.tags.contains('SIG');
     final hasImage = widget.experience.image.isNotEmpty;
 
     if (hasSIG) {
       // Fond avec carte SIG en opacité réduite
       return Positioned.fill(
-        child: Opacity(
-          opacity: 0.3,
-          child: const SigDiscoveryMap(),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            if (!mounted || constraints.maxWidth <= 0) {
+              return const SizedBox.shrink();
+            }
+
+            return Opacity(
+              opacity: 0.3,
+              child: SigDiscoveryMap(
+                key: ValueKey('map_detail_${widget.experience.id}'),
+              ),
+            );
+          },
         ),
       );
     } else if (hasImage) {
@@ -336,7 +355,7 @@ class _ImmersiveExperienceDetailState
       backgroundColor: Colors.black.withValues(alpha: 0.8),
       automaticallyImplyLeading: false,
       flexibleSpace: FlexibleSpaceBar(
-        title: Text(
+        title: ResponsiveText(
           widget.experience.entreprise,
           style: TextStyle(
             fontSize: info.isMobile ? 18 : 24,

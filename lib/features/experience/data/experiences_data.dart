@@ -1,3 +1,5 @@
+import 'package:latlong2/latlong.dart';
+
 import '../../generator/data/location_data.dart';
 
 class Experience {
@@ -94,4 +96,33 @@ class Experience {
         'resultats': resultats,
         'poste': poste,
       };
+}
+
+class WorkExperience {
+  final String id;
+  final String entreprise;
+  final String poste;
+  final String periode;
+  final LatLng location;
+
+  WorkExperience({
+    required this.id,
+    required this.entreprise,
+    required this.poste,
+    required this.periode,
+    required this.location,
+  });
+
+  factory WorkExperience.fromJson(Map<String, dynamic> json) {
+    return WorkExperience(
+      id: json['id'],
+      entreprise: json['entreprise'],
+      poste: json['poste'],
+      periode: json['periode'],
+      location: LatLng(
+        json['location']['latitude'],
+        json['location']['longitude'],
+      ),
+    );
+  }
 }

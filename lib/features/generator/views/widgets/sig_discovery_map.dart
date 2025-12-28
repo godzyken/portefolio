@@ -1,23 +1,18 @@
-import 'dart:developer' as developer;
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:portefolio/core/provider/json_data_provider.dart';
-import 'package:portefolio/features/generator/data/location_data.dart';
+import 'package:portefolio/core/provider/provider_extentions.dart';
+import 'package:portefolio/core/ui/widgets/responsive_text.dart';
 
-import '../../../../core/provider/location_providers.dart';
-import '../../../../core/provider/providers.dart';
-import '../../../../core/ui/widgets/responsive_text.dart';
+import '../../../experience/data/experiences_data.dart';
 
 class SigDiscoveryMap extends ConsumerStatefulWidget {
   const SigDiscoveryMap({super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() =>
-      _SigDiscoveryMapState();
+  ConsumerState<SigDiscoveryMap> createState() => _SigDiscoveryMapState();
 }
 
 class _SigDiscoveryMapState extends ConsumerState<SigDiscoveryMap>
@@ -27,7 +22,6 @@ class _SigDiscoveryMapState extends ConsumerState<SigDiscoveryMap>
   @override
   void initState() {
     super.initState();
-
     _pulseController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 1),
@@ -40,347 +34,346 @@ class _SigDiscoveryMapState extends ConsumerState<SigDiscoveryMap>
     super.dispose();
   }
 
+  void _showExperienceDetails(WorkExperience exp) {
+    showModalBottomSheet(
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(exp.entreprise,
+                style:
+                    const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+            Text(exp.poste,
+                style: TextStyle(fontSize: 16, color: Colors.grey.shade700)),
+            const Divider(),
+            Text(exp.periode,
+                style: const TextStyle(fontStyle: FontStyle.italic)),
+            const SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () => /* Naviguer vers la page détail */ {},
+              child: const Text("Voir les détails de l'expérience"),
+            )
+          ],
+        ),
+      ),
+      context: context,
+    );
+  }
+
+  /// 🔹 Logique de la visite guidée
+  Future<void> _runGuidedTour(List<WorkExperience> experiences) async {
+    final controller = ref.read(mapControllerProvider);
+    final notifier = ref.read(tourIndexProvider.notifier);
+
+    for (int i = 0; i < experiences.length; i++) {
+      if (!ref.read(tourIndexProvider.notifier).isTourActive && i > 0) break;
+
+      notifier.setIndex(i);
+
+      // Animation de déplacement vers le job suivant
+      controller.move(experiences[i].location, 15.5);
+
+      await Future.delayed(const Duration(seconds: 4));
+      if (!mounted) return;
+    }
+    notifier.stopTour();
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (kIsWeb) {
-      return _buildStaticMap();
-    }
-    final userPosAsync = ref.watch(userLocationProvider);
+    final fmtcInit = ref.watch(fmtcInitializationProvider);
+    final tourIndex = ref.watch(tourIndexProvider);
 
-    return userPosAsync.when(
-      data: (pos) => Stack(
-        children: [
-          _buildMap(pos),
-          _buildDemoBadge(),
-          _buildRecenterButton(pos),
-        ],
-      ),
-      loading: () => _buildLoading(),
-      error: (e, st) {
-        developer.log('⚠️ Erreur géolocalisation: $e');
-        return _buildStaticMap();
-      },
-    );
-  }
+    // Écoute de l'init du cache
+    ref.listen(fmtcInitializationProvider, (_, next) {
+      if (next is AsyncData && context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('Cache optimisé'),
+              behavior: SnackBarBehavior.floating),
+        );
+      }
+    });
 
-  /// Carte statique pour le Web (position fixe : Paris)
-  Widget _buildStaticMap() {
-    final mapController = MapController();
-    final experiencesAsync = ref.watch(experiencesProvider);
-
-    return experiencesAsync.when(
-        data: (experiences) {
-          final sigExperience = experiences.firstWhere(
-              (exp) => exp.tags.contains('SIG'),
-              orElse: () => experiences.first);
-
-          final positionProjet = sigExperience.location != null
-              ? LatLng(
-                  sigExperience.location!.latitude,
-                  sigExperience.location!.longitude,
-                )
-              : const LatLng(48.8566, 2.3522); // Paris
-
-          return Stack(
-            children: [
-              FlutterMap(
-                mapController: mapController,
-                options: MapOptions(
-                  initialCenter: positionProjet,
-                  initialZoom: 13.0,
-                  minZoom: 3.0,
-                  maxZoom: 18.0,
-                  interactionOptions: const InteractionOptions(
-                    flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
-                  ),
-                ),
+    return fmtcInit.when(
+      loading: _buildLoading,
+      error: (e, _) => _buildError(e),
+      data: (_) => ref.watch(userLocationProvider).when(
+            loading: _buildLoading,
+            error: (e, _) => _buildError(e),
+            data: (pos) {
+              final latLng = LatLng(pos.latitude, pos.longitude);
+              return Stack(
                 children: [
-                  TileLayer(
-                    urlTemplate:
-                        'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                    subdomains: const ['a', 'b', 'c'],
-                    userAgentPackageName: 'com.godzyken.portfolio',
-                    tileProvider: NetworkTileProvider(),
-                  ),
-                  MarkerLayer(
-                    markers: [
-                      Marker(
-                        point: positionProjet,
-                        width: 40,
-                        height: 40,
-                        child: const Icon(
-                          Icons.location_city,
-                          color: Colors.blue,
-                          size: 40,
-                        ),
-                      ),
-                    ],
-                  ),
-                  RichAttributionWidget(
-                    popupInitialDisplayDuration: const Duration(seconds: 3),
-                    showFlutterMapAttribution: false,
-                    attributions: [
-                      TextSourceAttribution('© OpenStreetMap'),
-                      const TextSourceAttribution('Mode démo Web'),
-                    ],
-                  ),
+                  _buildMapCore(latLng),
+                  _buildTopOverlay(tourIndex),
+                  _buildBottomControls(latLng),
+                  if (tourIndex != -1) _buildTourCard(tourIndex),
                 ],
-              ),
-              // Badge "Mode Démo"
-              Positioned(
-                top: 16,
-                left: 16,
-                child: ResponsiveBox(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  paddingSize: ResponsiveSpacing.s,
-                  decoration: BoxDecoration(
-                    color: Colors.orange.withValues(alpha: 0.9),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.info_outline, size: 16, color: Colors.white),
-                      ResponsiveBox(width: 4),
-                      ResponsiveText.headlineMedium(
-                        'Mode Démo (Web)',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          );
-        },
-        error: (e, st) => _buildError(e),
-        loading: () => _buildLoading());
-  }
-
-  Widget _buildDemoBadge() {
-    return Positioned(
-      top: 16,
-      left: 16,
-      child: ResponsiveBox(
-        paddingSize: ResponsiveSpacing.s,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        decoration: BoxDecoration(
-          color: Colors.green.withValues(alpha: 0.9),
-          borderRadius: BorderRadius.circular(8),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.2),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: const Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.gps_fixed, size: 16, color: Colors.white),
-            ResponsiveBox(width: 6),
-            ResponsiveText.bodyMedium(
-              'Géolocalisation active',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 12,
-              ),
-            ),
-          ],
-        ),
-      ),
+              );
+            },
+          ),
     );
   }
 
-  Widget _buildMap(LocationData pos) {
-    final userPos = LatLng(pos.latitude, pos.longitude);
+  Widget _buildMapCore(LatLng center) {
+    final options = ref.watch(mapConfigProvider(center));
     final sigPoints = ref.watch(nearbySigPointsProvider).value ?? [];
-    final followUser = ref.watch(followUserProvider);
-    final mapController = ref.read(mapControllerProvider);
-    final mapOptionsFactory = ref.watch(mapConfigProvider);
+    final isSatellite = ref.watch(satelliteModeProvider);
+    final tileProvider =
+        kIsWeb ? NetworkTileProvider() : ref.watch(mapTileProvider);
 
-    final markers = <Marker>[
-      Marker(
-        point: userPos,
-        width: 40,
-        height: 40,
-        child: ScaleTransition(
-          scale: Tween(begin: 0.8, end: 1.2).animate(
-            CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
-          ),
-          child: const Icon(
-            Icons.person_pin_circle,
-            color: Colors.blue,
-            size: 40,
-          ),
-        ),
-      ),
-      ...sigPoints.map((p) => Marker(
-            point: p,
-            width: 40,
-            height: 40,
-            child: const Icon(Icons.location_on, color: Colors.red, size: 40),
-          )),
-    ];
-
-    if (followUser) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        mapController.move(userPos, 16.0);
-      });
-    }
+    final experiences = ref.watch(workExperiencesProvider).value ?? [];
+    final path = ref.watch(careerPathProvider);
 
     return FlutterMap(
-      mapController: mapController,
-      options: mapOptionsFactory(userPos),
+      mapController: ref.read(mapControllerProvider),
+      options: options,
       children: [
         TileLayer(
           urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-          subdomains: const ['a', 'b', 'c'],
           userAgentPackageName: 'com.godzyken.portfolio',
-          tileProvider: NetworkTileProvider(),
-          maxZoom: 19,
+          tileProvider: tileProvider,
         ),
-        TileLayer(
-          urlTemplate:
-              'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-          subdomains: const ['a', 'b', 'c'],
-          userAgentPackageName: 'com.godzyken.portfolio',
-          tileProvider: NetworkTileProvider(),
+        // On superpose la couche Satellite avec une opacité animée
+        AnimatedOpacity(
+          duration: const Duration(milliseconds: 500),
+          opacity: isSatellite ? 1.0 : 0.0,
+          child: TileLayer(
+            urlTemplate:
+                'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+            userAgentPackageName: 'com.godzyken.portfolio',
+            tileProvider: tileProvider,
+          ),
         ),
-        MarkerLayer(markers: markers),
-        RichAttributionWidget(
-          popupInitialDisplayDuration: const Duration(seconds: 5),
-          showFlutterMapAttribution: false,
-          attributions: [
-            TextSourceAttribution('© OpenStreetMap contributors'),
-            const TextSourceAttribution('SIG Discovery Map'),
+        if (!kIsWeb)
+          PolylineLayer(
+            polylines: [
+              Polyline(
+                points: path,
+                color: Colors.blue.withValues(alpha: 0.6),
+                strokeWidth: 4.0,
+                useStrokeWidthInMeter: true,
+              ),
+            ],
+          ),
+        MarkerLayer(
+          markers: [
+            Marker(
+              point: center,
+              width: 40,
+              height: 40,
+              child: ScaleTransition(
+                scale: Tween(begin: 0.8, end: 1.2).animate(CurvedAnimation(
+                    parent: _pulseController, curve: Curves.easeInOut)),
+                child: const Icon(Icons.person_pin_circle,
+                    color: Colors.blue, size: 40),
+              ),
+            ),
+            if (kIsWeb)
+              ...sigPoints.map((p) => Marker(
+                    point: p,
+                    width: 35,
+                    height: 35,
+                    child: const Icon(Icons.location_on,
+                        color: Colors.red, size: 35),
+                  )),
+            if (!kIsWeb)
+              ...experiences.map((exp) => Marker(
+                    point: exp.location,
+                    width: 40,
+                    height: 40,
+                    child: GestureDetector(
+                      onTap: () => _showExperienceDetails(exp),
+                      child: const Icon(Icons.location_on,
+                          color: Colors.red, size: 40),
+                    ),
+                  )),
           ],
         ),
       ],
     );
   }
 
-  /// Bouton flottant pour recadrer sur la position utilisateur
-  Widget _buildRecenterButton(LocationData pos) {
-    final mapController = ref.read(mapControllerProvider);
-    final userPos = LatLng(pos.latitude, pos.longitude);
+  Widget _buildTopOverlay(int tourIndex) {
+    final isTourActive = tourIndex != -1;
 
     return Positioned(
-      bottom: 20,
-      right: 20,
-      child: FloatingActionButton(
-        heroTag: "recenter_btn",
-        onPressed: () {
-          mapController.move(userPos, 16.0);
-        },
-        backgroundColor: Colors.white,
-        child: const Icon(Icons.my_location, color: Colors.blue),
+      top: 16,
+      left: 16,
+      right: 16,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          _buildBadge(
+            isTourActive
+                ? 'Visite guidée'
+                : (kIsWeb ? 'Mode Démo (Web)' : 'GPS Actif'),
+            isTourActive
+                ? Colors.blue
+                : (kIsWeb ? Colors.orange : Colors.green),
+            isTourActive ? Icons.map : (kIsWeb ? Icons.web : Icons.gps_fixed),
+          ),
+          Row(
+            children: [
+              // Bouton Lancer/Arrêter la visite
+              FloatingActionButton.small(
+                heroTag: 'tour_btn',
+                onPressed: () {
+                  if (!isTourActive) {
+                    final exps = ref.read(workExperiencesProvider).value ?? [];
+                    _runGuidedTour(exps);
+                  } else {
+                    ref.read(tourIndexProvider.notifier).stopTour();
+                  }
+                },
+                backgroundColor: Colors.white,
+                child: Icon(isTourActive ? Icons.stop : Icons.play_arrow,
+                    color: Colors.blue),
+              ),
+              const SizedBox(width: 8),
+              _buildLayerToggle(),
+            ],
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildLoading() => Container(
-        color: Colors.grey.shade200,
-        child: const Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+  Widget _buildTourCard(int index) {
+    final experiences = ref.watch(workExperiencesProvider).value ?? [];
+    if (index >= experiences.length) return const SizedBox.shrink();
+    final exp = experiences[index];
+
+    return Positioned(
+      bottom: 110,
+      left: 20,
+      right: 20,
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        elevation: 10,
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
             children: [
-              CircularProgressIndicator(),
-              SizedBox(height: 16),
-              ResponsiveText.bodyMedium('Chargement de la carte SIG...'),
+              // Logo ou Icône entreprise
+              CircleAvatar(
+                backgroundColor: Colors.blue.shade50,
+                child: const Icon(Icons.business, color: Colors.blue),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(exp.entreprise,
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16)),
+                    Text(exp.poste,
+                        style:
+                            const TextStyle(fontSize: 13, color: Colors.grey)),
+                  ],
+                ),
+              ),
+              Text('${index + 1}/${experiences.length}',
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.blue)),
             ],
           ),
         ),
-      );
-
-  Widget _buildError(Object e) {
-    final isPermissionError = e.toString().contains('permission');
-    final isGpsError =
-        e.toString().contains('désactivé') || e.toString().contains('service');
-
-    return Container(
-      color: Colors.red.shade50,
-      padding: const EdgeInsets.all(24),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(isGpsError ? Icons.gps_off : Icons.error_outline,
-                size: 64, color: Colors.red.shade400),
-            const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
-            ResponsiveText.headlineMedium(
-              isPermissionError
-                  ? "Accès à la localisation refusé"
-                  : isGpsError
-                      ? "GPS désactivé"
-                      : "Erreur de géolocalisation",
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const ResponsiveBox(paddingSize: ResponsiveSpacing.s),
-            ResponsiveText.headlineMedium(
-              "$e",
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey.shade700),
-            ),
-            const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
-            Wrap(
-              spacing: 12,
-              runSpacing: 12,
-              alignment: WrapAlignment.center,
-              children: [
-                if (isPermissionError)
-                  ElevatedButton.icon(
-                    onPressed: () async {
-                      final status = await ref
-                          .read(requestLocationPermissionProvider.future);
-
-                      // Si elle est accordée, invalide pour relancer la carte
-                      if (status == LocationPermissionStatus.whileInUse ||
-                          status == LocationPermissionStatus.always) {
-                        ref.invalidate(userLocationProvider);
-                      }
-                    },
-                    icon: const Icon(Icons.settings),
-                    label: const ResponsiveText.headlineMedium(
-                        'Ouvrir paramètres'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orange,
-                      foregroundColor: Colors.white,
-                    ),
-                  ),
-                if (isGpsError)
-                  ElevatedButton.icon(
-                    onPressed: () async {
-                      await ref.read(userLocationProvider.notifier).refresh();
-                    },
-                    icon: const Icon(Icons.location_on),
-                    label: const ResponsiveText.headlineMedium('Activer GPS'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      foregroundColor: Colors.white,
-                    ),
-                  ),
-                ElevatedButton.icon(
-                  onPressed: () => ref.invalidate(userLocationProvider),
-                  icon: const Icon(Icons.refresh),
-                  label: const ResponsiveText.headlineMedium(
-                      'Réinitialiser le Flux'),
-                ),
-              ],
-            ),
-          ],
-        ),
       ),
     );
   }
+
+  Widget _buildLayerToggle() => FloatingActionButton.small(
+        heroTag: 'layer_btn',
+        onPressed: () => ref.read(satelliteModeProvider.notifier).toggle(),
+        backgroundColor: Colors.white,
+        child: Icon(ref.watch(satelliteModeProvider) ? Icons.map : Icons.layers,
+            color: Colors.blue),
+      );
+
+  Widget _buildBottomControls(LatLng pos) {
+    return Positioned(
+      bottom: 24,
+      right: 16,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          if (!kIsWeb) _buildCacheStatusMini(),
+          const SizedBox(height: 12),
+          FloatingActionButton(
+            heroTag: 'recenter_btn',
+            onPressed: () => ref.read(mapControllerProvider).move(pos, 16.0),
+            backgroundColor: Colors.white,
+            child: const Icon(Icons.my_location, color: Colors.blue),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // --- WIDGETS DE SUPPORT ---
+
+  Widget _buildBadge(String text, Color color, IconData icon) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.9),
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 6)]),
+      child: Row(children: [
+        Icon(icon, size: 16, color: Colors.white),
+        const SizedBox(width: 8),
+        ResponsiveText(text,
+            style: const TextStyle(
+                color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12))
+      ]),
+    );
+  }
+
+  Widget _buildCacheStatusMini() {
+    return ref.watch(cacheSizeProvider).maybeWhen(
+          data: (size) => Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.9),
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: const [
+                  BoxShadow(color: Colors.black12, blurRadius: 4)
+                ]),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.storage, size: 12, color: Colors.grey),
+                const SizedBox(width: 6),
+                ResponsiveText.displaySmall('${size.toStringAsFixed(1)} Mo',
+                    style: const TextStyle(
+                        fontSize: 11, fontWeight: FontWeight.w600)),
+              ],
+            ),
+          ),
+          orElse: () => const SizedBox.shrink(),
+        );
+  }
+
+  Widget _buildLoading() =>
+      const Center(child: CircularProgressIndicator.adaptive());
+
+  Widget _buildError(Object e) => Center(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: ResponsiveText.displaySmall('Erreur : $e',
+              textAlign: TextAlign.center),
+        ),
+      );
 }

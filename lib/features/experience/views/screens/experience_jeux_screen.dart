@@ -479,26 +479,25 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
                   // Colonne 2: Pot
                   Expanded(
                       flex: 40,
-                      child: Stack(
-                        children: [
-                          Positioned.fill(
-                            child: ResponsiveBox(
-                              padding: EdgeInsets.only(
-                                right: info.size.width * 0.02,
-                                left: info.size.width * 0.02,
-                                bottom: info.size.height * 0.02,
-                                top: info.size.height * 0.02,
-                              ),
-                              child: InteractivePot(
-                                experiences: widget.experiences,
-                                cardKeys: _cardKeys,
-                                flyCard: _flyCard,
-                                onCardsArrivedInPot: _onCardsArrivedInPot,
-                                onPotCleared: _onPotCleared,
-                              ),
+                      child: ResponsiveBox(
+                        padding: EdgeInsets.only(
+                          right: info.size.width * 0.02,
+                          left: info.size.width * 0.02,
+                          bottom: info.size.height * 0.02,
+                          top: info.size.height * 0.02,
+                        ),
+                        child: Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            InteractivePot(
+                              experiences: widget.experiences,
+                              cardKeys: _cardKeys,
+                              flyCard: _flyCard,
+                              onCardsArrivedInPot: _onCardsArrivedInPot,
+                              onPotCleared: _onPotCleared,
                             ),
-                          )
-                        ],
+                          ],
+                        ),
                       )),
                 ],
               ),

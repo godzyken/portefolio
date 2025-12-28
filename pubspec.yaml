@@ -60,6 +60,7 @@ dependencies:
   flutter_native_splash: ^2.4.7
   model_viewer_plus: ^1.9.3
   flutter_lucide: ^1.7.0
+  flutter_map_tile_caching: ^10.1.1
 
 
 dev_dependencies:

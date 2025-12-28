@@ -25,7 +25,8 @@ Future<List<String>> _loadAssetsFromManifest({
 
     // Charger le manifest
     final manifestContent = await rootBundle.loadString('AssetManifest.json');
-    final Map<String, dynamic> manifestMap = jsonDecode(manifestContent);
+    final Map<String, dynamic> manifestMap =
+        await compute(jsonDecode, manifestContent) as Map<String, dynamic>;
 
     // Récupérer tous les chemins d'assets
     var assets = manifestMap.keys.cast<String>().toList();
@@ -60,12 +61,13 @@ final imageFilesProvider = FutureProvider<List<String>>((ref) async {
   final allAssets = await ref.watch(allImagesProvider.future);
   return allAssets.where((path) {
     final lower = path.toLowerCase();
+
+    if (lower.contains('/2.0x/') || lower.contains('/3.0x/')) return false;
+
     return lower.endsWith('.png') ||
         lower.endsWith('.jpg') ||
         lower.endsWith('.jpeg') ||
-        lower.endsWith('.webp') ||
-        lower.endsWith('.gltf') ||
-        lower.endsWith('.svg');
+        lower.endsWith('.webp');
   }).toList();
 });
 
@@ -146,4 +148,35 @@ final skillLogoPathProvider =
       return path.isEmpty ? null : path;
     },
   );
+});
+
+final rasterImagesProvider = FutureProvider<List<String>>((ref) async {
+  final allAssets = await ref.watch(allImagesProvider.future);
+  return allAssets.where((path) {
+    final p = path.toLowerCase();
+    // Exclure les variantes de résolution et les formats non-matériels
+    return (p.endsWith('.png') || p.endsWith('.jpg') || p.endsWith('.webp')) &&
+        !p.contains('/2.0x/') &&
+        !p.contains('/3.0x/');
+  }).toList();
+});
+
+/// Images vectorielles (Précachables via SvgCache)
+final svgImagesProvider = FutureProvider<List<String>>((ref) async {
+  final allAssets = await ref.watch(allImagesProvider.future);
+  return allAssets
+      .where((path) => path.toLowerCase().endsWith('.svg'))
+      .toList();
+});
+
+final gltfImagesProvider = FutureProvider<List<String>>((ref) async {
+  final allAssets = await ref.watch(allImagesProvider.future);
+  return allAssets
+      .where((path) => path.toLowerCase().endsWith('.gltf'))
+      .toList();
+});
+
+final lottieAssetsProvider = FutureProvider<List<String>>((ref) async {
+  final all = await ref.watch(allImagesProvider.future);
+  return all.where((path) => path.toLowerCase().endsWith('.json')).toList();
 });

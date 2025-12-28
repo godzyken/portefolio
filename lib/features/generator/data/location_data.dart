@@ -6,6 +6,7 @@ enum LocationPermissionStatus {
   whileInUse,
   always,
   unableToDetermine,
+  grantedLimited,
 }
 
 class LocationData {

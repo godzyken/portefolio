@@ -1,3 +1,7 @@
+import 'dart:convert';
+
+import 'package:portefolio/features/home/data/services_data.dart'; // Pour 'compute'
+
 class EnvConfigService {
   // EmailJS
   final String emailJsServiceId;
@@ -107,4 +111,9 @@ EnvConfigService(
   wakaTimeApiKey: ${wakaTimeApiKey != null ? '***' : 'MISSING'},
   googleCalendarClientId: ${googleCalendarClientId != null ? '***' : 'MISSING'},
 )''';
+}
+
+List<Service> parseServices(String responseBody) {
+  final parsed = jsonDecode(responseBody).cast<Map<String, dynamic>>();
+  return parsed.map<Service>((json) => Service.fromJson(json)).toList();
 }
