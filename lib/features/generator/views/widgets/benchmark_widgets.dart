@@ -18,81 +18,93 @@ class BenchmarkGlobalWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final double pieSize = info.isMobile ? 80 : 100;
+    final double centerRadius = info.isMobile ? 35 : 40;
+
     return Container(
-      padding: EdgeInsets.all(info.isMobile ? 20 : 24),
+      padding: EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: ColorHelpers.darkBg.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: Colors.white.withValues(alpha: 0.1),
           width: 2,
         ),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          ResponsiveText.titleLarge(
+          ResponsiveText.titleMedium(
             benchmark.projectTitle,
             style: TextStyle(
               color: Colors.white,
-              fontSize: info.isMobile ? 20 : 24,
               fontWeight: FontWeight.bold,
             ),
             textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
-          SizedBox(height: info.isMobile ? 16 : 24),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Pie Chart
-              SizedBox(
-                width: info.isMobile ? 160 : 200,
-                height: info.isMobile ? 160 : 200,
-                child: PieChart(
-                  PieChartData(
-                    sectionsSpace: 5,
-                    centerSpaceRadius: info.isMobile ? 50 : 60,
-                    sections: [
-                      PieChartSectionData(
-                        value: benchmark.scoreGlobal.toDouble(),
-                        color: ColorHelpers.green,
-                        radius: 30,
-                        title: '',
-                      ),
-                      PieChartSectionData(
-                        value: (100 - benchmark.scoreGlobal).toDouble(),
-                        color: ColorHelpers.gray,
-                        radius: 30,
-                        title: '',
-                      ),
+          Expanded(
+              child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Pie Chart
+                SizedBox(
+                  width: pieSize,
+                  height: pieSize,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      PieChart(
+                        PieChartData(
+                          sectionsSpace: 3,
+                          centerSpaceRadius: centerRadius,
+                          sections: [
+                            PieChartSectionData(
+                              value: benchmark.scoreGlobal.toDouble(),
+                              color: ColorHelpers.green,
+                              radius: 20,
+                              title: '',
+                            ),
+                            PieChartSectionData(
+                              value: (100 - benchmark.scoreGlobal).toDouble(),
+                              color: ColorHelpers.gray.withValues(alpha: 0.3),
+                              radius: 20,
+                              title: '',
+                            ),
+                          ],
+                        ),
+                      )
                     ],
                   ),
                 ),
-              ),
-              SizedBox(width: info.isMobile ? 16 : 32),
-              // Score
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ResponsiveText.displaySmall(
-                    '${benchmark.scoreGlobal}/100',
-                    style: TextStyle(
-                      color: ColorHelpers.green,
-                      fontSize: info.isMobile ? 32 : 48,
-                      fontWeight: FontWeight.bold,
+                SizedBox(
+                  height: 8,
+                ),
+                // Score
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ResponsiveText.displaySmall(
+                      '${benchmark.scoreGlobal}/100',
+                      style: TextStyle(
+                        color: ColorHelpers.green,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
+                  ],
+                ),
+                ResponsiveText.bodySmall(
+                  'Score global',
+                  style: TextStyle(
+                    color: ColorHelpers.textGray,
                   ),
-                  const SizedBox(height: 8),
-                  ResponsiveText.bodyMedium(
-                    'Score global',
-                    style: TextStyle(
-                      color: ColorHelpers.textGray,
-                      fontSize: info.isMobile ? 14 : 16,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
+                ),
+              ],
+            ),
+          )),
         ],
       ),
     );
@@ -334,18 +346,9 @@ class BenchmarkRadarWidget extends StatelessWidget {
       ),
       child: Column(
         children: [
-          ResponsiveText.titleLarge(
-            '${benchmark.projectTitle} - Analyse Radar',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: info.isMobile ? 18 : 20,
-              fontWeight: FontWeight.bold,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          ResponsiveBox(height: info.isMobile ? 16 : 24),
+          ResponsiveBox(height: 8),
           ResponsiveBox(
-            height: info.isMobile ? 250 : 300,
+            height: info.isMobile ? 100 : 120,
             child: RadarChart(
               RadarChartData(
                 radarShape: RadarShape.polygon,

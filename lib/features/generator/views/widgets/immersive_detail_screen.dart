@@ -1039,28 +1039,22 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
     double getChartHeight(ChartData chart) {
       switch (chart.type) {
         case ChartType.kpiCards:
-          return info.isMobile ? 350 : 400;
+          return info.isMobile ? 200 : 250;
 
         case ChartType.lineChart:
-          return info.isMobile ? 350 : 400;
-
         case ChartType.pieChart:
-          return info.isMobile ? 350 : 400;
+          return info.isMobile ? 300 : 350;
 
         case ChartType.benchmarkGlobal:
-          return info.isMobile ? 350 : 400;
-
         case ChartType.benchmarkRadar:
-          return info.isMobile ? 350 : 400;
+          return info.isMobile ? 250 : 300;
 
         case ChartType.benchmarkComparison:
-          return info.isMobile ? 350 : 400;
-
         case ChartType.benchmarkTable:
-          return info.isMobile ? 350 : 400;
+          return info.isMobile ? 400 : 500;
 
         default:
-          return info.isMobile ? 350 : 400;
+          return info.isMobile ? 300 : 350;
       }
     }
 
