@@ -9,6 +9,7 @@ import 'package:portefolio/core/ui/widgets/responsive_text.dart';
 import '../../../../core/affichage/screen_size_detector.dart';
 import '../../../../core/provider/iot_view_provider.dart';
 import '../../../../core/provider/sensor_provider.dart';
+import '../../../generator/views/widgets/three_d_tech_icon.dart';
 
 class EnhancedIotDashboardScreen extends ConsumerStatefulWidget {
   const EnhancedIotDashboardScreen({super.key});
@@ -275,29 +276,34 @@ class _EnhancedIotDashboardScreenState
   }
 
   Widget _buildGridView(Map<String, double> sensors, ResponsiveInfo info) {
-    final crossAxisCount = info.isMobile ? 2 : (info.isTablet ? 3 : 4);
+    int crossAxisCount = 2;
+    if (info.size.width > 1100)
+      crossAxisCount = 4;
+    else if (info.size.width > 750) crossAxisCount = 3;
 
     return LayoutBuilder(builder: (context, constraints) {
-      final double maxCardWidth = 240; // largeur maximale souhaitée
-      final double maxCardHeight = 220; // hauteur maximale souhaitée
+      final double itemWidth = constraints.maxWidth / crossAxisCount;
+      final double aspectRatio = (itemWidth / 180).clamp(1.0, 1.6);
 
-      final itemWidth =
-          (constraints.maxWidth / crossAxisCount).clamp(0, maxCardWidth);
-      final aspectRatio = itemWidth / maxCardHeight;
-      return GridView.count(
-        crossAxisCount: crossAxisCount,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
-        childAspectRatio: aspectRatio,
-        children: sensors.entries.map((entry) {
+      return GridView.builder(
+        itemCount: sensors.length,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: crossAxisCount,
+          crossAxisSpacing: 12,
+          mainAxisSpacing: 12,
+          childAspectRatio: aspectRatio,
+        ),
+        itemBuilder: (context, index) {
+          final entry = sensors.entries.elementAt(index);
           return _buildSensorCard(
             icon: _getSensorIcon(entry.key),
             title: entry.key,
             value: _getSensorValue(entry.key, entry.value),
             color: _getSensorColor(entry.key),
             trend: _calculateTrend(entry.value),
+            rawValue: entry.value,
           );
-        }).toList(),
+        },
       );
     });
   }
@@ -325,9 +331,15 @@ class _EnhancedIotDashboardScreenState
     required IconData icon,
     required String title,
     required String value,
+    required double rawValue,
     required Color color,
     required double trend,
   }) {
+    // Logique d'intensité spécifique pour la température
+    bool isTemperature = title.contains('Température');
+    double intensity = (rawValue - 15) / 50; // Normalisation 15°C -> 65°C
+    intensity = intensity.clamp(0.0, 1.0);
+
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0.0, end: 1.0),
       duration: const Duration(milliseconds: 600),
@@ -355,22 +367,22 @@ class _EnhancedIotDashboardScreenState
                     animation: _animationController,
                     builder: (context, child) {
                       return ResponsiveBox(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: color.withValues(alpha: 0.2),
-                          boxShadow: [
-                            BoxShadow(
-                              color: color.withValues(
-                                alpha: 0.3 * _animationController.value,
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: color.withValues(alpha: 0.2),
+                            boxShadow: [
+                              BoxShadow(
+                                color: color.withValues(
+                                  alpha: 0.3 * _animationController.value,
+                                ),
+                                blurRadius: 15,
+                                spreadRadius: 3,
                               ),
-                              blurRadius: 15,
-                              spreadRadius: 3,
-                            ),
-                          ],
-                        ),
-                        child: Icon(icon, color: color, size: 32),
-                      );
+                            ],
+                          ),
+                          child: _buildHeatIconEffect(
+                              icon, rawValue, color, isTemperature));
                     },
                   ),
                   const SizedBox(height: 12),
@@ -384,7 +396,7 @@ class _EnhancedIotDashboardScreenState
                   const SizedBox(height: 8),
                   AnimatedSwitcher(
                     duration: const Duration(milliseconds: 500),
-                    child: ResponsiveText.displaySmall(
+                    child: ResponsiveText.bodySmall(
                       value,
                       key: ValueKey(value),
                       style: TextStyle(
@@ -556,6 +568,51 @@ class _EnhancedIotDashboardScreenState
           }).toList(),
         ),
       ),
+    );
+  }
+
+  Widget _buildHeatIconEffect(
+      IconData icon, double temperature, Color baseColor, bool isTemp) {
+    // Calcul de l'intensité (0.0 à 1.0)
+    double intensity = isTemp ? (temperature / 100).clamp(0.0, 1.0) : 0.2;
+
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        // La "Bulle 3D" de chaleur
+        AnimatedContainer(
+          duration: const Duration(seconds: 1),
+          width: 55,
+          height: 55,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: RadialGradient(
+              colors: [
+                (isTemp && temperature > 40 ? Colors.red : baseColor)
+                    .withValues(alpha: intensity * 0.4),
+                (isTemp && temperature < 5 ? Colors.blue : baseColor)
+                    .withValues(alpha: intensity * 0.8),
+                Colors.transparent,
+              ],
+              stops: const [0.3, 0.7, 1.0],
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: (isTemp && temperature > 40 ? Colors.orange : baseColor)
+                    .withValues(alpha: intensity * 0.5),
+                blurRadius: 10 * intensity,
+                spreadRadius: 2,
+              )
+            ],
+          ),
+        ),
+        // L'icône technique existante
+        ThreeDTechIcon(
+          icon: icon,
+          color: baseColor,
+          size: 28,
+        ),
+      ],
     );
   }
 

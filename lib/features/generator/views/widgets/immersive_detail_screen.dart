@@ -486,7 +486,7 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
             child: Center(
               child: ConstrainedBox(
                 constraints: BoxConstraints(
-                  maxWidth: info.size.width > 1200 ? 1000 : double.infinity,
+                  maxWidth: info.isLandscape ? 1100 : double.infinity,
                   // On force la hauteur à prendre tout l'espace disponible moins les paddings
                   maxHeight: info.size.height,
                 ),
@@ -966,6 +966,8 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
   }
 
   Widget _buildResultsContent(BuildContext context, ResponsiveInfo info) {
+    int count =
+        widget.project.results!.length + widget.project.resultsMap!.length;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -986,10 +988,10 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
             margin: const EdgeInsets.only(bottom: 16),
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
-              itemCount: widget.project.results!.length,
+              itemCount: count,
               separatorBuilder: (_, __) => const SizedBox(width: 8),
               itemBuilder: (context, index) {
-                return _buildResultBadge(widget.project.results![index]);
+                return _buildResultBadge(result(index));
               },
             ),
           ),
@@ -1011,24 +1013,54 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
     );
   }
 
+  String result(int index) {
+    return widget.project.results![index] +
+        widget.project.resultsMap!.length.toString();
+  }
+
   // 🆕 Grille de graphiques compacte avec gestion responsive
   Widget _buildCompactChartsGrid(ResponsiveInfo info) {
     // Déterminer le nombre de colonnes selon la taille d'écran
-    final crossAxisCount = info.isMobile ? 1 : (info.isTablet ? 2 : 3);
+    int crossAxisCount;
+    if (info.size.width > 1200) {
+      crossAxisCount = 4;
+    } else if (info.size.width > 800) {
+      crossAxisCount = 3; // Idéal pour iPad Pro paysage
+    } else if (info.size.width > 600) {
+      crossAxisCount = 2; // iPad Pro portrait / Split view
+    } else {
+      crossAxisCount = 1;
+    }
+
+    double aspectRatio = (info.size.width / crossAxisCount) / 400;
+    aspectRatio = aspectRatio.clamp(1.1, 10.0);
 
     // Hauteur adaptative selon le type de chart
     double getChartHeight(ChartData chart) {
       switch (chart.type) {
         case ChartType.kpiCards:
-          return info.isMobile ? 120 : 140;
+          return info.isMobile ? 350 : 400;
+
+        case ChartType.lineChart:
+          return info.isMobile ? 350 : 400;
+
+        case ChartType.pieChart:
+          return info.isMobile ? 350 : 400;
+
         case ChartType.benchmarkGlobal:
+          return info.isMobile ? 350 : 400;
+
         case ChartType.benchmarkRadar:
-          return info.isMobile ? 250 : 300;
+          return info.isMobile ? 350 : 400;
+
         case ChartType.benchmarkComparison:
+          return info.isMobile ? 350 : 400;
+
         case ChartType.benchmarkTable:
           return info.isMobile ? 350 : 400;
+
         default:
-          return info.isMobile ? 200 : 250;
+          return info.isMobile ? 350 : 400;
       }
     }
 
@@ -1036,7 +1068,7 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
       padding: const EdgeInsets.only(bottom: 16),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: crossAxisCount,
-        childAspectRatio: info.isMobile ? 1.2 : 1.5,
+        childAspectRatio: aspectRatio,
         crossAxisSpacing: 12,
         mainAxisSpacing: 12,
       ),
