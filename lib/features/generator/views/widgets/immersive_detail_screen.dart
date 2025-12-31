@@ -88,6 +88,18 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
       ));
     }
 
+    // NOUVELLE SECTION Infrastructure
+    if (widget.project.development != null &&
+        widget.project.development!.isNotEmpty) {
+      sections.add(ProjectSection(
+        id: 'infrastructure',
+        title: 'Infrastructure',
+        icon: Icons.architecture,
+        builder: _buildInfrastructureContent,
+      ));
+    }
+
+    // Section Analyse économique (avec graphiques)
     if (widget.project.development != null &&
         widget.project.development!.isNotEmpty) {
       sections.add(ProjectSection(
@@ -980,138 +992,151 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
     final dev = widget.project.development!;
     final charts = ChartDataFactory.createChartsFromDevelopment(dev);
 
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const ResponsiveText.titleMedium(
-            'Analyse économique du projet',
-            style: TextStyle(fontWeight: FontWeight.bold),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ResponsiveText.titleMedium(
+          '💼 Analyse Économique & ROI',
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
           ),
-          const SizedBox(height: 12),
-          ...charts.map((chart) {
-            switch (chart.type) {
-              case ChartType.barChart:
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: SizedBox(
-                    height: 250,
-                    child: BarChart(BarChartData(
-                      barGroups: chart.barGroups!,
-                      borderData: FlBorderData(show: false),
-                      titlesData: FlTitlesData(
-                        bottomTitles: AxisTitles(
-                          sideTitles: SideTitles(
-                            showTitles: true,
-                            getTitlesWidget: (value, meta) {
-                              final index = value.toInt();
-                              if (index >= 0 &&
-                                  index < chart.barGroups!.length) {
-                                return ResponsiveText.bodySmall(
-                                    'Année ${index + 1}',
-                                    style: const TextStyle(
-                                        color: Colors.white70, fontSize: 12));
-                              }
-                              return const SizedBox.shrink();
-                            },
-                          ),
-                        ),
-                        leftTitles: AxisTitles(
-                          sideTitles: SideTitles(showTitles: true),
-                        ),
-                      ),
-                    )),
-                  ),
-                );
+        ),
+        const SizedBox(height: 16),
 
-              case ChartType.lineChart:
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: SizedBox(
-                    height: 250,
-                    child: LineChart(LineChartData(
-                      lineBarsData: [
-                        LineChartBarData(
-                          spots: chart.lineSpots!,
-                          isCurved: true,
-                          color: chart.lineColor ?? Colors.blueAccent,
-                          barWidth: 3,
-                          dotData: FlDotData(show: true),
-                        )
-                      ],
-                      titlesData: FlTitlesData(
-                        bottomTitles: AxisTitles(
-                          sideTitles: SideTitles(
-                            showTitles: true,
-                            getTitlesWidget: (value, meta) {
-                              final index = value.toInt();
-                              if (chart.xLabels != null &&
-                                  index >= 0 &&
-                                  index < chart.xLabels!.length) {
-                                return chart.xLabels![index];
-                              }
-                              return const SizedBox.shrink();
-                            },
-                          ),
-                        ),
-                        leftTitles: AxisTitles(
-                          sideTitles: SideTitles(showTitles: true),
-                        ),
-                      ),
-                    )),
-                  ),
-                );
+        // Liste compacte des résultats économiques clés (badges horizontaux)
+        if (dev.containsKey('6_roi_global'))
+          Container(
+            height: 60,
+            margin: const EdgeInsets.only(bottom: 16),
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: _getEconomicBadges(dev).length,
+              separatorBuilder: (_, __) => const SizedBox(width: 8),
+              itemBuilder: (context, index) {
+                final badge = _getEconomicBadges(dev)[index];
+                return _buildEconomicBadge(badge['label']!, badge['value']!);
+              },
+            ),
+          ),
 
-              case ChartType.pieChart:
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: SizedBox(
-                    height: 250,
-                    child: PieChart(PieChartData(
-                      sections: chart.pieSections!,
-                      sectionsSpace: 2,
-                      centerSpaceRadius: 40,
-                    )),
+        // Graphiques en grille compacte avec scroll (même logique que results)
+        Expanded(
+          child: charts.isEmpty
+              ? Center(
+                  child: ResponsiveText.bodyMedium(
+                    'Aucun graphique économique disponible',
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.6),
+                    ),
                   ),
-                );
+                )
+              : _buildCompactEconomicChartsGrid(charts, info),
+        ),
+      ],
+    );
+  }
 
-              case ChartType.kpiCards:
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: Wrap(
-                    spacing: 12,
-                    runSpacing: 12,
-                    children: chart.kpiValues!.entries.map((entry) {
-                      return Container(
-                        padding: const EdgeInsets.all(12),
-                        width: 150,
-                        decoration: BoxDecoration(
-                          color: Colors.blueGrey.shade800,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ResponsiveText.titleSmall(entry.key,
-                                style: const TextStyle(color: Colors.white70)),
-                            const SizedBox(height: 4),
-                            ResponsiveText.displaySmall(entry.value,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold)),
-                          ],
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                );
+  List<Map<String, String>> _getEconomicBadges(Map<String, dynamic> dev) {
+    final badges = <Map<String, String>>[];
 
-              default:
-                return const SizedBox.shrink();
-            }
-          }),
+    if (dev.containsKey('6_roi_global')) {
+      final roi = dev['6_roi_global'] as Map<String, dynamic>;
+      badges
+          .add({'label': '💰 ROI 3 ans', 'value': roi['roi_3_ans'].toString()});
+      badges.add({'label': '💶 Gains', 'value': '${roi['gains_totaux']}€'});
+      badges.add({'label': '💸 Coûts', 'value': '${roi['couts_totaux']}€'});
+    }
+
+    if (dev.containsKey('7_interpretation_business')) {
+      final business = dev['7_interpretation_business'] as Map<String, dynamic>;
+      if (business.containsKey('temps_economise_total')) {
+        badges.add({
+          'label': '⏰ Temps gagné',
+          'value': business['temps_economise_total'].toString()
+        });
+      }
+      if (business.containsKey('reactivite')) {
+        badges.add({
+          'label': '⚡ Réactivité',
+          'value': business['reactivite'].toString()
+        });
+      }
+    }
+
+    return badges;
+  }
+
+  Widget _buildEconomicBadge(String label, String value) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: Colors.blue.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: Colors.blue.withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ResponsiveText.bodySmall(
+            label,
+            style: const TextStyle(color: Colors.white70, fontSize: 11),
+          ),
+          const SizedBox(width: 6),
+          ResponsiveText.bodySmall(
+            value,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 13,
+            ),
+          ),
         ],
       ),
+    );
+  }
+
+  Widget _buildCompactEconomicChartsGrid(
+      List<ChartData> charts, ResponsiveInfo info) {
+    int crossAxisCount;
+    if (info.size.width > 1200) {
+      crossAxisCount = 4;
+    } else if (info.size.width > 800) {
+      crossAxisCount = 3;
+    } else if (info.size.width > 600) {
+      crossAxisCount = 2;
+    } else {
+      crossAxisCount = 1;
+    }
+
+    double aspectRatio = (info.size.width / crossAxisCount) / 400;
+    aspectRatio = aspectRatio.clamp(1.1, 10.0);
+
+    double getChartHeight(ChartData chart) {
+      switch (chart.type) {
+        case ChartType.kpiCards:
+          return info.isMobile ? 200 : 250;
+        case ChartType.lineChart:
+        case ChartType.barChart:
+          return info.isMobile ? 300 : 350;
+        default:
+          return info.isMobile ? 300 : 350;
+      }
+    }
+
+    return GridView.builder(
+      padding: const EdgeInsets.only(bottom: 16),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: crossAxisCount,
+        childAspectRatio: aspectRatio,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+      ),
+      itemCount: charts.length,
+      itemBuilder: (context, index) {
+        final chart = charts[index];
+        return _buildChartCard(chart, info, getChartHeight(chart));
+      },
     );
   }
 
@@ -1841,6 +1866,300 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
         );
       },
     );
+  }
+
+  Widget _buildInfrastructureContent(
+      BuildContext context, ResponsiveInfo info) {
+    final dev = widget.project.development!;
+
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ResponsiveText.titleMedium(
+            '🏗️ Infrastructure & Architecture',
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 24),
+
+          // Hypothèses du projet
+          if (dev.containsKey('1_hypotheses'))
+            _buildInfrastructureSection(
+              '📋 Hypothèses du projet',
+              dev['1_hypotheses'] as Map<String, dynamic>,
+              Icons.article_outlined,
+              Colors.blue,
+            ),
+
+          const SizedBox(height: 20),
+
+          // Gains de productivité
+          if (dev.containsKey('2_gains_productivite'))
+            _buildInfrastructureSection(
+              '⚡ Gains de productivité',
+              dev['2_gains_productivite'] as Map<String, dynamic>,
+              Icons.trending_up,
+              Colors.green,
+            ),
+
+          const SizedBox(height: 20),
+
+          // Autres gains
+          if (dev.containsKey('3_autres_gains'))
+            _buildInfrastructureSection(
+              '💎 Autres gains',
+              dev['3_autres_gains'] as Map<String, dynamic>,
+              Icons.emoji_events,
+              Colors.amber,
+            ),
+
+          const SizedBox(height: 20),
+
+          // Coûts
+          if (dev.containsKey('4_couts'))
+            _buildInfrastructureSection(
+              '💰 Structure des coûts',
+              dev['4_couts'] as Map<String, dynamic>,
+              Icons.account_balance_wallet,
+              Colors.orange,
+            ),
+
+          const SizedBox(height: 20),
+
+          // Synthèse annuelle
+          if (dev.containsKey('5_synthese_annuelle'))
+            _buildSyntheseAnnuelle(
+              dev['5_synthese_annuelle'] as List<dynamic>,
+              info,
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfrastructureSection(
+    String title,
+    Map<String, dynamic> data,
+    IconData icon,
+    Color accentColor,
+  ) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: accentColor.withValues(alpha: 0.3),
+          width: 2,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: accentColor.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(icon, color: accentColor, size: 24),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: ResponsiveText.titleMedium(
+                  title,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          ...data.entries.map((entry) => Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 6,
+                      height: 6,
+                      margin: const EdgeInsets.only(top: 6),
+                      decoration: BoxDecoration(
+                        color: accentColor,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ResponsiveText.bodySmall(
+                            _formatKey(entry.key),
+                            style: TextStyle(
+                              color: Colors.white.withValues(alpha: 0.7),
+                              fontSize: 12,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          ResponsiveText.bodyMedium(
+                            entry.value.toString(),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              )),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSyntheseAnnuelle(List<dynamic> synthese, ResponsiveInfo info) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Colors.purple.withValues(alpha: 0.2),
+            Colors.blue.withValues(alpha: 0.2),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Colors.purple.withValues(alpha: 0.4),
+          width: 2,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.purple.withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(Icons.calendar_today,
+                    color: Colors.purple, size: 24),
+              ),
+              const SizedBox(width: 12),
+              const ResponsiveText.titleMedium(
+                '📊 Synthèse annuelle',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          ...synthese.asMap().entries.map((entry) {
+            final index = entry.key;
+            final year = entry.value as Map<String, dynamic>;
+            return _buildYearCard(year, index, info);
+          }),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildYearCard(
+      Map<String, dynamic> year, int index, ResponsiveInfo info) {
+    final colors = [Colors.green, Colors.blue, Colors.purple];
+    final color = colors[index % colors.length];
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: color.withValues(alpha: 0.3),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ResponsiveText.titleSmall(
+            'Année ${year['annee']} - ${year['intervenants']} intervenants',
+            style: TextStyle(
+              color: color,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _buildMetricColumn(
+                    'Gains', '${year['gains']}€', Colors.green),
+              ),
+              Expanded(
+                child: _buildMetricColumn(
+                    'Coûts', '${year['couts']}€', Colors.orange),
+              ),
+              Expanded(
+                child: _buildMetricColumn(
+                    'Net', '${year['resultat_net']}€', color),
+              ),
+              Expanded(
+                child: _buildMetricColumn('ROI', year['roi'], Colors.amber),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMetricColumn(String label, String value, Color color) {
+    return Column(
+      children: [
+        ResponsiveText.bodySmall(
+          label,
+          style: TextStyle(
+            color: Colors.white.withValues(alpha: 0.6),
+            fontSize: 11,
+          ),
+        ),
+        const SizedBox(height: 4),
+        ResponsiveText.bodyMedium(
+          value,
+          style: TextStyle(
+            color: color,
+            fontWeight: FontWeight.bold,
+            fontSize: 14,
+          ),
+        ),
+      ],
+    );
+  }
+
+  String _formatKey(String key) {
+    return key
+        .replaceAll('_', ' ')
+        .split(' ')
+        .map((word) =>
+            word.isEmpty ? '' : word[0].toUpperCase() + word.substring(1))
+        .join(' ');
   }
 
   Widget _buildEmptyWakaTimeCard(ResponsiveInfo info) {
