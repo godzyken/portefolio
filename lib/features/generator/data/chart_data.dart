@@ -212,6 +212,99 @@ class ChartData {
 }
 
 class ChartDataFactory {
+  /// Crée les graphiques liés à l'analyse économique (champ "development")
+  static List<ChartData> createChartsFromDevelopment(
+      Map<String, dynamic> development) {
+    final charts = <ChartData>[];
+
+    // 1️⃣ Synthèse annuelle du ROI (BarChart)
+    if (development.containsKey('5_synthese_annuelle')) {
+      final synthese = development['5_synthese_annuelle'] as List<dynamic>;
+      final barGroups = synthese.asMap().entries.map((entry) {
+        final x = entry.key;
+        final result = entry.value;
+        final y = (result['roi'].toString().replaceAll('%', '')).trim();
+        final value = double.tryParse(y) ?? 0;
+        return BarChartGroupData(
+          x: x,
+          barRods: [
+            BarChartRodData(
+              toY: value,
+              color: Colors.greenAccent,
+              width: 18,
+            )
+          ],
+        );
+      }).toList();
+
+      charts.add(ChartData.bar(
+        title: '📈 ROI annuel comparatif',
+        barGroups: barGroups,
+      ));
+    }
+
+    // 2️⃣ Cumul des gains et coûts (LineChart)
+    if (development.containsKey('5_synthese_annuelle')) {
+      final synthese = development['5_synthese_annuelle'] as List<dynamic>;
+      final gains =
+          synthese.map((e) => (e['gains'] as num).toDouble()).toList();
+      final couts =
+          synthese.map((e) => (e['couts'] as num).toDouble()).toList();
+
+      final gainSpots = gains
+          .asMap()
+          .entries
+          .map((e) => FlSpot(e.key.toDouble(), e.value))
+          .toList();
+      final coutSpots = couts
+          .asMap()
+          .entries
+          .map((e) => FlSpot(e.key.toDouble(), e.value))
+          .toList();
+
+      final labels = synthese.map((e) {
+        return Text('Année ${e['annee']}',
+            style: const TextStyle(color: Colors.white70, fontSize: 12));
+      }).toList();
+
+      charts.add(ChartData.line(
+        title: '💸 Gains vs Coûts',
+        lineSpots: gainSpots,
+        xLabels: labels,
+        lineColor: Colors.lightGreenAccent,
+      ));
+
+      charts.add(ChartData.line(
+        title: '💰 Coûts cumulés',
+        lineSpots: coutSpots,
+        xLabels: labels,
+        lineColor: Colors.redAccent,
+      ));
+    }
+
+    // 3️⃣ KPIs économiques globaux
+    if (development.containsKey('6_roi_global')) {
+      final roi = development['6_roi_global'] as Map<String, dynamic>;
+      final business = development['7_interpretation_business'] ?? {};
+
+      final kpis = <String, String>{
+        '📊 ROI sur 3 ans': roi['roi_3_ans'].toString(),
+        '💶 Gains totaux': '${roi['gains_totaux']}€',
+        '💸 Coûts totaux': '${roi['couts_totaux']}€',
+        '⚡ Productivité': business['reactivite']?.toString() ?? '+0%',
+        '🕓 Temps économisé':
+            business['temps_economise_total']?.toString() ?? '',
+      };
+
+      charts.add(ChartData.kpiCards(
+        title: '💼 Indicateurs économiques clés',
+        kpiValues: kpis,
+      ));
+    }
+
+    return charts;
+  }
+
   /// Crée les données de tous les charts à partir de resultsMap
   static List<ChartData> createChartsFromResults(
       Map<String, dynamic> resultsMap) {

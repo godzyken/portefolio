@@ -6,7 +6,7 @@ import 'package:latlong2/latlong.dart';
 class MapConfig {
   final LatLng initialCenter;
   static const double defaultZoom = 16.0;
-  static final ParisBounds =
+  static final parisBounds =
       LatLngBounds(LatLng(48.85, 2.34), LatLng(48.87, 2.36));
 
   const MapConfig(this.initialCenter);
@@ -14,7 +14,7 @@ class MapConfig {
   MapOptions get options => MapOptions(
         initialCenter: initialCenter,
         initialZoom: defaultZoom,
-        cameraConstraint: CameraConstraint.contain(bounds: ParisBounds),
+        cameraConstraint: CameraConstraint.contain(bounds: parisBounds),
         interactionOptions: const InteractionOptions(
           flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
         ),

@@ -88,6 +88,16 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
       ));
     }
 
+    if (widget.project.development != null &&
+        widget.project.development!.isNotEmpty) {
+      sections.add(ProjectSection(
+        id: 'economic',
+        title: 'Analyse économique',
+        icon: Icons.bar_chart_rounded,
+        builder: _buildEconomicAnalysisContent,
+      ));
+    }
+
     if (_hasIoTFeatures()) {
       sections.add(ProjectSection(
         id: 'iot',
@@ -960,6 +970,146 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
               );
             }).toList(),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEconomicAnalysisContent(
+      BuildContext context, ResponsiveInfo info) {
+    final dev = widget.project.development!;
+    final charts = ChartDataFactory.createChartsFromDevelopment(dev);
+
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const ResponsiveText.titleMedium(
+            'Analyse économique du projet',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 12),
+          ...charts.map((chart) {
+            switch (chart.type) {
+              case ChartType.barChart:
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: SizedBox(
+                    height: 250,
+                    child: BarChart(BarChartData(
+                      barGroups: chart.barGroups!,
+                      borderData: FlBorderData(show: false),
+                      titlesData: FlTitlesData(
+                        bottomTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            getTitlesWidget: (value, meta) {
+                              final index = value.toInt();
+                              if (index >= 0 &&
+                                  index < chart.barGroups!.length) {
+                                return ResponsiveText.bodySmall(
+                                    'Année ${index + 1}',
+                                    style: const TextStyle(
+                                        color: Colors.white70, fontSize: 12));
+                              }
+                              return const SizedBox.shrink();
+                            },
+                          ),
+                        ),
+                        leftTitles: AxisTitles(
+                          sideTitles: SideTitles(showTitles: true),
+                        ),
+                      ),
+                    )),
+                  ),
+                );
+
+              case ChartType.lineChart:
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: SizedBox(
+                    height: 250,
+                    child: LineChart(LineChartData(
+                      lineBarsData: [
+                        LineChartBarData(
+                          spots: chart.lineSpots!,
+                          isCurved: true,
+                          color: chart.lineColor ?? Colors.blueAccent,
+                          barWidth: 3,
+                          dotData: FlDotData(show: true),
+                        )
+                      ],
+                      titlesData: FlTitlesData(
+                        bottomTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            getTitlesWidget: (value, meta) {
+                              final index = value.toInt();
+                              if (chart.xLabels != null &&
+                                  index >= 0 &&
+                                  index < chart.xLabels!.length) {
+                                return chart.xLabels![index];
+                              }
+                              return const SizedBox.shrink();
+                            },
+                          ),
+                        ),
+                        leftTitles: AxisTitles(
+                          sideTitles: SideTitles(showTitles: true),
+                        ),
+                      ),
+                    )),
+                  ),
+                );
+
+              case ChartType.pieChart:
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: SizedBox(
+                    height: 250,
+                    child: PieChart(PieChartData(
+                      sections: chart.pieSections!,
+                      sectionsSpace: 2,
+                      centerSpaceRadius: 40,
+                    )),
+                  ),
+                );
+
+              case ChartType.kpiCards:
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Wrap(
+                    spacing: 12,
+                    runSpacing: 12,
+                    children: chart.kpiValues!.entries.map((entry) {
+                      return Container(
+                        padding: const EdgeInsets.all(12),
+                        width: 150,
+                        decoration: BoxDecoration(
+                          color: Colors.blueGrey.shade800,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ResponsiveText.titleSmall(entry.key,
+                                style: const TextStyle(color: Colors.white70)),
+                            const SizedBox(height: 4),
+                            ResponsiveText.displaySmall(entry.value,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                );
+
+              default:
+                return const SizedBox.shrink();
+            }
+          }),
         ],
       ),
     );

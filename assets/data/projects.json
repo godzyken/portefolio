@@ -164,6 +164,75 @@
     ],
     "platform" : ["Smartphone", "tablet", "DeskTop", "LargeDesktop"],
     "tags": ["Flutter", "Firebase", "IoT", "VR", "Management", "UX/UI", "Digitalisation"],
+    "development": {
+      "1_hypotheses": {
+        "intervenants": "3 premières années, puis 5 en 3ᵉ année",
+        "temps_travail": "4h/jour × 4j/semaine × 47 semaines = 752h/an",
+        "tarif_technicien": "25€/h",
+        "administratif": "4h/semaine ponctuel à 45€/h",
+        "cout_horaire_moyen": "≈ 27€/h pondéré",
+        "gain_productivite": "12h/semaine/intervenant",
+        "cout_dev": "45 000€ (conception et développement par le porteur de projet)",
+        "maintenance_annuelle": "5 000€",
+        "ca_moyen": "150 000€ la 1ère année → 220 000€ la 3ᵉ année"
+      },
+      "2_gains_productivite": {
+        "annee_1_2": "12h × 3 intervenants × 47 semaines × 25€/h = 42 300€/an",
+        "annee_3": "12h × 5 intervenants × 47 semaines × 25€/h = 70 500€/an"
+      },
+      "3_autres_gains": {
+        "reduction_erreurs": "2 000€/an",
+        "fin_papier": "800€/an",
+        "gain_ca_crm": "+5% du CA ≈ 7 500€/an",
+        "gain_admin": "4 230€/an",
+        "total": "≈ 14 500€/an"
+      },
+      "4_couts": {
+        "developpement": "45 000€",
+        "maintenance": "5 000€/an",
+        "hebergement_mdm_firebase": "2 000€/an"
+      },
+      "5_synthese_annuelle": [
+        {
+          "annee": 1,
+          "intervenants": 3,
+          "gains": 56800,
+          "couts": 52000,
+          "resultat_net": 4800,
+          "roi": "9%"
+        },
+        {
+          "annee": 2,
+          "intervenants": 3,
+          "gains": 56800,
+          "couts": 7000,
+          "resultat_net": 49800,
+          "roi": "712%"
+        },
+        {
+          "annee": 3,
+          "intervenants": 5,
+          "gains": 85000,
+          "couts": 7000,
+          "resultat_net": 78000,
+          "roi": "1114%"
+        }
+      ],
+      "6_roi_global": {
+        "gains_totaux": 198600,
+        "couts_totaux": 66000,
+        "roi_3_ans": "≈ 200%",
+        "interpretation": "Retour sur investissement complet en moins de 18 mois, forte rentabilité à partir de la 2ᵉ année"
+      },
+      "7_interpretation_business": {
+        "temps_economise_total": "> 2000h",
+        "interventions_gerees": "≈ 40/an",
+        "satisfaction": "4.6/5",
+        "papier_supprime": "≈ 90%",
+        "reactivite": "+45%",
+        "tracabilite": "100% numérique"
+      }
+    },
     "results": [
       "🔄 Digitalisation complète de 80% des processus administratifs",
       "📱 Accès mobile temps réel pour 100% des intervenants",
@@ -175,14 +244,15 @@
       "💡 +40% de suggestions d'amélioration remontées par les équipes"
     ],
     "resultsMap": {
-      "roi": "250%",
-      "timeSaved": "12h/semaine",
-      "clients": "500+",
-      "projects": "150+",
-      "satisfaction": "4.7/5",
-      "efficiency": "+35%",
-      "deployment": "-95%",
+      "roi": "200%",
+      "timeSaved": "12h/semaine/intervenant",
+      "projects": "40+/an",
+      "clients": "20+",
+      "satisfaction": "4.6/5",
+      "efficiency": "+45%",
+      "deployment": "-90% papier",
       "compliance": "100%",
+      "gainCA": "+5%/an",
       "ventes": [
         {"gamme": "0-50k€", "quantite": 45},
         {"gamme": "50-100k€", "quantite": 32},

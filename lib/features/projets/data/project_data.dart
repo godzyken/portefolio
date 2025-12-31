@@ -18,6 +18,9 @@ class ProjectInfo {
   /// Résultats structurés pour KPI (ventes, clients, démonstrations…)
   final Map<String, dynamic>? resultsMap;
 
+  /// Nouveau champ pour l'analyse de développement (économie, ROI, coûts, etc.)
+  final Map<String, dynamic>? development;
+
   ProjectInfo({
     required this.id,
     required this.title,
@@ -31,6 +34,7 @@ class ProjectInfo {
     this.techDetails,
     this.results,
     this.resultsMap,
+    this.development,
   });
 
   // Getter qui retourne les images nettoyées
@@ -69,6 +73,7 @@ class ProjectInfo {
     Map<String, dynamic>? techDetails,
     List<String>? results,
     Map<String, dynamic>? resultsMap,
+    Map<String, dynamic>? development,
   }) {
     return ProjectInfo(
       id: id ?? this.id,
@@ -83,6 +88,7 @@ class ProjectInfo {
       techDetails: techDetails ?? this.techDetails,
       results: results ?? this.results,
       resultsMap: resultsMap ?? this.resultsMap,
+      development: development ?? this.development,
     );
   }
 
@@ -104,6 +110,9 @@ class ProjectInfo {
           json['results'] != null ? List<String>.from(json['results']) : null,
       resultsMap: json['resultsMap'] != null
           ? Map<String, dynamic>.from(json['resultsMap'])
+          : null,
+      development: json['development'] != null
+          ? Map<String, dynamic>.from(json['development'])
           : null,
     );
   }
