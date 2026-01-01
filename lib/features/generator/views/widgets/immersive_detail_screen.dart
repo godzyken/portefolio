@@ -32,6 +32,7 @@ class ImmersiveDetailScreen extends ConsumerStatefulWidget {
 
 class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
     with SingleTickerProviderStateMixin {
+  late final SectionManager sectionManager;
   late AnimationController _transitionController;
   List<ChartData> _charts = [];
 
