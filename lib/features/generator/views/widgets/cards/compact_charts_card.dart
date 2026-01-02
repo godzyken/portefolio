@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
@@ -205,7 +207,7 @@ class CompactLineChart extends StatelessWidget {
 }
 
 /// PieChart version compacte
-class CompactPieChart extends StatelessWidget {
+class CompactPieChart extends StatefulWidget {
   final List<PieChartSectionData> sections;
   final ResponsiveInfo info;
 
@@ -216,18 +218,135 @@ class CompactPieChart extends StatelessWidget {
   });
 
   @override
+  State<CompactPieChart> createState() => _CompactPieChartState();
+}
+
+class _CompactPieChartState extends State<CompactPieChart> {
+  int? touchedIndex;
+
+  String formatCompact(num value) {
+    String formatted;
+    if (value >= 1000000) {
+      formatted = (value / 1000000).toStringAsFixed(1);
+      return formatted.endsWith('.0')
+          ? '${formatted.substring(0, formatted.length - 2)}M'
+          : '${formatted}M';
+    } else if (value >= 1000) {
+      formatted = (value / 1000).toStringAsFixed(1);
+      return formatted.endsWith('.0')
+          ? '${formatted.substring(0, formatted.length - 2)}K'
+          : '${formatted}K';
+    } else {
+      return value.toStringAsFixed(0);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return PieChart(
-      PieChartData(
-        sections: sections,
-        sectionsSpace: 2,
-        centerSpaceRadius: info.isMobile ? 25 : 35,
-        pieTouchData: PieTouchData(
-          touchCallback: (FlTouchEvent event, pieTouchResponse) {
-            // Optionnel: ajouter une interaction
-          },
+    final info = widget.info;
+
+    return Container(
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.1),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
+          border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+          backgroundBlendMode: BlendMode.modulate,
         ),
-      ),
-    );
+        padding: const EdgeInsets.all(8),
+        child: ClipRRect(
+            borderRadius: BorderRadius.circular(24),
+            child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 400),
+                      height: info.isMobile ? 180 : 220,
+                      child: PieChart(
+                        PieChartData(
+                          sectionsSpace: 2,
+                          centerSpaceRadius: info.isMobile ? 40 : 60,
+                          pieTouchData: PieTouchData(
+                            touchCallback: (event, response) {
+                              if (!event.isInterestedForInteractions ||
+                                  response == null) {
+                                setState(() => touchedIndex = null);
+                                return;
+                              }
+                              setState(() => touchedIndex =
+                                  response.touchedSection?.touchedSectionIndex);
+                            },
+                          ),
+                          sections: List.generate(widget.sections.length, (i) {
+                            final section = widget.sections[i];
+                            final isTouched = i == touchedIndex;
+                            final double radius =
+                                isTouched ? 70 : (info.isMobile ? 50 : 60);
+                            return PieChartSectionData(
+                              title: section.title,
+                              value: section.value,
+                              color: section.color,
+                              gradient: section.gradient,
+                              titleStyle: TextStyle(
+                                fontSize: isTouched ? 18 : 14,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                shadows: [
+                                  Shadow(
+                                      color:
+                                          Colors.black.withValues(alpha: 0.3),
+                                      blurRadius: 12),
+                                ],
+                              ),
+                              radius: radius,
+                            );
+                          }),
+                        ),
+                        duration: const Duration(milliseconds: 800),
+                        curve: Curves.easeInOutCubic,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      alignment: WrapAlignment.center,
+                      spacing: 12,
+                      runSpacing: 8,
+                      children: widget.sections.map((s) {
+                        return Row(mainAxisSize: MainAxisSize.min, children: [
+                          Container(
+                            width: 12,
+                            height: 12,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              gradient: s.gradient ??
+                                  LinearGradient(
+                                    colors: [
+                                      s.color,
+                                      s.color.withValues(alpha: 0.7)
+                                    ],
+                                  ),
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          ResponsiveText.bodySmall(
+                            "${s.title}: ${formatCompact(s.value)}",
+                            style: TextStyle(
+                              color: Colors.white.withValues(alpha: 0.9),
+                              fontSize: 13,
+                            ),
+                          ),
+                        ]);
+                      }).toList(),
+                    )
+                  ],
+                ))));
   }
 }
