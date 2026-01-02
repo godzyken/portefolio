@@ -1,12 +1,12 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:portefolio/features/generator/data/chart_data.dart';
-import 'package:portefolio/features/generator/views/widgets/benchmark_widgets.dart';
 import 'package:portefolio/features/generator/views/widgets/three_d_tech_icon.dart';
 
-import '../../../../core/affichage/colors_spec.dart';
-import '../../../../core/affichage/screen_size_detector.dart';
-import '../../../../core/ui/widgets/responsive_text.dart';
+import '../../../../../core/affichage/colors_spec.dart';
+import '../../../../../core/affichage/screen_size_detector.dart';
+import '../../../../../core/ui/widgets/responsive_text.dart';
+import 'benchmark_widgets.dart';
 
 class ChartRenderer {
   /// Rend tous les charts de manière uniforme

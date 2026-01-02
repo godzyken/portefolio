@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/provider/json_data_provider.dart';
 
-import '../../../../core/affichage/screen_size_detector.dart';
-import '../../../../core/ui/widgets/responsive_text.dart';
-import '../../../home/data/comparatifs_data.dart';
+import '../../../../../core/affichage/screen_size_detector.dart';
+import '../../../../../core/ui/widgets/responsive_text.dart';
+import '../../../../home/data/comparatifs_data.dart';
 
 class ComparisonStatsView extends ConsumerStatefulWidget {
   const ComparisonStatsView({super.key});

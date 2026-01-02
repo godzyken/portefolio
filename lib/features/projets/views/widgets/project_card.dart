@@ -6,7 +6,6 @@ import 'package:go_router/go_router.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/ui/widgets/ui_widgets_extentions.dart';
 import 'package:portefolio/features/generator/views/generator_widgets_extentions.dart';
-import 'package:portefolio/features/generator/views/widgets/wakatime_badge_extensions.dart';
 import 'package:portefolio/features/projets/views/widgets/unified_project_card.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
