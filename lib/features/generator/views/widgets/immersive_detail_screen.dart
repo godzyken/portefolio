@@ -49,9 +49,7 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
   @override
   Widget build(BuildContext context) {
     final info = ref.watch(responsiveInfoProvider);
-    // final sections = _buildSections();
     final sections = _sectionManager.buildSections(context);
-
     final activeSection = ref.watch(activeSectionProvider);
     final showSidebar = info.size.width > 1200;
 
@@ -112,10 +110,6 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
       ),
     );
   }
-
-  // ==========================================================================
-  // CONTENU PRINCIPAL
-  // ==========================================================================
 
   Widget _buildMainContent(
     List<ProjectSection> sections,
@@ -215,10 +209,6 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
       ),
     );
   }
-
-  // ==========================================================================
-  // HELPERS
-  // ==========================================================================
 
   Widget _buildBackground(ResponsiveInfo info) {
     final images = _sectionManager.getImages();

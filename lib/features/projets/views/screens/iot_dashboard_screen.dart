@@ -2,14 +2,13 @@ import 'dart:math';
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/ui/widgets/responsive_text.dart';
 
 import '../../../../core/affichage/screen_size_detector.dart';
 import '../../../../core/provider/iot_view_provider.dart';
 import '../../../../core/provider/sensor_provider.dart';
-import '../../../generator/views/widgets/three_d_tech_icon.dart';
+import 'iot_dashboard_widgets.dart';
 
 class EnhancedIotDashboardScreen extends ConsumerStatefulWidget {
   const EnhancedIotDashboardScreen({super.key});
@@ -173,58 +172,7 @@ class _EnhancedIotDashboardScreenState
   Widget _buildViewToggle() {
     final isGridView = ref.watch(iotViewModeProvider);
 
-    return ResponsiveBox(
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _buildToggleButton(
-            icon: LucideIcons.list,
-            isActive: !isGridView,
-            onTap: () => ref.read(iotViewModeProvider.notifier).toggle(),
-          ),
-          Container(
-            width: 1,
-            height: 24,
-            color: Colors.white.withValues(alpha: 0.2),
-          ),
-          _buildToggleButton(
-            icon: LucideIcons.layout_grid,
-            isActive: isGridView,
-            onTap: () => ref.read(iotViewModeProvider.notifier).toggle(),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildToggleButton({
-    required IconData icon,
-    required bool isActive,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: isActive
-              ? Colors.white.withValues(alpha: 0.2)
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Icon(
-          icon,
-          color: isActive ? Colors.white : Colors.white60,
-          size: 20,
-        ),
-      ),
-    );
+    return IoTViewToggle(isGridView: isGridView);
   }
 
   Widget _buildSensorFilters(ResponsiveInfo info) {
@@ -236,7 +184,7 @@ class _EnhancedIotDashboardScreenState
       runSpacing: 8,
       children: sensors.keys.map((sensorName) {
         final isActive = activeFilters.contains(sensorName);
-        final color = _getSensorColor(sensorName);
+        final color = IoTSensorHelpers.getColor(sensorName);
 
         return FilterChip(
           label: ResponsiveText(
@@ -295,13 +243,14 @@ class _EnhancedIotDashboardScreenState
         ),
         itemBuilder: (context, index) {
           final entry = sensors.entries.elementAt(index);
-          return _buildSensorCard(
-            icon: _getSensorIcon(entry.key),
+          return IoTSensorCard(
+            icon: IoTSensorHelpers.getIcon(entry.key),
             title: entry.key,
-            value: _getSensorValue(entry.key, entry.value),
-            color: _getSensorColor(entry.key),
-            trend: _calculateTrend(entry.value),
+            value: IoTSensorHelpers.formatValue(entry.key, entry.value),
             rawValue: entry.value,
+            color: IoTSensorHelpers.getColor(entry.key),
+            trend: IoTSensorHelpers.calculateTrend(entry.value),
+            pulseController: _animationController,
           );
         },
       );
@@ -315,225 +264,15 @@ class _EnhancedIotDashboardScreenState
       separatorBuilder: (context, index) => const SizedBox(height: 12),
       itemBuilder: (context, index) {
         final entry = sensors.entries.elementAt(index);
-        return _buildSensorListCard(
-          icon: _getSensorIcon(entry.key),
+        return IoTSensorListCard(
+          icon: IoTSensorHelpers.getIcon(entry.key),
           title: entry.key,
-          value: _getSensorValue(entry.key, entry.value),
-          color: _getSensorColor(entry.key),
-          trend: _calculateTrend(entry.value),
+          value: IoTSensorHelpers.formatValue(entry.key, entry.value),
+          color: IoTSensorHelpers.getColor(entry.key),
+          trend: IoTSensorHelpers.calculateTrend(entry.value),
           progress: entry.value / 100,
         );
       },
-    );
-  }
-
-  Widget _buildSensorCard({
-    required IconData icon,
-    required String title,
-    required String value,
-    required double rawValue,
-    required Color color,
-    required double trend,
-  }) {
-    // Logique d'intensité spécifique pour la température
-    bool isTemperature = title.contains('Température');
-    double intensity = (rawValue - 15) / 50; // Normalisation 15°C -> 65°C
-    intensity = intensity.clamp(0.0, 1.0);
-
-    return TweenAnimationBuilder<double>(
-      tween: Tween(begin: 0.0, end: 1.0),
-      duration: const Duration(milliseconds: 600),
-      curve: Curves.easeOutCubic,
-      builder: (context, animValue, child) {
-        return Transform.scale(
-          scale: animValue,
-          child: Card(
-            color: const Color(0xFF1E293B),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-              side: BorderSide(
-                color: color.withValues(alpha: 0.3),
-                width: 1.5,
-              ),
-            ),
-            elevation: 4,
-            child: ResponsiveBox(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Icône avec animation de pulse
-                  AnimatedBuilder(
-                    animation: _animationController,
-                    builder: (context, child) {
-                      return ResponsiveBox(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: color.withValues(alpha: 0.2),
-                            boxShadow: [
-                              BoxShadow(
-                                color: color.withValues(
-                                  alpha: 0.3 * _animationController.value,
-                                ),
-                                blurRadius: 15,
-                                spreadRadius: 3,
-                              ),
-                            ],
-                          ),
-                          child: _buildHeatIconEffect(
-                              icon, rawValue, color, isTemperature));
-                    },
-                  ),
-                  const SizedBox(height: 12),
-                  ResponsiveText.displaySmall(
-                    title,
-                    style: const TextStyle(
-                      color: Colors.white70,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 8),
-                  AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 500),
-                    child: ResponsiveText.bodySmall(
-                      value,
-                      key: ValueKey(value),
-                      style: TextStyle(
-                        color: color,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  _buildTrendIndicator(trend, color),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildSensorListCard({
-    required IconData icon,
-    required String title,
-    required String value,
-    required Color color,
-    required double trend,
-    required double progress,
-  }) {
-    return Card(
-      color: const Color(0xFF1E293B),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(
-          color: color.withValues(alpha: 0.3),
-          width: 1.5,
-        ),
-      ),
-      child: ResponsiveBox(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                ResponsiveBox(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(icon, color: color, size: 28),
-                ),
-                const SizedBox(width: 16),
-                ResponsiveBox(
-                  paddingSize: ResponsiveSpacing.s,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ResponsiveText.displaySmall(
-                        title,
-                        style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 14,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 500),
-                        child: ResponsiveText.displaySmall(
-                          value,
-                          key: ValueKey(value),
-                          style: TextStyle(
-                            color: color,
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                ResponsiveBox(
-                  paddingSize: ResponsiveSpacing.s,
-                  child: _buildTrendIndicator(trend, color),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            // Barre de progression
-            TweenAnimationBuilder<double>(
-              tween: Tween(begin: 0.0, end: progress),
-              duration: const Duration(milliseconds: 800),
-              curve: Curves.easeOutCubic,
-              builder: (context, value, child) {
-                return ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
-                  child: LinearProgressIndicator(
-                    value: value,
-                    backgroundColor: Colors.white.withValues(alpha: 0.1),
-                    valueColor: AlwaysStoppedAnimation<Color>(color),
-                    minHeight: 6,
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTrendIndicator(double trend, Color color) {
-    final isPositive = trend > 0;
-    final trendColor = isPositive ? Colors.green : Colors.red;
-
-    return ResponsiveBox(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: trendColor.withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            isPositive ? LucideIcons.trending_up : LucideIcons.trending_down,
-            color: trendColor,
-            size: 14,
-          ),
-          const SizedBox(width: 4),
-          ResponsiveText.displaySmall(
-            '${trend.abs().toStringAsFixed(1)}%',
-            style: TextStyle(
-              color: trendColor,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
-      ),
     );
   }
 
@@ -546,7 +285,7 @@ class _EnhancedIotDashboardScreenState
           titlesData: const FlTitlesData(show: false),
           borderData: FlBorderData(show: false),
           lineBarsData: sensors.entries.map((entry) {
-            final color = _getSensorColor(entry.key);
+            final color = IoTSensorHelpers.getColor(entry.key);
             return LineChartBarData(
               isCurved: true,
               color: color,
@@ -569,101 +308,5 @@ class _EnhancedIotDashboardScreenState
         ),
       ),
     );
-  }
-
-  Widget _buildHeatIconEffect(
-      IconData icon, double temperature, Color baseColor, bool isTemp) {
-    // Calcul de l'intensité (0.0 à 1.0)
-    double intensity = isTemp ? (temperature / 100).clamp(0.0, 1.0) : 0.2;
-
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        // La "Bulle 3D" de chaleur
-        AnimatedContainer(
-          duration: const Duration(seconds: 1),
-          width: 55,
-          height: 55,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: RadialGradient(
-              colors: [
-                (isTemp && temperature > 40 ? Colors.red : baseColor)
-                    .withValues(alpha: intensity * 0.4),
-                (isTemp && temperature < 5 ? Colors.blue : baseColor)
-                    .withValues(alpha: intensity * 0.8),
-                Colors.transparent,
-              ],
-              stops: const [0.3, 0.7, 1.0],
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: (isTemp && temperature > 40 ? Colors.orange : baseColor)
-                    .withValues(alpha: intensity * 0.5),
-                blurRadius: 10 * intensity,
-                spreadRadius: 2,
-              )
-            ],
-          ),
-        ),
-        // L'icône technique existante
-        ThreeDTechIcon(
-          icon: icon,
-          color: baseColor,
-          size: 28,
-        ),
-      ],
-    );
-  }
-
-  // Helpers
-  IconData _getSensorIcon(String sensorName) {
-    switch (sensorName) {
-      case 'Température':
-        return LucideIcons.thermometer;
-      case 'Consommation':
-        return LucideIcons.bolt;
-      case 'Vibrations':
-        return LucideIcons.activity;
-      case 'Humidité':
-        return LucideIcons.droplet;
-      default:
-        return LucideIcons.gauge;
-    }
-  }
-
-  Color _getSensorColor(String sensorName) {
-    switch (sensorName) {
-      case 'Température':
-        return Colors.orangeAccent;
-      case 'Consommation':
-        return Colors.yellowAccent;
-      case 'Vibrations':
-        return Colors.lightGreenAccent;
-      case 'Humidité':
-        return Colors.cyanAccent;
-      default:
-        return Colors.grey;
-    }
-  }
-
-  String _getSensorValue(String sensorName, double value) {
-    switch (sensorName) {
-      case 'Température':
-        return '${value.toStringAsFixed(1)}°C';
-      case 'Consommation':
-        return '${value.toStringAsFixed(1)} kWh';
-      case 'Vibrations':
-        return value < 1.5 ? 'Normal' : 'Élevé';
-      case 'Humidité':
-        return '${value.toStringAsFixed(1)}%';
-      default:
-        return value.toStringAsFixed(1);
-    }
-  }
-
-  double _calculateTrend(double value) {
-    // Simulation de tendance basée sur la valeur
-    return ((value * 100) % 10) - 5;
   }
 }

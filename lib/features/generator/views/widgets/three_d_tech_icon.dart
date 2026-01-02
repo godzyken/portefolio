@@ -71,7 +71,7 @@ class ThreeDTechIcon extends ConsumerWidget {
                     path: path,
                     width: size * 0.45,
                     height: size * 0.45,
-                    fit: BoxFit.contain,
+                    fit: BoxFit.fitWidth,
                     enableShimmer: false,
                     useCache: true,
                     fallbackIcon: skillIcon,
