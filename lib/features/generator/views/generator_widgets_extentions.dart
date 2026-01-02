@@ -10,7 +10,7 @@ export 'widgets/charts/benchmark_widgets.dart';
 export 'widgets/charts/chart_renderer.dart';
 export 'widgets/charts/compact_charts_grid.dart';
 export 'widgets/charts/comparatif_widget.dart';
-export 'widgets/charts/fullscreen_chart_dialog.dart ';
+export 'widgets/charts/fullscreen_chart_dialog.dart';
 export 'widgets/code_high_light_list.dart';
 export 'widgets/fade_slide_animation.dart';
 export 'widgets/footer_bottom_bar.dart';
