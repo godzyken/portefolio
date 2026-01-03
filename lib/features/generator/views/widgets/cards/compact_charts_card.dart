@@ -21,8 +21,12 @@ class CompactKPICards extends StatelessWidget {
     return GridView.builder(
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: info.isMobile ? 2 : 3,
-        childAspectRatio: 2,
+        crossAxisCount: info.isMobile
+            ? 2
+            : info.isTablet
+                ? 3
+                : 4,
+        childAspectRatio: info.isMobile ? 2.1 : 2.5,
         crossAxisSpacing: 8,
         mainAxisSpacing: 8,
       ),
@@ -126,6 +130,21 @@ class CompactBarChart extends StatelessWidget {
           },
         ),
         borderData: FlBorderData(show: false),
+        barTouchData: BarTouchData(
+          touchTooltipData: BarTouchTooltipData(getTooltipColor: (group) {
+            final color = group.barRods.first.color;
+            final alpha = color?.withValues(alpha: 09);
+            final red = color?.withValues(red: 255);
+            final green = color?.withValues(green: 255);
+            final blue = color?.withValues(blue: 255);
+            return Color.from(
+                alpha: alpha!.a, red: red!.r, green: green!.g, blue: blue!.b);
+          }, getTooltipItem: (group, groupIndex, rod, rodIndex) {
+            return BarTooltipItem(
+                formatCompact(rod.toY), const TextStyle(color: Colors.white));
+          }),
+        ),
+        backgroundColor: Colors.white.withValues(alpha: 0.05),
       ),
     );
   }
@@ -224,23 +243,6 @@ class CompactPieChart extends StatefulWidget {
 class _CompactPieChartState extends State<CompactPieChart> {
   int? touchedIndex;
 
-  String formatCompact(num value) {
-    String formatted;
-    if (value >= 1000000) {
-      formatted = (value / 1000000).toStringAsFixed(1);
-      return formatted.endsWith('.0')
-          ? '${formatted.substring(0, formatted.length - 2)}M'
-          : '${formatted}M';
-    } else if (value >= 1000) {
-      formatted = (value / 1000).toStringAsFixed(1);
-      return formatted.endsWith('.0')
-          ? '${formatted.substring(0, formatted.length - 2)}K'
-          : '${formatted}K';
-    } else {
-      return value.toStringAsFixed(0);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final info = widget.info;
@@ -269,11 +271,11 @@ class _CompactPieChartState extends State<CompactPieChart> {
                   children: [
                     AnimatedContainer(
                       duration: const Duration(milliseconds: 400),
-                      height: info.isMobile ? 180 : 220,
+                      height: info.isMobile ? 200 : 220,
                       child: PieChart(
                         PieChartData(
                           sectionsSpace: 2,
-                          centerSpaceRadius: info.isMobile ? 40 : 60,
+                          centerSpaceRadius: info.isMobile ? 20 : 40,
                           pieTouchData: PieTouchData(
                             touchCallback: (event, response) {
                               if (!event.isInterestedForInteractions ||
@@ -314,7 +316,7 @@ class _CompactPieChartState extends State<CompactPieChart> {
                         curve: Curves.easeInOutCubic,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 12),
                     Wrap(
                       alignment: WrapAlignment.center,
                       spacing: 12,
@@ -348,5 +350,22 @@ class _CompactPieChartState extends State<CompactPieChart> {
                     )
                   ],
                 ))));
+  }
+}
+
+String formatCompact(num value) {
+  String formatted;
+  if (value >= 1000000) {
+    formatted = (value / 1000000).toStringAsFixed(1);
+    return formatted.endsWith('.0')
+        ? '${formatted.substring(0, formatted.length - 2)}M'
+        : '${formatted}M';
+  } else if (value >= 1000) {
+    formatted = (value / 1000).toStringAsFixed(1);
+    return formatted.endsWith('.0')
+        ? '${formatted.substring(0, formatted.length - 2)}K'
+        : '${formatted}K';
+  } else {
+    return value.toStringAsFixed(0);
   }
 }

@@ -126,22 +126,25 @@ class _ImmersiveExperienceDetailState
   Widget build(BuildContext context) {
     final info = ref.watch(responsiveInfoProvider);
     final themeColor = _getThemeColor();
-    final theme = Theme.of(context);
+    final baseTheme = ThemeData.dark(useMaterial3: true);
+    final immersiveTheme = baseTheme.copyWith(
+      scaffoldBackgroundColor: Colors.black,
+      cardColor: Colors.white.withValues(alpha: 0.08),
+      textTheme: baseTheme.textTheme.apply(fontFamily: 'Montserrat'),
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: themeColor,
+        brightness: Brightness.dark,
+      ),
+    );
 
     return Theme(
-      data: theme.copyWith(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: themeColor,
-          brightness: Brightness.dark,
-        ),
-        scaffoldBackgroundColor: Colors.black,
-      ),
+      data: immersiveTheme,
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: Stack(
           children: [
             _buildBackground(themeColor),
-
+            _buildGlassOverlay(themeColor),
             // Contenu principal
             FadeTransition(
               opacity: _fadeAnimation,
@@ -162,15 +165,15 @@ class _ImmersiveExperienceDetailState
                             padding: EdgeInsets.all(info.isMobile ? 24 : 48),
                             sliver: SliverList(
                               delegate: SliverChildListDelegate([
-                                _buildInfoCard(theme, info),
+                                _buildInfoCard(immersiveTheme, info),
                                 const SizedBox(height: 24),
-                                _buildObjectifsSection(theme),
+                                _buildObjectifsSection(immersiveTheme),
                                 const SizedBox(height: 24),
-                                _buildMissionsSection(theme),
+                                _buildMissionsSection(immersiveTheme),
                                 const SizedBox(height: 24),
-                                _buildStackSection(theme, info),
+                                _buildStackSection(immersiveTheme, info),
                                 const SizedBox(height: 24),
-                                _buildResultatsSection(theme),
+                                _buildResultatsSection(immersiveTheme),
                                 const SizedBox(height: 100),
                               ]),
                             ),
@@ -285,6 +288,17 @@ class _ImmersiveExperienceDetailState
         ),
       );
     }
+  }
+
+  Widget _buildGlassOverlay(Color themeColor) {
+    return Positioned.fill(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+        child: Container(
+          color: themeColor.withValues(alpha: 0.05),
+        ),
+      ),
+    );
   }
 
   Widget _buildSliverHeader(ResponsiveInfo info, Color themeColor) {

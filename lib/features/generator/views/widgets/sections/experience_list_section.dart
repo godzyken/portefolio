@@ -58,7 +58,7 @@ class ExperienceListSection extends StatelessWidget {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
+                    ResponsiveBox(
                       margin: const EdgeInsets.only(top: 6),
                       width: 8,
                       height: 8,

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/ui/widgets/ui_widgets_extentions.dart';
@@ -25,14 +27,27 @@ class ChartCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final dominantColor =
+        chart.lineColor ?? chart.pieSections?.first.color ?? Colors.white;
+
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.05),
+        gradient: LinearGradient(colors: [
+          dominantColor.withValues(alpha: 0.05),
+          Colors.white.withValues(alpha: 0.03),
+        ], begin: Alignment.topLeft, end: Alignment.bottomRight),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Colors.white.withValues(alpha: 0.1),
+          color: dominantColor.withValues(alpha: 0.15),
           width: 1,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: dominantColor.withValues(alpha: 0.25),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       padding: const EdgeInsets.all(12),
       child: Column(
@@ -79,11 +94,30 @@ class ChartCard extends StatelessWidget {
   }
 
   Widget _buildChartContent() {
+    final randomDelay = Duration(milliseconds: Random().nextInt(300));
+
     return LayoutBuilder(
       builder: (context, constraints) {
         return SizedBox(
           height: constraints.maxHeight,
-          child: _buildChart(),
+          child: AnimatedOpacity(
+            duration: const Duration(milliseconds: 600),
+            opacity: 1,
+            child: AnimatedScale(
+              duration: const Duration(milliseconds: 700),
+              scale: 1,
+              curve: Curves.easeOutBack,
+              child: FutureBuilder(
+                future: Future.delayed(randomDelay),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const SizedBox.shrink();
+                  }
+                  return _buildChart();
+                },
+              ),
+            ),
+          ),
         );
       },
     );
