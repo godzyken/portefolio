@@ -1,3 +1,6 @@
+export 'widgets/animations/chart_animator.dart';
+export 'widgets/animations/chart_content_animation.dart';
+export 'widgets/animations/painter_chart_animation.dart';
 export 'widgets/badges/bagde_widget.dart';
 export 'widgets/badges/experience_badge.dart';
 export 'widgets/badges/wakatime_badge.dart';

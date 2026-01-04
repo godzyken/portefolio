@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/ui/widgets/ui_widgets_extentions.dart';
@@ -56,7 +57,13 @@ class ChartCard extends StatelessWidget {
           _buildHeader(context),
           const SizedBox(height: 8),
           Expanded(
-            child: _buildChartContent(),
+            child: Padding(
+              padding: EdgeInsets.only(
+                top: info.isMobile ? 4 : 8,
+                bottom: info.isMobile ? 4 : 12,
+              ),
+              child: _buildChartContent(),
+            ),
           ),
         ],
       ),
@@ -64,6 +71,9 @@ class ChartCard extends StatelessWidget {
   }
 
   Widget _buildHeader(BuildContext context) {
+    final dominantColor =
+        chart.lineColor ?? chart.pieSections?.first.color ?? Colors.white;
+
     return Row(
       children: [
         Expanded(
@@ -87,6 +97,7 @@ class ChartCard extends StatelessWidget {
             context: context,
             chart: chart,
             info: info,
+            themeColor: dominantColor,
           ),
         ),
       ],
@@ -176,6 +187,19 @@ class ChartCard extends StatelessWidget {
           sections: chart.pieSections!,
           info: info,
         );
+
+      case ChartType.scatterChart:
+        return CompactScatterTrendChart(
+            spots: chart.scatterSpots!.map((s) => FlSpot(s.x, s.y)).toList(),
+            labels: [
+              'ROI 3 ans',
+              'Gains',
+              'Coûts',
+              'Productivité',
+              'Temps économisé'
+            ],
+            color: chart.scatterColor ?? Colors.tealAccent,
+            info: info);
     }
   }
 }

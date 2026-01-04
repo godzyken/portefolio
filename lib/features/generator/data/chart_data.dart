@@ -12,6 +12,7 @@ enum ChartType {
   benchmarkComparison,
   benchmarkRadar,
   benchmarkTable,
+  scatterChart,
 }
 
 // Données de benchmark
@@ -106,6 +107,9 @@ class ChartData {
   final BenchmarkInfo? benchmarkInfo;
   final List<BenchmarkInfo>? benchmarkComparison;
 
+  final List<ScatterSpot>? scatterSpots;
+  final Color? scatterColor;
+
   ChartData.bar({
     required this.title,
     required this.barGroups,
@@ -117,7 +121,9 @@ class ChartData {
         xLabelStep = null,
         kpiValues = null,
         benchmarkInfo = null,
-        benchmarkComparison = null;
+        benchmarkComparison = null,
+        scatterSpots = null,
+        scatterColor = null;
 
   ChartData.pie({
     required this.title,
@@ -130,7 +136,9 @@ class ChartData {
         xLabelStep = null,
         kpiValues = null,
         benchmarkInfo = null,
-        benchmarkComparison = null;
+        benchmarkComparison = null,
+        scatterSpots = null,
+        scatterColor = null;
 
   ChartData.line({
     required this.title,
@@ -143,7 +151,9 @@ class ChartData {
         pieSections = null,
         kpiValues = null,
         benchmarkInfo = null,
-        benchmarkComparison = null;
+        benchmarkComparison = null,
+        scatterSpots = null,
+        scatterColor = null;
 
   ChartData.kpiCards({
     required this.title,
@@ -156,7 +166,9 @@ class ChartData {
         lineColor = null,
         xLabelStep = null,
         benchmarkInfo = null,
-        benchmarkComparison = null;
+        benchmarkComparison = null,
+        scatterSpots = null,
+        scatterColor = null;
 
   ChartData.benchmarkGlobal({
     required this.title,
@@ -169,7 +181,9 @@ class ChartData {
         lineColor = null,
         xLabelStep = null,
         kpiValues = null,
-        benchmarkComparison = null;
+        benchmarkComparison = null,
+        scatterSpots = null,
+        scatterColor = null;
 
   ChartData.benchmarkComparison({
     required this.title,
@@ -182,7 +196,9 @@ class ChartData {
         lineColor = null,
         xLabelStep = null,
         kpiValues = null,
-        benchmarkInfo = null;
+        benchmarkInfo = null,
+        scatterSpots = null,
+        scatterColor = null;
 
   ChartData.benchmarkRadar({
     required this.title,
@@ -195,7 +211,9 @@ class ChartData {
         lineColor = null,
         xLabelStep = null,
         kpiValues = null,
-        benchmarkComparison = null;
+        benchmarkComparison = null,
+        scatterSpots = null,
+        scatterColor = null;
 
   ChartData.benchmarkTable({
     required this.title,
@@ -208,10 +226,33 @@ class ChartData {
         lineColor = null,
         xLabelStep = null,
         kpiValues = null,
-        benchmarkInfo = null;
+        benchmarkInfo = null,
+        scatterSpots = null,
+        scatterColor = null;
+
+  ChartData.scatter({
+    required this.title,
+    required this.scatterSpots,
+    this.scatterColor = Colors.blueAccent,
+  })  : type = ChartType.scatterChart,
+        barGroups = null,
+        pieSections = null,
+        lineSpots = null,
+        xLabels = null,
+        lineColor = null,
+        xLabelStep = null,
+        kpiValues = null,
+        benchmarkInfo = null,
+        benchmarkComparison = null;
 }
 
 class ChartDataFactory {
+  static double _parseNumeric(dynamic value) {
+    if (value == null) return 0;
+    final str = value.toString().replaceAll(RegExp('[^0-9.,-]'), '');
+    return double.tryParse(str.replaceAll(',', '.')) ?? 0;
+  }
+
   /// Crée les graphiques liés à l'analyse économique (champ "development")
   static List<ChartData> createChartsFromDevelopment(
       Map<String, dynamic> development) {
@@ -287,18 +328,47 @@ class ChartDataFactory {
       final roi = development['6_roi_global'] as Map<String, dynamic>;
       final business = development['7_interpretation_business'] ?? {};
 
-      final kpis = <String, String>{
-        '📊 ROI sur 3 ans': roi['roi_3_ans'].toString(),
-        '💶 Gains totaux': '${roi['gains_totaux']}€',
-        '💸 Coûts totaux': '${roi['couts_totaux']}€',
-        '⚡ Productivité': business['reactivite']?.toString() ?? '+0%',
-        '🕓 Temps économisé':
-            business['temps_economise_total']?.toString() ?? '',
+      final kpis = <String, double>{
+        'ROI 3 ans': _parseNumeric(roi['roi_3_ans']),
+        'Gains totaux': _parseNumeric(roi['gains_totaux']),
+        'Coûts totaux': _parseNumeric(roi['couts_totaux']),
+        'Productivité': _parseNumeric(business['reactivite']),
+        'Temps économisé': _parseNumeric(business['temps_economise_total']),
       };
 
-      charts.add(ChartData.kpiCards(
+      final colors = [
+        Colors.greenAccent,
+        Colors.orangeAccent,
+        Colors.redAccent,
+        Colors.blueAccent,
+        Colors.purpleAccent,
+      ];
+
+      final scatterSpots = <ScatterSpot>[];
+      var i = 0;
+      kpis.forEach((label, value) {
+        final x = i.toDouble() * 2;
+        final y = value;
+        scatterSpots.add(
+          ScatterSpot(
+            x,
+            y,
+            renderPriority: i,
+            dotPainter: FlDotCirclePainter(
+              color: colors[i % colors.length],
+              radius: (value / 1000).clamp(5, 16),
+              strokeWidth: 1.5,
+              strokeColor: Colors.white.withValues(alpha: 0.6),
+            ),
+          ),
+        );
+        i++;
+      });
+
+      charts.add(ChartData.scatter(
         title: '💼 Indicateurs économiques clés',
-        kpiValues: kpis,
+        scatterSpots: scatterSpots,
+        scatterColor: Colors.greenAccent,
       ));
     }
 
@@ -412,10 +482,33 @@ class ChartDataFactory {
     if (benchmarkData is Map<String, dynamic>) {
       final info = BenchmarkInfo.fromJson(benchmarkData);
 
+      final barGroups = [
+        BarChartGroupData(x: 0, barRods: [
+          BarChartRodData(
+              toY: info.performances.toDouble(), color: Colors.greenAccent)
+        ]),
+        BarChartGroupData(x: 1, barRods: [
+          BarChartRodData(toY: info.seo.toDouble(), color: Colors.blueAccent)
+        ]),
+        BarChartGroupData(x: 2, barRods: [
+          BarChartRodData(
+              toY: info.mobile.toDouble(), color: Colors.orangeAccent)
+        ]),
+        BarChartGroupData(x: 3, barRods: [
+          BarChartRodData(
+              toY: info.securite.toDouble(), color: Colors.redAccent)
+        ]),
+      ];
+
       // Score global avec pie chart
       charts.add(ChartData.benchmarkGlobal(
         title: '📊 Score Global - ${info.projectTitle}',
         benchmarkInfo: info,
+      ));
+
+      charts.add(ChartData.bar(
+        title: '📊 Performances globales -  ${info.projectTitle}',
+        barGroups: barGroups,
       ));
 
       // Radar chart
@@ -470,27 +563,87 @@ class ChartDataFactory {
       }
     });
 
-    return ChartData.kpiCards(
+    final colors = [
+      Colors.lightBlueAccent,
+      Colors.orangeAccent,
+      Colors.purpleAccent,
+      Colors.greenAccent,
+      Colors.redAccent,
+    ];
+
+    final pieSections = kpis.entries.toList().asMap().entries.map((entry) {
+      final i = entry.key;
+      final key = entry.value.key;
+      final val = entry.value.value;
+      final numeric = _parseNumeric(val);
+      return PieChartSectionData(
+        value: numeric == 0 ? 1 : numeric,
+        title: key,
+        color: colors[i % colors.length],
+        radius: 55,
+        showTitle: false,
+      );
+    }).toList();
+
+    return ChartData.pie(
       title: '📊 Indicateurs clés de performance',
-      kpiValues: kpis,
+      pieSections: pieSections,
     );
   }
 
   static ChartData? _createBarChart(List<dynamic> ventes) {
     if (ventes.isEmpty) return null;
 
-    final barGroups = ventes.asMap().entries.map((entry) {
-      final x = entry.key;
-      final y = (entry.value['quantite'] as num).toDouble();
-      return BarChartGroupData(
-        x: x,
-        barRods: [BarChartRodData(toY: y, color: Colors.blueAccent)],
-      );
-    }).toList();
+    // Génère les BarGroups et les labels associés
+    final barGroups = <BarChartGroupData>[];
+    final labels = <String>[];
 
-    return ChartData.bar(
-      title: 'Ventes par gamme de prix',
-      barGroups: barGroups,
+    for (var i = 0; i < ventes.length; i++) {
+      final item = ventes[i];
+      final quantite = (item['quantite'] as num?)?.toDouble() ?? 0.0;
+      final label = item['gamme']?.toString() ??
+          item['label']?.toString() ??
+          'Catégorie ${i + 1}';
+
+      labels.add(label);
+
+      barGroups.add(
+        BarChartGroupData(
+          x: i,
+          barRods: [
+            BarChartRodData(
+              toY: quantite,
+              color: Colors.blueAccent,
+              width: 16,
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // ➜ On stocke les labels dans ChartData via xLabels (widgets)
+    final xLabels = labels
+        .map(
+          (label) => Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: Text(
+              label,
+              style: const TextStyle(
+                color: Colors.white70,
+                fontSize: 11,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ),
+        )
+        .toList();
+
+    return ChartData.line(
+      // ⚠️ on va créer une version bar étendue
+      title: '📦 Ventes par gamme de prix',
+      lineSpots: [], // placeholder, pas utilisé ici
+      xLabels: xLabels,
     );
   }
 
@@ -515,7 +668,7 @@ class ChartDataFactory {
         radius: 60,
         showTitle: false,
         borderSide: BorderSide(color: color, width: 2),
-        // badgePositionPercentageOffset: 1.4,
+        badgePositionPercentageOffset: 1.4,
       );
     }).toList();
 

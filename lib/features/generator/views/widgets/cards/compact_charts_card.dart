@@ -1,9 +1,12 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/ui/widgets/ui_widgets_extentions.dart';
+
+import '../../generator_widgets_extentions.dart';
 
 /// KPI Cards version compacte
 class CompactKPICards extends StatelessWidget {
@@ -75,7 +78,7 @@ class CompactKPICards extends StatelessWidget {
 }
 
 /// BarChart version compacte
-class CompactBarChart extends StatelessWidget {
+class CompactBarChart extends StatefulWidget {
   final List<BarChartGroupData> barGroups;
   final ResponsiveInfo info;
 
@@ -86,72 +89,135 @@ class CompactBarChart extends StatelessWidget {
   });
 
   @override
+  State<CompactBarChart> createState() => _CompactBarChartState();
+}
+
+class _CompactBarChartState extends State<CompactBarChart>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
+    )..forward();
+
+    _animation = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeOutCubic,
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return BarChart(
-      BarChartData(
-        barGroups: barGroups,
-        alignment: BarChartAlignment.spaceAround,
-        titlesData: FlTitlesData(
-          show: true,
-          leftTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              reservedSize: 28,
-              getTitlesWidget: (value, meta) {
-                return ResponsiveText.bodySmall(
-                  value.toInt().toString(),
-                  style: const TextStyle(
-                    color: Colors.white70,
-                    fontSize: 10,
+    return ChartAnimator(
+        duration: const Duration(milliseconds: 800),
+        curve: Curves.easeOutBack,
+        child: AnimatedBuilder(
+          animation: _animation,
+          builder: (context, child) {
+            return BarChart(
+              BarChartData(
+                barGroups: List.generate(widget.barGroups.length, (i) {
+                  final group = widget.barGroups[i];
+                  return BarChartGroupData(
+                    x: group.x,
+                    barRods: group.barRods.map((rod) {
+                      return BarChartRodData(
+                        toY: rod.toY *
+                            (_animation.value - (i * 0.03)).clamp(0, 1),
+                        color: rod.color ??
+                            Colors.blueAccent.withValues(alpha: 0.8),
+                        width: rod.width,
+                        borderRadius: BorderRadius.circular(4),
+                        backDrawRodData: BackgroundBarChartRodData(
+                          show: true,
+                          toY: rod.toY,
+                          color: Colors.white.withValues(alpha: 0.05),
+                        ),
+                      );
+                    }).toList(),
+                  );
+                }),
+                alignment: BarChartAlignment.spaceAround,
+                titlesData: FlTitlesData(
+                  show: true,
+                  leftTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 28,
+                      getTitlesWidget: (value, meta) {
+                        return ResponsiveText.bodySmall(
+                          value.toInt().toString(),
+                          style: const TextStyle(
+                            color: Colors.white70,
+                            fontSize: 10,
+                          ),
+                        );
+                      },
+                    ),
                   ),
-                );
-              },
-            ),
-          ),
-          bottomTitles: const AxisTitles(
-            sideTitles: SideTitles(showTitles: false),
-          ),
-          rightTitles: const AxisTitles(
-            sideTitles: SideTitles(showTitles: false),
-          ),
-          topTitles: const AxisTitles(
-            sideTitles: SideTitles(showTitles: false),
-          ),
-        ),
-        gridData: FlGridData(
-          show: true,
-          drawVerticalLine: false,
-          horizontalInterval: 5,
-          getDrawingHorizontalLine: (value) {
-            return FlLine(
-              color: Colors.white.withValues(alpha: 0.1),
-              strokeWidth: 1,
+                  bottomTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  rightTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  topTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                ),
+                gridData: FlGridData(
+                  show: true,
+                  drawVerticalLine: false,
+                  horizontalInterval: 5,
+                  getDrawingHorizontalLine: (value) {
+                    return FlLine(
+                      color: Colors.white.withValues(alpha: 0.1),
+                      strokeWidth: 1,
+                    );
+                  },
+                ),
+                borderData: FlBorderData(show: false),
+                barTouchData: BarTouchData(
+                  touchTooltipData:
+                      BarTouchTooltipData(getTooltipColor: (group) {
+                    final color = group.barRods.first.color;
+                    final alpha = color?.withValues(alpha: 09);
+                    final red = color?.withValues(red: 255);
+                    final green = color?.withValues(green: 255);
+                    final blue = color?.withValues(blue: 255);
+                    return Color.from(
+                        alpha: alpha!.a,
+                        red: red!.r,
+                        green: green!.g,
+                        blue: blue!.b);
+                  }, getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                    return BarTooltipItem(formatCompact(rod.toY),
+                        const TextStyle(color: Colors.white));
+                  }),
+                ),
+                backgroundColor: Colors.white.withValues(alpha: 0.05),
+              ),
+              duration: const Duration(milliseconds: 700),
+              curve: Curves.easeOutCubic,
             );
           },
-        ),
-        borderData: FlBorderData(show: false),
-        barTouchData: BarTouchData(
-          touchTooltipData: BarTouchTooltipData(getTooltipColor: (group) {
-            final color = group.barRods.first.color;
-            final alpha = color?.withValues(alpha: 09);
-            final red = color?.withValues(red: 255);
-            final green = color?.withValues(green: 255);
-            final blue = color?.withValues(blue: 255);
-            return Color.from(
-                alpha: alpha!.a, red: red!.r, green: green!.g, blue: blue!.b);
-          }, getTooltipItem: (group, groupIndex, rod, rodIndex) {
-            return BarTooltipItem(
-                formatCompact(rod.toY), const TextStyle(color: Colors.white));
-          }),
-        ),
-        backgroundColor: Colors.white.withValues(alpha: 0.05),
-      ),
-    );
+        ));
   }
 }
 
 /// LineChart version compacte
-class CompactLineChart extends StatelessWidget {
+class CompactLineChart extends StatefulWidget {
   final List<FlSpot> spots;
   final List<Widget> xLabels;
   final Color color;
@@ -166,62 +232,144 @@ class CompactLineChart extends StatelessWidget {
   });
 
   @override
+  State<CompactLineChart> createState() => _CompactLineChartState();
+}
+
+class _CompactLineChartState extends State<CompactLineChart>
+    with TickerProviderStateMixin {
+  late AnimationController _lineController;
+  late Animation<double> _lineAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _lineController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    )..forward();
+    _lineAnimation = CurvedAnimation(
+      parent: _lineController,
+      curve: Curves.easeOutCubic,
+    );
+  }
+
+  @override
+  void dispose() {
+    _lineController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return LineChart(
-      LineChartData(
-        lineBarsData: [
-          LineChartBarData(
-            spots: spots,
-            isCurved: true,
-            color: color,
-            barWidth: 2,
-            dotData: const FlDotData(show: false),
-            belowBarData: BarAreaData(
-              show: true,
-              color: color.withValues(alpha: 0.2),
-            ),
-          ),
-        ],
-        titlesData: FlTitlesData(
-          show: true,
-          leftTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              reservedSize: 28,
-              getTitlesWidget: (value, meta) {
-                return ResponsiveText.bodySmall(
-                  value.toInt().toString(),
-                  style: const TextStyle(
-                    color: Colors.white70,
-                    fontSize: 10,
-                  ),
+    return ChartAnimator(
+        duration: const Duration(milliseconds: 800),
+        curve: Curves.easeOutBack,
+        child: AnimatedBuilder(
+          animation: _lineAnimation,
+          builder: (context, child) {
+            final progress = _lineAnimation.value;
+            final total = widget.spots.length;
+            final currentCount = (total * progress).clamp(1, total).toInt();
+
+            // ✏️ on ne montre que les points jusqu’à la progression actuelle
+            final visibleSpots = widget.spots.take(currentCount).toList();
+
+            // 🔦 point lumineux en cours
+            final lightSpot = visibleSpots.isNotEmpty
+                ? visibleSpots.last
+                : widget.spots.first;
+
+            return LayoutBuilder(
+              builder: (context, constraints) {
+                return Stack(
+                  children: [
+                    // Ligne principale (courbe)
+                    LineChart(
+                      LineChartData(
+                        lineBarsData: [
+                          LineChartBarData(
+                            spots: visibleSpots,
+                            isCurved: true,
+                            color: widget.color.withValues(alpha: 0.9),
+                            barWidth: 2.5,
+                            isStrokeCapRound: true,
+                            dotData: FlDotData(
+                              show: false,
+                              getDotPainter: (spot, percent, bar, index) =>
+                                  FlDotCirclePainter(
+                                radius: 3.5 + 2 * _lineAnimation.value,
+                                color: widget.color.withValues(
+                                    alpha: (0.5 + 0.5 * _lineAnimation.value)),
+                                strokeWidth: 1.5,
+                                strokeColor:
+                                    Colors.white.withValues(alpha: 0.8),
+                              ),
+                            ),
+                            belowBarData: BarAreaData(
+                              show: true,
+                              color: widget.color.withValues(alpha: 0.15),
+                            ),
+                          ),
+                        ],
+                        titlesData: FlTitlesData(
+                          show: true,
+                          leftTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                              showTitles: true,
+                              reservedSize: 28,
+                              getTitlesWidget: (value, meta) {
+                                return ResponsiveText.bodySmall(
+                                  value.toInt().toString(),
+                                  style: const TextStyle(
+                                    color: Colors.white70,
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                          bottomTitles: const AxisTitles(
+                            sideTitles: SideTitles(showTitles: false),
+                          ),
+                          rightTitles: const AxisTitles(
+                            sideTitles: SideTitles(showTitles: false),
+                          ),
+                          topTitles: const AxisTitles(
+                            sideTitles: SideTitles(showTitles: false),
+                          ),
+                        ),
+                        gridData: FlGridData(
+                          show: true,
+                          drawVerticalLine: false,
+                          getDrawingHorizontalLine: (value) {
+                            return FlLine(
+                              color: Colors.white.withValues(alpha: 0.1),
+                              strokeWidth: 1,
+                            );
+                          },
+                        ),
+                        borderData: FlBorderData(show: false),
+                      ),
+                      duration: const Duration(milliseconds: 600),
+                      curve: Curves.easeOutCubic,
+                    ),
+                    Positioned.fill(
+                      child: IgnorePointer(
+                        child: CustomPaint(
+                          painter: TrailingLightPainter(
+                            spot: lightSpot,
+                            color: widget.color,
+                            opacity: progress,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 );
               },
-            ),
-          ),
-          bottomTitles: const AxisTitles(
-            sideTitles: SideTitles(showTitles: false),
-          ),
-          rightTitles: const AxisTitles(
-            sideTitles: SideTitles(showTitles: false),
-          ),
-          topTitles: const AxisTitles(
-            sideTitles: SideTitles(showTitles: false),
-          ),
-        ),
-        gridData: FlGridData(
-          show: true,
-          drawVerticalLine: false,
-          getDrawingHorizontalLine: (value) {
-            return FlLine(
-              color: Colors.white.withValues(alpha: 0.1),
-              strokeWidth: 1,
             );
           },
-        ),
-        borderData: FlBorderData(show: false),
-      ),
-    );
+        ));
   }
 }
 
@@ -240,116 +388,229 @@ class CompactPieChart extends StatefulWidget {
   State<CompactPieChart> createState() => _CompactPieChartState();
 }
 
-class _CompactPieChartState extends State<CompactPieChart> {
+class _CompactPieChartState extends State<CompactPieChart>
+    with SingleTickerProviderStateMixin {
   int? touchedIndex;
+
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    )..forward();
+
+    _animation = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeOutCubic,
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final info = widget.info;
 
-    return Container(
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.08),
-          borderRadius: BorderRadius.circular(24),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
+    return ChartAnimator(
+        duration: const Duration(milliseconds: 1200),
+        curve: Curves.easeOutBack,
+        child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.1),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+              border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+              backgroundBlendMode: BlendMode.modulate,
             ),
-          ],
-          border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
-          backgroundBlendMode: BlendMode.modulate,
-        ),
-        padding: const EdgeInsets.all(8),
-        child: ClipRRect(
-            borderRadius: BorderRadius.circular(24),
-            child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    AnimatedContainer(
-                      duration: const Duration(milliseconds: 400),
-                      height: info.isMobile ? 200 : 220,
-                      child: PieChart(
-                        PieChartData(
-                          sectionsSpace: 2,
-                          centerSpaceRadius: info.isMobile ? 20 : 40,
-                          pieTouchData: PieTouchData(
-                            touchCallback: (event, response) {
-                              if (!event.isInterestedForInteractions ||
-                                  response == null) {
-                                setState(() => touchedIndex = null);
-                                return;
-                              }
-                              setState(() => touchedIndex =
-                                  response.touchedSection?.touchedSectionIndex);
-                            },
-                          ),
-                          sections: List.generate(widget.sections.length, (i) {
-                            final section = widget.sections[i];
-                            final isTouched = i == touchedIndex;
-                            final double radius =
-                                isTouched ? 70 : (info.isMobile ? 50 : 60);
-                            return PieChartSectionData(
-                              title: section.title,
-                              value: section.value,
-                              color: section.color,
-                              gradient: section.gradient,
-                              titleStyle: TextStyle(
-                                fontSize: isTouched ? 18 : 14,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                                shadows: [
-                                  Shadow(
-                                      color:
-                                          Colors.black.withValues(alpha: 0.3),
-                                      blurRadius: 12),
-                                ],
-                              ),
-                              radius: radius,
-                            );
-                          }),
-                        ),
-                        duration: const Duration(milliseconds: 800),
-                        curve: Curves.easeInOutCubic,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Wrap(
-                      alignment: WrapAlignment.center,
-                      spacing: 12,
-                      runSpacing: 8,
-                      children: widget.sections.map((s) {
-                        return Row(mainAxisSize: MainAxisSize.min, children: [
-                          Container(
-                            width: 12,
-                            height: 12,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              gradient: s.gradient ??
-                                  LinearGradient(
-                                    colors: [
-                                      s.color,
-                                      s.color.withValues(alpha: 0.7)
-                                    ],
+            padding: const EdgeInsets.all(8),
+            child: ClipRRect(
+                borderRadius: BorderRadius.circular(24),
+                child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+                    child: AnimatedBuilder(
+                      animation: _animation,
+                      builder: (context, child) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Transform.scale(
+                              scale: 0.9 + 0.1 * _animation.value,
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 400),
+                                height: info.isMobile ? 200 : 220,
+                                curve: Curves.easeOutBack,
+                                child: PieChart(
+                                  PieChartData(
+                                    sectionsSpace: 2,
+                                    centerSpaceRadius: info.isMobile ? 20 : 30,
+                                    pieTouchData: PieTouchData(
+                                      touchCallback: (event, response) {
+                                        if (!event
+                                                .isInterestedForInteractions ||
+                                            response == null) {
+                                          setState(() => touchedIndex = null);
+                                          return;
+                                        }
+                                        setState(() => touchedIndex = response
+                                            .touchedSection
+                                            ?.touchedSectionIndex);
+                                      },
+                                    ),
+                                    sections: List.generate(
+                                        widget.sections.length, (i) {
+                                      final section = widget.sections[i];
+                                      final isTouched = i == touchedIndex;
+                                      final double radius = isTouched
+                                          ? 70
+                                          : (info.isMobile ? 50 : 60);
+                                      return PieChartSectionData(
+                                        title: section.title,
+                                        value: section.value,
+                                        color: section.color,
+                                        gradient: section.gradient,
+                                        titleStyle: TextStyle(
+                                          fontSize: isTouched ? 18 : 14,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                          shadows: [
+                                            Shadow(
+                                                color: Colors.black
+                                                    .withValues(alpha: 0.3),
+                                                blurRadius: 12),
+                                          ],
+                                        ),
+                                        radius: radius,
+                                      );
+                                    }),
                                   ),
+                                  duration: const Duration(milliseconds: 1000),
+                                  curve: Curves.easeInOutCubic,
+                                ),
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 6),
-                          ResponsiveText.bodySmall(
-                            "${s.title}: ${formatCompact(s.value)}",
-                            style: TextStyle(
-                              color: Colors.white.withValues(alpha: 0.9),
-                              fontSize: 13,
+                            const SizedBox(height: 12),
+                            AnimatedOpacity(
+                              opacity: _animation.value,
+                              duration: const Duration(milliseconds: 600),
+                              child: Wrap(
+                                alignment: WrapAlignment.center,
+                                spacing: 12,
+                                runSpacing: 8,
+                                children: widget.sections.map((s) {
+                                  return Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        AnimatedContainer(
+                                          duration:
+                                              const Duration(milliseconds: 600),
+                                          width: 12,
+                                          height: 12,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            gradient: s.gradient ??
+                                                LinearGradient(
+                                                  colors: [
+                                                    s.color,
+                                                    s.color
+                                                        .withValues(alpha: 0.7)
+                                                  ],
+                                                ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 6),
+                                        ResponsiveText.bodySmall(
+                                          "${s.title}: ${formatCompact(s.value)}",
+                                          style: TextStyle(
+                                            color: Colors.white
+                                                .withValues(alpha: 0.9),
+                                            fontSize: 13,
+                                          ),
+                                        ),
+                                      ]);
+                                }).toList(),
+                              ),
                             ),
-                          ),
-                        ]);
-                      }).toList(),
-                    )
-                  ],
-                ))));
+                          ],
+                        );
+                      },
+                    )))));
+  }
+}
+
+/// Graphique combiné : ligne de tendance + points + labels immersifs
+class CompactScatterTrendChart extends StatefulWidget {
+  final List<FlSpot> spots;
+  final List<String> labels;
+  final Color color;
+  final ResponsiveInfo info;
+
+  const CompactScatterTrendChart({
+    super.key,
+    required this.spots,
+    required this.labels,
+    required this.color,
+    required this.info,
+  });
+
+  @override
+  State<CompactScatterTrendChart> createState() =>
+      _CompactScatterTrendChartState();
+}
+
+class _CompactScatterTrendChartState extends State<CompactScatterTrendChart>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    )..forward();
+
+    _animation = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeOutCubic,
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.spots.isEmpty) return const SizedBox.shrink();
+
+    final maxValue = widget.spots.map((e) => e.y).reduce(max);
+    final width = MediaQuery.of(context).size.width;
+    final height = 220.0; // hauteur fixe pour l’affichage compact
+
+    return ChartAnimator(
+        child: BuildAnimatedChartContent(
+            animation: _animation,
+            height: height,
+            widget: widget,
+            maxValue: maxValue,
+            width: width));
   }
 }
 
