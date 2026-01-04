@@ -31,8 +31,8 @@ class HoverCard extends ConsumerWidget {
     );
 
     return MouseRegion(
-      onEnter: (_) => ref.read(hoverMapProvider.notifier).setHover(id, true),
-      onExit: (_) => ref.read(hoverMapProvider.notifier).setHover(id, false),
+      onEnter: (_) => ref.read(hoverMapProvider.notifier).set(id, true),
+      onExit: (_) => ref.read(hoverMapProvider.notifier).remove(id),
       cursor: SystemMouseCursors.click,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),

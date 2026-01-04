@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
-import 'package:portefolio/core/ui/widgets/ui_widgets_extentions.dart';
+import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
 import 'package:portefolio/features/generator/services/section_manager.dart';
 
 import '../../../projets/providers/projects_extentions_providers.dart';

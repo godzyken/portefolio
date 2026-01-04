@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:portefolio/core/ui/widgets/ui_widgets_extentions.dart';
+import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
 import 'package:portefolio/features/projets/providers/projects_extentions_providers.dart';
 
 import '../../../../core/logging/app_logger.dart';

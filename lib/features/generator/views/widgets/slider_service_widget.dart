@@ -4,7 +4,7 @@ import 'package:portefolio/features/home/views/widgets/extentions_widgets.dart';
 
 import '../../../../core/affichage/screen_size_detector.dart';
 import '../../../../core/provider/json_data_provider.dart';
-import '../../../../core/ui/widgets/ui_widgets_extentions.dart';
+import '../../../../core/ui/ui_widgets_extentions.dart';
 
 class ServicesSlider extends ConsumerStatefulWidget {
   const ServicesSlider({super.key});

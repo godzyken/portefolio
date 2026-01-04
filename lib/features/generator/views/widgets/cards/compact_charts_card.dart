@@ -4,7 +4,7 @@ import 'dart:ui';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
-import 'package:portefolio/core/ui/widgets/ui_widgets_extentions.dart';
+import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
 
 import '../../generator_widgets_extentions.dart';
 

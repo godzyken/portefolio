@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/colors_spec.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/provider/image_providers.dart';
-import 'package:portefolio/core/ui/widgets/ui_widgets_extentions.dart';
+import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
 
 import '../../../../projets/providers/projects_wakatime_service_provider.dart';
 import '../../../data/wakatime_models_data.dart';

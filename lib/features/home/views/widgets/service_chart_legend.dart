@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/features/generator/data/extention_models.dart';
 
 import '../../../../../core/affichage/screen_size_detector.dart';
-import '../../../../../core/ui/widgets/ui_widgets_extentions.dart';
+import '../../../../core/ui/ui_widgets_extentions.dart';
 import 'service_card_helpers.dart';
 
 class ServiceChartLegend extends ConsumerWidget {

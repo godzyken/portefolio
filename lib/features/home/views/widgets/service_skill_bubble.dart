@@ -5,9 +5,9 @@ import 'package:portefolio/features/generator/views/generator_widgets_extentions
 import 'package:portefolio/features/home/views/widgets/extentions_widgets.dart';
 
 import '../../../../../core/affichage/screen_size_detector.dart';
-import '../../../../../core/ui/widgets/ui_widgets_extentions.dart';
 import '../../../../constants/tech_logos.dart';
 import '../../../../core/provider/image_providers.dart';
+import '../../../../core/ui/ui_widgets_extentions.dart';
 
 /// Widget représentant une bulle de compétence avec icône/logo
 class ServiceSkillBubble extends ConsumerWidget {

@@ -114,14 +114,10 @@ enum AppTab {
                         // ✅ Logique corrigée
                         if (index == 0) {
                           // Clic sur Swipe
-                          ref
-                              .read(isPageViewProvider.notifier)
-                              .enablePageView();
+                          ref.read(isPageViewProvider.notifier).setTrue();
                         } else {
                           // Clic sur Timeline
-                          ref
-                              .read(isPageViewProvider.notifier)
-                              .disablePageView();
+                          ref.read(isPageViewProvider.notifier).setFalse();
                         }
                       },
                       selectedColor: Theme.of(context).colorScheme.onPrimary,

@@ -3,7 +3,7 @@ import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
-import 'package:portefolio/core/ui/widgets/ui_widgets_extentions.dart';
+import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
 import 'package:portefolio/features/experience/data/experiences_data.dart';
 import 'package:portefolio/features/generator/views/generator_widgets_extentions.dart';
 import 'package:vector_math/vector_math_64.dart' show Vector3;
@@ -57,12 +57,12 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
 
     final playingVideo = ref.read(playingVideoProvider);
     if (playingVideo != null) {
-      ref.read(playingVideoProvider.notifier).stop();
+      ref.read(playingVideoProvider.notifier).clear();
 
       await Future.delayed(const Duration(milliseconds: 100));
     }
     // Cache et arrête la vidéo avant la navigation
-    ref.read(globalVideoVisibilityProvider.notifier).hide();
+    ref.read(globalVideoVisibilityProvider.notifier).setFalse();
 
     await Navigator.of(context).push(
       MaterialPageRoute(
@@ -74,7 +74,7 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
 
     // Réaffiche la vidéo après le retour
     if (mounted) {
-      ref.read(globalVideoVisibilityProvider.notifier).show();
+      ref.read(globalVideoVisibilityProvider.notifier).setTrue();
     }
   }
 
@@ -246,11 +246,11 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
             child: GestureDetector(
               onTap: () {
                 // Active la vidéo
-                ref.read(globalVideoVisibilityProvider.notifier).show();
+                ref.read(globalVideoVisibilityProvider.notifier).setTrue();
                 // Joue la vidéo
                 ref
                     .read(playingVideoProvider.notifier)
-                    .play(widget.experience.id);
+                    .setValue(widget.experience.id);
               },
               child: ResponsiveBox(
                 padding: const EdgeInsets.all(16),

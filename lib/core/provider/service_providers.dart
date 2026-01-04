@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../features/home/data/services_data.dart';
+import '../notifier/generic_notifier.dart';
 import '../notifier/service_notifiers.dart';
 import 'json_data_provider.dart';
 
@@ -12,8 +13,8 @@ final servicesFilterProvider =
 
 /// 🔹 Provider pour les services sélectionnés
 final selectedServicesProvider =
-    NotifierProvider<SelectedServicesNotifier, List<Service>>(
-  SelectedServicesNotifier.new,
+    NotifierProvider<CollectionNotifier<Service>, List<Service>>(
+  () => CollectionNotifier<Service>(),
 );
 
 /// 🔹 Provider des services filtrés

@@ -4,7 +4,7 @@ import 'package:portefolio/features/generator/data/extention_models.dart';
 
 import '../../../../../core/affichage/screen_size_detector.dart';
 import '../../../../../core/provider/expertise_provider.dart';
-import '../../../../../core/ui/widgets/ui_widgets_extentions.dart';
+import '../../../../core/ui/ui_widgets_extentions.dart';
 import 'extentions_widgets.dart';
 
 class ServiceCardTopSection extends ConsumerWidget {

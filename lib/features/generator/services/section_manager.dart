@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/ui/widgets/ui_widgets_extentions.dart';
+import '../../../core/ui/ui_widgets_extentions.dart';
 import '../../projets/data/project_data.dart';
 import '../../projets/views/widgets/project_section.dart';
 import '../views/generator_widgets_extentions.dart';

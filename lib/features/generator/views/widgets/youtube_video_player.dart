@@ -40,11 +40,11 @@ class _YoutubeVideoPlayerIframeState
 
     if (!kIsWeb) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        final isPlaying =
-            ref.read(playingVideoProvider.notifier).isPlaying(widget.cardId);
-        if (isPlaying) {
+        if (mounted) {
+          ref.read(playingVideoProvider.notifier).setValue(widget.cardId);
           _controller.playVideo();
         } else {
+          ref.read(playingVideoProvider.notifier).clear();
           _controller.pauseVideo();
         }
       });
@@ -79,11 +79,11 @@ class _YoutubeVideoPlayerIframeState
           child: GestureDetector(
             onTap: () {
               final notifier = ref.read(playingVideoProvider.notifier);
-              if (notifier.isPlaying(widget.cardId)) {
+              /*       if (notifier.setValue(widget.cardId)) {
                 notifier.stop();
               } else {
                 notifier.play(widget.cardId);
-              }
+              }*/
             },
             child: YoutubePlayer(
               controller: _controller,
@@ -114,10 +114,10 @@ extension VideoOverlayHelper on BuildContext {
     bool barrierDismissible = true,
   }) async {
     // 1. Cache les vidéos
-    ref.read(globalVideoVisibilityProvider.notifier).hide();
+    ref.read(globalVideoVisibilityProvider.notifier).setFalse();
 
     // 2. Pause toutes les vidéos
-    ref.read(playingVideoProvider.notifier).stop();
+    ref.read(playingVideoProvider.notifier).clear();
 
     try {
       // 3. Affiche le dialog
@@ -129,7 +129,7 @@ extension VideoOverlayHelper on BuildContext {
       return result;
     } finally {
       // 4. Réaffiche les vidéos après fermeture
-      ref.read(globalVideoVisibilityProvider.notifier).show();
+      ref.read(globalVideoVisibilityProvider.notifier).setTrue();
     }
   }
 
@@ -139,8 +139,8 @@ extension VideoOverlayHelper on BuildContext {
     required WidgetRef ref,
     bool isScrollControlled = true,
   }) async {
-    ref.read(globalVideoVisibilityProvider.notifier).hide();
-    ref.read(playingVideoProvider.notifier).stop();
+    ref.read(globalVideoVisibilityProvider.notifier).setFalse();
+    ref.read(playingVideoProvider.notifier).clear();
 
     try {
       final result = await showModalBottomSheet<T>(
@@ -150,7 +150,7 @@ extension VideoOverlayHelper on BuildContext {
       );
       return result;
     } finally {
-      ref.read(globalVideoVisibilityProvider.notifier).show();
+      ref.read(globalVideoVisibilityProvider.notifier).setTrue();
     }
   }
 }

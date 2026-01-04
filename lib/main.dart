@@ -17,7 +17,7 @@ import 'core/provider/providers.dart';
 import 'core/routes/router.dart';
 import 'core/service/bootstrap_service.dart';
 import 'core/service/config_env.dart';
-import 'core/ui/widgets/ui_widgets_extentions.dart';
+import 'core/ui/ui_widgets_extentions.dart';
 import 'features/generator/views/generator_widgets_extentions.dart';
 import 'features/home/views/screens/splash_screen.dart';
 import 'features/home/views/widgets/precache_wrapper.dart';

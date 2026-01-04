@@ -1,8 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../notifier/visited_page_notifier.dart';
+import '../notifier/generic_notifier.dart';
 
-final visitedPagesProvider =
-    NotifierProvider<VisitedPagesNotifier, Set<String>>(
-  VisitedPagesNotifier.new,
+final visitedPagesProvider = NotifierProvider<SetNotifier<String>, Set<String>>(
+  () => SetNotifier<String>(),
 );

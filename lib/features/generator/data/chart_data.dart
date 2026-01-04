@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:portefolio/core/affichage/colors_spec.dart';
+import 'package:portefolio/core/ui/widgets/responsive_text.dart';
 
 /// Représente un type de chart à afficher
 enum ChartType {
@@ -627,11 +628,10 @@ class ChartDataFactory {
         .map(
           (label) => Padding(
             padding: const EdgeInsets.only(top: 4),
-            child: Text(
+            child: ResponsiveText.bodySmall(
               label,
               style: const TextStyle(
                 color: Colors.white70,
-                fontSize: 11,
                 overflow: TextOverflow.ellipsis,
               ),
             ),

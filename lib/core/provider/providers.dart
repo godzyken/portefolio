@@ -2,12 +2,12 @@ import 'dart:async';
 
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:portefolio/features/generator/notifiers/hover_map_notifier.dart';
 
 import '../../constants/app_tab.dart';
 import '../../constants/tech_logos.dart';
 import '../../features/generator/services/pdf_export_service.dart';
 import '../logging/app_logger.dart';
+import '../notifier/generic_notifier.dart';
 import '../notifier/notifiers.dart';
 import '../service/bootstrap_service.dart';
 
@@ -55,26 +55,31 @@ final currentIndexProvider = Provider<int>((ref) {
 });
 
 /// 🔹 Exemple : état de chargement du PDF
-final isGeneratingProvider =
-    NotifierProvider<IsGeneratingNotifier, bool>(IsGeneratingNotifier.new);
+final isGeneratingProvider = NotifierProvider<BooleanNotifier, bool>(
+  () => BooleanNotifier(false),
+);
 
 /// 🔹 Etat de la page courante
-final isPageViewProvider =
-    NotifierProvider<IsPageViewNotifier, bool>(IsPageViewNotifier.new);
+final isPageViewProvider = NotifierProvider<BooleanNotifier, bool>(
+  () => BooleanNotifier(false),
+);
 
 /// 🔹 Etat de detection du survol d'un élément
-final hoverMapProvider = NotifierProvider<HoverMapNotifier, Map<String, bool>>(
-  HoverMapNotifier.new,
+final hoverMapProvider =
+    NotifierProvider<MapNotifier<String, bool>, Map<String, bool>>(
+  () => MapNotifier<String, bool>(),
 );
 
 /// Provider pour la visibilité globale des vidéos
-final globalVideoVisibilityProvider =
-    NotifierProvider<GlobalVideoVisibilityNotifier, bool>(
-        GlobalVideoVisibilityNotifier.new);
+final globalVideoVisibilityProvider = NotifierProvider<BooleanNotifier, bool>(
+  () => BooleanNotifier(true),
+);
 
 /// 🔹 Etat du lecteur YoutubeVideoIframe
 final playingVideoProvider =
-    NotifierProvider<PlayingVideoNotifier, String?>(PlayingVideoNotifier.new);
+    NotifierProvider<NullableNotifier<String>, String?>(
+  () => NullableNotifier<String>(),
+);
 
 /// 🔹 Génerateur de PDF
 final pdfExportProvider = Provider<PdfExportService>((ref) {
@@ -89,8 +94,9 @@ final wakatimeBadgeProvider = Provider.family<String?, String>((
   return wakatimeBadges[projectName];
 });
 
-final followUserProvider =
-    NotifierProvider<FollowUserNotifier, bool>(FollowUserNotifier.new);
+final followUserProvider = NotifierProvider<BooleanNotifier, bool>(
+  () => BooleanNotifier(true),
+);
 
 final mapControllerProvider = Provider<MapController>((ref) => MapController());
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:portefolio/core/ui/widgets/ui_widgets_extentions.dart';
+import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
 
 /// Card générique avec titre, icône et contenu
 /// Remplace les multiples Container répétitifs

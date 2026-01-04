@@ -11,6 +11,7 @@ import '../../features/experience/data/experiences_data.dart';
 import '../../features/generator/data/location_data.dart';
 import '../../features/generator/providers/errors/geolocation_exception.dart';
 import '../../features/generator/providers/location_service_provider.dart';
+import '../notifier/generic_notifier.dart';
 import '../notifier/location_notifiers.dart';
 import 'location_settings_provider.dart';
 
@@ -107,8 +108,9 @@ final nearbySigPointsProvider = Provider<AsyncValue<List<LatLng>>>((ref) {
   });
 });
 
-final satelliteModeProvider =
-    NotifierProvider<SatelliteModeNotifier, bool>(SatelliteModeNotifier.new);
+final satelliteModeProvider = NotifierProvider<BooleanNotifier, bool>(
+  () => BooleanNotifier(false),
+);
 
 final mapTileProvider = Provider<TileProvider>((ref) {
   if (kIsWeb) {
