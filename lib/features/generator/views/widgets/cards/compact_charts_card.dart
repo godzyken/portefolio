@@ -80,12 +80,14 @@ class CompactKPICards extends StatelessWidget {
 /// BarChart version compacte
 class CompactBarChart extends StatefulWidget {
   final List<BarChartGroupData> barGroups;
+  final List<Widget>? xLabels;
   final ResponsiveInfo info;
 
   const CompactBarChart({
     super.key,
     required this.barGroups,
     required this.info,
+    this.xLabels,
   });
 
   @override
@@ -166,8 +168,22 @@ class _CompactBarChartState extends State<CompactBarChart>
                       },
                     ),
                   ),
-                  bottomTitles: const AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: widget.info.isMobile ? 40 : 50,
+                      getTitlesWidget: (value, meta) {
+                        final index = value.toInt();
+                        if (widget.xLabels != null &&
+                            index < widget.xLabels!.length) {
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 8),
+                            child: widget.xLabels![index],
+                          );
+                        }
+                        return const SizedBox.shrink();
+                      },
+                    ),
                   ),
                   rightTitles: const AxisTitles(
                     sideTitles: SideTitles(showTitles: false),
@@ -191,16 +207,17 @@ class _CompactBarChartState extends State<CompactBarChart>
                 barTouchData: BarTouchData(
                   touchTooltipData:
                       BarTouchTooltipData(getTooltipColor: (group) {
-                    final color = group.barRods.first.color;
-                    final alpha = color?.withValues(alpha: 09);
-                    final red = color?.withValues(red: 255);
-                    final green = color?.withValues(green: 255);
-                    final blue = color?.withValues(blue: 255);
+                    final color =
+                        group.barRods.first.color ?? Colors.blueAccent;
+                    final alpha = color.withValues(alpha: 0.9);
+                    final red = color.withValues(red: 255);
+                    final green = color.withValues(green: 255);
+                    final blue = color.withValues(blue: 255);
                     return Color.from(
-                        alpha: alpha!.a,
-                        red: red!.r,
-                        green: green!.g,
-                        blue: blue!.b);
+                        alpha: alpha.a,
+                        red: red.r,
+                        green: green.g,
+                        blue: blue.b);
                   }, getTooltipItem: (group, groupIndex, rod, rodIndex) {
                     return BarTooltipItem(formatCompact(rod.toY),
                         const TextStyle(color: Colors.white));
@@ -269,16 +286,15 @@ class _CompactLineChartState extends State<CompactLineChart>
           animation: _lineAnimation,
           builder: (context, child) {
             final progress = _lineAnimation.value;
-            final total = widget.spots.length;
-            final currentCount = (total * progress).clamp(1, total).toInt();
 
-            // ✏️ on ne montre que les points jusqu’à la progression actuelle
-            final visibleSpots = widget.spots.take(currentCount).toList();
+            if (widget.spots.isEmpty) return const SizedBox.shrink();
 
-            // 🔦 point lumineux en cours
-            final lightSpot = visibleSpots.isNotEmpty
-                ? visibleSpots.last
-                : widget.spots.first;
+            // On multiplie le y de chaque point par progress
+            final animatedSpots =
+                widget.spots.map((s) => FlSpot(s.x, s.y * progress)).toList();
+
+            // Point lumineux : dernier point actuel
+            final lightSpot = animatedSpots.last;
 
             return LayoutBuilder(
               builder: (context, constraints) {
@@ -289,7 +305,7 @@ class _CompactLineChartState extends State<CompactLineChart>
                       LineChartData(
                         lineBarsData: [
                           LineChartBarData(
-                            spots: visibleSpots,
+                            spots: animatedSpots,
                             isCurved: true,
                             color: widget.color.withValues(alpha: 0.9),
                             barWidth: 2.5,
@@ -328,8 +344,34 @@ class _CompactLineChartState extends State<CompactLineChart>
                               },
                             ),
                           ),
-                          bottomTitles: const AxisTitles(
-                            sideTitles: SideTitles(showTitles: false),
+                          bottomTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                              showTitles: true,
+                              reservedSize: 40,
+                              getTitlesWidget: (value, meta) {
+                                final index = value.toInt();
+                                // 🔹 Saut d’un label sur 2 en mobile, ou sur 1 en desktop
+                                final availableWidth = constraints.maxWidth;
+                                final labelWidth = 60.0;
+                                final step = (availableWidth /
+                                        (labelWidth * widget.xLabels.length))
+                                    .clamp(1, 3)
+                                    .round();
+
+                                if (index % step != 0 ||
+                                    index >= widget.xLabels.length) {
+                                  return const SizedBox.shrink();
+                                }
+
+                                return Padding(
+                                  padding: const EdgeInsets.only(top: 6),
+                                  child: Transform.rotate(
+                                    angle: -0.4,
+                                    child: widget.xLabels[index],
+                                  ),
+                                );
+                              },
+                            ),
                           ),
                           rightTitles: const AxisTitles(
                             sideTitles: SideTitles(showTitles: false),

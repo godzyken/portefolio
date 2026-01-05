@@ -114,10 +114,10 @@ class ChartData {
   ChartData.bar({
     required this.title,
     required this.barGroups,
+    this.xLabels,
   })  : type = ChartType.barChart,
         pieSections = null,
         lineSpots = null,
-        xLabels = null,
         lineColor = null,
         xLabelStep = null,
         kpiValues = null,
@@ -634,15 +634,16 @@ class ChartDataFactory {
                 color: Colors.white70,
                 overflow: TextOverflow.ellipsis,
               ),
+              maxLines: 1,
             ),
           ),
         )
         .toList();
 
-    return ChartData.line(
+    return ChartData.bar(
       // ⚠️ on va créer une version bar étendue
       title: '📦 Ventes par gamme de prix',
-      lineSpots: [], // placeholder, pas utilisé ici
+      barGroups: barGroups, // placeholder, pas utilisé ici
       xLabels: xLabels,
     );
   }
@@ -685,14 +686,23 @@ class ChartDataFactory {
   }) {
     if (data.isEmpty) return null;
 
-    final spots = data.asMap().entries.map((entry) {
+    // 🔹 On filtre les doublons et on garde la première occurrence
+    final seen = <String>{};
+    final filteredData = data.where((item) {
+      final label = item[xKey]?.toString() ?? '';
+      if (seen.contains(label)) return false;
+      seen.add(label);
+      return true;
+    }).toList();
+
+    final spots = filteredData.asMap().entries.map((entry) {
       return FlSpot(
         entry.key.toDouble(),
         (entry.value[yKey] as num).toDouble(),
       );
     }).toList();
 
-    final labels = data.map((item) {
+    final labels = filteredData.map((item) {
       return Text(
         item[xKey]?.toString() ?? '',
         style: const TextStyle(color: Colors.white70, fontSize: 12),
