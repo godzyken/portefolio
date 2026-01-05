@@ -564,23 +564,18 @@ class ChartDataFactory {
       }
     });
 
-    final colors = [
-      Colors.lightBlueAccent,
-      Colors.orangeAccent,
-      Colors.purpleAccent,
-      Colors.greenAccent,
-      Colors.redAccent,
-    ];
+    final mix = ColorHelpers.chartColors;
 
     final pieSections = kpis.entries.toList().asMap().entries.map((entry) {
       final i = entry.key;
       final key = entry.value.key;
       final val = entry.value.value;
+      final color = mix[i % mix.length];
       final numeric = _parseNumeric(val);
       return PieChartSectionData(
         value: numeric == 0 ? 1 : numeric,
         title: key,
-        color: colors[i % colors.length],
+        color: color.withValues(alpha: 0.8),
         radius: 55,
         showTitle: false,
       );
@@ -598,6 +593,8 @@ class ChartDataFactory {
     // Génère les BarGroups et les labels associés
     final barGroups = <BarChartGroupData>[];
     final labels = <String>[];
+
+    final uniqueLabels = labels.toSet().toList();
 
     for (var i = 0; i < ventes.length; i++) {
       final item = ventes[i];
@@ -624,12 +621,12 @@ class ChartDataFactory {
     }
 
     // ➜ On stocke les labels dans ChartData via xLabels (widgets)
-    final xLabels = labels
+    final xLabels = uniqueLabels
         .map(
           (label) => Padding(
             padding: const EdgeInsets.only(top: 4),
             child: ResponsiveText.bodySmall(
-              label,
+              label.isEmpty ? 'N/A' : label,
               style: const TextStyle(
                 color: Colors.white70,
                 overflow: TextOverflow.ellipsis,

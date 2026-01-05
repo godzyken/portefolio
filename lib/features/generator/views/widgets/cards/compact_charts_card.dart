@@ -127,106 +127,136 @@ class _CompactBarChartState extends State<CompactBarChart>
         child: AnimatedBuilder(
           animation: _animation,
           builder: (context, child) {
-            return BarChart(
-              BarChartData(
-                barGroups: List.generate(widget.barGroups.length, (i) {
-                  final group = widget.barGroups[i];
-                  return BarChartGroupData(
-                    x: group.x,
-                    barRods: group.barRods.map((rod) {
-                      return BarChartRodData(
-                        toY: rod.toY *
-                            (_animation.value - (i * 0.03)).clamp(0, 1),
-                        color: rod.color ??
-                            Colors.blueAccent.withValues(alpha: 0.8),
-                        width: rod.width,
-                        borderRadius: BorderRadius.circular(4),
-                        backDrawRodData: BackgroundBarChartRodData(
-                          show: true,
-                          toY: rod.toY,
-                          color: Colors.white.withValues(alpha: 0.05),
-                        ),
-                      );
-                    }).toList(),
-                  );
-                }),
-                alignment: BarChartAlignment.spaceAround,
-                titlesData: FlTitlesData(
-                  show: true,
-                  leftTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      reservedSize: 28,
-                      getTitlesWidget: (value, meta) {
-                        return ResponsiveText.bodySmall(
-                          value.toInt().toString(),
-                          style: const TextStyle(
-                            color: Colors.white70,
-                            fontSize: 10,
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  bottomTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      reservedSize: widget.info.isMobile ? 40 : 50,
-                      getTitlesWidget: (value, meta) {
-                        final index = value.toInt();
-                        if (widget.xLabels != null &&
-                            index < widget.xLabels!.length) {
-                          return Padding(
-                            padding: const EdgeInsets.only(top: 8),
-                            child: widget.xLabels![index],
+            return LayoutBuilder(
+              builder: (context, constraints) {
+                return Stack(
+                  children: [
+                    BarChart(
+                      BarChartData(
+                        barGroups: List.generate(widget.barGroups.length, (i) {
+                          final group = widget.barGroups[i];
+                          return BarChartGroupData(
+                            x: group.x,
+                            barRods: group.barRods.map((rod) {
+                              return BarChartRodData(
+                                toY: rod.toY *
+                                    (Curves.easeOutCubic.transform(
+                                      (_animation.value * (1.0 - i * 0.05))
+                                          .clamp(0.0, 1.0),
+                                    )),
+                                color: rod.color ??
+                                    Colors.blueAccent.withValues(alpha: 0.8),
+                                width: rod.width,
+                                borderRadius: BorderRadius.circular(4),
+                                backDrawRodData: BackgroundBarChartRodData(
+                                  show: true,
+                                  toY: rod.toY,
+                                  color: Colors.white.withValues(alpha: 0.05),
+                                ),
+                              );
+                            }).toList(),
                           );
-                        }
-                        return const SizedBox.shrink();
-                      },
+                        }),
+                        groupsSpace: 18,
+                        alignment: BarChartAlignment.spaceAround,
+                        titlesData: FlTitlesData(
+                          show: true,
+                          leftTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                              showTitles: true,
+                              reservedSize: 28,
+                              getTitlesWidget: (value, meta) {
+                                return ResponsiveText.bodySmall(
+                                  value.toInt().toString(),
+                                  style: const TextStyle(
+                                    color: Colors.white70,
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                          bottomTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                              showTitles: true,
+                              reservedSize: widget.info.isMobile ? 40 : 50,
+                              interval: 1,
+                              getTitlesWidget: (value, meta) {
+                                final labels = widget.xLabels;
+                                if (labels == null || labels.isEmpty) {
+                                  return const SizedBox.shrink();
+                                }
+
+                                final index = value.round();
+                                if (index < 0 || index >= labels.length) {
+                                  return const SizedBox.shrink();
+                                }
+
+                                // 🔹 Espacement dynamique selon la largeur
+                                // Trop de labels ? On en saute
+                                final total = labels.length;
+                                final step = total > 8 ? (total / 8).ceil() : 1;
+                                if (index % step != 0)
+                                  return const SizedBox.shrink();
+
+                                return Padding(
+                                  padding: const EdgeInsets.only(top: 8),
+                                  child: Transform.rotate(
+                                    origin: Offset(-2.0, -1.5),
+                                    alignment: Alignment.center,
+                                    angle: -0.8,
+                                    child: labels[index],
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                          rightTitles: const AxisTitles(
+                            sideTitles: SideTitles(showTitles: false),
+                          ),
+                          topTitles: const AxisTitles(
+                            sideTitles: SideTitles(showTitles: false),
+                          ),
+                        ),
+                        gridData: FlGridData(
+                          show: true,
+                          drawVerticalLine: false,
+                          horizontalInterval: 5,
+                          getDrawingHorizontalLine: (value) {
+                            return FlLine(
+                              color: Colors.white.withValues(alpha: 0.1),
+                              strokeWidth: 1,
+                            );
+                          },
+                        ),
+                        borderData: FlBorderData(show: false),
+                        barTouchData: BarTouchData(
+                          touchTooltipData: BarTouchTooltipData(
+                              getTooltipColor: (group) {
+                            final color =
+                                group.barRods.first.color ?? Colors.blueAccent;
+                            final alpha = color.withValues(alpha: 0.9);
+                            final red = color.withValues(red: 255);
+                            final green = color.withValues(green: 255);
+                            final blue = color.withValues(blue: 255);
+                            return Color.from(
+                                alpha: alpha.a,
+                                red: red.r,
+                                green: green.g,
+                                blue: blue.b);
+                          }, getTooltipItem:
+                                  (group, groupIndex, rod, rodIndex) {
+                            return BarTooltipItem(formatCompact(rod.toY),
+                                const TextStyle(color: Colors.white));
+                          }),
+                        ),
+                        backgroundColor: Colors.white.withValues(alpha: 0.05),
+                      ),
+                      duration: const Duration(milliseconds: 700),
+                      curve: Curves.easeOutCubic,
                     ),
-                  ),
-                  rightTitles: const AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
-                  ),
-                  topTitles: const AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
-                  ),
-                ),
-                gridData: FlGridData(
-                  show: true,
-                  drawVerticalLine: false,
-                  horizontalInterval: 5,
-                  getDrawingHorizontalLine: (value) {
-                    return FlLine(
-                      color: Colors.white.withValues(alpha: 0.1),
-                      strokeWidth: 1,
-                    );
-                  },
-                ),
-                borderData: FlBorderData(show: false),
-                barTouchData: BarTouchData(
-                  touchTooltipData:
-                      BarTouchTooltipData(getTooltipColor: (group) {
-                    final color =
-                        group.barRods.first.color ?? Colors.blueAccent;
-                    final alpha = color.withValues(alpha: 0.9);
-                    final red = color.withValues(red: 255);
-                    final green = color.withValues(green: 255);
-                    final blue = color.withValues(blue: 255);
-                    return Color.from(
-                        alpha: alpha.a,
-                        red: red.r,
-                        green: green.g,
-                        blue: blue.b);
-                  }, getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                    return BarTooltipItem(formatCompact(rod.toY),
-                        const TextStyle(color: Colors.white));
-                  }),
-                ),
-                backgroundColor: Colors.white.withValues(alpha: 0.05),
-              ),
-              duration: const Duration(milliseconds: 700),
-              curve: Curves.easeOutCubic,
+                  ],
+                );
+              },
             );
           },
         ));
@@ -353,10 +383,12 @@ class _CompactLineChartState extends State<CompactLineChart>
                                 // 🔹 Saut d’un label sur 2 en mobile, ou sur 1 en desktop
                                 final availableWidth = constraints.maxWidth;
                                 final labelWidth = 60.0;
-                                final step = (availableWidth /
-                                        (labelWidth * widget.xLabels.length))
-                                    .clamp(1, 3)
-                                    .round();
+                                final visibleCount =
+                                    (availableWidth / labelWidth).floor();
+                                final step =
+                                    (widget.xLabels.length / visibleCount)
+                                        .ceil()
+                                        .clamp(1, 5);
 
                                 if (index % step != 0 ||
                                     index >= widget.xLabels.length) {
@@ -366,7 +398,9 @@ class _CompactLineChartState extends State<CompactLineChart>
                                 return Padding(
                                   padding: const EdgeInsets.only(top: 6),
                                   child: Transform.rotate(
-                                    angle: -0.4,
+                                    origin: Offset(-2.0, -1.5),
+                                    alignment: Alignment.center,
+                                    angle: -0.8,
                                     child: widget.xLabels[index],
                                   ),
                                 );
