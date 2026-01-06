@@ -57,7 +57,7 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
 
     final playingVideo = ref.read(playingVideoProvider);
     if (playingVideo != null) {
-      ref.read(playingVideoProvider.notifier).clear();
+      ref.read(playingVideoProvider.notifier).stop();
 
       await Future.delayed(const Duration(milliseconds: 100));
     }
@@ -250,7 +250,7 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
                 // Joue la vidéo
                 ref
                     .read(playingVideoProvider.notifier)
-                    .setValue(widget.experience.id);
+                    .play(widget.experience.id);
               },
               child: ResponsiveBox(
                 padding: const EdgeInsets.all(16),

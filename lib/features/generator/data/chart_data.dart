@@ -305,8 +305,8 @@ class ChartDataFactory {
           .toList();
 
       final labels = synthese.map((e) {
-        return Text('Année ${e['annee']}',
-            style: const TextStyle(color: Colors.white70, fontSize: 12));
+        return ResponsiveText.titleSmall('Année ${e['annee']}',
+            style: const TextStyle(color: Colors.white70));
       }).toList();
 
       charts.add(ChartData.line(
@@ -337,13 +337,7 @@ class ChartDataFactory {
         'Temps économisé': _parseNumeric(business['temps_economise_total']),
       };
 
-      final colors = [
-        Colors.greenAccent,
-        Colors.orangeAccent,
-        Colors.redAccent,
-        Colors.blueAccent,
-        Colors.purpleAccent,
-      ];
+      final colors = ColorHelpers.chartColors;
 
       final scatterSpots = <ScatterSpot>[];
       var i = 0;
@@ -385,24 +379,26 @@ class ChartDataFactory {
       charts.addAll(_createBenchmarkCharts(resultsMap['benchmark']));
     }
 
-    // 1. KPI Cards (NOUVEAU - en premier pour l'impact visuel)
-    if (resultsMap.containsKey('roi') ||
-        resultsMap.containsKey('timeSaved') ||
-        resultsMap.containsKey('satisfaction')) {
+    // 1. KPI Cards
+    if (resultsMap.keys
+        .any((k) => ['roi', 'timeSaved', 'satisfaction'].contains(k))) {
       charts.add(_createKPICards(resultsMap));
     }
 
     // 2. Ventes (BarChart)
-    if (resultsMap.containsKey('ventes') && resultsMap['ventes'] is List) {
-      final barData = _createBarChart(resultsMap['ventes'] as List<dynamic>);
+    if (resultsMap['ventes'] is List<Map<String, dynamic>>) {
+      final barData = _createBarChart(resultsMap['ventes']);
       if (barData != null) charts.add(barData);
     }
 
     // 3. Clients (PieChart)
-    if (resultsMap.containsKey('clients') && resultsMap['clients'] is List) {
-      final pieData = _createPieChart('Répartition des clients par âge',
-          resultsMap['clients'] as List<dynamic>,
-          labelKey: 'age', valueKey: 'nombre');
+    if (resultsMap['clients'] is List<Map<String, dynamic>>) {
+      final pieData = _createPieChart(
+        'Répartition des clients par âge',
+        resultsMap['clients'],
+        labelKey: 'age',
+        valueKey: 'nombre',
+      );
       if (pieData != null) charts.add(pieData);
     }
 
@@ -486,18 +482,22 @@ class ChartDataFactory {
       final barGroups = [
         BarChartGroupData(x: 0, barRods: [
           BarChartRodData(
-              toY: info.performances.toDouble(), color: Colors.greenAccent)
+              toY: info.performances.toDouble(),
+              color: ColorHelpers.getColorForIndex(0))
         ]),
         BarChartGroupData(x: 1, barRods: [
-          BarChartRodData(toY: info.seo.toDouble(), color: Colors.blueAccent)
+          BarChartRodData(
+              toY: info.seo.toDouble(), color: ColorHelpers.getColorForIndex(1))
         ]),
         BarChartGroupData(x: 2, barRods: [
           BarChartRodData(
-              toY: info.mobile.toDouble(), color: Colors.orangeAccent)
+              toY: info.mobile.toDouble(),
+              color: ColorHelpers.getColorForIndex(2))
         ]),
         BarChartGroupData(x: 3, barRods: [
           BarChartRodData(
-              toY: info.securite.toDouble(), color: Colors.redAccent)
+              toY: info.securite.toDouble(),
+              color: ColorHelpers.getColorForIndex(3))
         ]),
       ];
 
@@ -611,7 +611,7 @@ class ChartDataFactory {
           barRods: [
             BarChartRodData(
               toY: quantite,
-              color: Colors.blueAccent,
+              color: ColorHelpers.getColorForIndex(i),
               width: 16,
               borderRadius: BorderRadius.circular(4),
             ),
@@ -628,7 +628,7 @@ class ChartDataFactory {
             child: ResponsiveText.bodySmall(
               label.isEmpty ? 'N/A' : label,
               style: const TextStyle(
-                color: Colors.white70,
+                color: ColorHelpers.textGray,
                 overflow: TextOverflow.ellipsis,
               ),
               maxLines: 1,
@@ -700,9 +700,9 @@ class ChartDataFactory {
     }).toList();
 
     final labels = filteredData.map((item) {
-      return Text(
+      return ResponsiveText.bodySmall(
         item[xKey]?.toString() ?? '',
-        style: const TextStyle(color: Colors.white70, fontSize: 12),
+        style: const TextStyle(color: Colors.white70),
       );
     }).toList();
 

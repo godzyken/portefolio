@@ -77,9 +77,7 @@ final globalVideoVisibilityProvider = NotifierProvider<BooleanNotifier, bool>(
 
 /// 🔹 Etat du lecteur YoutubeVideoIframe
 final playingVideoProvider =
-    NotifierProvider<NullableNotifier<String>, String?>(
-  () => NullableNotifier<String>(),
-);
+    NotifierProvider<PlayingVideoNotifier, String?>(PlayingVideoNotifier.new);
 
 /// 🔹 Génerateur de PDF
 final pdfExportProvider = Provider<PdfExportService>((ref) {

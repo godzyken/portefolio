@@ -41,10 +41,10 @@ class _YoutubeVideoPlayerIframeState
     if (!kIsWeb) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
-          ref.read(playingVideoProvider.notifier).setValue(widget.cardId);
+          ref.read(playingVideoProvider.notifier).play(widget.cardId);
           _controller.playVideo();
         } else {
-          ref.read(playingVideoProvider.notifier).clear();
+          ref.read(playingVideoProvider.notifier).stop();
           _controller.pauseVideo();
         }
       });
@@ -68,6 +68,8 @@ class _YoutubeVideoPlayerIframeState
     });
 
     final isVideoVisible = ref.watch(globalVideoVisibilityProvider);
+    final isPlaying =
+        ref.watch(playingVideoProvider.select((id) => id == widget.cardId));
 
     if (!isVideoVisible) {
       return const SizedBox.shrink();
@@ -78,31 +80,36 @@ class _YoutubeVideoPlayerIframeState
           absorbing: !isVideoVisible,
           child: GestureDetector(
             onTap: () {
-              final notifier = ref.read(playingVideoProvider.notifier);
-              /*       if (notifier.setValue(widget.cardId)) {
-                notifier.stop();
-              } else {
-                notifier.play(widget.cardId);
-              }*/
+              ref.read(playingVideoProvider.notifier).play(widget.cardId);
             },
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                YoutubePlayer(
+                  controller: _controller,
+                  aspectRatio: 16 / 9,
+                  key: ValueKey(widget.youtubeVideoId),
+                ),
+                if (!isPlaying)
+                  Container(
+                    color: Colors.black45,
+                    child: const Icon(Icons.play_circle_fill,
+                        color: Colors.white, size: 64),
+                  ),
+              ],
+            ),
+          ));
+    }
+    return AnimatedOpacity(
+        opacity: isVideoVisible ? 1.0 : 0.0,
+        duration: const Duration(milliseconds: 300),
+        child: IgnorePointer(
+            ignoring: !isVideoVisible,
             child: YoutubePlayer(
               controller: _controller,
               aspectRatio: 16 / 9,
               key: ValueKey(widget.youtubeVideoId),
-            ),
-          ));
-    } else {
-      return AnimatedOpacity(
-          opacity: isVideoVisible ? 1.0 : 0.0,
-          duration: const Duration(milliseconds: 300),
-          child: IgnorePointer(
-              ignoring: !isVideoVisible,
-              child: YoutubePlayer(
-                controller: _controller,
-                aspectRatio: 16 / 9,
-                key: ValueKey(widget.youtubeVideoId),
-              )));
-    }
+            )));
   }
 }
 
@@ -117,7 +124,7 @@ extension VideoOverlayHelper on BuildContext {
     ref.read(globalVideoVisibilityProvider.notifier).setFalse();
 
     // 2. Pause toutes les vidéos
-    ref.read(playingVideoProvider.notifier).clear();
+    ref.read(playingVideoProvider.notifier).stop();
 
     try {
       // 3. Affiche le dialog
@@ -140,7 +147,7 @@ extension VideoOverlayHelper on BuildContext {
     bool isScrollControlled = true,
   }) async {
     ref.read(globalVideoVisibilityProvider.notifier).setFalse();
-    ref.read(playingVideoProvider.notifier).clear();
+    ref.read(playingVideoProvider.notifier).stop();
 
     try {
       final result = await showModalBottomSheet<T>(

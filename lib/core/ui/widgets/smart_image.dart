@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:portefolio/core/affichage/colors_spec.dart';
 import 'package:portefolio/core/provider/smart_image_cache_provider.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -215,18 +216,38 @@ class _SmartImageState extends ConsumerState<SmartImage> {
   }
 
   Widget _buildFallback(double? w, double? h) {
-    final color = widget.fallbackColor ?? Theme.of(context).colorScheme.primary;
-    return Container(
-      width: w,
-      height: h,
-      color: color.withValues(alpha: 0.1),
-      alignment: Alignment.center,
-      child: Icon(
-        widget.fallbackIcon ?? Icons.broken_image_outlined,
-        color: color.withValues(alpha: 0.7),
-        size: (w ?? 100) * 0.4,
-      ),
-    );
+    final color = ColorHelpers.createHarmoniousPalette(
+        widget.fallbackColor ?? Theme.of(context).colorScheme.primary);
+    return Shimmer.fromColors(
+        baseColor: color.first,
+        highlightColor: color.last,
+        direction: ShimmerDirection.ttb,
+        child: TweenAnimationBuilder<double>(
+          tween: Tween(begin: 0.8, end: 1.2),
+          duration: const Duration(seconds: 2),
+          curve: Curves.easeInOut,
+          builder: (context, scale, child) {
+            return Transform.scale(
+              scale: scale,
+              child: Container(
+                width: w,
+                height: h,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  borderRadius:
+                      widget.borderRadius ?? BorderRadius.circular(12),
+                  gradient: ColorHelpers.bgGradient,
+                ),
+                child: Icon(
+                  widget.fallbackIcon ?? Icons.broken_image_outlined,
+                  color: ColorHelpers.errorColor,
+                  size: (w ?? 100) * 0.4,
+                ),
+              ),
+            );
+          },
+          onEnd: () => setState(() {}),
+        ));
   }
 
   Widget _buildShimmer(double? w, double? h) {
