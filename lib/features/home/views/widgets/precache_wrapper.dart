@@ -99,14 +99,14 @@ class _PrecacheWrapperState extends ConsumerState<PrecacheWrapper> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                ElevatedButton.icon(
+                ResponsiveButton.icon(
                   onPressed: () {
                     setState(() {
                       _forceShowContent = true;
                     });
                   },
                   icon: const Icon(Icons.skip_next),
-                  label: const ResponsiveText.bodySmall('Continuer quand même'),
+                  label: 'Continuer quand même',
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 24,

@@ -185,6 +185,7 @@ class StatsCardFactory {
 // UTILISATION
 // ============================================================================
 
+/*
 /// ❌ AVANT : 3 fichiers différents (StatCard, MetricColumn, KPICard)
 /// ✅ APRÈS : 1 seul factory
 
@@ -215,3 +216,4 @@ class WakaTimeStatsExample extends StatelessWidget {
     return StatsCardFactory.grid(stats, crossAxisCount: 3);
   }
 }
+*/

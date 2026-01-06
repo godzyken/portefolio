@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:portefolio/core/affichage/colors_spec.dart';
 import 'package:portefolio/features/parametres/themes/theme/theme_data.dart';
 
+import '../../../../../core/ui/widgets/responsive_text.dart';
+
 /// Widget pour comparer deux thèmes côte à côte
 class ThemeComparison extends StatelessWidget {
   final BasicTheme theme1;
@@ -197,10 +199,10 @@ class ThemeComparison extends StatelessWidget {
               if (isLeft ? onApplyTheme1 != null : onApplyTheme2 != null)
                 Padding(
                   padding: const EdgeInsets.all(16),
-                  child: ElevatedButton.icon(
+                  child: ResponsiveButton.icon(
                     onPressed: isLeft ? onApplyTheme1 : onApplyTheme2,
                     icon: const Icon(Icons.check_circle),
-                    label: const Text('Appliquer ce thème'),
+                    label: 'Appliquer ce thème',
                     style: ElevatedButton.styleFrom(
                       backgroundColor: theme.primaryColor,
                       foregroundColor:
@@ -305,7 +307,7 @@ class ThemeComparison extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        ElevatedButton(
+        ResponsiveButton(
           onPressed: () {},
           child: const Text('Elevated Button'),
         ),

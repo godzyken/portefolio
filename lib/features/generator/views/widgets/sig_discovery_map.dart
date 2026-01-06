@@ -56,7 +56,7 @@ class _SigDiscoveryMapState extends ConsumerState<SigDiscoveryMap>
             Text(exp.periode,
                 style: const TextStyle(fontStyle: FontStyle.italic)),
             const SizedBox(height: 10),
-            ElevatedButton(
+            ResponsiveButton(
               onPressed: () => /* Naviguer vers la page détail */ {},
               child: const Text("Voir les détails de l'expérience"),
             )

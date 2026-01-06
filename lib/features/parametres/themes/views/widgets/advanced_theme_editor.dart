@@ -759,10 +759,10 @@ class _AdvancedThemeEditorState extends ConsumerState<AdvancedThemeEditor>
       spacing: 8,
       runSpacing: 8,
       children: [
-        ElevatedButton.icon(
+        ResponsiveButton.icon(
           onPressed: () {},
           icon: const Icon(Icons.check),
-          label: const ResponsiveText.bodySmall('Elevated'),
+          label: 'Elevated',
         ),
         OutlinedButton.icon(
           onPressed: () {},
@@ -830,10 +830,10 @@ class _AdvancedThemeEditorState extends ConsumerState<AdvancedThemeEditor>
           ),
           const SizedBox(width: 16),
           Expanded(
-            child: ElevatedButton.icon(
+            child: ResponsiveButton.icon(
               onPressed: _saveTheme,
               icon: const Icon(Icons.save),
-              label: const ResponsiveText.bodySmall('Enregistrer'),
+              label: 'Enregistrer',
               style: ElevatedButton.styleFrom(
                 backgroundColor: _primaryColor,
                 foregroundColor: Colors.white,
@@ -842,10 +842,10 @@ class _AdvancedThemeEditorState extends ConsumerState<AdvancedThemeEditor>
           ),
           const SizedBox(width: 16),
           Expanded(
-            child: ElevatedButton.icon(
+            child: ResponsiveButton.icon(
               onPressed: _applyTheme,
               icon: const Icon(Icons.check_circle),
-              label: const ResponsiveText.bodySmall('Appliquer'),
+              label: 'Appliquer',
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green,
                 foregroundColor: Colors.white,

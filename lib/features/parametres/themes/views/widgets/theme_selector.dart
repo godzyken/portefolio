@@ -215,13 +215,13 @@ class _ThemeSelectorState extends ConsumerState<ThemeSelector>
       children: [
         ResponsiveBox(
           padding: const EdgeInsets.all(16),
-          child: ElevatedButton.icon(
+          child: ResponsiveButton.icon(
             onPressed: () {
               // Ouvrir le dialog de création
               // showDialog(context: context, builder: (_) => ThemeEditorDialog())
             },
             icon: const Icon(Icons.add),
-            label: const ResponsiveText.bodySmall('Créer un nouveau thème'),
+            label: 'Créer un nouveau thème',
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
             ),

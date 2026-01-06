@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:portefolio/core/affichage/colors_spec.dart';
 import 'package:portefolio/features/parametres/themes/theme/theme_data.dart';
 
+import '../../../../../core/ui/widgets/responsive_text.dart';
+
 class ThemePreviewWidget extends StatelessWidget {
   final BasicTheme theme;
   final VoidCallback? onApply;
@@ -140,7 +142,7 @@ class ThemePreviewWidget extends StatelessWidget {
   Widget _buildButtonsPreview(BuildContext context) {
     return Row(
       children: [
-        ElevatedButton(
+        ResponsiveButton(
           onPressed: () {},
           child: const Text('Elevated'),
         ),
@@ -206,10 +208,10 @@ class ThemePreviewWidget extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 16),
-          ElevatedButton.icon(
+          ResponsiveButton.icon(
             onPressed: onApply,
             icon: const Icon(Icons.check),
-            label: const Text('Appliquer'),
+            label: 'Appliquer',
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             ),

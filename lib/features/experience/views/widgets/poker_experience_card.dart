@@ -232,6 +232,7 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
               fit: BoxFit.cover,
               responsiveSize: ResponsiveImageSize.medium,
               fallbackIcon: Icons.business,
+              enableShimmer: true,
             )
           else
             ResponsiveBox(
@@ -278,6 +279,7 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
         responsiveSize: ResponsiveImageSize.medium,
         fit: BoxFit.cover,
         fallbackIcon: Icons.business,
+        enableShimmer: true,
       );
     }
 

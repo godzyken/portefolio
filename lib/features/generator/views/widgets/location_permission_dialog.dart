@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/ui/widgets/responsive_text.dart';
 import '../../data/location_data.dart';
 import '../../services/location_service.dart';
 
@@ -90,7 +91,7 @@ class _LocationPermissionDialogState
           onPressed: _isRequesting ? null : () => Navigator.pop(context, false),
           child: const Text('Refuser'),
         ),
-        ElevatedButton(
+        ResponsiveButton(
           onPressed: _isRequesting ? null : _requestPermission,
           child: _isRequesting
               ? const SizedBox(

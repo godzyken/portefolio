@@ -663,8 +663,8 @@ class ChartDataFactory {
         value: (item[valueKey] as num).toDouble(),
         title: label,
         color: color.withValues(alpha: 0.8),
-        radius: 60,
-        showTitle: false,
+        radius: 30,
+        showTitle: true,
         borderSide: BorderSide(color: color, width: 2),
         badgePositionPercentageOffset: 1.4,
       );

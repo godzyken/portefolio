@@ -349,14 +349,10 @@ class _SubmitRow extends StatelessWidget {
                 ResponsiveBox(
                   width: double.infinity,
                   height: 60,
-                  child: ElevatedButton.icon(
+                  child: ResponsiveButton.icon(
                     onPressed: onEmail,
                     icon: const Icon(Icons.send_rounded, size: 24),
-                    label: const ResponsiveText.bodyMedium(
-                      'Envoyer par Email',
-                      style:
-                          TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
-                    ),
+                    label: 'Envoyer par Email',
                     style: ElevatedButton.styleFrom(
                       backgroundColor: theme.colorScheme.primary,
                       foregroundColor: Colors.white,

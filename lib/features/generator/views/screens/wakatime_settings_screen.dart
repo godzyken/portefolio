@@ -285,7 +285,7 @@ class _WakaTimeSettingsScreenState
   Widget _buildActionButtons() {
     return Row(children: [
       Expanded(
-        child: ElevatedButton.icon(
+        child: ResponsiveButton.icon(
           onPressed: _isLoading ? null : _testAndSaveApiKey,
           icon: _isLoading
               ? const SizedBox(
@@ -293,8 +293,7 @@ class _WakaTimeSettingsScreenState
                   height: 16,
                   child: CircularProgressIndicator(strokeWidth: 2))
               : const Icon(Icons.save),
-          label:
-              Text(_isLoading ? 'Test en cours...' : 'Tester et Sauvegarder'),
+          label: _isLoading ? 'Test en cours...' : 'Tester et Sauvegarder',
         ),
       ),
     ]);

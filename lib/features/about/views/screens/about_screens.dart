@@ -152,6 +152,7 @@ class _AboutSectionState extends ConsumerState<AboutSection>
                   fit: BoxFit.cover,
                   fallbackIcon: Icons.person,
                   fallbackColor: theme.colorScheme.primary,
+                  enableShimmer: true,
                 ),
               ),
             ),

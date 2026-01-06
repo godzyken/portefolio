@@ -79,6 +79,7 @@ class ExperienceTimeline extends ConsumerWidget {
                     path: experiences[index].logo,
                     responsiveSize: ResponsiveImageSize.medium,
                     fit: BoxFit.contain,
+                    enableShimmer: true,
                   ),
                 ),
               ),

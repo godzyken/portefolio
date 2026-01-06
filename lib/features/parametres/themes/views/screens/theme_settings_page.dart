@@ -8,6 +8,8 @@ import 'package:portefolio/features/parametres/themes/views/widgets/quick_color_
 import 'package:portefolio/features/parametres/themes/views/widgets/theme_comparison.dart';
 import 'package:portefolio/features/parametres/themes/views/widgets/theme_selector.dart';
 
+import '../../../../../core/ui/widgets/responsive_text.dart';
+
 class ThemeSettingsPage extends ConsumerWidget {
   const ThemeSettingsPage({super.key});
 
@@ -133,10 +135,10 @@ class ThemeSettingsPage extends ConsumerWidget {
             Row(
               children: [
                 Expanded(
-                  child: ElevatedButton.icon(
+                  child: ResponsiveButton.icon(
                     onPressed: () => _showThemeSelector(context),
                     icon: const Icon(Icons.palette),
-                    label: const Text('Changer de thème'),
+                    label: 'Changer de thème',
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.all(16),
                     ),
@@ -144,10 +146,10 @@ class ThemeSettingsPage extends ConsumerWidget {
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: ElevatedButton.icon(
+                  child: ResponsiveButton.icon(
                     onPressed: () => _showThemeEditor(context),
                     icon: const Icon(Icons.add),
-                    label: const Text('Créer un thème'),
+                    label: 'Créer un thème',
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.all(16),
                     ),

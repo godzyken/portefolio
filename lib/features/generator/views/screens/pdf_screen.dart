@@ -23,11 +23,9 @@ class PdfScreen extends ConsumerWidget {
             textAlign: TextAlign.center,
           ),
           const ResponsiveBox(height: 32),
-          ElevatedButton.icon(
+          ResponsiveButton.icon(
             icon: const Icon(Icons.picture_as_pdf),
-            label: ResponsiveText.headlineMedium(
-              isGenerating ? 'Génération en cours...' : 'Créer le PDF',
-            ),
+            label: isGenerating ? 'Génération en cours...' : 'Créer le PDF',
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
               textStyle: const TextStyle(fontSize: 16),

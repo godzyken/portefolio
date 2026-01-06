@@ -721,7 +721,7 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
     // 💡 Vérification si le service est prêt
     return ResponsiveBox(
       height: 56,
-      child: ElevatedButton.icon(
+      child: ResponsiveButton.icon(
         onPressed: state.canConfirm
             ? () {
                 if (_formKey.currentState?.validate() ?? false) {
@@ -739,12 +739,9 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
                 ),
               )
             : const Icon(Icons.check),
-        label: ResponsiveText.bodyMedium(
-          state.status == AppointmentStatus.loading
-              ? 'Confirmation...'
-              : 'Confirmer le rendez-vous',
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
+        label: state.status == AppointmentStatus.loading
+            ? 'Confirmation...'
+            : 'Confirmer le rendez-vous',
         style: ElevatedButton.styleFrom(
           backgroundColor: theme.colorScheme.primary,
           foregroundColor: Colors.white,

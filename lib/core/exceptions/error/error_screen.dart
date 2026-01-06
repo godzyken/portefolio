@@ -67,10 +67,10 @@ class ErrorScreen extends StatelessWidget {
                   runSpacing: 8,
                   children: [
                     if (onRetry != null)
-                      ElevatedButton.icon(
+                      ResponsiveButton.icon(
                         onPressed: onRetry,
                         icon: const Icon(Icons.refresh),
-                        label: const ResponsiveText.bodyMedium('Réessayer'),
+                        label: 'Réessayer',
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 24, vertical: 12),
@@ -80,11 +80,10 @@ class ErrorScreen extends StatelessWidget {
                         ),
                       ),
                     if (onGoHome != null)
-                      OutlinedButton.icon(
+                      ResponsiveButton.icon(
                         onPressed: onGoHome,
                         icon: const Icon(Icons.home),
-                        label: const ResponsiveText.bodyMedium(
-                            'Retour à l’accueil'),
+                        label: 'Retour à l’accueil',
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 24, vertical: 12),

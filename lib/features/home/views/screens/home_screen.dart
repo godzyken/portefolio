@@ -190,23 +190,27 @@ class HomeScreen extends ConsumerWidget {
       runSpacing: 16,
       alignment: WrapAlignment.center,
       children: [
-        ElevatedButton.icon(
+        ResponsiveButton.icon(
           onPressed: () => context.go('/projects'),
           icon: const Icon(Icons.work_outline),
-          label: const ResponsiveText.bodySmall('Voir mes projets'),
+          label: 'Voir mes projets',
           style: _btnStyle(theme, isMobile),
         ),
-        OutlinedButton.icon(
+        ResponsiveButton.icon(
           onPressed: () => context.go('/contact'),
-          icon: const Icon(Icons.mail_outline),
-          label: const ResponsiveText.bodySmall('Me contacter'),
+          icon: Icon(
+            Icons.mail_outline,
+            color: theme.colorScheme.surfaceContainerHigh,
+          ),
+          label: 'Me contacter',
           style: OutlinedButton.styleFrom(
             padding: EdgeInsets.symmetric(
               horizontal: isMobile ? 24 : 32,
               vertical: isMobile ? 16 : 20,
             ),
             side: BorderSide(color: theme.colorScheme.primary, width: 2),
-            foregroundColor: theme.colorScheme.primary,
+            shadowColor: theme.colorScheme.secondary.withValues(alpha: 0.5),
+            foregroundColor: theme.colorScheme.onSecondary,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),

@@ -295,45 +295,106 @@ enum ResponsiveSpacing { xs, s, m, l, xl, xxl }
 
 class ResponsiveButton extends ConsumerWidget {
   final VoidCallback? onPressed;
-  final Widget child;
+  final Widget? child;
+  final String? label;
+  final Widget? icon;
   final ButtonStyle? style;
-  final bool isPrimary;
+  final ButtonType type;
 
   const ResponsiveButton({
     super.key,
     required this.onPressed,
-    required this.child,
+    this.child,
+    this.label,
+    this.icon,
     this.style,
-    this.isPrimary = true,
-  });
+    this.type = ButtonType.primary,
+  }) : assert(
+          child != null || label != null,
+          'Either child or label must be provided',
+        );
+
+  const ResponsiveButton.icon({
+    super.key,
+    required this.onPressed,
+    required this.icon,
+    required this.label,
+    this.style,
+    this.type = ButtonType.primary,
+  }) : child = null;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final constants = ref.watch(responsiveConstantsProvider);
 
-    final defaultStyle = ElevatedButton.styleFrom(
-      padding: EdgeInsets.symmetric(
-        horizontal: constants.buttonPaddingH,
-        vertical: constants.buttonPaddingV,
-      ),
-      minimumSize: Size(0, constants.buttonHeight),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(constants.radiusM),
-      ),
-    );
+    final defaultStyle = _baseButtonStyle(constants);
+    final mergedStyle = defaultStyle.merge(style);
 
-    if (isPrimary) {
-      return ElevatedButton(
-        onPressed: onPressed,
-        style: defaultStyle.merge(style),
-        child: child,
-      );
-    }
+    final content = child ?? Text(label!);
+    final hasIcon = icon != null;
 
-    return OutlinedButton(
-      onPressed: onPressed,
-      style: defaultStyle.merge(style),
-      child: child,
+    return switch (type) {
+      ButtonType.primary => hasIcon
+          ? ElevatedButton.icon(
+              onPressed: onPressed,
+              style: mergedStyle,
+              icon: icon!,
+              label: content,
+            )
+          : ElevatedButton(
+              onPressed: onPressed,
+              style: mergedStyle,
+              child: content,
+            ),
+      ButtonType.secondary => hasIcon
+          ? OutlinedButton.icon(
+              onPressed: onPressed,
+              style: mergedStyle,
+              icon: icon!,
+              label: content,
+            )
+          : OutlinedButton(
+              onPressed: onPressed,
+              style: mergedStyle,
+              child: content,
+            ),
+      ButtonType.text => hasIcon
+          ? TextButton.icon(
+              onPressed: onPressed,
+              style: mergedStyle,
+              icon: icon!,
+              label: content,
+            )
+          : TextButton(
+              onPressed: onPressed,
+              style: mergedStyle,
+              child: content,
+            ),
+    };
+  }
+
+  ButtonStyle _baseButtonStyle(ResponsiveConstants constants) {
+    return ButtonStyle(
+      padding: WidgetStateProperty.all(
+        EdgeInsets.symmetric(
+          horizontal: constants.buttonPaddingH,
+          vertical: constants.buttonPaddingV,
+        ),
+      ),
+      minimumSize: WidgetStateProperty.all(
+        Size(0, constants.buttonHeight),
+      ),
+      shape: WidgetStateProperty.all(
+        RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(constants.radiusM),
+        ),
+      ),
     );
   }
+}
+
+enum ButtonType {
+  primary,
+  secondary,
+  text,
 }

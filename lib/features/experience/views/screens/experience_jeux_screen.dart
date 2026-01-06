@@ -159,7 +159,11 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
                 child: ClipRRect(
                   borderRadius:
                       const BorderRadius.vertical(top: Radius.circular(12)),
-                  child: SmartImage(path: exp.image, fit: BoxFit.cover),
+                  child: SmartImage(
+                    path: exp.image,
+                    fit: BoxFit.cover,
+                    enableShimmer: true,
+                  ),
                 ),
               ),
             Padding(
@@ -410,6 +414,7 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
             path: 'assets/images/tapis-poker-2.png',
             responsiveSize: ResponsiveImageSize.xlarge,
             fit: BoxFit.cover,
+            enableShimmer: true,
           ),
         ),
         Column(
