@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
 
-import '../../../../projets/views/widgets/project_section.dart';
+import '../../../../projets/data/project_section.dart';
 
 /// Sidebar de navigation (desktop)
 class ProjectNavigationSidebar extends StatelessWidget {

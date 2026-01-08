@@ -3,6 +3,8 @@ import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/ui/widgets/responsive_text.dart';
 
+import '../../../../core/provider/iot_view_provider.dart';
+
 /// Toggle entre vue liste et grille
 class IoTViewToggle extends ConsumerWidget {
   final bool isGridView;
@@ -25,7 +27,7 @@ class IoTViewToggle extends ConsumerWidget {
           _IoTToggleButton(
             icon: LucideIcons.list,
             isActive: !isGridView,
-            onTap: () {}, // Géré par le parent
+            onTap: () => ref.read(iotViewModeProvider.notifier).toggle(),
           ),
           Container(
             width: 1,
@@ -35,7 +37,7 @@ class IoTViewToggle extends ConsumerWidget {
           _IoTToggleButton(
             icon: LucideIcons.layout_grid,
             isActive: isGridView,
-            onTap: () {}, // Géré par le parent
+            onTap: () => ref.read(iotViewModeProvider.notifier).toggle(),
           ),
         ],
       ),

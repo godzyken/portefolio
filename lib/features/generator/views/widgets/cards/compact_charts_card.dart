@@ -166,8 +166,9 @@ class _CompactBarChartState extends State<CompactBarChart>
                               showTitles: true,
                               reservedSize: 28,
                               getTitlesWidget: (value, meta) {
+                                var numb = formatCompact(value.toInt());
                                 return ResponsiveText.bodySmall(
-                                  value.toInt().toString(),
+                                  numb,
                                   style: const TextStyle(
                                     color: Colors.white70,
                                   ),
@@ -195,8 +196,9 @@ class _CompactBarChartState extends State<CompactBarChart>
                                 // Trop de labels ? On en saute
                                 final total = labels.length;
                                 final step = total > 8 ? (total / 8).ceil() : 1;
-                                if (index % step != 0)
+                                if (index % step != 0) {
                                   return const SizedBox.shrink();
+                                }
 
                                 return Padding(
                                   padding: const EdgeInsets.only(top: 8),
@@ -365,8 +367,9 @@ class _CompactLineChartState extends State<CompactLineChart>
                               showTitles: true,
                               reservedSize: 28,
                               getTitlesWidget: (value, meta) {
+                                var numb = formatCompact(value.toInt());
                                 return ResponsiveText.bodySmall(
-                                  value.toInt().toString(),
+                                  numb,
                                   style: const TextStyle(
                                     color: Colors.white70,
                                   ),
@@ -517,110 +520,129 @@ class _CompactPieChartState extends State<CompactPieChart>
                 borderRadius: BorderRadius.circular(24),
                 child: BackdropFilter(
                     filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-                    child: AnimatedBuilder(
-                      animation: _animation,
-                      builder: (context, child) {
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Transform.scale(
-                              scale: 0.9 + 0.1 * _animation.value,
-                              child: AnimatedContainer(
-                                duration: const Duration(milliseconds: 400),
-                                height: info.isMobile ? 200 : 220,
-                                curve: Curves.easeOutBack,
-                                child: PieChart(
-                                  PieChartData(
-                                    sectionsSpace: 2,
-                                    centerSpaceRadius: info.isMobile ? 20 : 30,
-                                    pieTouchData: PieTouchData(
-                                      touchCallback: (event, response) {
-                                        if (!event
-                                                .isInterestedForInteractions ||
-                                            response == null) {
-                                          setState(() => touchedIndex = null);
-                                          return;
-                                        }
-                                        setState(() => touchedIndex = response
-                                            .touchedSection
-                                            ?.touchedSectionIndex);
-                                      },
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        final size = constraints.biggest;
+                        final minSide = size.shortestSide;
+
+                        // 🔹 Rayon adaptatif (plus petit sur mobile, plus large sur grand écran)
+                        final baseRadius = (minSide / 3.2).clamp(30.0, 70.0);
+                        final centerSpace = baseRadius / 2;
+
+                        return AnimatedBuilder(
+                          animation: _animation,
+                          builder: (context, child) {
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Transform.scale(
+                                  scale: 0.9 + 0.1 * _animation.value,
+                                  alignment: Alignment.center,
+                                  child: AnimatedContainer(
+                                    duration: const Duration(milliseconds: 400),
+                                    height: info.isMobile
+                                        ? info.cardWidth
+                                        : info.cardHeightRatio * size.height,
+                                    curve: Curves.easeOutBack,
+                                    child: PieChart(
+                                      PieChartData(
+                                          sectionsSpace: 4,
+                                          centerSpaceRadius: centerSpace,
+                                          pieTouchData: PieTouchData(
+                                            touchCallback: (event, response) {
+                                              if (!event
+                                                      .isInterestedForInteractions ||
+                                                  response == null) {
+                                                setState(
+                                                    () => touchedIndex = null);
+                                                return;
+                                              }
+                                              setState(() => touchedIndex =
+                                                  response.touchedSection
+                                                      ?.touchedSectionIndex);
+                                            },
+                                          ),
+                                          sections: List.generate(
+                                              widget.sections.length, (i) {
+                                            final section = widget.sections[i];
+                                            final isTouched = i == touchedIndex;
+                                            final double radius = isTouched
+                                                ? baseRadius * 1.2
+                                                : baseRadius;
+                                            return PieChartSectionData(
+                                              title: section.title,
+                                              value: section.value,
+                                              color: section.color,
+                                              gradient: section.gradient,
+                                              titleStyle: TextStyle(
+                                                fontSize: isTouched ? 18 : 14,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white,
+                                                shadows: [
+                                                  Shadow(
+                                                      color: Colors.black
+                                                          .withValues(
+                                                              alpha: 0.3),
+                                                      blurRadius: 12),
+                                                ],
+                                              ),
+                                              radius: radius,
+                                            );
+                                          }),
+                                          startDegreeOffset: -45),
+                                      duration:
+                                          const Duration(milliseconds: 1000),
+                                      curve: Curves.easeInOutCubic,
                                     ),
-                                    sections: List.generate(
-                                        widget.sections.length, (i) {
-                                      final section = widget.sections[i];
-                                      final isTouched = i == touchedIndex;
-                                      final double radius = isTouched
-                                          ? 70
-                                          : (info.isMobile ? 50 : 60);
-                                      return PieChartSectionData(
-                                        title: section.title,
-                                        value: section.value,
-                                        color: section.color,
-                                        gradient: section.gradient,
-                                        titleStyle: TextStyle(
-                                          fontSize: isTouched ? 18 : 14,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                          shadows: [
-                                            Shadow(
-                                                color: Colors.black
-                                                    .withValues(alpha: 0.3),
-                                                blurRadius: 12),
-                                          ],
-                                        ),
-                                        radius: radius,
-                                      );
-                                    }),
                                   ),
-                                  duration: const Duration(milliseconds: 1000),
-                                  curve: Curves.easeInOutCubic,
                                 ),
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            AnimatedOpacity(
-                              opacity: _animation.value,
-                              duration: const Duration(milliseconds: 600),
-                              child: Wrap(
-                                alignment: WrapAlignment.center,
-                                spacing: 12,
-                                runSpacing: 8,
-                                children: widget.sections.map((s) {
-                                  return Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        AnimatedContainer(
-                                          duration:
-                                              const Duration(milliseconds: 600),
-                                          width: 12,
-                                          height: 12,
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            gradient: s.gradient ??
-                                                LinearGradient(
-                                                  colors: [
-                                                    s.color,
-                                                    s.color
-                                                        .withValues(alpha: 0.7)
-                                                  ],
-                                                ),
-                                          ),
-                                        ),
-                                        const SizedBox(width: 6),
-                                        ResponsiveText.bodySmall(
-                                          "${s.title}: ${formatCompact(s.value)}",
-                                          style: TextStyle(
-                                            color: Colors.white
-                                                .withValues(alpha: 0.9),
-                                            fontSize: 13,
-                                          ),
-                                        ),
-                                      ]);
-                                }).toList(),
-                              ),
-                            ),
-                          ],
+                                const SizedBox(height: 12),
+                                AnimatedOpacity(
+                                  opacity: _animation.value,
+                                  duration: const Duration(milliseconds: 600),
+                                  child: Wrap(
+                                    alignment: WrapAlignment.center,
+                                    crossAxisAlignment:
+                                        WrapCrossAlignment.center,
+                                    spacing: 12,
+                                    runSpacing: 8,
+                                    children: widget.sections.map((s) {
+                                      return Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            AnimatedContainer(
+                                              duration: const Duration(
+                                                  milliseconds: 600),
+                                              width: 12,
+                                              height: 12,
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                gradient: s.gradient ??
+                                                    LinearGradient(
+                                                      colors: [
+                                                        s.color,
+                                                        s.color.withValues(
+                                                            alpha: 0.7)
+                                                      ],
+                                                    ),
+                                              ),
+                                            ),
+                                            const SizedBox(width: 6),
+                                            ResponsiveText.bodySmall(
+                                              "${s.title}: ${formatCompact(s.value)}",
+                                              style: TextStyle(
+                                                color: Colors.white
+                                                    .withValues(alpha: 0.9),
+                                                fontSize: 13,
+                                              ),
+                                            ),
+                                          ]);
+                                    }).toList(),
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
                         );
                       },
                     )))));
@@ -677,16 +699,35 @@ class _CompactScatterTrendChartState extends State<CompactScatterTrendChart>
     if (widget.spots.isEmpty) return const SizedBox.shrink();
 
     final maxValue = widget.spots.map((e) => e.y).reduce(max);
-    final width = MediaQuery.of(context).size.width;
-    final height = 220.0; // hauteur fixe pour l’affichage compact
 
-    return ChartAnimator(
-        child: BuildAnimatedChartContent(
-            animation: _animation,
-            height: height,
-            widget: widget,
-            maxValue: maxValue,
-            width: width));
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width = constraints.maxWidth;
+        final height = (constraints.maxHeight).clamp(200.0, 320.0);
+
+        return Center(
+          child: ChartAnimator(
+              child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            child: ClipRect(
+              child: Align(
+                alignment: Alignment.center,
+                child: SizedBox(
+                  width: width * 0.95,
+                  height: height * 0.9,
+                  child: BuildAnimatedChartContent(
+                      animation: _animation,
+                      height: height * 0.9,
+                      widget: widget,
+                      maxValue: maxValue,
+                      width: width * 0.9),
+                ),
+              ),
+            ),
+          )),
+        );
+      },
+    );
   }
 }
 

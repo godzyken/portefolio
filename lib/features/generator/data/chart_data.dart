@@ -272,7 +272,7 @@ class ChartDataFactory {
           barRods: [
             BarChartRodData(
               toY: value,
-              color: Colors.greenAccent,
+              color: ColorHelpers.getColorForIndex(x),
               width: 18,
             )
           ],
@@ -313,18 +313,92 @@ class ChartDataFactory {
         title: '💸 Gains vs Coûts',
         lineSpots: gainSpots,
         xLabels: labels,
-        lineColor: Colors.lightGreenAccent,
+        lineColor: ColorHelpers.getColorForIndex(2),
       ));
 
       charts.add(ChartData.line(
         title: '💰 Coûts cumulés',
         lineSpots: coutSpots,
         xLabels: labels,
-        lineColor: Colors.redAccent,
+        lineColor: ColorHelpers.getColorForIndex(3),
       ));
     }
 
-    // 3️⃣ KPIs économiques globaux
+    // 3️⃣ Répartition des gains (PieChart)
+    if (development.containsKey('3_autres_gains')) {
+      final gains = development['3_autres_gains'] as Map<String, dynamic>;
+      final data = gains.entries
+          .where((e) => e.key != 'total')
+          .map((e) => {
+                'label': e.key.replaceAll('_', ' '),
+                'valeur': _parseNumeric(e.value)
+              })
+          .toList();
+
+      final sections = data.asMap().entries.map((entry) {
+        final index = entry.key;
+        final item = entry.value;
+        final color = ColorHelpers.getColorForIndex(index);
+        return PieChartSectionData(
+          value: (item['valeur'] as num?)?.toDouble() ?? 0,
+          title: item['label'].toString(),
+          color: color.withValues(alpha: 0.85),
+          radius: 45,
+          showTitle: true,
+        );
+      }).toList();
+
+      charts.add(ChartData.pie(
+        title: '💡 Répartition des gains',
+        pieSections: sections,
+      ));
+    }
+
+    // 4️⃣ Répartition des coûts (BarChart)
+    if (development.containsKey('4_couts')) {
+      final couts = development['4_couts'] as Map<String, dynamic>;
+      final data = couts.entries
+          .map((e) => {
+                'label': e.key.replaceAll('_', ' '),
+                'valeur': _parseNumeric(e.value)
+              })
+          .toList();
+
+      final barGroups = data.asMap().entries.map((entry) {
+        final index = entry.key;
+        final item = entry.value;
+        return BarChartGroupData(
+          x: index,
+          barRods: [
+            BarChartRodData(
+              toY: (item['valeur'] as num?)?.toDouble() ?? 0,
+              color: ColorHelpers.getColorForIndex(index),
+              width: 18,
+              borderRadius: BorderRadius.circular(6),
+            ),
+          ],
+        );
+      }).toList();
+
+      final xLabels = data
+          .map((e) => Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: ResponsiveText.bodySmall(
+                  e['label'].toString(),
+                  style: const TextStyle(color: Colors.white70),
+                  maxLines: 1,
+                ),
+              ))
+          .toList();
+
+      charts.add(ChartData.bar(
+        title: '🏗️ Répartition des coûts',
+        barGroups: barGroups,
+        xLabels: xLabels,
+      ));
+    }
+
+    // 5️⃣ KPIs économiques globaux
     if (development.containsKey('6_roi_global')) {
       final roi = development['6_roi_global'] as Map<String, dynamic>;
       final business = development['7_interpretation_business'] ?? {};
@@ -337,20 +411,16 @@ class ChartDataFactory {
         'Temps économisé': _parseNumeric(business['temps_economise_total']),
       };
 
-      final colors = ColorHelpers.chartColors;
-
       final scatterSpots = <ScatterSpot>[];
       var i = 0;
       kpis.forEach((label, value) {
-        final x = i.toDouble() * 2;
-        final y = value;
         scatterSpots.add(
           ScatterSpot(
-            x,
-            y,
+            i.toDouble() * 2,
+            value,
             renderPriority: i,
             dotPainter: FlDotCirclePainter(
-              color: colors[i % colors.length],
+              color: ColorHelpers.getColorForIndex(i),
               radius: (value / 1000).clamp(5, 16),
               strokeWidth: 1.5,
               strokeColor: Colors.white.withValues(alpha: 0.6),
@@ -363,7 +433,7 @@ class ChartDataFactory {
       charts.add(ChartData.scatter(
         title: '💼 Indicateurs économiques clés',
         scatterSpots: scatterSpots,
-        scatterColor: Colors.greenAccent,
+        scatterColor: ColorHelpers.getColorForIndex(5),
       ));
     }
 
@@ -576,7 +646,7 @@ class ChartDataFactory {
         value: numeric == 0 ? 1 : numeric,
         title: key,
         color: color.withValues(alpha: 0.8),
-        radius: 55,
+        radius: 45,
         showTitle: false,
       );
     }).toList();

@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../data/github_project_ai_analyzer.dart';
 import '../data/project_data.dart';
 import '../notifiers/projet_notifiers.dart';
 
@@ -18,3 +19,18 @@ final selectedProjectsProvider =
 /// SECTION ACTIVE
 final activeSectionProvider =
     NotifierProvider<ActiveSectionNotifier, String>(ActiveSectionNotifier.new);
+
+final githubProjectAIProvider = FutureProvider.family
+    .autoDispose<GithubProjectAIInfo, String>((ref, repoUrl) async {
+  return await GithubProjectAIAnalyzer.analyzeRepoWithAI(repoUrl);
+});
+
+/*final githubReleasesProvider = FutureProvider.family
+    .autoDispose<List<GitHubRelease>, String>((ref, repoUrl) async {
+  return await GitHubAnalyzer.fetchReleases(repoUrl);
+});
+
+final githubLanguagesProvider = FutureProvider.family
+    .autoDispose<Map<String, int>, String>((ref, repoUrl) async {
+  return await GitHubAnalyzer.fetchLanguages(repoUrl);
+});*/
