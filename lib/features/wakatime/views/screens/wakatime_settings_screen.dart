@@ -5,10 +5,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/ui/widgets/responsive_text.dart';
 
 import '../../../../core/ui/widgets/duration_formatter.dart';
+import '../../../generator/data/extention_models.dart';
+import '../../../generator/views/widgets/wakatime_debug.dart';
 import '../../../projets/providers/projects_extentions_providers.dart';
-import '../../data/extention_models.dart';
 import '../../services/wakatime_service.dart';
-import '../widgets/wakatime_debug.dart';
 
 class WakaTimeSettingsScreen extends ConsumerStatefulWidget {
   const WakaTimeSettingsScreen({super.key});

@@ -359,33 +359,30 @@ class _ImmersiveExperienceDetailState
   Widget _buildObjectifsSection(ThemeData theme) {
     if (widget.experience.objectifs.isEmpty) return const SizedBox.shrink();
 
-    return ExperienceListSection(
-      theme: theme,
+    return SectionBuilder.simple(
       icon: Icons.flag_outlined,
       title: 'Objectifs',
-      items: widget.experience.objectifs,
+      child: BulletListBuilder(items: widget.experience.objectifs),
     );
   }
 
   Widget _buildMissionsSection(ThemeData theme) {
     if (widget.experience.missions.isEmpty) return const SizedBox.shrink();
 
-    return ExperienceListSection(
-      theme: theme,
+    return SectionBuilder.simple(
       icon: Icons.task_alt,
       title: 'Missions',
-      items: widget.experience.missions,
+      child: BulletListBuilder.checks(items: widget.experience.missions),
     );
   }
 
   Widget _buildResultatsSection(ThemeData theme) {
     if (widget.experience.resultats.isEmpty) return const SizedBox.shrink();
 
-    return ExperienceListSection(
-      theme: theme,
+    return SectionBuilder.simple(
       icon: Icons.trending_up,
       title: 'Résultats',
-      items: widget.experience.resultats,
+      child: BulletListBuilder(items: widget.experience.resultats),
     );
   }
 

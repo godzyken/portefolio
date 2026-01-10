@@ -5,8 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/device_spec.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
-import 'package:portefolio/features/projets/views/widgets/project_card.dart';
-import 'package:portefolio/features/projets/views/widgets/unified_project_card.dart';
+import 'package:portefolio/features/projets/views/widgets/project_widgets_extentions.dart';
 
 import '../../data/project_data.dart';
 
@@ -151,7 +150,7 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
           child: ResponsiveBox(
             width: dialogMaxWidth,
             height: dialogMaxHeight,
-            child: ProjectCard(
+            child: ProjectCard.adaptive(
               project: widget.project,
               width: dialogMaxWidth,
               height: dialogMaxHeight,
@@ -241,7 +240,7 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
                     child: ResponsiveBox(
                         width: screenWidth,
                         height: screenHeight,
-                        child: UnifiedProjectCard.minimal(
+                        child: ProjectCard.minimal(
                           project: widget.project,
                           width: 800,
                           height: 600,
@@ -358,7 +357,7 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
                 height: dialogMaxHeight,
                 key: ValueKey(
                     'project_card_${widget.project.id}_${DateTime.now().millisecondsSinceEpoch}'),
-                child: UnifiedProjectCard.minimal(project: widget.project),
+                child: ProjectCard.minimal(project: widget.project),
               ),
             ),
           ),

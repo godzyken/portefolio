@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/ui/widgets/responsive_text.dart';
-import '../../data/location_data.dart';
+import '../../data/models/location_data.dart';
 import '../../services/location_service.dart';
 
 /// Dialog pour expliquer et demander la permission de géolocalisation

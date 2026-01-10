@@ -7,7 +7,7 @@ import 'package:portefolio/core/provider/providers.dart';
 import '../../../../constants/app_tab.dart';
 import '../../../../core/provider/comparatif_provider.dart';
 import '../../../../core/ui/ui_widgets_extentions.dart';
-import '../../data/bubble_menu_item.dart';
+import '../../data/models/bubble_menu_item.dart';
 import '../generator_widgets_extentions.dart';
 
 class MainScaffold extends ConsumerWidget {

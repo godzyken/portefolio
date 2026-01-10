@@ -5,7 +5,7 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../features/generator/data/location_data.dart';
+import '../../features/generator/data/models/location_data.dart';
 import '../../features/generator/services/location_service.dart';
 
 class UserLocationNotifier extends StreamNotifier<LocationData> {

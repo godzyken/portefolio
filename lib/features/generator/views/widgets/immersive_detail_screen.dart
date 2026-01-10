@@ -8,6 +8,7 @@ import 'package:portefolio/features/generator/services/section_manager.dart';
 
 import '../../../projets/data/project_section.dart';
 import '../../../projets/providers/projects_extentions_providers.dart';
+import '../../../wakatime/views/widgets/wakatime_badge.dart';
 import '../../data/extention_models.dart';
 import '../generator_widgets_extentions.dart';
 

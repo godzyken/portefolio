@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 
-import '../../../data/chart_data.dart';
+import '../../../data/models/chart_data.dart';
 import '../cards/chart_card.dart';
 
 /// Grille responsive de graphiques

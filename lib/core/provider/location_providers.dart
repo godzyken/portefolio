@@ -8,7 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../../features/experience/data/experiences_data.dart';
-import '../../features/generator/data/location_data.dart';
+import '../../features/generator/data/models/location_data.dart';
 import '../../features/generator/providers/errors/geolocation_exception.dart';
 import '../../features/generator/providers/location_service_provider.dart';
 import '../notifier/generic_notifier.dart';

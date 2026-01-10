@@ -6,7 +6,7 @@ import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/features/generator/views/generator_widgets_extentions.dart';
 
 import '../../../../../core/ui/widgets/responsive_text.dart';
-import '../../../data/chart_data.dart';
+import '../../../data/models/chart_data.dart';
 
 /// Affiche un graphique en plein écran dans un dialog
 void showChartFullscreen({

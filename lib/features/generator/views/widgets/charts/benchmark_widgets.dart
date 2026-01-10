@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:portefolio/core/affichage/colors_spec.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/ui/widgets/responsive_text.dart';
-
-import '../../../data/chart_data.dart';
+import 'package:portefolio/features/generator/data/extention_models.dart';
 
 class BenchmarkGlobalWidget extends StatelessWidget {
   final BenchmarkInfo benchmark;

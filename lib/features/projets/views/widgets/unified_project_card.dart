@@ -8,6 +8,7 @@ import 'package:portefolio/features/projets/data/project_data.dart';
 import 'package:vector_math/vector_math_64.dart' show Vector3;
 
 import '../../../../core/provider/providers.dart';
+import '../../../wakatime/views/widgets/wakatime_badge.dart';
 
 enum ProjectCardStyle {
   /// Style adaptatif avec layout responsive
@@ -71,23 +72,23 @@ class ProjectCardConfig {
   }
 }
 
-class UnifiedProjectCard extends ConsumerStatefulWidget {
+class ProjectCard extends ConsumerStatefulWidget {
   final ProjectInfo project;
   final ProjectCardConfig config;
 
-  const UnifiedProjectCard({
+  const ProjectCard({
     super.key,
     required this.project,
     this.config = const ProjectCardConfig(),
   });
 
-  factory UnifiedProjectCard.adaptive({
+  factory ProjectCard.adaptive({
     required ProjectInfo project,
     VoidCallback? onTap,
     double? width,
     double? height,
   }) {
-    return UnifiedProjectCard(
+    return ProjectCard(
       project: project,
       config: ProjectCardConfig(
         style: ProjectCardStyle.adaptive,
@@ -96,12 +97,12 @@ class UnifiedProjectCard extends ConsumerStatefulWidget {
     );
   }
 
-  factory UnifiedProjectCard.minimal({
+  factory ProjectCard.minimal({
     required ProjectInfo project,
     double? width,
     double? height,
   }) {
-    return UnifiedProjectCard(
+    return ProjectCard(
       project: project,
       config: ProjectCardConfig(
         style: ProjectCardStyle.minimal,
@@ -111,11 +112,11 @@ class UnifiedProjectCard extends ConsumerStatefulWidget {
     );
   }
 
-  factory UnifiedProjectCard.hover({
+  factory ProjectCard.hover({
     required ProjectInfo project,
     EdgeInsets? margin,
   }) {
-    return UnifiedProjectCard(
+    return ProjectCard(
       project: project,
       config: ProjectCardConfig(
         style: ProjectCardStyle.hover,
@@ -124,11 +125,11 @@ class UnifiedProjectCard extends ConsumerStatefulWidget {
     );
   }
 
-  factory UnifiedProjectCard.compact({
+  factory ProjectCard.compact({
     required ProjectInfo project,
     VoidCallback? onTap,
   }) {
-    return UnifiedProjectCard(
+    return ProjectCard(
       project: project,
       config: ProjectCardConfig(
         style: ProjectCardStyle.compact,
@@ -139,10 +140,10 @@ class UnifiedProjectCard extends ConsumerStatefulWidget {
   }
 
   @override
-  ConsumerState<UnifiedProjectCard> createState() => _UnifiedProjectCardState();
+  ConsumerState<ProjectCard> createState() => _ProjectCardState();
 }
 
-class _UnifiedProjectCardState extends ConsumerState<UnifiedProjectCard> {
+class _ProjectCardState extends ConsumerState<ProjectCard> {
   bool _isHovered = false;
 
   @override

@@ -3,9 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
 
-import '../../../../projets/providers/projects_wakatime_service_provider.dart';
-import '../../../data/wakatime_models_data.dart';
-import '../../../services/wakatime_service.dart';
+import '../../data/wakatime_models_data.dart';
+import '../../providers/projects_wakatime_service_provider.dart';
+import '../../services/wakatime_service.dart';
 
 /// Définition des variantes d'affichage du badge WakaTime.
 enum WakaTimeBadgeVariant {

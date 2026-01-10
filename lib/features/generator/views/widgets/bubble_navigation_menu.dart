@@ -2,7 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
-import '../../data/bubble_menu_item.dart';
+import '../../data/models/bubble_menu_item.dart';
 
 class BubbleNavigationMenu extends StatefulWidget {
   final List<BubbleMenuItem> items;

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
 
+import '../../../../wakatime/views/widgets/wakatime_badge.dart';
 import '../../../data/extention_models.dart';
-import '../../generator_widgets_extentions.dart';
 
 /// Section Hero (présentation principale du projet)
 ///

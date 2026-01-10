@@ -7,7 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/provider/provider_extentions.dart';
 import '../../generator/data/extention_models.dart';
-import '../../generator/services/wakatime_service.dart';
+import '../services/wakatime_service.dart';
 
 /// Provider pour la clé API WakaTime (stockée localement)
 final wakaTimeApiKeyProvider = FutureProvider<String?>((ref) async {

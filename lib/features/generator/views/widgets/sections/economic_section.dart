@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
+import 'package:portefolio/features/generator/data/extention_models.dart';
 import 'package:portefolio/features/generator/views/generator_widgets_extentions.dart';
 
-import '../../../data/chart_data.dart';
 import '../../../services/section_manager.dart';
 
 /// Section Analyse Économique - Affiche ROI et graphiques économiques

@@ -1,5 +1,9 @@
 export '../../experience/data/experiences_data.dart';
 export '../../home/data/services_data.dart';
 export '../../projets/data/project_data.dart';
-export 'chart_data.dart';
-export 'wakatime_models_data.dart';
+export '../../wakatime/data/wakatime_models_data.dart';
+export 'factories/chart_factory.dart';
+export 'models/benchmark_info.dart';
+export 'models/bubble_menu_item.dart';
+export 'models/chart_data.dart';
+export 'models/location_data.dart';

@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
-import 'package:portefolio/core/ui/ui_widgets_extentions.dart'
-    hide MetricColumn;
+import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
 
 import '../../../services/section_manager.dart';
-import '../cards/info_card.dart';
 
 /// Section Infrastructure - Affiche l'architecture et les données de développement
 ///
@@ -111,15 +109,15 @@ class _InfrastructureDataSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InfoCard(
+    return SectionBuilder.gradient(
       title: title,
       icon: icon,
       accentColor: accentColor,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: data.entries.map((entry) {
-          return BulletListItem(
-            text: '${SectionManager.formatKey(entry.key)}: ${entry.value}',
+          return BulletListBuilder(
+            items: ['${SectionManager.formatKey(entry.key)}: ${entry.value}'],
             bulletColor: accentColor,
           );
         }).toList(),
@@ -140,11 +138,10 @@ class _SyntheseAnnuelle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InfoCard(
+    return SectionBuilder.gradient(
       title: '📊 Synthèse annuelle',
       icon: Icons.calendar_today,
       accentColor: Colors.purple,
-      useGradient: true,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: synthese.asMap().entries.map((entry) {

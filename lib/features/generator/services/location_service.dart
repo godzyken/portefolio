@@ -4,7 +4,7 @@ import 'dart:developer' as developer;
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 
-import '../data/location_data.dart';
+import '../data/models/location_data.dart';
 
 abstract class LocationService {
   static LocationService get instance => _PlatformLocationService();

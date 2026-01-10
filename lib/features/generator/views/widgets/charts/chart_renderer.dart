@@ -1,6 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:portefolio/features/generator/data/chart_data.dart';
+import 'package:portefolio/features/generator/data/extention_models.dart';
 import 'package:portefolio/features/generator/views/widgets/three_d_tech_icon.dart';
 
 import '../../../../../core/affichage/colors_spec.dart';

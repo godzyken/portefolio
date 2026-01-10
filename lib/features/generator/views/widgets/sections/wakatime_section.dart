@@ -6,8 +6,8 @@ import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/provider/image_providers.dart';
 import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
 
-import '../../../../projets/providers/projects_wakatime_service_provider.dart';
-import '../../../data/wakatime_models_data.dart';
+import '../../../../wakatime/data/wakatime_models_data.dart';
+import '../../../../wakatime/providers/projects_wakatime_service_provider.dart';
 import '../../generator_widgets_extentions.dart';
 
 /// Section WakaTime - Affiche les statistiques de développement
@@ -141,22 +141,23 @@ class _StatsColumn extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 24),
-        StatCard(
-          label: 'Temps de développement',
-          value: projectStat.text,
+        SectionBuilder.borderless(
+          title: 'Temps de développement',
           icon: Icons.timer,
+          child: ResponsiveText.titleSmall(projectStat.text),
         ),
         const SizedBox(height: 12),
-        StatCard(
-          label: 'Part du temps total',
-          value: '${projectStat.percent.toStringAsFixed(1)}%',
+        SectionBuilder.borderless(
+          title: 'Part du temps total',
           icon: Icons.trending_up,
+          child: ResponsiveText.titleSmall(
+              '${projectStat.percent.toStringAsFixed(1)}%'),
         ),
         const SizedBox(height: 12),
-        StatCard(
-          label: 'Format détaillé',
-          value: projectStat.digital,
+        SectionBuilder.borderless(
+          title: 'Format détaillé',
           icon: Icons.schedule,
+          child: ResponsiveText.titleSmall(projectStat.digital),
         ),
       ],
     );

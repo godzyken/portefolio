@@ -1,6 +1,6 @@
 import 'package:latlong2/latlong.dart';
 
-import '../../generator/data/location_data.dart';
+import '../../generator/data/models/location_data.dart';
 
 class Experience {
   final String id;

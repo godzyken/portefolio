@@ -4,7 +4,7 @@ import 'dart:developer' as developer;
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
-import '../data/extention_models.dart';
+import '../data/wakatime_models_data.dart';
 
 /// Service pour interagir avec l'API WakaTime
 class WakaTimeService {
