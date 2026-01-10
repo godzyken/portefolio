@@ -34,7 +34,7 @@ dependencies:
   geolocator: ^14.0.2
 
   # Google outils
-  google_fonts: ^6.3.2
+  google_fonts: ^7.0.0
   googleapis: ^15.0.0
   google_sign_in: ^7.2.0
 
@@ -54,7 +54,7 @@ dependencies:
   url_launcher: ^6.3.2
   cached_network_image: ^3.4.1
   shimmer: ^3.0.0
-  package_info_plus: ^8.3.1
+  package_info_plus: ^9.0.0
   fl_chart: ^1.1.1
   lottie: ^3.3.2
   flutter_native_splash: ^2.4.7
