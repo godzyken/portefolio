@@ -31,6 +31,8 @@ class _ImmersiveExperienceDetailState
   late ScrollController _scrollController;
   double _scrollOffset = 0.0;
   bool _isExiting = false;
+  bool _isMapLoading = true;
+  bool _hasMapError = false;
 
   @override
   void initState() {
@@ -62,6 +64,29 @@ class _ImmersiveExperienceDetailState
     ));
 
     _controller.forward();
+
+    if (widget.experience.tags.contains('SIG')) {
+      _loadMap();
+    }
+  }
+
+  Future<void> _loadMap() async {
+    try {
+      // Laisser le temps à la carte de se charger
+      await Future.delayed(const Duration(milliseconds: 500));
+      if (mounted) {
+        setState(() {
+          _isMapLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isMapLoading = false;
+          _hasMapError = true;
+        });
+      }
+    }
   }
 
   @override
@@ -217,11 +242,58 @@ class _ImmersiveExperienceDetailState
 
   Widget _buildBackground(Color themeColor) {
     if (_isExiting) return Container(color: Colors.black);
+
     final hasSIG = widget.experience.tags.contains('SIG');
     final hasImage = widget.experience.image.isNotEmpty;
 
     if (hasSIG) {
-      // Fond avec carte SIG en opacité réduite
+      // ✅ Afficher un loader pendant le chargement de la carte
+      if (_isMapLoading) {
+        return Positioned.fill(
+          child: Container(
+            color: Colors.black,
+            child: const Center(
+              child: CircularProgressIndicator(color: Colors.teal),
+            ),
+          ),
+        );
+      }
+
+      // ✅ Afficher une erreur si la carte a échoué
+      if (_hasMapError) {
+        return Positioned.fill(
+          child: Container(
+            color: Colors.black,
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.map_outlined, size: 64, color: Colors.teal),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Erreur de chargement de la carte',
+                    style: TextStyle(color: Colors.white70),
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      setState(() {
+                        _isMapLoading = true;
+                        _hasMapError = false;
+                      });
+                      _loadMap();
+                    },
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Réessayer'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      }
+
+      // ✅ Carte chargée avec succès
       return Positioned.fill(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -239,45 +311,42 @@ class _ImmersiveExperienceDetailState
         ),
       );
     } else if (hasImage) {
-      // Fond avec image parallaxe
       return Positioned.fill(
-          child: Stack(
-        fit: StackFit.expand,
-        children: [
-          Transform.translate(
-            offset: Offset(0, _scrollOffset * 0.5),
-            child: SmartImage(
-              path: widget.experience.image,
-              fit: BoxFit.cover,
-            ),
-          ),
-          ResponsiveBox(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Colors.black.withValues(alpha: 0.4), // Moins sombre en haut
-                  Colors.black.withValues(
-                      alpha: 0.8), // Plus sombre en bas où le texte défile
-                ],
-                stops: const [
-                  0.0,
-                  0.7
-                ], // Le dégradé commence à s'assombrir à 70% de la page
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Transform.translate(
+              offset: Offset(0, _scrollOffset * 0.5),
+              child: SmartImage(
+                path: widget.experience.image,
+                fit: BoxFit.cover,
+                enableShimmer: true,
               ),
             ),
-            child: ClipRect(
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
-                child: Container(
-                  color: Colors.black.withValues(alpha: 0.1),
+            ResponsiveBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black.withValues(alpha: 0.4),
+                    Colors.black.withValues(alpha: 0.8),
+                  ],
+                  stops: const [0.0, 0.7],
                 ),
               ),
-            ),
-          )
-        ],
-      ));
+              child: ClipRect(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+                  child: Container(
+                    color: Colors.black.withValues(alpha: 0.1),
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
+      );
     } else {
       return Positioned.fill(
         child: ParticleBackground(

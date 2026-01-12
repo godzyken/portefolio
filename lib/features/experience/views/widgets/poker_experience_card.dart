@@ -32,6 +32,9 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
   late AnimationController _glowController;
   late Animation<double> _glowAnimation;
   bool _isHovered = false;
+  bool _isMediaLoading = true;
+  bool _hasMediaError = false;
+  String? _errorMessage;
 
   @override
   void initState() {
@@ -44,6 +47,29 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
     _glowAnimation = Tween<double>(begin: 0.3, end: 1.0).animate(
       CurvedAnimation(parent: _glowController, curve: Curves.easeInOut),
     );
+
+    _initializeMedia();
+  }
+
+  Future<void> _initializeMedia() async {
+    try {
+      // Délai pour éviter que toutes les cartes se chargent en même temps
+      await Future.delayed(
+          Duration(milliseconds: 100 + (widget.experience.id.hashCode % 300)));
+
+      if (!mounted) return;
+
+      setState(() {
+        _isMediaLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _isMediaLoading = false;
+        _hasMediaError = true;
+        _errorMessage = e.toString();
+      });
+    }
   }
 
   @override
@@ -208,10 +234,80 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
     final hasVideo = widget.experience.youtubeVideoId?.isNotEmpty ?? false;
     final hasImage = widget.experience.image.isNotEmpty;
 
-    if (hasSIG) {
-      return const SigDiscoveryMap();
+    // ✅ Afficher un loader pendant le chargement initial
+    if (_isMediaLoading) {
+      return Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.indigo.shade900, Colors.purple.shade900],
+          ),
+        ),
+        child: const Center(
+          child: CircularProgressIndicator(
+            color: Colors.white70,
+            strokeWidth: 2,
+          ),
+        ),
+      );
     }
 
+    // ✅ Afficher une erreur si le chargement a échoué
+    if (_hasMediaError) {
+      return Container(
+        color: Colors.grey.shade900,
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.error_outline,
+                color: Colors.red,
+                size: 40,
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Erreur de chargement',
+                style: TextStyle(color: Colors.white70, fontSize: 12),
+              ),
+              if (_errorMessage != null)
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    _errorMessage!,
+                    style: const TextStyle(color: Colors.white54, fontSize: 10),
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // CAS 1 : Carte SIG
+    if (hasSIG) {
+      return FutureBuilder(
+        future: Future.delayed(const Duration(milliseconds: 300)),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return Container(
+              color: Colors.teal.shade900,
+              child: const Center(
+                child: CircularProgressIndicator(
+                  color: Colors.tealAccent,
+                  strokeWidth: 2,
+                ),
+              ),
+            );
+          }
+          return const SigDiscoveryMap();
+        },
+      );
+    }
+
+    // CAS 2 : Vidéo YouTube (carte centrale)
     if (widget.isCenter && hasVideo) {
       final isVideoVisible = ref.watch(globalVideoVisibilityProvider);
       final playingVideo = ref.watch(playingVideoProvider);
@@ -246,9 +342,7 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
           Center(
             child: GestureDetector(
               onTap: () {
-                // Active la vidéo
                 ref.read(globalVideoVisibilityProvider.notifier).setTrue();
-                // Joue la vidéo
                 ref
                     .read(playingVideoProvider.notifier)
                     .play(widget.experience.id);
