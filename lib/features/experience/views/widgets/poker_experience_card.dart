@@ -190,7 +190,7 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
           children: [
             // ✅ Média avec cache
             IgnorePointer(
-              ignoring: shouldShowVideo,
+              ignoring: false || !widget.isCenter,
               child: _buildCachedMediaContent(info),
             ),
 
@@ -368,13 +368,8 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
             ),
           // Bouton Play au centre
           Center(
-            child: GestureDetector(
-              onTap: () {
-                ref.read(globalVideoVisibilityProvider.notifier).setTrue();
-                ref
-                    .read(playingVideoProvider.notifier)
-                    .play(widget.experience.id);
-              },
+            child: AbsorbPointer(
+              absorbing: false,
               child: ResponsiveBox(
                 padding: const EdgeInsets.all(16),
                 paddingSize: ResponsiveSpacing.m,
@@ -382,10 +377,16 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
                   color: Colors.black.withValues(alpha: 0.5),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
-                  Icons.play_arrow,
-                  size: 48,
-                  color: Colors.white,
+                child: ResponsiveButton.icon(
+                  type: ButtonType.primary,
+                  icon: Icon(Icons.play_arrow),
+                  label: 'Jouer',
+                  onPressed: () {
+                    ref.read(globalVideoVisibilityProvider.notifier).setTrue();
+                    ref
+                        .read(playingVideoProvider.notifier)
+                        .play(widget.experience.id);
+                  },
                 ),
               ),
             ),
