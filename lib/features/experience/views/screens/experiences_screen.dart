@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/provider/providers.dart';
+import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
 import 'package:portefolio/features/experience/views/screens/experience_screens_extentions.dart';
 
 import '../../../../core/logging/app_logger.dart';
@@ -83,8 +84,40 @@ class _ExperiencesScreenState extends ConsumerState<ExperiencesScreen> {
       data: (allExperiences) {
         final filteredExperiences = ref.watch(filterExperiencesProvider);
 
+        // ✅ DEBUG : Afficher le nombre d'expériences filtrées
+        debugPrint(
+            '🔍 Expériences après filtre : ${filteredExperiences.length}');
+        debugPrint('📌 Filtre actuel : ${ref.read(experienceFilterProvider)}');
+
         if (filteredExperiences.isEmpty) {
-          return const Center(child: Text('Aucune expérience pour ce filtre.'));
+          // ✅ Amélioration : Afficher un message plus informatif
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.filter_alt_off, size: 64, color: Colors.grey),
+                const SizedBox(height: 16),
+                ResponsiveText.displaySmall(
+                  'Aucune expérience pour le filtre "${ref.watch(experienceFilterProvider)}"',
+                  style: const TextStyle(fontSize: 16),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                ResponsiveButton.icon(
+                  onPressed: () {
+                    ref.read(experienceFilterProvider.notifier).setFilter("");
+                  },
+                  icon: const Icon(Icons.refresh),
+                  label: 'Afficher toutes les expériences',
+                ),
+                const SizedBox(height: 24),
+                ResponsiveText.bodyMedium(
+                  'Total disponible : ${allExperiences.length} expériences',
+                  style: const TextStyle(color: Colors.grey),
+                ),
+              ],
+            ),
+          );
         }
 
         // ✅ Vérifier dynamiquement si le jeu peut être affiché
@@ -115,7 +148,24 @@ class _ExperiencesScreenState extends ConsumerState<ExperiencesScreen> {
               error: e,
               stackTrace: st,
             );
-        return Center(child: Text('Erreur : $e'));
+        return Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.error_outline, size: 64, color: Colors.red),
+              const SizedBox(height: 16),
+              ResponsiveText.displaySmall('Erreur : $e'),
+              const SizedBox(height: 16),
+              ResponsiveButton.icon(
+                onPressed: () {
+                  ref.invalidate(experiencesProvider);
+                },
+                icon: const Icon(Icons.refresh),
+                label: 'Réessayer',
+              ),
+            ],
+          ),
+        );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
     );
