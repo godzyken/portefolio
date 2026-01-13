@@ -51,7 +51,13 @@ class _ExperiencesScreenState extends ConsumerState<ExperiencesScreen> {
       });
 
       // Initialiser le filtre de manière safe hors build
-      ref.read(experienceFilterProvider.notifier).setFilter("Flutter");
+      ref.read(experienceFilterProvider.notifier).setFilter("");
+
+      // ✅ DEBUG : Afficher le nombre d'expériences
+      final allExperiences = ref.read(experiencesProvider).value ?? [];
+      debugPrint('📊 Nombre total d\'expériences : ${allExperiences.length}');
+      debugPrint(
+          '📋 Tags disponibles : ${allExperiences.map((e) => e.tags).expand((t) => t).toSet()}');
     });
   }
 
