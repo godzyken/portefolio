@@ -75,11 +75,23 @@ class ExperienceTimeline extends ConsumerWidget {
                 onTap: () =>
                     _showExperienceModal(context, experiences[index], info),
                 child: ClipOval(
+                  clipBehavior: Clip.hardEdge,
                   child: SmartImage(
                     path: experiences[index].logo,
                     responsiveSize: ResponsiveImageSize.medium,
-                    fit: BoxFit.contain,
+                    fit: BoxFit.fill,
                     enableShimmer: true,
+                    useCache: true,
+                    colorBlendMode: BlendMode.luminosity,
+                    color: Colors.white,
+                    fallbackColor: Colors.black54,
+                    borderRadius: BorderRadius.circular(100),
+                    border: Border.all(
+                      color: Colors.black54,
+                      width: 2,
+                      style: BorderStyle.solid,
+                      strokeAlign: BorderSide.strokeAlignInside,
+                    ),
                   ),
                 ),
               ),

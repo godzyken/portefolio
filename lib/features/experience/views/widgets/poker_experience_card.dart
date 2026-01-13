@@ -35,6 +35,8 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
   bool _isMediaLoading = true;
   bool _hasMediaError = false;
   String? _errorMessage;
+  Widget? _cachedMediaContent;
+  bool _mediaCacheBuilt = false;
 
   @override
   void initState() {
@@ -76,6 +78,17 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
   void dispose() {
     _glowController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant PokerExperienceCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.experience.id != widget.experience.id ||
+        oldWidget.isCenter != widget.isCenter) {
+      _mediaCacheBuilt = false;
+      _cachedMediaContent = null;
+    }
   }
 
   void _navigateToDetails() async {
@@ -133,100 +146,115 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
           child: AnimatedBuilder(
             animation: _glowAnimation,
             builder: (context, child) {
-              return ResponsiveBox(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: widget.isCenter
-                      ? [
-                          BoxShadow(
-                            color: theme.colorScheme.primary
-                                .withValues(alpha: _glowAnimation.value * 0.6),
-                            blurRadius: 30 * _glowAnimation.value,
-                            spreadRadius: 5 * _glowAnimation.value,
-                          ),
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.3),
-                            blurRadius: 20,
-                            offset: const Offset(0, 10),
-                          ),
-                        ]
-                      : [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.2),
-                            blurRadius: _isHovered ? 15 : 10,
-                            offset: Offset(0, _isHovered ? 8 : 5),
-                          ),
-                        ],
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      // Média principal
-                      IgnorePointer(
-                        ignoring: shouldShowVideo,
-                        child: _buildMediaContent(info),
-                      ),
-
-                      // Overlay gradient
-                      IgnorePointer(
-                        child: ResponsiveBox(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [
-                                Colors.transparent,
-                                Colors.black.withValues(alpha: 0.7),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      // Badge du poste
-                      if (widget.experience.poste.isNotEmpty)
-                        Positioned(
-                          top: 16,
-                          left: 16,
-                          right: 16,
-                          child: _buildPosteBadge(theme),
-                        ),
-
-                      // Badge du poste (en haut)
-                      if (widget.experience.poste.isNotEmpty)
-                        Positioned(
-                          top: 16,
-                          left: 16,
-                          right: 16,
-                          child: _buildPosteBadge(theme),
-                        ),
-
-                      // Bouton "Tap pour détails" ou label entreprise
-                      if (shouldShowVideo && widget.isCenter)
-                        Positioned(
-                          bottom: 16,
-                          left: 0,
-                          right: 0,
-                          child: _buildTapIndicator(theme),
-                        )
-                      else
-                        Positioned(
-                          bottom: 16,
-                          left: 16,
-                          right: 16,
-                          child: buildCompanyLabel(theme),
-                        ),
-                    ],
-                  ),
-                ),
-              );
+              return child!;
             },
+            child: _buildCardShell(theme, info, shouldShowVideo),
           ),
         ),
       ),
     );
+  }
+
+  /// ✅ Construit la coquille de la carte (ne dépend PAS de l'animation)
+  Widget _buildCardShell(
+      ThemeData theme, ResponsiveInfo info, bool shouldShowVideo) {
+    return ResponsiveBox(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: widget.isCenter
+            ? [
+                BoxShadow(
+                  color: theme.colorScheme.primary
+                      .withValues(alpha: _glowAnimation.value * 0.6),
+                  blurRadius: 30 * _glowAnimation.value,
+                  spreadRadius: 5 * _glowAnimation.value,
+                ),
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.3),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
+                ),
+              ]
+            : [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.2),
+                  blurRadius: _isHovered ? 15 : 10,
+                  offset: Offset(0, _isHovered ? 8 : 5),
+                ),
+              ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            // ✅ Média avec cache
+            IgnorePointer(
+              ignoring: shouldShowVideo,
+              child: _buildCachedMediaContent(info),
+            ),
+
+            // Overlay gradient (statique)
+            IgnorePointer(
+              child: ResponsiveBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Colors.black.withValues(alpha: 0.7),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+            // Badge du poste
+            if (widget.experience.poste.isNotEmpty)
+              Positioned(
+                top: 16,
+                left: 16,
+                right: 16,
+                child: _buildPosteBadge(theme),
+              ),
+
+            // Bouton "Tap pour détails" ou label entreprise
+            if (shouldShowVideo && widget.isCenter)
+              Positioned(
+                bottom: 16,
+                left: 0,
+                right: 0,
+                child: _buildTapIndicator(theme),
+              )
+            else
+              Positioned(
+                bottom: 16,
+                left: 16,
+                right: 16,
+                child: buildCompanyLabel(theme),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// ✅ Construit le contenu média UNE SEULE FOIS et le met en cache
+  Widget _buildCachedMediaContent(ResponsiveInfo info) {
+    // Si déjà construit et en cache, retourner le cache
+    if (_mediaCacheBuilt && _cachedMediaContent != null) {
+      return _cachedMediaContent!;
+    }
+
+    // Construire le contenu
+    final content = _buildMediaContent(info);
+
+    // Mettre en cache
+    _cachedMediaContent = content;
+    _mediaCacheBuilt = true;
+
+    return content;
   }
 
   Widget _buildMediaContent(ResponsiveInfo info) {

@@ -128,7 +128,6 @@ class SmartImage extends ConsumerStatefulWidget {
 class _SmartImageState extends ConsumerState<SmartImage> {
   ImageProvider? _imageProvider;
   bool _hasError = false;
-  bool _isLoaded = false;
 
   @override
   void didChangeDependencies() {

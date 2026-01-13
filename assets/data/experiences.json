@@ -582,7 +582,7 @@
   {
     "id": "exp_04",
     "entreprise": "2RouesVertes",
-    "logo": "assets/images/2rouesvertes-logo.png",
+    "logo": "assets/images/2rouesvertes-original-logo.jpg",
     "image": "assets/images/vitrine.png",
     "contexte": "Création d’une boutique en ligne pour la vente de vélos électriques",
     "objectifs":["Améliorer la visibilité et automatiser la gestion du stock et des commandes."],
