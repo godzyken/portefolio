@@ -151,10 +151,3 @@ class BulletListBuilder extends StatelessWidget {
     );
   }
 }
-
-// ============================================================================
-// UTILISATION : Remplace InfoCard, ExperienceListSection, etc.
-// ============================================================================
-
-/// ❌ AVANT dans experience_list_section.dart (50 lignes)
-/// ✅ APRÈS
