@@ -9,9 +9,19 @@ import '../../features/generator/services/pdf_export_service.dart';
 import '../logging/app_logger.dart';
 import '../notifier/generic_notifier.dart';
 import '../notifier/notifiers.dart';
+import '../service/assets_service.dart';
 import '../service/bootstrap_service.dart';
 
+/// 🔹 Asset service
+final assetServiceProvider = Provider((ref) => AssetService());
+
 /// 🔹 Bootstrap service
+final bootstrapProvider = Provider<BootstrapService>((ref) {
+  // Ce provider sera initialisé par un "override" dans le main.dart
+  throw UnimplementedError(
+      'Le bootstrapProvider doit être initialisé dans le main');
+});
+
 final bootstrapFutureProvider = FutureProvider((ref) async {
   return await BootstrapService.initialize();
 });
