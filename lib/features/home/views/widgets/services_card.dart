@@ -1,14 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:flutter_animate/flutter_animate.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:portefolio/features/generator/data/extention_models.dart';
-import 'package:portefolio/features/generator/views/generator_widgets_extentions.dart';
-import 'package:portefolio/features/home/views/widgets/extentions_widgets.dart';
-
-import '../../../../core/affichage/screen_size_detector.dart';
-import '../../../../core/provider/expertise_provider.dart';
-
+/*
 class ServicesCard extends ConsumerStatefulWidget {
   final Service service;
   final VoidCallback? onTap;
@@ -22,8 +12,9 @@ class ServicesCard extends ConsumerStatefulWidget {
   @override
   ConsumerState<ServicesCard> createState() => _ServicesCardState();
 }
+*/
 
-class _ServicesCardState extends ConsumerState<ServicesCard>
+/*class _ServicesCardState extends ConsumerState<ServicesCard>
     with SingleTickerProviderStateMixin {
   late AnimationController _scrollController;
   int _currentSkillIndex = 0;
@@ -218,4 +209,4 @@ class _ServicesCardState extends ConsumerState<ServicesCard>
           : info.isTablet
               ? 20
               : 24;
-}
+}*/

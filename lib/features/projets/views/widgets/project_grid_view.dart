@@ -25,6 +25,7 @@ class ProjectGridView extends ConsumerStatefulWidget {
 class _ProjectGridViewState extends ConsumerState<ProjectGridView> {
   Size? _lastScreenSize;
   bool _isInitialized = false;
+  String? _expandedProjectId;
 
   @override
   Widget build(BuildContext context) {
@@ -56,17 +57,24 @@ class _ProjectGridViewState extends ConsumerState<ProjectGridView> {
 
         final positions = ref.watch(projectPositionsProvider);
 
+        final sortedIndices = List.generate(widget.projects.length, (i) => i)
+          ..sort((a, b) {
+            final idA = widget.projects[a].id;
+            final idB = widget.projects[b].id;
+
+            // L'élément qui est dans _expandedProjectId doit TOUJOURS être en dernier (index le plus haut)
+            if (idA == _expandedProjectId) return 1;
+            if (idB == _expandedProjectId) return -1;
+
+            return 0;
+          });
+
         return Stack(
           clipBehavior: Clip.none,
-          children: [
-            for (int i = 0; i < widget.projects.length; i++)
-              _buildBubble(
-                i,
-                screenSize,
-                bubbleSpecs,
-                positions,
-              ),
-          ],
+          children: sortedIndices
+              .map((index) =>
+                  _buildBubble(index, screenSize, bubbleSpecs, positions))
+              .toList(),
         );
       },
     );
@@ -85,7 +93,8 @@ class _ProjectGridViewState extends ConsumerState<ProjectGridView> {
     return DraggableBubble(
       key: ValueKey(project.id),
       project: project,
-      isSelected: widget.selected.any((p) => p.id == project.id),
+      isSelected: widget.selected.any((p) => p.id == project.id) ||
+          _expandedProjectId == project.id,
       initialOffset: positions[project.id] ??
           _getInitialPosition(
             index,
@@ -104,6 +113,12 @@ class _ProjectGridViewState extends ConsumerState<ProjectGridView> {
               project.id,
               clamped,
             );
+      },
+      onToggleExpand: () {
+        setState(() {
+          _expandedProjectId =
+              _expandedProjectId == project.id ? null : project.id;
+        });
       },
       rotationAngle: (index * math.pi / 8) % (2 * math.pi),
     );

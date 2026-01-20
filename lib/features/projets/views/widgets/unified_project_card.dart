@@ -1,14 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
-import 'package:portefolio/features/generator/views/generator_widgets_extentions.dart';
 import 'package:portefolio/features/projets/data/project_data.dart';
-import 'package:vector_math/vector_math_64.dart' show Vector3;
-
-import '../../../../core/provider/providers.dart';
-import '../../../wakatime/views/widgets/wakatime_badge.dart';
 
 enum ProjectCardStyle {
   /// Style adaptatif avec layout responsive
@@ -72,6 +65,7 @@ class ProjectCardConfig {
   }
 }
 
+/*
 class ProjectCard extends ConsumerStatefulWidget {
   final ProjectInfo project;
   final ProjectCardConfig config;
@@ -142,7 +136,9 @@ class ProjectCard extends ConsumerStatefulWidget {
   @override
   ConsumerState<ProjectCard> createState() => _ProjectCardState();
 }
+*/
 
+/*
 class _ProjectCardState extends ConsumerState<ProjectCard> {
   bool _isHovered = false;
 
@@ -752,6 +748,7 @@ class _ProjectCardState extends ConsumerState<ProjectCard> {
         .any((tag) => titleLower.contains(tag));
   }
 }
+*/
 
 class _ProjectDialog extends StatelessWidget {
   final ProjectInfo project;

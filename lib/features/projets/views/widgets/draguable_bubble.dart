@@ -1,12 +1,12 @@
-import 'dart:math' as math;
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/device_spec.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
-import 'package:portefolio/features/projets/views/widgets/project_widgets_extentions.dart';
 
+import '../../../generator/views/widgets/immersive_detail_screen.dart';
 import '../../data/project_data.dart';
 
 class DraggableBubble extends ConsumerStatefulWidget {
@@ -15,6 +15,7 @@ class DraggableBubble extends ConsumerStatefulWidget {
   final Offset initialOffset;
   final ValueChanged<Offset> onPositionChanged;
   final double rotationAngle;
+  final VoidCallback? onToggleExpand;
 
   const DraggableBubble({
     super.key,
@@ -23,6 +24,7 @@ class DraggableBubble extends ConsumerStatefulWidget {
     required this.initialOffset,
     required this.onPositionChanged,
     this.rotationAngle = 0.0,
+    this.onToggleExpand,
   });
 
   @override
@@ -34,6 +36,8 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
   late Offset offset;
   late AnimationController _expandCtrl;
   late Animation<double> _expandAnim;
+  late AnimationController _centerCtrl;
+  late Animation<double> _centerAnim;
 
   bool isDragging = false;
   bool isHovered = false;
@@ -53,11 +57,22 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
       parent: _expandCtrl,
       curve: Curves.elasticOut,
     );
+
+    _centerCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
+
+    _centerAnim = CurvedAnimation(
+      parent: _centerCtrl,
+      curve: Curves.easeInOutCubic,
+    );
   }
 
   @override
   void dispose() {
     _expandCtrl.dispose();
+    _centerCtrl.dispose();
     super.dispose();
   }
 
@@ -66,109 +81,118 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
       isExpanded = !isExpanded;
       if (isExpanded) {
         _expandCtrl.forward();
+        _centerCtrl.forward();
       } else {
         _expandCtrl.reverse();
+        _centerCtrl.reverse();
       }
     });
+    widget.onToggleExpand?.call();
   }
 
   @override
   Widget build(BuildContext context) {
     final info = ref.watch(responsiveInfoProvider);
     final deviceSpec = _getDeviceSpec();
-    final canExpand = info.size.width > 900;
+    final screenSize = info.size;
 
-    final expandScale = isExpanded ? 2.2 : 1.0;
-    final currentSize = Size(
-      deviceSpec.size.width * expandScale,
-      deviceSpec.size.height * expandScale,
-    );
+    return AnimatedBuilder(
+      animation: Listenable.merge([_expandAnim, _centerAnim]),
+      builder: (context, child) {
+        final expandValue = _expandAnim.value;
+        final centerValue = _centerAnim.value;
 
-    return Positioned(
-      left: offset.dx,
-      top: offset.dy,
-      child: MouseRegion(
-        onEnter: (_) => setState(() => isHovered = true),
-        onExit: (_) => setState(() => isHovered = false),
-        child: GestureDetector(
-          onTap: canExpand ? _toggleExpand : _showProjectDialog,
-          onPanStart: (_) => setState(() => isDragging = true),
-          onPanEnd: (_) => setState(() => isDragging = false),
-          onPanUpdate: (details) {
-            final newOffset = offset + details.delta;
-            final clamped = Offset(
-              newOffset.dx.clamp(0.0, info.size.width - currentSize.width),
-              newOffset.dy.clamp(0.0, info.size.height - currentSize.height),
-            );
-            setState(() => offset = clamped);
-            widget.onPositionChanged(clamped);
-          },
-          child: AnimatedBuilder(
-            animation: _expandAnim,
-            builder: (context, child) {
-              // ✅ Pas d'animation flottante automatique
-              // ✅ Animation uniquement au hover et drag
-              final hoverScale = isHovered && !isDragging ? 1.08 : 1.0;
-              final dragScale = isDragging ? 1.15 : 1.0;
-              final finalScale =
-                  (hoverScale * dragScale) * (1.0 + _expandAnim.value * 1.2);
+        // Échelle élastique (rebond)
+        final scale = 1.0 + (expandValue * 0.8);
 
-              return Transform.scale(
-                scale: finalScale,
-                child: Transform.rotate(
-                  angle: widget.rotationAngle,
-                  child: _buildDevice(deviceSpec, canExpand),
+        // Redressement progressif (rotation 0)
+        final rotation = lerpDouble(widget.rotationAngle, 0.0, centerValue)!;
+
+        // Déplacement vers le centre progressif
+        final targetOffset = Offset(
+          (screenSize.width - deviceSpec.size.width) / 2,
+          (screenSize.height - deviceSpec.size.height) / 2,
+        );
+
+        final currentOffset = Offset.lerp(offset, targetOffset, centerValue)!;
+
+        return Stack(
+          clipBehavior: Clip.none,
+          children: [
+            // === DEVICE ANIMÉ ===
+            Positioned(
+              left: currentOffset.dx,
+              top: currentOffset.dy,
+              child: Transform.rotate(
+                angle: rotation,
+                alignment: Alignment.center,
+                child: Transform.scale(
+                  scale: scale,
+                  alignment: Alignment.center,
+                  child: MouseRegion(
+                    onEnter: (_) => setState(() => isHovered = true),
+                    onExit: (_) => setState(() => isHovered = false),
+                    child: GestureDetector(
+                      onTap: _toggleExpand,
+                      onPanStart: (_) => setState(() => isDragging = true),
+                      onPanEnd: (_) => setState(() => isDragging = false),
+                      onPanUpdate: (details) {
+                        if (isExpanded)
+                          return; // Désactive drag pendant expansion
+                        final newOffset = offset + details.delta;
+                        setState(() => offset = newOffset);
+                        widget.onPositionChanged(newOffset);
+                      },
+                      child: _buildDevice(deviceSpec),
+                    ),
+                  ),
                 ),
-              );
-            },
-          ),
-        ),
-      ),
-    );
-  }
-
-  // ✅ Afficher le dialog au clic sur mobile
-  void _showProjectDialog() {
-    final info = ref.read(responsiveInfoProvider);
-    final deviceSpec = _getDeviceSpec();
-    final screenWidth = deviceSpec.size.width - 2 * deviceSpec.bezelSize;
-    final screenHeight = deviceSpec.size.height - 2 * deviceSpec.bezelSize;
-
-    final dialogMaxWidth = math.min(info.size.width * 0.92, screenWidth * 2.4);
-    final dialogMaxHeight =
-        math.min(info.size.height * 0.86, screenHeight * 2.4);
-
-    showDialog(
-      context: context,
-      builder: (_) => Dialog(
-        insetPadding: const EdgeInsets.all(16),
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxWidth: dialogMaxWidth,
-            maxHeight: dialogMaxHeight,
-          ),
-          child: ResponsiveBox(
-            width: dialogMaxWidth,
-            height: dialogMaxHeight,
-            child: ProjectCard.adaptive(
-              project: widget.project,
-              width: dialogMaxWidth,
-              height: dialogMaxHeight,
+              ),
             ),
-          ),
-        ),
-      ),
+            // === BOUTON "VOIR LES DÉTAILS" ===
+            if (isExpanded)
+              Positioned(
+                left: screenSize.width / 2 - 60, // centré horizontalement
+                top: screenSize.height / 2 +
+                    deviceSpec.size.height / 2 * scale +
+                    20, // juste sous le device
+                child: AnimatedOpacity(
+                  opacity: _expandAnim.value.clamp(0.0, 1.0),
+                  duration: const Duration(milliseconds: 400),
+                  curve: Curves.easeInOut,
+                  child: ResponsiveButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      elevation: 6,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 10),
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              ImmersiveDetailScreen(project: widget.project),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.open_in_full_rounded),
+                    label: "Voir en détail",
+                  ),
+                ),
+              ),
+          ],
+        );
+      },
     );
   }
 
-  Widget _buildDevice(DeviceSpec spec, bool canExpand) {
-    final isPortrait = spec.size.height >= spec.size.width;
-    final screenWidth = isPortrait
-        ? spec.size.width - 2 * spec.bezelSize
-        : spec.size.height - 2 * spec.bezelSize;
-    final screenHeight = isPortrait
-        ? spec.size.height - 2 * spec.bezelSize
-        : spec.size.width - 2 * spec.bezelSize;
+  Widget _buildDevice(DeviceSpec spec) {
+    final images = widget.project.cleanedImages ?? [];
+    final hasImages = images.isNotEmpty;
 
     return ResponsiveBox(
       width: spec.size.width,
@@ -182,18 +206,6 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
             spreadRadius: isDragging ? 8 : 3,
             offset: Offset(0, isDragging ? 20 : 12),
           ),
-          if (widget.isSelected)
-            BoxShadow(
-              color: spec.accentColor.withValues(alpha: 0.6),
-              blurRadius: 25,
-              spreadRadius: 5,
-            ),
-          if (isHovered && !widget.isSelected)
-            BoxShadow(
-              color: spec.accentColor.withValues(alpha: 0.3),
-              blurRadius: 20,
-              spreadRadius: 3,
-            ),
         ],
       ),
       child: Stack(
@@ -213,160 +225,40 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
                   spec.bodyColor.withValues(alpha: 0.85),
                   spec.bodyColor.withValues(alpha: 0.7),
                 ],
-                stops: const [0.0, 0.5, 1.0],
               ),
             ),
           ),
-          Positioned.fill(
-            child: ResponsiveBox(
-              decoration: BoxDecoration(
-                borderRadius: spec.borderRadius,
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.center,
-                  colors: [
-                    Colors.white.withValues(alpha: 0.15),
-                    Colors.transparent,
-                  ],
+          if (hasImages)
+            Positioned.fill(
+              child: ClipRRect(
+                borderRadius: spec.screenRadius,
+                child: images.length > 1
+                    ? PageView(
+                        children: images
+                            .map((img) => SmartImage(
+                                  path: img,
+                                  fit: BoxFit.cover,
+                                ))
+                            .toList(),
+                      )
+                    : SmartImage(path: images.first, fit: BoxFit.cover),
+              ),
+            )
+          else
+            Positioned.fill(
+              child: Container(
+                color: Colors.black87,
+                child: Center(
+                  child: Icon(
+                    spec.icon,
+                    size: spec.size.width * 0.25,
+                    color: Colors.white.withValues(alpha: 0.2),
+                  ),
                 ),
               ),
             ),
-          ),
-          ResponsiveBox(
-            padding: EdgeInsets.all(spec.bezelSize),
-            paddingSize: ResponsiveSpacing.m,
-            child: isExpanded
-                ? SingleChildScrollView(
-                    child: ResponsiveBox(
-                        width: screenWidth,
-                        height: screenHeight,
-                        child: ProjectCard.minimal(
-                          project: widget.project,
-                          width: 800,
-                          height: 600,
-                        )),
-                  )
-                : ClipRRect(
-                    borderRadius: spec.screenRadius,
-                    child: _buildScreen(spec),
-                  ),
-          ),
           ...spec.buildDeviceDetails(widget.project),
-          if (widget.isSelected)
-            Positioned(
-              top: spec.bezelSize / 2,
-              right: spec.bezelSize / 2,
-              child: TweenAnimationBuilder(
-                tween: Tween<double>(begin: 0, end: 1),
-                duration: const Duration(milliseconds: 400),
-                curve: Curves.elasticOut,
-                builder: (context, double value, child) {
-                  return Transform.scale(
-                    scale: value,
-                    child: ResponsiveBox(
-                      padding: const EdgeInsets.all(6),
-                      paddingSize: ResponsiveSpacing.xs,
-                      decoration: BoxDecoration(
-                        color: Colors.green,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.green.withValues(alpha: 0.6),
-                            blurRadius: 12,
-                            spreadRadius: 3,
-                          ),
-                        ],
-                      ),
-                      child: const Icon(
-                        Icons.check,
-                        color: Colors.white,
-                        size: 14,
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildScreen(DeviceSpec spec) {
-    final screenWidth = spec.size.width - 2 * spec.bezelSize;
-    final screenHeight = spec.size.height - 2 * spec.bezelSize;
-
-    final images = widget.project.cleanedImages ?? [];
-    final hasImages = images.isNotEmpty;
-
-    if (!hasImages) {
-      // Pas d’images → icône par défaut
-      return Container(
-        width: screenWidth,
-        height: screenHeight,
-        color: Colors.black87,
-        child: Center(
-          child: Icon(
-            spec.icon,
-            size: screenWidth * 0.25,
-            color: Colors.white.withValues(alpha: 0.2),
-          ),
-        ),
-      );
-    }
-
-    final screenContent = images.length > 1
-        ? PageView(
-            children: images
-                .map((img) => SmartImage(
-                      path: img,
-                      fit: BoxFit.cover,
-                      width: screenWidth,
-                      height: screenHeight,
-                    ))
-                .toList(),
-          )
-        : SmartImage(
-            path: images.first,
-            fit: BoxFit.cover,
-            width: screenWidth,
-            height: screenHeight,
-          );
-
-    // clickable vers ProjectCard
-    return InkWell(
-      onTap: () {
-        final mq = MediaQuery.of(context);
-        // dialog size limited to viewport and related to device screen
-        final dialogMaxWidth =
-            math.min(mq.size.width * 0.92, screenWidth * 2.4);
-        final dialogMaxHeight =
-            math.min(mq.size.height * 0.86, screenHeight * 2.4);
-
-        showDialog(
-          context: context,
-          builder: (_) => Dialog(
-            insetPadding: const EdgeInsets.all(16),
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                maxWidth: dialogMaxWidth,
-                maxHeight: dialogMaxHeight,
-              ),
-              child: ResponsiveBox(
-                width: dialogMaxWidth,
-                height: dialogMaxHeight,
-                key: ValueKey(
-                    'project_card_${widget.project.id}_${DateTime.now().millisecondsSinceEpoch}'),
-                child: ProjectCard.minimal(project: widget.project),
-              ),
-            ),
-          ),
-        );
-      },
-      child: SizedBox(
-        width: screenWidth,
-        height: screenHeight,
-        child: screenContent,
       ),
     );
   }

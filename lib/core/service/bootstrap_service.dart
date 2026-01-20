@@ -132,9 +132,11 @@ class BootstrapService {
     // 1. Précacher les images classiques
     final rasters = await ref.read(rasterImagesProvider.future);
     for (var path in rasters) {
-      precacheImage(AssetImage(path), context).catchError((e) {
-        developer.log('⚠️ Échec précache image: $path');
-      });
+      if (context.mounted) {
+        precacheImage(AssetImage(path), context).catchError((e) {
+          developer.log('⚠️ Échec précache image: $path');
+        });
+      }
     }
 
     // 2. Précacher les SVG (évite l'erreur ImageCodecException)
@@ -158,8 +160,21 @@ class BootstrapService {
     for (String path in images) {
       try {
         // On ajoute un timeout pour éviter de bloquer le démarrage
-        await precacheImage(AssetImage(path), context)
-            .timeout(const Duration(milliseconds: 500));
+        final String lowPath = path.toLowerCase();
+
+        if (lowPath.endsWith('.json')) {
+          continue;
+        }
+
+        if (lowPath.endsWith('.svg')) {
+          // Pré-chargement SVG (via flutter_svg)
+          final loader = SvgAssetLoader(path);
+          await vg.loadPicture(loader, context);
+        } else {
+          // Pré-chargement classique
+          await precacheImage(AssetImage(path), context)
+              .timeout(const Duration(milliseconds: 500));
+        }
       } catch (e) {
         developer.log('⚠️ Saut de l\'asset (trop long ou invalide): $path');
       }

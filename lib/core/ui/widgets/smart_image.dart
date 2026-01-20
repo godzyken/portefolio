@@ -141,7 +141,7 @@ class _SmartImageState extends ConsumerState<SmartImage> {
           final cacheNotifier =
               ref.read(smartImageCacheNotifierProvider.notifier);
           cacheNotifier.setContext(context);
-          cacheNotifier.preloadImage(widget.path);
+          cacheNotifier.preloadImage(widget.path, context);
         } catch (e) {
           debugPrint('❌ SmartImage precache suppressed: ${widget.path}');
         }
@@ -155,7 +155,7 @@ class _SmartImageState extends ConsumerState<SmartImage> {
     final isSvg = widget.path.toLowerCase().endsWith('.svg');
     if (widget.path != oldWidget.path && widget.useCache && !isSvg) {
       final cacheNotifier = ref.read(smartImageCacheNotifierProvider.notifier);
-      cacheNotifier.preloadImage(widget.path);
+      cacheNotifier.preloadImage(widget.path, context);
     }
   }
 
