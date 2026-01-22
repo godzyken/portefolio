@@ -385,13 +385,13 @@ class _LanguageLegendItem extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           if (logoPath != null)
-            SmartImage(
+            SmartImageV2(
               path: logoPath,
               width: info.isMobile ? 20 : 24,
               height: info.isMobile ? 20 : 24,
               fit: BoxFit.contain,
               enableShimmer: false,
-              useCache: true,
+              autoPreload: true,
               fallbackIcon: Icons.code,
               fallbackColor: color,
             )

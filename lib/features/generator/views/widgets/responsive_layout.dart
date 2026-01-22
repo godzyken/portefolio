@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:portefolio/core/ui/widgets/smart_image.dart';
+import 'package:portefolio/core/provider/unified_image_provider.dart';
 import 'package:portefolio/features/generator/views/generator_widgets_extentions.dart';
 
 import '../../../../core/affichage/screen_size_detector.dart';
@@ -146,7 +146,7 @@ class _AnimatedImage extends ConsumerWidget {
     } else if (imageBuilder != null) {
       content = imageBuilder!(context, size);
     } else if (imagePath != null) {
-      content = SmartImage(
+      content = CachedImage(
         path: imagePath!,
         fit: BoxFit.cover,
         width: size.width,

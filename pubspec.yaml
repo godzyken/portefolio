@@ -80,11 +80,12 @@ flutter:
 
   assets:
     - assets/images/
-    - assets/images/2.0x/
-    - assets/images/3.0x/
-    - assets/images/4.0x/
     - assets/images/logos/
     - assets/images/animations/
+    - assets/images/backgrounds/
+    - assets/images/entreprises/
+    - assets/images/realisations/
+    - assets/images/services/
     - assets/images/WorkShop/
     - assets/images/models/
     - assets/data/

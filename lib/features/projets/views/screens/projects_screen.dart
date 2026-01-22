@@ -38,10 +38,12 @@ class _ProjectsScreenState extends ConsumerState<ProjectsScreen> {
       children: [
         // --- Image de fond ---
         Positioned.fill(
-          child: SmartImage(
+          child: SmartImageV2(
             key: UniqueKey(),
-            path: "assets/images/line.svg", // ton image
-            fit: BoxFit.contain,
+            path: "assets/images/backgrounds/line.svg", // ton image
+            fit: BoxFit.fitWidth,
+            width: double.infinity,
+            height: double.infinity,
             responsiveSize: ResponsiveImageSize.xlarge,
             fallbackIcon: Icons.image,
             fallbackColor: Colors.white,

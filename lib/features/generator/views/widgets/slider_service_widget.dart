@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:portefolio/core/provider/unified_image_provider.dart';
 import 'package:portefolio/features/generator/data/extention_models.dart';
 
 import '../../../../core/affichage/screen_size_detector.dart';
 import '../../../../core/provider/expertise_provider.dart';
 import '../../../../core/provider/json_data_provider.dart';
-import '../../../../core/ui/cards/base_card.dart';
 import '../../../../core/ui/ui_widgets_extentions.dart';
 import '../../../home/views/widgets/service_expertise_overlay.dart';
 
@@ -204,7 +204,7 @@ class _ServicesSliderState extends ConsumerState<ServicesSlider> {
                               Positioned.fill(
                                 child: Opacity(
                                   opacity: 0.4,
-                                  child: SmartImage(
+                                  child: CachedImage(
                                     path: service.imageUrl!,
                                     fit: BoxFit.cover,
                                   ),

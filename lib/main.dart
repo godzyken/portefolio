@@ -14,6 +14,7 @@ import 'core/exceptions/error/error_screen.dart';
 import 'core/provider/config_env_provider.dart';
 import 'core/provider/error_providers.dart';
 import 'core/provider/providers.dart';
+import 'core/provider/unified_image_provider.dart';
 import 'core/routes/router.dart';
 import 'core/service/bootstrap_service.dart';
 import 'core/service/config_env.dart';
@@ -148,6 +149,8 @@ void main() {
       }
 
       Env.init(container);
+      final imageManager = container.read(unifiedImageManagerProvider);
+      await imageManager.initialize();
 
       runApp(UncontrolledProviderScope(
         container: container,

@@ -208,9 +208,11 @@ class _ImageCarousel extends StatelessWidget {
           child: PageView.builder(
             itemCount: images.length,
             itemBuilder: (context, index) {
-              return SmartImage(
+              return SmartImageV2(
                 path: images[index],
                 fit: BoxFit.contain,
+                width: double.infinity,
+                height: double.infinity,
                 responsiveSize: ResponsiveImageSize.large,
               );
             },

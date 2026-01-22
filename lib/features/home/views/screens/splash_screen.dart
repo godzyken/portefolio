@@ -3,9 +3,11 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:portefolio/core/ui/widgets/responsive_text.dart';
+import 'package:portefolio/core/provider/provider_extentions.dart';
+import 'package:portefolio/core/service/unified_image_manager.dart';
+import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
 
-import '../../../../core/provider/precache_providers.dart';
+import '../../../../core/config/image_preload_config.dart';
 import '../../../../core/routes/router.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
@@ -37,10 +39,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
 
-    // On attend que la première frame soit construite avant de lancer l'animation en boucle.
+    _initializeApp();
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        // On vérifie que le widget est toujours là
         _controller.repeat(reverse: true);
       }
     });
@@ -52,19 +54,47 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     super.dispose();
   }
 
+  Future<void> _initializeApp() async {
+    try {
+      final manager = ref.read(unifiedImageManagerProvider);
+
+      // 1. Initialiser le manager (scan du manifest)
+      await manager.initialize(config: createLocalImageConfiguration(context));
+
+      // 2. Définir ce qu'on attend ABSOLUMENT avant de partir
+      // On ne veut peut-être pas attendre les 300 images, juste les critiques
+      final criticalImages = ImagePreloadConfig.allImagesToPreload
+          .where((img) => img.strategy == PreloadStrategy.critical)
+          .toList();
+
+      if (criticalImages.isNotEmpty) {
+        await manager.preloadWithPriorities(criticalImages, context: context);
+      }
+
+      // 3. Petit délai de courtoisie pour l'animation
+      await Future.delayed(const Duration(milliseconds: 1000));
+
+      // 4. Redirection sécurisée
+      if (mounted) {
+        ref.read(goRouterProvider).go('/');
+      }
+    } catch (e) {
+      debugPrint('❌ Erreur splash: $e');
+      // En cas d'erreur, on part quand même à l'accueil pour ne pas bloquer l'utilisateur
+      if (mounted) ref.read(goRouterProvider).go('/');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    ref.watch(precacheNotifierProvider.notifier);
-
-    // 2. Écoute de l'état
+    final stats = ref.watch(imageCacheStatsProvider);
     final precacheState = ref.watch(precacheNotifierProvider);
 
-    // 🔹 Une fois terminé, on redirige vers la Home
     precacheState.whenData((_) async {
       await Future.delayed(const Duration(milliseconds: 800));
       if (mounted) {
         final router = ref.read(goRouterProvider);
-        router.go('/'); // 🔁 adapte selon ton route name
+        router.go('/');
       }
     });
 
@@ -120,18 +150,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                           ),
                           child: ClipOval(
                             child: Image.asset(
-                              'assets/images/logo_godzyken.png',
+                              'assets/images/entreprises/logo_godzyken.png',
                               fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Container(
-                                  color: const Color(0xFF00D9FF),
-                                  child: const Icon(
-                                    Icons.flutter_dash,
-                                    size: 60,
-                                    color: Colors.white,
-                                  ),
-                                );
-                              },
+                              errorBuilder: (context, error, stack) =>
+                                  const Icon(Icons.person, size: 50),
                             ),
                           ),
                         ),
@@ -142,56 +164,21 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
                 const SizedBox(height: 40),
 
-                // Titre
-                // 3. REFACTO: Remplacement de FadeTransition
-                AnimatedBuilder(
-                  animation: _fadeAnimation,
-                  builder: (context, child) =>
-                      Opacity(opacity: _fadeAnimation.value, child: child),
-                  child: const ResponsiveText.displaySmall(
-                    'Godzyken',
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      letterSpacing: 2,
-                    ),
-                  ),
-                ),
-
+                // Titres
+                _buildAnimatedText('Godzyken', isTitle: true),
                 const SizedBox(height: 12),
-
-                // Sous-titre
-                AnimatedBuilder(
-                  animation: _fadeAnimation,
-                  builder: (context, child) =>
-                      Opacity(opacity: _fadeAnimation.value, child: child),
-                  child: ResponsiveText.titleMedium(
-                    'Portfolio',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.white.withValues(alpha: 0.6),
-                      letterSpacing: 1,
-                    ),
-                  ),
-                ),
+                _buildAnimatedText('Portfolio', isTitle: false),
 
                 const SizedBox(height: 60),
 
                 // Indicateur de chargement custom
-                // 4. OPTIMISATION: Isoler le CustomPainter, qui se redessine constamment.
                 RepaintBoundary(
-                  child: AnimatedBuilder(
-                    animation: _controller,
-                    builder: (context, child) {
-                      return CustomPaint(
-                        size: const Size(60, 60),
-                        painter: _LoadingPainter(
-                          progress: _controller.value,
-                          color: const Color(0xFF00D9FF),
-                        ),
-                      );
-                    },
+                  child: CustomPaint(
+                    size: const Size(80, 80),
+                    painter: _LoadingPainter(
+                      progress: stats.loadProgress,
+                      color: const Color(0xFF00D9FF),
+                    ),
                   ),
                 ),
 
@@ -200,12 +187,25 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                 // Texte de chargement
                 FadeTransition(
                   opacity: _fadeAnimation,
-                  child: ResponsiveText.bodySmall(
-                    'Chargement des ressources...',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.white.withValues(alpha: 0.5),
-                    ),
+                  child: Column(
+                    children: [
+                      ResponsiveText.bodySmall(
+                        '${(stats.loadProgress * 100).toStringAsFixed(0)}%',
+                        style: const TextStyle(
+                          color: Color(0xFF00D9FF),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      ResponsiveText.bodySmall(
+                        'Chargement des ressources...',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.white.withValues(alpha: 0.5),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -221,6 +221,26 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildAnimatedText(String text, {required bool isTitle}) {
+    return AnimatedBuilder(
+      animation: _fadeAnimation,
+      builder: (context, child) =>
+          Opacity(opacity: _fadeAnimation.value, child: child),
+      child: isTitle
+          ? ResponsiveText.displaySmall(text,
+              style: const TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  letterSpacing: 2))
+          : ResponsiveText.titleMedium(text,
+              style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white.withValues(alpha: 0.6),
+                  letterSpacing: 1)),
     );
   }
 }
@@ -262,7 +282,6 @@ class _LoadingPainter extends CustomPainter {
   final double progress;
   final Color color;
 
-  // Pré-calculer les objets Paint pour éviter de les recréer dans la méthode paint()
   final Paint _backgroundPaint;
   final Paint _progressPaint;
   final Paint _pointPaint;

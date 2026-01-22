@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
 
 import '../../../../constants/tech_logos.dart';
 import '../../../../core/provider/image_providers.dart';
-import '../../../../core/ui/widgets/smart_image.dart';
 
 class ThreeDTechIcon extends ConsumerWidget {
   final IconData? icon;
@@ -67,13 +67,13 @@ class ThreeDTechIcon extends ConsumerWidget {
         ),
         child: Center(
             child: path != null && path.isNotEmpty
-                ? SmartImage(
+                ? SmartImageV2(
                     path: path,
                     width: size * 0.45,
                     height: size * 0.45,
                     fit: BoxFit.fitWidth,
                     enableShimmer: false,
-                    useCache: true,
+                    autoPreload: true,
                     fallbackIcon: skillIcon,
                     fallbackColor: Colors.white,
                   )

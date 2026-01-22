@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
-import 'package:portefolio/core/ui/widgets/responsive_text.dart';
-import 'package:portefolio/core/ui/widgets/smart_image.dart';
+import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
 
 class AboutSection extends ConsumerStatefulWidget {
   const AboutSection({super.key});
@@ -147,7 +146,7 @@ class _AboutSectionState extends ConsumerState<AboutSection>
               paddingSize: ResponsiveSpacing.s,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(24),
-                child: SmartImage(
+                child: SmartImageV2(
                   path: 'assets/images/me_portrait_2.webp',
                   fit: BoxFit.cover,
                   fallbackIcon: Icons.person,

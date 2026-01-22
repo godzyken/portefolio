@@ -10,17 +10,12 @@ class GithubProjectAIInfo extends GithubProjectTechInfo {
   final String aiSummary;
 
   GithubProjectAIInfo({
-    required List<String> languages,
-    required List<String> frameworks,
-    required List<String> platforms,
-    required String summary,
+    required super.languages,
+    required super.frameworks,
+    required super.platforms,
+    required super.summary,
     required this.aiSummary,
-  }) : super(
-          languages: languages,
-          frameworks: frameworks,
-          platforms: platforms,
-          summary: summary,
-        );
+  });
 }
 
 class GithubProjectAIAnalyzer {

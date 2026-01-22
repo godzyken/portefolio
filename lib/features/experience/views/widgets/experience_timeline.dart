@@ -35,7 +35,7 @@ class ExperienceTimeline extends ConsumerWidget {
       decoration: const BoxDecoration(
         image: DecorationImage(
           opacity: 0.5,
-          image: AssetImage('assets/images/frise-mur.png'),
+          image: AssetImage('assets/images/backgrounds/frise_mur.png'),
           fit: BoxFit.cover,
         ),
       ),
@@ -75,14 +75,16 @@ class ExperienceTimeline extends ConsumerWidget {
                     _showExperienceModal(context, experiences[index], info),
                 child: ClipOval(
                   clipBehavior: Clip.hardEdge,
-                  child: SmartImage(
+                  child: SmartImageV2(
                     path: experiences[index].logo,
                     responsiveSize: ResponsiveImageSize.medium,
                     fit: BoxFit.fill,
+                    width: 70,
+                    height: 70,
                     enableShimmer: true,
-                    useCache: true,
+                    autoPreload: true,
                     colorBlendMode: BlendMode.luminosity,
-                    color: Colors.white,
+                    color: Colors.black54,
                     fallbackColor: Colors.black54,
                     borderRadius: BorderRadius.circular(100),
                     border: Border.all(

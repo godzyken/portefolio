@@ -1,14 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:portefolio/core/affichage/colors_spec.dart';
-import 'package:portefolio/core/provider/smart_image_cache_provider.dart';
-import 'package:shimmer/shimmer.dart';
-
-import '../responsive_constants.dart';
-
 enum ResponsiveImageSize { small, medium, large, xlarge }
 
 // Transparent pixel placeholder
@@ -85,7 +76,7 @@ const kTransparentImage = <int>[
 
 final Uint8List transparentImage = Uint8List.fromList(kTransparentImage);
 
-class SmartImage extends ConsumerStatefulWidget {
+/*class SmartImage extends ConsumerStatefulWidget {
   final String path;
   final double? width;
   final double? height;
@@ -310,4 +301,4 @@ class _SmartImageState extends ConsumerState<SmartImage> {
       errorBuilder: (_, __, ___) => _buildFallback(w, h),
     );
   }
-}
+}*/

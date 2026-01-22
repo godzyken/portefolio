@@ -3,12 +3,11 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:portefolio/core/ui/widgets/smart_image.dart';
+import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
 import 'package:portefolio/features/generator/views/widgets/immersive_experience_detail.dart';
 
 import '../../../../constants/enum_global.dart';
 import '../../../../core/affichage/screen_size_detector.dart';
-import '../../../../core/ui/widgets/responsive_text.dart';
 import '../../controllers/providers/card_flight_provider.dart';
 import '../../data/experiences_data.dart';
 import '../widgets/experience_widgets_extentions.dart';
@@ -159,7 +158,7 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
                 child: ClipRRect(
                   borderRadius:
                       const BorderRadius.vertical(top: Radius.circular(12)),
-                  child: SmartImage(
+                  child: SmartImageV2(
                     path: exp.image,
                     fit: BoxFit.cover,
                     enableShimmer: true,
@@ -410,9 +409,11 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
     return Stack(
       children: [
         Positioned.fill(
-          child: SmartImage(
-            path: 'assets/images/tapis-poker-2.png',
+          child: SmartImageV2(
+            path: 'assets/images/backgrounds/tapis_poker.png',
             responsiveSize: ResponsiveImageSize.xlarge,
+            width: double.infinity,
+            height: double.infinity,
             fit: BoxFit.cover,
             enableShimmer: true,
           ),

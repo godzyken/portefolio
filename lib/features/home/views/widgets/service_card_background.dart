@@ -28,13 +28,13 @@ class ServiceCardBackground extends StatelessWidget {
       return _buildFallbackGradient(theme);
     }
 
-    return SmartImage(
+    return SmartImageV2(
       path: service.cleanedImageUrl!,
       fit: BoxFit.cover,
       responsiveSize: ResponsiveImageSize.medium,
       fallbackIcon: service.icon,
       fallbackColor: theme.colorScheme.primary,
-      useCache: true,
+      autoPreload: true,
       enableShimmer: false,
     );
   }

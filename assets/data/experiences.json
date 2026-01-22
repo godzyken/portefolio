@@ -2,8 +2,8 @@
   {
     "id": "exp_22",
     "entreprise": "Armatis Bordeaux",
-    "logo": "assets/images/armatis-logo.png",
-    "image": "assets/images/conseiller-service-client.png",
+    "logo": "assets/images/entreprises/armatis_logo.png",
+    "image": "assets/images/conseiller_service_client.png",
     "contexte": "Armatis est un centre de relation client externalisée opérant pour le compte de grandes entreprises dans les secteurs des télécommunications, de la finance, du e-commerce ou de l’énergie. L’objectif est d’assurer un lien de qualité entre les clients finaux et les services internes des marques.",
     "objectifs": ["Offrir une prise en charge fluide, empathique et rapide des demandes clients tout en respectant des indicateurs stricts de performance (SLA, satisfaction, taux de résolution)."],
     "missions": ["Réception et traitement des appels entrants selon des scripts adaptables et le service, diagnostic des problèmes clients, conseils personnalisés sur les produits et services, remontées régulières aux équipes techniques et marketing pour améliorer l’offre, suivi et analyse des KPI pour ajuster les stratégies de communication."],
@@ -28,8 +28,8 @@
   {
     "id": "exp_21",
     "entreprise": "UTS31",
-    "logo": "assets/images/uts31-logo.png",
-    "image": "assets/images/livreur-amazon.png",
+    "logo": "assets/images/entreprises/uts31_logo.png",
+    "image": "assets/images/livreur_amazon.png",
     "contexte": "Entreprise partenaire de la chaîne logistique d’Amazon, spécialisée dans la livraison du dernier kilomètre. L’activité se concentre sur la distribution rapide, fiable et sécurisée des commandes en milieu urbain et péri-urbain.",
     "objectifs": ["Garantir une expérience de livraison irréprochable pour les utilisateurs Amazon en respectant scrupuleusement les créneaux de livraison, les protocoles de sécurité et les attentes de service client."],
     "missions": ["Réception des colis au dépôt Amazon, tri et organisation des tournées via application mobile, livraison directe aux clients ou en consignes (lockers) avec scan Bluetooth ou QR code, remontées terrain via l’app mobile intégrée."],
@@ -58,8 +58,8 @@
   {
     "id": "exp_20",
     "entreprise": "Groupe Keym",
-    "logo": "assets/images/keym.png",
-    "image": "assets/images/keym-frame.png",
+    "logo": "assets/images/entreprises/keym.png",
+    "image": "assets/images/realisations/keym_frame.png",
     "contexte": "Le groupe Keym développe une plateforme mobile pour promouvoir les artistes indépendants, gérer des événements musicaux et connecter les fans aux artistes via des contenus exclusifs et des outils interactifs.",
     "objectifs": ["Moderniser l’architecture de l’application mobile en y intégrant une gestion d’état performante et modulaire (Riverpod) pour permettre un développement pérenne, testable, et scalable, avec des performances accrues."],
     "missions": ["Refactorisation complète du code existant, implémentation de Riverpod pour la gestion des permissions et des états critiques, amélioration des temps de chargement, mise en place de tests unitaires et d’intégration, et documentation technique pour faciliter la reprise du code."],
@@ -83,8 +83,8 @@
   {
     "id": "exp_19",
     "entreprise": "Apside",
-    "logo": "assets/images/apside-logo.png",
-    "image": "assets/images/medimail3.jpg",
+    "logo": "assets/images/entreprises/apside_logo.png",
+    "image": "assets/images/realisations/medimail3.jpg",
     "contexte": "Mission de conseil AMOA au sein d’Apside pour la création d’une application mobile B2B (secteur santé) destinée à fluidifier la communication entre praticiens et établissements, avec un écosystème technique entièrement basé sur Angular et un back-end Node.js.",
     "objectifs": [
       "Établir une feuille de route technique et fonctionnelle claire dès la phase d’avant‑vente",
@@ -119,8 +119,8 @@
   {
     "id": "exp_18",
     "entreprise": "EGOTE+RMC Rénovation et Services",
-    "logo": "assets/images/egote-foto.png",
-    "image": "assets/images/egote-foto.png",
+    "logo": "assets/images/entreprises/egote_foto.png",
+    "image": "assets/images/realisations/bat_track_form_intervention.png",
     "contexte": "TPE du secteur BTP/électricité sans outil numérique unifié: devis sur Excel, suivi chantier papier, facturation Word… Objectif: digitaliser l’ensemble du cycle de vente et de production via une application Flutter multi‑modules.",
     "objectifs": [
       "Concevoir un outil tout‑en‑un (CRM, ERP, SaaS, gestion SAV)",
@@ -156,8 +156,8 @@
   {
     "id": "exp_17",
     "entreprise": "Urbalyon",
-    "logo": "assets/images/urbalyon-logo.png",
-    "image": "assets/images/sig-lyon.png",
+    "logo": "assets/images/entreprises/urbalyon_logo.png",
+    "image": "assets/images/realisations/sig_lyon.png",
     "contexte": "Service urbanisme de la Métropole de Lyon: cartothèque historique et outils d’analyse géospatiale sous techno legacy. Besoin de moderniser l’expérience promoteur immobilier sur mobile.",
     "objectifs": [
       "Migrer la vieille application SIG (PHP/Laravel) vers Flutter pour Android/iOS",
@@ -196,8 +196,8 @@
   {
     "id": "exp_16",
     "entreprise": "Jean Claude Aubry",
-    "logo": "assets/images/aubry-logo.png",
-    "image": "assets/images/aubry-facade.jpg",
+    "logo": "assets/images/entreprises/aubry_logo.png",
+    "image": "assets/images/realisations/business_app.svg",
     "contexte": "Conception d'une application SF&A pour l'empire de M. Jean Claude Aubry.",
     "objectifs": [
       "Transformer la maquette présentée au Salon du Numérique en un produit abouti",
@@ -234,8 +234,8 @@
   {
     "id": "exp_15",
     "entreprise": "Wayma Group - StartUp Nursery",
-    "logo": "assets/images/wayma-logo.png",
-    "image": "assets/images/startup-nursery-1.png",
+    "logo": "assets/images/entreprises/wayma_logo.png",
+    "image": "assets/images/entreprises/startup_nursery.png",
     "contexte": "Wayma Group est un incubateur multi‑projets axé sur l’innovation numérique (marketplaces, IA, IoT). Le stage visait à plonger dans un environnement start‑up pour contribuer activement au delivery.",
     "objectifs": [
       "Observer et assimiler les méthodes agiles et DevOps de l’équipe",
@@ -274,8 +274,8 @@
   {
     "id": "exp_14",
     "entreprise": "TME",
-    "logo": "assets/images/tme-logo.png",
-    "image": "assets/images/tme-livreur.png",
+    "logo": "assets/images/entreprises/tme_logo.png",
+    "image": "assets/images/tme_livreur.png",
     "contexte": "TME assure la livraison et le montage de meubles/électroménager pour de grandes enseignes. Le poste combine logistique, relation client et manipulation de colis volumineux.",
     "objectifs": [
       "Garantir une livraison rapide et sans dommage des produits",
@@ -310,8 +310,8 @@
   {
     "id": "exp_13",
     "entreprise": "SunPower",
-    "logo": "assets/images/sunpower.png",
-    "image": "assets/images/sunpower-1.png",
+    "logo": "assets/images/entreprises/sunpower.png",
+    "image": "assets/images/realisations/sunpower_1.png",
     "contexte": "Usine de fabrication de panneaux photovoltaïques haute performance. Poste en fin de chaîne pour garantir la conformité des produits avant expédition.",
     "objectifs": [
       "Contrôler la qualité (tests électriques, contrôle visuel) des panneaux sortants",
@@ -343,8 +343,8 @@
   {
     "id": "exp_12",
     "entreprise": "Zodiac Pool Care (saison 2)",
-    "logo": "assets/images/zodiac-logo.png",
-    "image": "assets/images/rv-4200.png",
+    "logo": "assets/images/entreprises/zodiac_logo.png",
+    "image": "assets/images/realisations/rv_4200.png",
     "contexte": "Zodiac conçoit et assemble des robots nettoyeurs de piscine haut de gamme. Le poste se situe en fin de chaîne, sur l’assemblage et la validation des boîtiers de commande avant expédition mondiale.",
     "objectifs": [
       "Garantir une qualité 100% conforme aux standards Zodiac",
@@ -377,8 +377,8 @@
   {
     "id": "exp_11",
     "entreprise": "Dédienne Aerospace",
-    "logo": "assets/images/dedienne-logo.png",
-    "image": "assets/images/transporteur-moteur.jpg",
+    "logo": "assets/images/entreprises/dedienne_logo.png",
+    "image": "assets/images/realisations/transporteur_moteur.jpg",
     "contexte": "Fournisseur d’outillages et de pièces de maintenance pour l’aéronautique. Poste polyvalent entre programmation CNC, suivi atelier et emballage sur‑mesure répondant à la norme qualité AS9100.",
     "objectifs": [
       "Produire des pièces conformes aux tolérances micrométriques aéronautiques",
@@ -449,8 +449,8 @@
   {
     "id": "exp_09",
     "entreprise": "Thales",
-    "logo": "assets/images/thales-logo.jpg",
-    "image": "assets/images/salle-blanche.jpg",
+    "logo": "assets/images/entreprises/thales_logo.jpg",
+    "image": "assets/images/entreprises/salle_blanche.jpg",
     "contexte": "Site de production Thales spécialisé dans les cartes et modules électroniques pour systèmes de défense. Mission saisonnière en montage, test et maintenance.",
     "objectifs": [
       "Garantir la fiabilité et la robustesse des cartes conformément au cahier des charges",
@@ -484,8 +484,8 @@
   {
     "id": "exp_08",
     "entreprise": "Zodiac Pool Care (Saison 1)",
-    "logo": "assets/images/zodiac-logo.png",
-    "image": "assets/images/rv-4200.png",
+    "logo": "assets/images/entreprises/zodiac_logo.png",
+    "image": "assets/images/realisations/rv-4200.png",
     "contexte": "Saisonnier sur la chaîne de fabrication des robots de piscine, axée sur l’assemblage du boîtier de commande et la préparation des unités pour l’expédition.",
     "objectifs": ["Assurer la qualité et la fiabilité des boîtiers de commande en respectant les standards de production et les délais impartis."],
     "missions": ["Assemblage des composants électroniques et mécaniques du boîtier de commande, réalisation de tests fonctionnels, contrôle qualité et conditionnement pour expédition."],
@@ -507,8 +507,8 @@
   {
     "id": "exp_07",
     "entreprise": "Continental S.A.",
-    "logo": "assets/images/continental-logo.png",
-    "image": "assets/images/continental-hvac.jpg",
+    "logo": "assets/images/entreprises/continental_logo.png",
+    "image": "assets/images/continental_hvac.jpg",
     "contexte": "Saisonnier sur chaîne de montage de composants automobiles.",
     "objectifs": ["Assurer la cadence de production et la qualité des pièces sur chaîne automatisée."],
     "missions": ["Contrôle visuel, ajustement de modules, approvisionnement des postes, respect des plans de fabrication."],
@@ -532,8 +532,8 @@
   {
     "id": "exp_06",
     "entreprise": "CoyCoyCoy Riders inside",
-    "logo": "assets/images/coy.jpg",
-    "image": "assets/images/coy.jpg",
+    "logo": "assets/images/entreprises/coy.jpg",
+    "image": "assets/images/vignette_clip_articles_1.jpg",
     "contexte": "Création d’une boutique en ligne pour un fabricant d'accessoires de ridder",
     "objectifs": ["Améliorer la visibilité et automatiser la gestion du stock et des commandes."],
     "missions": ["Installation et configuration de PrestaShop, gestion de base MySQL, configurer ftp-Server, hébergement OVH."],
@@ -558,8 +558,8 @@
   {
     "id": "exp_05",
     "entreprise": "Asics",
-    "logo": "assets/images/asics-logo.png",
-    "image": "assets/images/asics-stock.jpg",
+    "logo": "assets/images/entreprises/asics_logo.png",
+    "image": "assets/images/entreprises/asics_stock.jpg",
     "contexte": "Missions de préparation de commande dans deux environnements logistiques : entrepôt textile (Asics) et plateforme multi-produits proche de l'aéroport.",
     "objectifs": ["Assurer un traitement efficace des commandes clients dans un environnement rythmé par des délais courts et une forte rotation de stock."],
     "missions": ["Réception des palettes, scan des articles, tri par références et tailles, préparation des commandes à l’unité ou en lot, filmage, étiquetage, mise en zone d’expédition. Utilisation de PDA pour le picking et la traçabilité des flux."],
@@ -582,8 +582,8 @@
   {
     "id": "exp_04",
     "entreprise": "2RouesVertes",
-    "logo": "assets/images/2rouesvertes-original-logo.jpg",
-    "image": "assets/images/vitrine.png",
+    "logo": "assets/images/entreprises/2rouesvertes_original_logo.jpg",
+    "image": "assets/images/realisations/vitrine.png",
     "contexte": "Création d’une boutique en ligne pour la vente de vélos électriques",
     "objectifs":["Améliorer la visibilité et automatiser la gestion du stock et des commandes."],
     "missions": ["Installation et configuration de PrestaShop, gestion de base MySQL, intégration vidéos, hébergement OVH."],
@@ -607,8 +607,8 @@
   {
     "id": "exp_03",
     "entreprise": "Darty",
-    "logo": "assets/images/darty-logo.png",
-    "image": "assets/images/livraison-darty.jpg",
+    "logo": "assets/images/entreprises/darty_logo.png",
+    "image": "assets/images/realisations/livraison_darty.jpg",
     "contexte": "Livreur de gros électroménager et produits high-tech pour le réseau Darty.",
     "objectifs": ["Assurer la livraison et l’installation des produits chez les clients dans le respect des délais et de la qualité de service."],
     "missions": ["Chargement des véhicules, parcours de livraison, installation et démonstration des appareils, collecte de la signature client, gestion des retours et SAV de 1er niveau."],

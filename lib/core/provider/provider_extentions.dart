@@ -14,4 +14,5 @@ export 'precache_providers.dart';
 export 'providers.dart';
 export 'sensor_provider.dart';
 export 'service_providers.dart';
+export 'unified_image_provider.dart';
 export 'visited_page_provider.dart';

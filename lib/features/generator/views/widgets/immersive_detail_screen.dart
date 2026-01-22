@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
-import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
+import 'package:portefolio/core/provider/unified_image_provider.dart';
 import 'package:portefolio/features/generator/services/section_manager.dart';
 
 import '../../../projets/data/project_section.dart';
@@ -219,7 +219,11 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
           Positioned.fill(
             child: Opacity(
               opacity: 0.15,
-              child: SmartImage(path: images[0], fit: BoxFit.cover),
+              child: CachedImage(
+                  path: images[0],
+                  fit: BoxFit.cover,
+                  height: info.size.height,
+                  width: info.size.width),
             ),
           ),
         Positioned.fill(

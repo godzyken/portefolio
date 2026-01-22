@@ -14,10 +14,10 @@
       "🧾 Catalogue, panier, suivi client et interface multilingue"
     ],
     "image": [
-      "assets/images/vitrine.png",
-      "assets/images/2rouesvertes-original-logo.jpg",
+      "assets/images/realisations/vitrine.png",
+      "assets/images/entreprises/2rouesvertes_original_logo.jpg",
       "assets/images/prestashop.jpg",
-      "assets/images/etricks-bmx.png"
+      "assets/images/etricks_bmx.png"
     ],
     "platform" : ["Web", "Desktop"],
     "tags": ["FileZila", "Web", "Php", "Magento", "Prestashop", "Boutique", "Stock"],
@@ -122,7 +122,8 @@
       "🔧 Formation du client à la gestion du CMS"
     ],
     "image": [
-      "assets/images/coy.jpg"
+      "assets/images/entreprises/coy.jpg",
+      "assets/images/vignette_clip_articles_1.jpg"
     ],
     "platform": ["Desktop", "Web"],
     "tags": ["E-commerce", "PrestaShop", "Facturation", "Accessoire du Ridder", "Catalogue Dynamique"],
@@ -156,11 +157,11 @@
       "🔐 Conformité avec les normes RGPD (protection des données utilisateurs)"
     ],
     "image": [
-      "assets/images/flutter-image.png",
-      "assets/images/flutter-mascotte.png",
+      "assets/images/services/flutter_image.png",
+      "assets/images/flutter_mascotte.png",
       "assets/images/agile.png",
-      "assets/images/screenshot-login.jpg",
-      "assets/images/screenshot-inspector.jpg"
+      "assets/images/realisations/screenshot_login.jpg",
+      "assets/images/realisations/screenshot_inspector.jpg"
     ],
     "platform" : ["Smartphone", "tablet", "DeskTop", "LargeDesktop"],
     "tags": ["Flutter", "Firebase", "IoT", "VR", "Management", "UX/UI", "Digitalisation"],
@@ -292,11 +293,11 @@
       "🎨 Interface responsive Material 3 optimisée pour tablette, desktop et mobile"
     ],
     "image": [
-      "assets/images/bat_track_dashboard.png",
-      "assets/images/bat_track_vr_mode.png",
-      "assets/images/bat_track_form_intervention.png",
-      "assets/images/bat_track_pdf_preview.png",
-      "assets/images/bat_track_iot_mock.png"
+      "assets/images/realisations/bat_track_dashboard.png",
+      "assets/images/realisations/bat_track_vr_mode.png",
+      "assets/images/realisations/bat_track_form_intervention.png",
+      "assets/images/realisations/bat_track_pdf_preview.png",
+      "assets/images/realisations/bat_track_iot_mock.png"
     ],
     "platform": ["Smartphone", "Tablet", "Desktop", "WebVR"],
     "tags": ["Flutter", "Firebase", "Hive", "IoT", "3D", "VR", "PDF", "Construction4.0"],
@@ -360,9 +361,9 @@
       "💬 Analyse UX, optimisation des parcours utilisateurs (User Flow) et ergonomie"
     ],
     "image": [
-      "assets/images/ui-ux-mobile.png",
-      "assets/images/medical-app.png",
-      "assets/images/business-app.svg"
+      "assets/images/services/ui_ux_mobile.png",
+      "assets/images/realisations/medical_app.png",
+      "assets/images/realisations/business_app.svg"
     ],
     "platform" : ["Smartphone", "tablet", "DeskTop", "LargeDesktop"],
     "tags": ["UX/UI", "Digitalisation", "AWS Cloud"]
@@ -379,10 +380,11 @@
       "🧪 Mise en œuvre de solutions numériques complètes : sites web, applications mobiles et stratégies de communication digitale."
     ],
     "image": [
-      "assets/images/getty-images.jpg",
-      "assets/images/gestion-portefeuilles-projets-banniere.jpg",
-      "assets/images/transformation-digitale.jpg",
-      "assets/images/sketchup-image.webp"
+      "assets/images/getty_images.jpg",
+      "assets/images/services/gestion_portefeuilles_projets_banniere.jpg",
+      "assets/images/transformation_digitale.jpg",
+      "assets/images/realisations/sketchup_image.webp",
+      "assets/images/realisations/scan_pokemon_card_struct.png"
     ],
     "platform" : ["Smartphone", "tablet", "DeskTop", "LargeDesktop"],
     "tags": ["Flutter", "Firebase", "IoT", "VR", "Management", "UX/UI", "Digitalisation"]
@@ -398,19 +400,19 @@
       "📂 Hébergement local et/ou via GitHub Pages"
     ],
     "image": [
-      "assets/images/logo_godzyken.png",
-      "assets/images/portefolio-ide.png",
-      "assets/images/pf_wp (1).png",
-      "assets/images/pf_wp (2).png",
-      "assets/images/pf_wp (3).png",
-      "assets/images/pf_wp (4).png",
-      "assets/images/pf_wp (5).png",
-      "assets/images/pf_wp (6).png",
-      "assets/images/pf_wp (7).png",
-      "assets/images/pf_wp (8).png",
-      "assets/images/pf_wp (9).png",
-      "assets/images/pf_wp (10).png",
-      "assets/images/pf_wp (11).png"
+      "assets/images/entreprises/logo_godzyken.png",
+      "assets/images/realisations/portefolio_ide.png",
+      "assets/images/realisations/pf_wp_1.png",
+      "assets/images/realisations/pf_wp_2.png",
+      "assets/images/realisations/pf_wp_3.png",
+      "assets/images/realisations/pf_wp_4.png",
+      "assets/images/realisations/pf_wp_5.png",
+      "assets/images/realisations/pf_wp_6.png",
+      "assets/images/realisations/pf_wp_7.png",
+      "assets/images/realisations/pf_wp_8.png",
+      "assets/images/realisations/pf_wp_9.png",
+      "assets/images/realisations/pf_wp_10.png",
+      "assets/images/realisations/pf_wp_11.png"
     ],
     "platform": ["Web", "Desktop", "Mobile"],
     "tags": ["WordPress", "Github Octocat", "Github Actions", "Unity", "Flutter"]
@@ -438,7 +440,7 @@
       "matériel": ["Raspberry Pi 4", "ESP8266 NodeMCU", "Routeur Wi-Fi portable", "Smartphone Android/iOS"]
     },
     "image": [
-      "assets/images/ultron.webp",
+      "assets/images/Workshop/ultron.webp",
       "assets/images/WorkShop/1.png",
       "assets/images/WorkShop/2.png",
       "assets/images/WorkShop/3.png",

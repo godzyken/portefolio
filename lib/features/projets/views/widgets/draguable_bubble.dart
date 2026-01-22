@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/device_spec.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
+import 'package:portefolio/core/provider/unified_image_provider.dart';
 import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
 
 import '../../../generator/views/widgets/immersive_detail_screen.dart';
@@ -235,13 +236,13 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
                 child: images.length > 1
                     ? PageView(
                         children: images
-                            .map((img) => SmartImage(
+                            .map((img) => CachedImage(
                                   path: img,
                                   fit: BoxFit.cover,
                                 ))
                             .toList(),
                       )
-                    : SmartImage(path: images.first, fit: BoxFit.cover),
+                    : CachedImage(path: images.first, fit: BoxFit.cover),
               ),
             )
           else
