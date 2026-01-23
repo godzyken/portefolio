@@ -1,3 +1,7 @@
+import 'dart:ui' as ui;
+
+import 'package:flutter/foundation.dart';
+
 import '../service/unified_image_manager.dart';
 
 class ImagePreloadConfig {
@@ -125,5 +129,14 @@ class ImagePreloadConfig {
     // Pour être 100% automatique, tu peux utiliser le rootBundle (voir AssetValidator)
     // Mais pour la config, on peut aussi lister les dossiers clés.
     return []; // À remplir via le chargement du AssetManifest
+  }
+
+  static bool get shouldLimitCache => kIsWeb && _isMobileBrowser();
+
+  static bool _isMobileBrowser() {
+    // Logique simple pour détecter un navigateur mobile
+    final userAgent = ui.PlatformDispatcher.instance.views.first
+        .platformDispatcher.defaultRouteName;
+    return userAgent.contains('iPhone') || userAgent.contains('Android');
   }
 }

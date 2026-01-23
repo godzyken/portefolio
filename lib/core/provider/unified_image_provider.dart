@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../service/unified_image_manager.dart';
 
 /// Provider pour le gestionnaire d'images unifié
-final unifiedImageManagerProvider = Provider<UnifiedImageManager>((ref) {
+final unifiedImageManagerProvider =
+    ChangeNotifierProvider<UnifiedImageManager>((ref) {
   return UnifiedImageManager();
 });
 

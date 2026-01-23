@@ -5,10 +5,11 @@ import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:portefolio/core/config/image_preload_config.dart';
+
+import '../config/image_preload_config.dart';
 
 /// 🎯 Gestionnaire unifié d'images avec cache intelligent
-class UnifiedImageManager {
+class UnifiedImageManager with ChangeNotifier {
   static final UnifiedImageManager _instance = UnifiedImageManager._internal();
   factory UnifiedImageManager() => _instance;
   UnifiedImageManager._internal();
@@ -27,114 +28,101 @@ class UnifiedImageManager {
   ImageConfiguration? _baseConfig;
   bool _initialized = false;
 
+  int _totalToLoad = 0;
+
   /// Initialise le gestionnaire (à appeler au démarrage)
-  Future<void> initialize({
-    ImageConfiguration? config,
-  }) async {
+  Future<void> initialize({ImageConfiguration? config}) async {
     if (_initialized) return;
 
     try {
-      // 1. Lire le manifest de Flutter pour connaître TOUS les fichiers
       final manifestContent = await rootBundle.loadString('AssetManifest.json');
       final Map<String, dynamic> manifestMap = json.decode(manifestContent);
 
-      // Nettoyage des clés (parfois le manifest contient des variantes 2.0x, 3.0x en clés)
-      final allPaths = manifestMap.keys.toList();
+      // On vide pour repartir propre
+      _assetManifest.clear();
 
-      // 2. Filtrer et envoyer vers ImagePreloadConfig
-      for (String path in allPaths) {
-        // Sécurité : Ignorer les doublons de préfixe et dossiers systèmes
-        if (path.startsWith('assets/images/') && !path.contains('/. ')) {
-          _assetManifest[path] = path; // On stocke pour isAvailable()
+      for (String path in manifestMap.keys) {
+        if (path.startsWith('assets/images/')) {
+          _assetManifest[path] = path;
+          // On remplit automatiquement la config ici si besoin
           ImagePreloadConfig.registerImage(path);
         }
       }
 
-      _baseConfig = config ?? ImageConfiguration();
+      _baseConfig = config ?? const ImageConfiguration();
       _initialized = true;
-
-      // 3. Lancer le préchargement "intelligent" par batch
-      // On ne 'await' pas forcément tout ici pour ne pas bloquer le Splash indéfiniment
-      // mais on lance le processus.
-      _startSmartPreload();
+      developer
+          .log('✅ Manager initialisé avec ${_assetManifest.length} images.');
     } catch (e) {
       developer.log('❌ Erreur initialisation Manager: $e');
-      // On ne throw pas pour éviter de crash l'app si un asset manque
     }
   }
 
-  Future<void> _startSmartPreload() async {
-    // Récupère la liste triée (Logo d'abord, puis logos tech, puis projets...)
-    final imagesToLoad = ImagePreloadConfig.allImagesToPreload;
-
-    // On charge par batch de 3 pour ne pas saturer le thread UI
-    for (var i = 0; i < imagesToLoad.length; i += 3) {
-      final end = (i + 3 < imagesToLoad.length) ? i + 3 : imagesToLoad.length;
-      final batch = imagesToLoad.sublist(i, end);
-
-      await Future.wait(batch.map((img) => preloadImage(img.path)));
-
-      // Petite pause pour laisser l'UI respirer et l'animation du Splash tourner
-      await Future.delayed(const Duration(milliseconds: 50));
-    }
-  }
+  List<String> getAssetPaths() => _assetManifest.keys.toList();
 
   /// Précharge une image (raster ou SVG)
-  Future<bool> preloadImage(
-    String path, {
-    BuildContext? context,
-    Duration timeout = const Duration(seconds: 3),
-  }) async {
-    if (!_initialized) {
-      developer.log('⚠️ Manager non initialisé, appel initialize() d\'abord');
-      return false;
+  Future<bool> preloadImage(String path,
+      {BuildContext? context,
+      Duration timeout = const Duration(seconds: 3)}) async {
+    if (!_initialized) return false;
+
+    String cleanPath = path.trim();
+    if (cleanPath.startsWith('assets/assets/')) {
+      cleanPath = cleanPath.replaceFirst('assets/assets/', 'assets/');
     }
 
-    // 1. Nettoyage du chemin (Supprime les espaces et gère la casse)
-    final cleanPath = path.trim();
     final lowerPath = cleanPath.toLowerCase();
 
-    // Déjà chargée ou en cours
-    if (_loadedPaths.contains(path)) return true;
-    if (_loadingPaths.contains(path)) return false;
-    if (_failedPaths.contains(path)) return false;
+    if (_loadedPaths.contains(cleanPath)) return true;
+    if (_loadingPaths.contains(cleanPath)) return false;
 
-    // 🔹 Sécurité : Ignorer les fichiers qui ne sont pas des images (évite l'erreur ImageCodecException)
+    // 1. GESTION JSON/Lottie : On marque comme "chargé" mais on ne décode pas en image
     if (lowerPath.endsWith('.json')) {
-      developer.log('ℹ️ Skip JSON dans preloadImage: $path');
+      _loadedPaths.add(cleanPath);
+      notifyListeners();
       return true;
     }
 
-    final bool isSvg = lowerPath.split('?').first.endsWith('.svg');
+    // 2. GESTION SVG : Branchement exclusif
+    if (lowerPath.endsWith('.svg')) {
+      if (_loadedPaths.contains(cleanPath)) return true;
+      _loadingPaths.add(cleanPath);
+      try {
+        await _preloadSvg(cleanPath, cleanPath.startsWith('http'), context);
+        _loadedPaths.add(cleanPath);
+        return true;
+      } catch (e) {
+        _failedPaths.add(cleanPath);
+        return false;
+      } finally {
+        _loadingPaths.remove(cleanPath);
+        notifyListeners();
+      }
+    }
+
+    // 3. GESTION RASTER (PNG, JPG, WEBP)
     final bool isRaster = lowerPath.endsWith('.png') ||
         lowerPath.endsWith('.jpg') ||
         lowerPath.endsWith('.jpeg') ||
         lowerPath.endsWith('.webp');
 
-    _loadingPaths.add(path);
-
-    try {
-      if (isSvg) {
-        // ✅ Utilise impérativement le loader SVG
-        await _preloadSvg(cleanPath, cleanPath.startsWith('http'), context);
-      } else if (isRaster) {
-        // ✅ Utilise le loader de pixels
+    if (isRaster) {
+      if (_loadedPaths.contains(cleanPath)) return true;
+      _loadingPaths.add(cleanPath);
+      try {
         await _preloadRaster(cleanPath, cleanPath.startsWith('http'), timeout);
-      } else {
-        developer.log('ℹ️ Format ignoré (non supporté): $cleanPath');
-        _loadingPaths.remove(cleanPath);
+        _loadedPaths.add(cleanPath);
+        return true;
+      } catch (e) {
+        _failedPaths.add(cleanPath);
         return false;
+      } finally {
+        _loadingPaths.remove(cleanPath);
+        notifyListeners();
       }
-
-      _loadedPaths.add(cleanPath);
-      _loadingPaths.remove(cleanPath);
-      return true;
-    } catch (e) {
-      developer.log('⚠️ Échec préchargement: $cleanPath ($e)');
-      _failedPaths.add(cleanPath);
-      _loadingPaths.remove(cleanPath);
-      return false;
     }
+
+    return false;
   }
 
   /// Précharge plusieurs images en batch
@@ -150,13 +138,19 @@ class UnifiedImageManager {
     for (int i = 0; i < paths.length; i += batchSize) {
       final batch = paths.skip(i).take(batchSize).toList();
 
+      // On lance le batch
       final results = await Future.wait(
-        batch.map((path) => preloadImage(path, context: context)),
+        batch.map((path) async {
+          final result = await preloadImage(path, context: context);
+          notifyListeners();
+          return result;
+        }),
       );
 
       success += results.where((r) => r).length;
       failed += results.where((r) => !r).length;
 
+      // Petite respiration pour l'UI Thread
       if (i + batchSize < paths.length) {
         await Future.delayed(delayBetweenBatches);
       }
@@ -187,7 +181,7 @@ class UnifiedImageManager {
   /// Obtient les statistiques du cache
   CacheStats getStats() {
     return CacheStats(
-      totalAssets: _assetManifest.length,
+      totalAssets: _totalToLoad > 0 ? _totalToLoad : _assetManifest.length,
       loadedRaster: _rasterCache.length,
       loadedSvg: _svgCache.length,
       failed: _failedPaths.length,
@@ -214,6 +208,15 @@ class UnifiedImageManager {
     _svgCache.remove(path);
     _loadedPaths.remove(path);
     _failedPaths.remove(path);
+  }
+
+  void setTotalToLoad(int total) {
+    _totalToLoad = total;
+    notifyListeners();
+  }
+
+  int getTotalToLoad() {
+    return _totalToLoad;
   }
 
   // ============================================================================
@@ -288,11 +291,10 @@ class UnifiedImageManager {
       final loader = isNetwork ? SvgNetworkLoader(path) : SvgAssetLoader(path);
 
       // Charger en mémoire
-      final pictureInfo = await vg.loadPicture(loader, context);
+      final PictureInfo pictureInfo = await vg.loadPicture(loader, null);
       _svgCache[path] = pictureInfo;
     } catch (e) {
       developer.log('⚠️ Erreur chargement SVG: $path ($e)');
-      rethrow;
     }
   }
 }
@@ -392,31 +394,34 @@ extension UnifiedImageManagerExtension on UnifiedImageManager {
         .map((i) => i.path)
         .toList();
 
-    // Charger les critiques en premier
-    final criticalResult = await preloadBatch(critical, context: context);
+    int totalSuccess = 0;
+    int totalFailed = 0;
 
-    // Charger les lazy (avec délai)
-    await Future.delayed(const Duration(milliseconds: 500));
-    final lazyResult = await preloadBatch(lazy, context: context);
-
-    // Lancer les background en Fire & Forget
-    if (background.isNotEmpty) {
-      _preloadBackgroundImages(background, context);
+    // --- PHASE 1 : CRITIQUE (Bloquant pour le Splash) ---
+    if (critical.isNotEmpty) {
+      developer.log('🚀 Chargement de ${critical.length} assets critiques...');
+      final res = await preloadBatch(critical, context: context, batchSize: 3);
+      totalSuccess += res.success;
+      totalFailed += res.failed;
     }
 
-    return PreloadResult(
-      criticalResult.success + lazyResult.success,
-      criticalResult.failed + lazyResult.failed,
-    );
-  }
+    // --- PHASE 2 : LAZY (Chargement séquentiel fluide) ---
+    if (lazy.isNotEmpty) {
+      // Petite pause pour laisser l'UI respirer après les critiques
+      await Future.delayed(const Duration(milliseconds: 200));
+      final res = await preloadBatch(lazy, context: context, batchSize: 5);
+      totalSuccess += res.success;
+      totalFailed += res.failed;
+    }
 
-  void _preloadBackgroundImages(List<String> paths, BuildContext? context) {
-    Future(() async {
-      for (final path in paths) {
-        await preloadImage(path, context: context);
-        await Future.delayed(const Duration(milliseconds: 200));
-      }
-      developer.log('✅ Background preload terminé (${paths.length} images)');
-    });
+    // --- PHASE 3 : BACKGROUND (Non-bloquant) ---
+    if (background.isNotEmpty) {
+      // On lance sans 'await' pour rendre la main au Splash rapidement
+      preloadBatch(background, context: context, batchSize: 2).then((res) {
+        developer.log('✅ Background preload terminé (${res.success} succès)');
+      });
+    }
+
+    return PreloadResult(totalSuccess, totalFailed);
   }
 }

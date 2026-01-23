@@ -122,8 +122,8 @@ class _AboutSectionState extends ConsumerState<AboutSection>
           child: Hero(
             tag: 'profile_image',
             child: ResponsiveBox(
-              width: imageSize,
-              height: imageSize,
+              width: imageSize / 2,
+              height: imageSize / 1.5,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(32),
                 gradient: LinearGradient(
@@ -149,6 +149,8 @@ class _AboutSectionState extends ConsumerState<AboutSection>
                 child: SmartImageV2(
                   path: 'assets/images/me_portrait_2.webp',
                   fit: BoxFit.cover,
+                  width: imageSize,
+                  height: imageSize,
                   fallbackIcon: Icons.person,
                   fallbackColor: theme.colorScheme.primary,
                   enableShimmer: true,
@@ -217,7 +219,7 @@ class _AboutSectionState extends ConsumerState<AboutSection>
                   size: 20,
                 ),
                 const SizedBox(width: 8),
-                Text(
+                ResponsiveText.titleMedium(
                   "Développeur Flutter Freelance",
                   style: GoogleFonts.openSans(
                     fontSize: 16,
@@ -329,7 +331,7 @@ class _AboutSectionState extends ConsumerState<AboutSection>
           ),
           const ResponsiveBox(width: 12),
           Expanded(
-            child: ResponsiveText(
+            child: ResponsiveText.headlineSmall(
               text,
               textAlign: isCentered ? TextAlign.center : TextAlign.start,
               style: GoogleFonts.openSans(

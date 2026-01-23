@@ -1,13 +1,13 @@
+import 'dart:developer' as developer;
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:portefolio/core/provider/provider_extentions.dart';
 import 'package:portefolio/core/service/unified_image_manager.dart';
 import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
 
-import '../../../../core/config/image_preload_config.dart';
+import '../../../../core/provider/unified_image_provider.dart';
 import '../../../../core/routes/router.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
@@ -39,11 +39,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
 
-    _initializeApp();
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        _controller.repeat(reverse: true);
+        _initializeApp();
       }
     });
   }
@@ -57,46 +55,51 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   Future<void> _initializeApp() async {
     try {
       final manager = ref.read(unifiedImageManagerProvider);
-
-      // 1. Initialiser le manager (scan du manifest)
       await manager.initialize(config: createLocalImageConfiguration(context));
 
-      // 2. Définir ce qu'on attend ABSOLUMENT avant de partir
-      // On ne veut peut-être pas attendre les 300 images, juste les critiques
-      final criticalImages = ImagePreloadConfig.allImagesToPreload
-          .where((img) => img.strategy == PreloadStrategy.critical)
-          .toList();
+      // TEST CRITIQUE : Dis-nous combien d'images le manager voit
+      final allPaths =
+          manager.getStats().totalAssets > 0 ? manager.getAssetPaths() : [];
+      developer
+          .log("🔥 DEBUG : Nombre d'images détectées = ${allPaths.length}");
 
-      if (criticalImages.isNotEmpty) {
-        await manager.preloadWithPriorities(criticalImages, context: context);
+      if (allPaths.isEmpty) {
+        developer.log(
+            "❌ ERREUR : La liste d'images est VIDE. Le problème est dans ImagePreloadConfig !");
+      } else {
+        final imagesToLoad = allPaths.map((path) {
+          // Exemple : les logos sont critiques, le reste est en background
+          final strategy = path.contains('logos/')
+              ? PreloadStrategy.critical
+              : PreloadStrategy.background;
+          return ImagePriority(path, strategy: strategy);
+        }).toList();
+
+        manager.setTotalToLoad(imagesToLoad.length);
+        await manager.preloadWithPriorities(imagesToLoad, context: context);
       }
 
-      // 3. Petit délai de courtoisie pour l'animation
-      await Future.delayed(const Duration(milliseconds: 1000));
+      await Future.delayed(const Duration(milliseconds: 800));
 
-      // 4. Redirection sécurisée
-      if (mounted) {
-        ref.read(goRouterProvider).go('/');
-      }
-    } catch (e) {
-      debugPrint('❌ Erreur splash: $e');
-      // En cas d'erreur, on part quand même à l'accueil pour ne pas bloquer l'utilisateur
+      developer.log("🏁 DEBUG : Chargement fini, tentative de redirection...");
       if (mounted) ref.read(goRouterProvider).go('/');
+    } catch (e, stack) {
+      developer.log("❌ CRASH DANS INITIALIZE : $e");
+      developer.log("X DEBUG : $stack");
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final stats = ref.watch(imageCacheStatsProvider);
-    final precacheState = ref.watch(precacheNotifierProvider);
+    final bool isInitializing = stats.totalAssets == 0;
 
-    precacheState.whenData((_) async {
-      await Future.delayed(const Duration(milliseconds: 800));
-      if (mounted) {
-        final router = ref.read(goRouterProvider);
-        router.go('/');
-      }
-    });
+    final double progress = stats.totalAssets > 0
+        ? ((stats.totalLoaded + stats.failed) / stats.totalAssets)
+            .clamp(0.0, 1.0)
+        : 0.0;
+
+    final isFinished = progress >= 1.0;
 
     return Scaffold(
       backgroundColor: const Color(0xFF0A0A0A),
@@ -173,12 +176,25 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
                 // Indicateur de chargement custom
                 RepaintBoundary(
-                  child: CustomPaint(
-                    size: const Size(80, 80),
-                    painter: _LoadingPainter(
-                      progress: stats.loadProgress,
-                      color: const Color(0xFF00D9FF),
-                    ),
+                  child: Column(
+                    children: [
+                      AnimatedScale(
+                        scale: isFinished ? 1.2 : 1.0,
+                        duration: Duration(milliseconds: 500),
+                        child: CustomPaint(
+                          size: const Size(80, 80),
+                          painter: _LoadingPainter(
+                            progress: progress,
+                            color: const Color(0xFF00D9FF),
+                          ),
+                        ),
+                      ),
+                      if (isFinished)
+                        const ResponsiveText.bodyMedium(
+                          "C'est prêt !",
+                          style: TextStyle(color: Colors.greenAccent),
+                        )
+                    ],
                   ),
                 ),
 
@@ -190,7 +206,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                   child: Column(
                     children: [
                       ResponsiveText.bodySmall(
-                        '${(stats.loadProgress * 100).toStringAsFixed(0)}%',
+                        isInitializing
+                            ? 'Initialisation...'
+                            : '${(progress * 100).toInt()}%',
                         style: const TextStyle(
                           color: Color(0xFF00D9FF),
                           fontWeight: FontWeight.bold,
@@ -282,61 +300,57 @@ class _LoadingPainter extends CustomPainter {
   final double progress;
   final Color color;
 
-  final Paint _backgroundPaint;
-  final Paint _progressPaint;
-  final Paint _pointPaint;
-  final Paint _glowPaint;
+  // On initialise les Paint une seule fois
+  late final Paint _backgroundPaint = Paint()
+    ..color = color.withValues(alpha: 0.1)
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = 2;
 
-  _LoadingPainter({required this.progress, required this.color})
-      : _backgroundPaint = Paint()
-          ..color = color.withValues(alpha: 0.3)
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 3,
-        _progressPaint = Paint()
-          ..color = color
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 4
-          ..strokeCap = StrokeCap.round,
-        _pointPaint = Paint()
-          ..color = color
-          ..style = PaintingStyle.fill,
-        _glowPaint = Paint()
-          ..color = color.withValues(alpha: 0.3)
-          ..style = PaintingStyle.fill;
+  late final Paint _progressPaint = Paint()
+    ..color = color
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = 4
+    ..strokeCap = StrokeCap.round;
+
+  late final Paint _glowPaint = Paint()
+    ..color = color.withValues(alpha: 0.2)
+    ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8);
+
+  _LoadingPainter({required this.progress, required this.color});
 
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
-    final radius = size.width / 2;
+    final radius = (size.width / 2) - 4; // On laisse un peu de marge
 
-    // Cercle de fond
+    // 1. Dessiner le cercle de fond (Rail)
     canvas.drawCircle(center, radius, _backgroundPaint);
 
-    // Arc de progression
-    final sweepAngle = 2 * math.pi * progress;
+    // 2. Dessiner l'arc de progression
+    final sweepAngle = 2 * math.pi * progress.clamp(0.0, 1.0);
     canvas.drawArc(
       Rect.fromCircle(center: center, radius: radius),
-      -math.pi / 2, // Démarrer en haut
+      -math.pi / 2,
       sweepAngle,
       false,
       _progressPaint,
     );
 
-    // Point lumineux
-    final angle = -math.pi / 2 + sweepAngle;
-    final pointOffset = Offset(
-      center.dx + radius * math.cos(angle),
-      center.dy + radius * math.sin(angle),
-    );
+    // 3. Dessiner l'effet de lueur (Glow) à l'extrémité de l'arc
+    if (progress > 0) {
+      final angle = -math.pi / 2 + sweepAngle;
+      final tipOffset = Offset(
+        center.dx + radius * math.cos(angle),
+        center.dy + radius * math.sin(angle),
+      );
 
-    // Glow du point
-    canvas.drawCircle(pointOffset, 10, _glowPaint);
-    // Point lui-même
-    canvas.drawCircle(pointOffset, 6, _pointPaint);
+      // On dessine un petit cercle lumineux au bout
+      canvas.drawCircle(tipOffset, 6, _glowPaint);
+      canvas.drawCircle(tipOffset, 3, Paint()..color = color);
+    }
   }
 
   @override
-  bool shouldRepaint(_LoadingPainter oldDelegate) {
-    return oldDelegate.progress != progress;
-  }
+  bool shouldRepaint(_LoadingPainter oldDelegate) =>
+      oldDelegate.progress != progress;
 }

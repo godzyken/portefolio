@@ -108,14 +108,14 @@ class _ContactScreenState extends ConsumerState<ContactScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
+                      ResponsiveText.bodyMedium(
                         'Message envoyé !',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
                       ),
-                      Text(
+                      ResponsiveText.bodyMedium(
                         'Je vous répondrai sous 24h',
                         style: TextStyle(fontSize: 12),
                       ),
@@ -150,7 +150,8 @@ class _ContactScreenState extends ConsumerState<ContactScreen>
               children: [
                 const Icon(Icons.error_outline, color: Colors.white),
                 const SizedBox(width: 16),
-                Expanded(child: Text('Erreur : ${next.error}')),
+                Expanded(
+                    child: ResponsiveText.bodyMedium('Erreur : ${next.error}')),
               ],
             ),
             backgroundColor: Colors.red.shade700,
