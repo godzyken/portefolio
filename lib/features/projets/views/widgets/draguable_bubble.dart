@@ -6,8 +6,9 @@ import 'package:portefolio/core/affichage/device_spec.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/provider/unified_image_provider.dart';
 import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
+import 'package:portefolio/features/generator/views/generator_widgets_extentions.dart';
+import 'package:portefolio/features/projets/providers/projects_extentions_providers.dart';
 
-import '../../../generator/views/widgets/immersive_detail_screen.dart';
 import '../../data/project_data.dart';
 
 class DraggableBubble extends ConsumerStatefulWidget {
@@ -91,11 +92,25 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
     widget.onToggleExpand?.call();
   }
 
+  void _toggleSelection() {
+    ref.read(selectedProjectsProvider.notifier).toggle(widget.project);
+  }
+
+  void _openImmersiveDetail() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => ImmersiveDetailScreen(project: widget.project),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final info = ref.watch(responsiveInfoProvider);
     final deviceSpec = _getDeviceSpec();
     final screenSize = info.size;
+    final selectedProjects = ref.watch(selectedProjectsProvider);
+    final isSelected = selectedProjects.any((p) => p.id == widget.project.id);
 
     return AnimatedBuilder(
       animation: Listenable.merge([_expandAnim, _centerAnim]),
@@ -135,63 +150,38 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
                     onExit: (_) => setState(() => isHovered = false),
                     child: GestureDetector(
                       onTap: _toggleExpand,
+                      onLongPress: _toggleSelection,
                       onPanStart: (_) => setState(() => isDragging = true),
                       onPanEnd: (_) => setState(() => isDragging = false),
                       onPanUpdate: (details) {
-                        if (isExpanded)
+                        if (isExpanded) {
                           return; // Désactive drag pendant expansion
+                        }
                         final newOffset = offset + details.delta;
                         setState(() => offset = newOffset);
                         widget.onPositionChanged(newOffset);
                       },
-                      child: _buildDevice(deviceSpec),
+                      child: SizedBox(
+                        child: Stack(
+                          children: [
+                            _buildDevice(deviceSpec, isSelected),
+                            // === OVERLAY AVEC INFOS ET ACTIONS ===
+                            if (isExpanded) _buildDetailsOverlay(deviceSpec)
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-            // === BOUTON "VOIR LES DÉTAILS" ===
-            if (isExpanded)
-              Positioned(
-                left: screenSize.width / 2 - 60, // centré horizontalement
-                top: screenSize.height / 2 +
-                    deviceSpec.size.height / 2 * scale +
-                    20, // juste sous le device
-                child: AnimatedOpacity(
-                  opacity: _expandAnim.value.clamp(0.0, 1.0),
-                  duration: const Duration(milliseconds: 400),
-                  curve: Curves.easeInOut,
-                  child: ResponsiveButton.icon(
-                    style: ElevatedButton.styleFrom(
-                      elevation: 6,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 10),
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                    ),
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) =>
-                              ImmersiveDetailScreen(project: widget.project),
-                        ),
-                      );
-                    },
-                    icon: const Icon(Icons.open_in_full_rounded),
-                    label: "Voir en détail",
-                  ),
-                ),
-              ),
           ],
         );
       },
     );
   }
 
-  Widget _buildDevice(DeviceSpec spec) {
+  Widget _buildDevice(DeviceSpec spec, bool isSelected) {
     final images = widget.project.cleanedImages ?? [];
     final hasImages = images.isNotEmpty;
 
@@ -207,6 +197,13 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
             spreadRadius: isDragging ? 8 : 3,
             offset: Offset(0, isDragging ? 20 : 12),
           ),
+          if (isSelected)
+            BoxShadow(
+              color: Colors.blue.withValues(alpha: 0.4),
+              blurRadius: 20,
+              spreadRadius: 4,
+              offset: const Offset(0, 8),
+            )
         ],
       ),
       child: Stack(
@@ -259,7 +256,115 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
               ),
             ),
           ...spec.buildDeviceDetails(widget.project),
+
+          // Indicateur de sélection (coin supérieur droit)
+          if (isSelected)
+            Positioned(
+              top: 8,
+              right: 8,
+              child: Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.blue.withValues(alpha: 0.5),
+                      blurRadius: 8,
+                      spreadRadius: 2,
+                    ),
+                  ],
+                ),
+                child: const Icon(
+                  Icons.check,
+                  color: Colors.white,
+                  size: 16,
+                ),
+              ),
+            ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildDetailsOverlay(DeviceSpec spec) {
+    return Positioned(
+      bottom: 2, // Décalage du bord inférieur
+      left: 3,
+      right: 3,
+      child: FadeTransition(
+        opacity: _expandAnim,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: BackdropFilter(
+            filter:
+                ImageFilter.blur(sigmaX: 2, sigmaY: 1), // Effet flou Premium
+            child: ResponsiveBox(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.transparent.withValues(alpha: 0.7),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: Colors.transparent.withValues(alpha: 0.1),
+                  width: 1.5,
+                ),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Titre et Bouton Immersif
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ResponsiveText.titleSmall(
+                          widget.project.title,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 10,
+                          ),
+                        ),
+                      ),
+                      // Le bouton pour naviguer
+                      IconButton(
+                        tooltip: 'Voir les détails',
+                        onPressed: _openImmersiveDetail,
+                        icon: const Icon(Icons.data_array_rounded,
+                            color: Colors.blueAccent, size: 10),
+                        style: IconButton.styleFrom(
+                          backgroundColor:
+                              Colors.transparent.withValues(alpha: 0.1),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const Divider(color: Colors.white24, height: 10),
+
+                  // SECTION TECHS : Tes Bulles 3D ici
+                  if (widget.project.tags != null)
+                    SizedBox(
+                      height: 16,
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        shrinkWrap: true,
+                        itemCount: widget.project.tags!.take(5).length,
+                        separatorBuilder: (_, __) => const SizedBox(width: 8),
+                        itemBuilder: (context, index) {
+                          final tagName = widget.project.tags![index];
+                          return ThreeDTechIcon(
+                            logoPath: tagName,
+                            color: Colors.blueAccent,
+                            size: 15, // Taille de la bulle
+                          );
+                        },
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
