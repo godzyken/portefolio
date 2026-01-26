@@ -78,7 +78,7 @@ class SectionManager {
       id: 'wakatime',
       title: 'Développement',
       icon: Icons.code,
-      builder: (context, info) => WakaTimeSection(
+      builder: (context, info) => EnhancedWakaTimeSection(
         projectName: project.title,
         info: info,
       ),
