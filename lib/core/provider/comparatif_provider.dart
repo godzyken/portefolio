@@ -18,6 +18,12 @@ final comparisonBubbleVisibilityProvider = Provider.family<bool, String>(
     const excludedPaths = [
       '/experiences',
       '/experience',
+      '/projects',
+      '/project',
+      '/pdf',
+      '/legal',
+      '/theme_settings',
+      '/wakatime_settings',
     ];
 
     // Vérifier si le chemin actuel est exclu
