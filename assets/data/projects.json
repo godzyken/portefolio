@@ -542,6 +542,84 @@
     }
   },
   {
+    "id": "projet_11",
+    "title": "emap_services",
+    "points": [
+      "💧 Application Flutter pour EMAP Services - Plomberie, Chauffage, Climatisation",
+      "📍 Intégration complète de Google Maps pour la géolocalisation et la navigation client",
+      "💬 Chat en direct avec Tawk.to intégré pour l’assistance en temps réel",
+      "📄 Génération et téléchargement de PDF (mentions légales, devis, factures)",
+      "🗺️ Données dynamiques via Supabase (formulaires, analytics, messages)",
+      "⚡ Architecture Riverpod 3 modulaire et typée (providers, modèles, vues)",
+      "🎨 Thème clair/sombre et design responsive (mobile, tablette, desktop)",
+      "🌍 Multi-langues (FR, EN, ES, OC) via JSON et providers localisés",
+      "🧠 Séparation stricte des responsabilités : domain / views / core / assets",
+      "🚀 Chargement asynchrone et cache automatique via Riverpod FutureProviders"
+    ],
+    "image": [
+      "assets/images/logos/logo_emap.png",
+      "assets/images/realisations/emap_cible.png",
+      "assets/images/realisations/emap_crm_integration.png",
+      "assets/images/realisations/emap_partenariat_dashboard.png"
+    ],
+    "platform": ["Smartphone", "Tablet", "Desktop", "Web"],
+    "tags": [
+      "Flutter",
+      "Riverpod3",
+      "Supabase",
+      "GoogleMaps",
+      "TawkTo",
+      "PDF",
+      "ResponsiveUI",
+      "Multilangue"
+    ],
+    "results": [
+      "📞 Centralisation complète des informations de contact EMAP Services",
+      "💬 Interaction directe client-entreprise via chat intégré",
+      "🗺️ Amélioration de la visibilité locale grâce à Google Maps",
+      "📈 Base de données Supabase assurant un suivi analytique des interactions",
+      "🧩 Architecture claire et évolutive, documentée dans ARCHITECTURE.md",
+      "🧭 Gestion unifiée des couleurs et icônes par typage fort (type safety)",
+      "⚙️ Maintenance simplifiée : configuration centralisée via JSON",
+      "🌐 Expérience fluide sur tous les appareils et navigateurs"
+    ],
+    "resultsMap": {
+      "roi": "185%",
+      "timeSaved": "5h/semaine",
+      "clients": "300+",
+      "messages": "2.5k+/mois",
+      "satisfaction": "4.9/5",
+      "efficiency": "+35%",
+      "deployment": "-80%",
+      "compliance": "100%",
+      "pagesVisited": "12k+/mois",
+      "pdfGenerated": "800+/mois",
+      "sessionsTawk": "1.2k+",
+      "demonstrations": [
+        {"mois": "Jan", "evenements": 4},
+        {"mois": "Fév", "evenements": 7},
+        {"mois": "Mar", "evenements": 10},
+        {"mois": "Avr", "evenements": 13},
+        {"mois": "Mai", "evenements": 17},
+        {"mois": "Juin", "evenements": 19}
+      ],
+      "videos": [
+        {"titre": "Présentation EMAP Services", "vues": 2500},
+        {"titre": "Démo du chat client", "vues": 3200},
+        {"titre": "Tutoriel PDF mentions légales", "vues": 2800},
+        {"titre": "Intégration Google Maps", "vues": 4100},
+        {"titre": "Expérience responsive multi-appareils", "vues": 3700}
+      ],
+      "benchmark": {
+        "score": "82/100",
+        "performances": "26/30",
+        "seo": "27/30",
+        "mobile": "23/30",
+        "sécurité": "6/10"
+      }
+    }
+  },
+  {
     "id": "projet_comparison",
     "title": "Comparaison des Projets E-commerce",
     "points": [
@@ -590,6 +668,81 @@
           "securiteMax": 10
         }
       ]
+    }
+  },
+  {
+    "id": "projet_partenariat_strategie",
+    "title": "Partenariat et stratégie gagnant-gagnant",
+    "points": [
+      "🤝 Mise en place d’une stratégie de collaboration durable entre EMAP Services et ses partenaires locaux",
+      "📈 Approche « win-win » favorisant la croissance mutuelle et la fidélisation client",
+      "🌍 Développement d’un écosystème de services interconnectés (plomberie, chauffage, climatisation, maintenance)",
+      "💡 Utilisation d’outils numériques (CRM, analytics, formulaires en ligne) pour renforcer la transparence et la performance",
+      "📊 Collecte et suivi des indicateurs clés via Supabase et tableaux de bord analytiques",
+      "🧩 Intégration fluide des partenaires via API et interface web collaborative",
+      "🎯 Objectif : augmenter la valeur ajoutée perçue par le client final tout en réduisant les coûts opérationnels",
+      "🪴 Construction d’un réseau de confiance basé sur la qualité, la réactivité et la responsabilité environnementale"
+    ],
+    "image": [
+      "assets/images/realisations/emap_partenariat_dashboard.png",
+      "assets/images/realisations/emap_collaboration_map.png",
+      "assets/images/realisations/emap_crm_integration.png",
+      "assets/images/realisations/emap_team_strategy.png"
+    ],
+    "platform": ["Web", "Tablet", "Desktop"],
+    "tags": [
+      "BusinessStrategy",
+      "Partenariat",
+      "CRM",
+      "Supabase",
+      "DataAnalytics",
+      "Collaboration",
+      "B2B",
+      "Sustainability"
+    ],
+    "results": [
+      "🌱 Création d’un réseau de partenaires qualifiés couvrant tout le territoire occitan",
+      "📊 Augmentation de 45% du nombre de projets collaboratifs conclus en un an",
+      "🤝 Taux de satisfaction partenaires supérieur à 95%",
+      "🧭 Mise en place d’indicateurs de performance partagés et transparents",
+      "⚡ Réduction moyenne de 30% des délais de réponse aux demandes inter-entreprises",
+      "💬 Meilleure coordination grâce aux outils numériques et aux données en temps réel",
+      "🌍 Contribution à la transition énergétique par une offre commune optimisée",
+      "🏆 Référencement d’EMAP Services comme acteur clé de la coopération régionale"
+    ],
+    "resultsMap": {
+      "roi": "240%",
+      "timeSaved": "12h/semaine",
+      "partners": "25+",
+      "projects": "60+",
+      "satisfaction": "4.9/5",
+      "efficiency": "+50%",
+      "deployment": "-70%",
+      "collaborations": "120+",
+      "crmUpdates": "900+/mois",
+      "analyticsReports": "300+/mois",
+      "demonstrations": [
+        {"mois": "Jan", "evenements": 2},
+        {"mois": "Fév", "evenements": 5},
+        {"mois": "Mar", "evenements": 8},
+        {"mois": "Avr", "evenements": 12},
+        {"mois": "Mai", "evenements": 16},
+        {"mois": "Juin", "evenements": 20}
+      ],
+      "videos": [
+        {"titre": "Présentation de la stratégie gagnant-gagnant", "vues": 1800},
+        {"titre": "Atelier collaboration numérique", "vues": 2400},
+        {"titre": "Démo du CRM inter-entreprises", "vues": 3100},
+        {"titre": "Retour d’expérience partenaires", "vues": 3700},
+        {"titre": "EMAP Services et innovation durable", "vues": 4100}
+      ],
+      "benchmark": {
+        "score": "88/100",
+        "performances": "27/30",
+        "seo": "29/30",
+        "mobile": "22/30",
+        "sécurité": "10/10"
+      }
     }
   }
 ]

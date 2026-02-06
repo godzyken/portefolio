@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -130,7 +131,9 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
           (screenSize.height - deviceSpec.size.height) / 2,
         );
 
-        final currentOffset = Offset.lerp(offset, targetOffset, centerValue)!;
+        final currentOffset = centerValue == 0
+            ? offset
+            : Offset.lerp(offset, targetOffset, centerValue)!;
 
         return Stack(
           clipBehavior: Clip.none,
@@ -157,9 +160,39 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
                         if (isExpanded) {
                           return; // Désactive drag pendant expansion
                         }
-                        final newOffset = offset + details.delta;
-                        setState(() => offset = newOffset);
-                        widget.onPositionChanged(newOffset);
+
+                        setState(() {
+                          // 1. On récupère le delta brut
+                          Offset delta = details.delta;
+
+                          // 2. Correction mathématique : On fait pivoter le delta
+                          // selon l'angle inverse de la bulle pour annuler l'effet du Transform.rotate
+                          final double angle = widget.rotationAngle;
+                          final double cosAn = math.cos(angle);
+                          final double sinAn = math.sin(angle);
+
+                          // Formule de rotation de vecteur
+                          Offset correctedDelta = Offset(
+                            delta.dx * cosAn - delta.dy * sinAn,
+                            delta.dx * sinAn + delta.dy * cosAn,
+                          );
+
+                          // 3. Calcul de la nouvelle position avec les limites de l'écran
+                          Offset newOffset = offset + correctedDelta;
+
+                          // On récupère la taille actuelle de la bulle via les specs du device
+                          final bubbleSize = _getDeviceSpec().size;
+
+                          // 4. Empêcher de sortir de l'écran (Clamping)
+                          double clampedX = newOffset.dx
+                              .clamp(0.0, screenSize.width - bubbleSize.width);
+                          double clampedY = newOffset.dy.clamp(
+                              0.0, screenSize.height - bubbleSize.height);
+
+                          offset = Offset(clampedX, clampedY);
+                        });
+
+                        widget.onPositionChanged(offset);
                       },
                       child: SizedBox(
                         child: Stack(

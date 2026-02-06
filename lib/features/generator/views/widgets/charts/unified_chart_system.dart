@@ -3,6 +3,9 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
+import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
+
+import '../../../data/models/chart_data.dart';
 
 /// 🎯 SYSTÈME UNIFIÉ DE GRAPHIQUES
 /// Remplace : chart_renderer.dart, compact_charts_card.dart, chart_widgets_unified.dart
@@ -52,11 +55,13 @@ class UnifiedChart extends StatelessWidget {
 
   Widget _buildChart() {
     return switch (data.type) {
-      ChartType.bar => _BarChartBuilder(data: data, config: config),
-      ChartType.line => _LineChartBuilder(data: data, config: config),
-      ChartType.pie => _PieChartBuilder(data: data, config: config),
-      ChartType.scatter => _ScatterChartBuilder(data: data, config: config),
-      ChartType.kpi => _KPIBuilder(data: data, config: config),
+      ChartType.barChart => _BarChartBuilder(data: data, config: config),
+      ChartType.lineChart => _LineChartBuilder(data: data, config: config),
+      ChartType.pieChart => _PieChartBuilder(data: data, config: config),
+      ChartType.scatterChart =>
+        _ScatterChartBuilder(data: data, config: config),
+      ChartType.kpiCards => _KPIBuilder(data: data, config: config),
+      _ => const Center(child: Text("Format en cours de migration...")),
     };
   }
 }
@@ -75,10 +80,11 @@ class _BarChartBuilder extends StatelessWidget {
   Widget build(BuildContext context) {
     return BarChart(
       BarChartData(
-        barGroups: data.barGroups,
+        barGroups: data.barGroups ?? [],
         titlesData: _buildTitles(),
         gridData: config.showGrid ? _defaultGrid : FlGridData(show: false),
         borderData: FlBorderData(show: false),
+        barTouchData: BarTouchData(enabled: config.animate),
       ),
     );
   }
@@ -88,10 +94,23 @@ class _BarChartBuilder extends StatelessWidget {
       leftTitles: AxisTitles(
         sideTitles: SideTitles(
           showTitles: true,
-          reservedSize: config.info.isMobile ? 32 : 40,
-          getTitlesWidget: (value, meta) => Text(
-            _formatCompact(value),
-            style: TextStyle(fontSize: config.info.isMobile ? 10 : 12),
+          reservedSize: config.info.isMobile ? 28 : 35,
+          getTitlesWidget: (value, meta) => SideTitleWidget(
+            meta: meta,
+            fitInside: SideTitleFitInsideData(
+              enabled: true,
+              distanceFromEdge: 0,
+              parentAxisSize: meta.parentAxisSize,
+              axisPosition: meta.axisPosition,
+            ),
+            space: 4,
+            child: Text(
+              _formatCompact(value),
+              style: TextStyle(
+                fontSize: config.info.isMobile ? 9 : 11,
+                color: Colors.white54,
+              ),
+            ),
           ),
         ),
       ),
@@ -129,11 +148,11 @@ class _LineChartBuilder extends StatelessWidget {
       LineChartData(
         lineBarsData: [
           LineChartBarData(
-            spots: data.lineSpots!,
+            spots: data.lineSpots ?? [],
             isCurved: true,
             color: config.primaryColor,
             barWidth: 2.5,
-            dotData: FlDotData(show: config.info.isMobile ? false : true),
+            dotData: FlDotData(show: !config.info.isMobile),
             belowBarData: BarAreaData(
               show: true,
               color: config.primaryColor.withValues(alpha: 0.2),
@@ -156,11 +175,11 @@ class _PieChartBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final radius = config.info.isMobile ? 50.0 : 70.0;
+    final radius = config.info.isMobile ? 40.0 : 60.0;
 
     return PieChart(
       PieChartData(
-        sections: data.pieSections,
+        sections: data.pieSections ?? [],
         centerSpaceRadius: radius * 0.6,
         sectionsSpace: 2,
         startDegreeOffset: -90,
@@ -177,16 +196,11 @@ class _ScatterChartBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LineChart(
-      LineChartData(
-        lineBarsData: [
-          LineChartBarData(
-            spots: data.scatterSpots!.map((s) => FlSpot(s.x, s.y)).toList(),
-            isCurved: false,
-            dotData: FlDotData(show: true),
-            show: true,
-          ),
-        ],
+    return ScatterChart(
+      ScatterChartData(
+        scatterSpots: data.scatterSpots ?? [],
+        gridData: FlGridData(show: config.showGrid),
+        borderData: FlBorderData(show: false),
       ),
     );
   }
@@ -200,20 +214,19 @@ class _KPIBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final entries = data.kpiValues?.entries.toList() ?? [];
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: config.info.isMobile ? 2 : 4,
-        childAspectRatio: 2.0,
+        childAspectRatio: config.info.isMobile ? 1.8 : 2.2,
         crossAxisSpacing: 8,
         mainAxisSpacing: 8,
       ),
-      itemCount: data.kpiValues?.length,
-      itemBuilder: (context, index) {
-        final entry = data.kpiValues?.entries.elementAt(index);
-        return _KPICard(label: entry!.key, value: entry.value);
-      },
+      itemCount: entries.length,
+      itemBuilder: (context, index) =>
+          _KPICard(label: entries[index].key, value: entries[index].value),
     );
   }
 }
@@ -227,47 +240,38 @@ class _KPICard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.blue.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.blue.withValues(alpha: 0.3)),
+        color: Colors.blue.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.blue.withValues(alpha: 0.2)),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(label, style: const TextStyle(fontSize: 10)),
+          Flexible(
+              child: ResponsiveText.titleSmall(
+            label,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 10),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          )),
           const SizedBox(height: 4),
-          Text(
-            value,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
+          Expanded(
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: ResponsiveText.bodySmall(
+                value,
+                style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blueAccent),
+              ),
+            ),
+          )
         ],
       ),
     );
   }
-}
-
-// ============================================================================
-// TYPES (à déplacer dans models/)
-// ============================================================================
-
-enum ChartType { bar, line, pie, scatter, kpi }
-
-class ChartData {
-  final ChartType type;
-  final List<BarChartGroupData>? barGroups;
-  final List<FlSpot>? lineSpots;
-  final List<PieChartSectionData>? pieSections;
-  final List<ScatterSpot>? scatterSpots;
-  final Map<String, String>? kpiValues;
-
-  const ChartData({
-    required this.type,
-    this.barGroups,
-    this.lineSpots,
-    this.pieSections,
-    this.scatterSpots,
-    this.kpiValues,
-  });
 }

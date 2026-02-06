@@ -24,7 +24,7 @@ class CompactChartsGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final crossAxisCount = _calculateCrossAxisCount();
-    final aspectRatio = _calculateAspectRatio(crossAxisCount);
+    final aspectRatio = _calculateAspectRatio(crossAxisCount, info.cardWidth);
 
     return GridView.builder(
       padding: const EdgeInsets.only(bottom: 16),
@@ -36,11 +36,11 @@ class CompactChartsGrid extends StatelessWidget {
       ),
       itemCount: charts.length,
       itemBuilder: (context, index) {
-        final chart = charts[index];
-        final height = _getChartHeight(chart);
+        final data = charts[index];
+        final height = _getChartHeight(data);
 
         return ChartCard(
-          chart: chart,
+          chart: data,
           info: info,
           height: height,
         );
@@ -60,9 +60,11 @@ class CompactChartsGrid extends StatelessWidget {
     }
   }
 
-  double _calculateAspectRatio(int crossAxisCount) {
-    double aspectRatio = (info.size.width / crossAxisCount) / 400;
-    return aspectRatio.clamp(1.1, 10.0);
+  double _calculateAspectRatio(int crossAxisCount, double targetHeight) {
+    // Largeur d'une colonne
+    double columnWidth = info.size.width / crossAxisCount;
+    // Ratio = Largeur / Hauteur
+    return (columnWidth / targetHeight).clamp(0.5, 2.0);
   }
 
   double _getChartHeight(ChartData chart) {
@@ -72,7 +74,7 @@ class CompactChartsGrid extends StatelessWidget {
 
       case ChartType.lineChart:
       case ChartType.pieChart:
-        return info.isMobile ? 300 : 350;
+        return info.isMobile ? 320 : 350;
 
       case ChartType.benchmarkGlobal:
       case ChartType.benchmarkRadar:

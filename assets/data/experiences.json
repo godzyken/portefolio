@@ -485,7 +485,7 @@
     "id": "exp_08",
     "entreprise": "Zodiac Pool Care (Saison 1)",
     "logo": "assets/images/entreprises/zodiac_logo.png",
-    "image": "assets/images/realisations/rv-4200.png",
+    "image": "assets/images/realisations/rv_4200.png",
     "contexte": "Saisonnier sur la chaîne de fabrication des robots de piscine, axée sur l’assemblage du boîtier de commande et la préparation des unités pour l’expédition.",
     "objectifs": ["Assurer la qualité et la fiabilité des boîtiers de commande en respectant les standards de production et les délais impartis."],
     "missions": ["Assemblage des composants électroniques et mécaniques du boîtier de commande, réalisation de tests fonctionnels, contrôle qualité et conditionnement pour expédition."],

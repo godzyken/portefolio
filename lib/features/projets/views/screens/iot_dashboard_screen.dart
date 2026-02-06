@@ -225,9 +225,11 @@ class _EnhancedIotDashboardScreenState
 
   Widget _buildGridView(Map<String, double> sensors, ResponsiveInfo info) {
     int crossAxisCount = 2;
-    if (info.size.width > 1100)
+    if (info.size.width > 1100) {
       crossAxisCount = 4;
-    else if (info.size.width > 750) crossAxisCount = 3;
+    } else if (info.size.width > 750) {
+      crossAxisCount = 3;
+    }
 
     return LayoutBuilder(builder: (context, constraints) {
       final double itemWidth = constraints.maxWidth / crossAxisCount;
