@@ -558,9 +558,16 @@
     ],
     "image": [
       "assets/images/logos/logo_emap.png",
-      "assets/images/realisations/emap_cible.png",
-      "assets/images/realisations/emap_crm_integration.png",
-      "assets/images/realisations/emap_partenariat_dashboard.png"
+      "assets/images/Emap/1.png",
+      "assets/images/Emap/2.png",
+      "assets/images/Emap/3.png",
+      "assets/images/Emap/4.png",
+      "assets/images/Emap/5.png",
+      "assets/images/Emap/6.png",
+      "assets/images/Emap/7.png",
+      "assets/images/Emap/8.png",
+      "assets/images/Emap/9.png",
+      "assets/images/Emap/10.png"
     ],
     "platform": ["Smartphone", "Tablet", "Desktop", "Web"],
     "tags": [
