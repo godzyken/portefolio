@@ -23,7 +23,7 @@ class EconomicSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final charts = ChartDataFactory.createChartsFromDevelopment(development);
+    final charts = ChartDataFactory.createChartsFromResults(development);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

@@ -1,368 +1,97 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:portefolio/core/affichage/colors_spec.dart';
-import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
 import 'package:portefolio/features/generator/data/extention_models.dart';
 
+/// Factory corrigé pour EMAP Services et tous les projets
 class ChartDataFactory {
-  static double _parseNumeric(dynamic value) {
-    if (value == null) return 0;
-    final str = value.toString().replaceAll(RegExp('[^0-9.,-]'), '');
-    return double.tryParse(str.replaceAll(',', '.')) ?? 0;
-  }
-
-  /// Crée les graphiques liés à l'analyse économique (champ "development")
-  static List<ChartData> createChartsFromDevelopment(
-      Map<String, dynamic> development) {
-    final charts = <ChartData>[];
-
-    // 1️⃣ Synthèse annuelle du ROI (BarChart)
-    if (development.containsKey('5_synthese_annuelle')) {
-      final synthese = development['5_synthese_annuelle'] as List<dynamic>;
-      final barGroups = synthese.asMap().entries.map((entry) {
-        final x = entry.key;
-        final result = entry.value;
-        final y = (result['roi'].toString().replaceAll('%', '')).trim();
-        final value = double.tryParse(y) ?? 0;
-        return BarChartGroupData(
-          x: x,
-          barRods: [
-            BarChartRodData(
-              toY: value,
-              color: ColorHelpers.getColorForIndex(x),
-              width: 18,
-            )
-          ],
-        );
-      }).toList();
-
-      charts.add(ChartData.bar(
-        title: '📈 ROI annuel comparatif',
-        barGroups: barGroups,
-      ));
-    }
-
-    // 2️⃣ Cumul des gains et coûts (LineChart)
-    if (development.containsKey('5_synthese_annuelle')) {
-      final synthese = development['5_synthese_annuelle'] as List<dynamic>;
-      final gains =
-          synthese.map((e) => (e['gains'] as num).toDouble()).toList();
-      final couts =
-          synthese.map((e) => (e['couts'] as num).toDouble()).toList();
-
-      final gainSpots = gains
-          .asMap()
-          .entries
-          .map((e) => FlSpot(e.key.toDouble(), e.value))
-          .toList();
-      final coutSpots = couts
-          .asMap()
-          .entries
-          .map((e) => FlSpot(e.key.toDouble(), e.value))
-          .toList();
-
-      final labels = synthese.map((e) {
-        return ResponsiveText.titleSmall('Année ${e['annee']}',
-            style: const TextStyle(color: Colors.white70));
-      }).toList();
-
-      charts.add(ChartData.line(
-        title: '💸 Gains vs Coûts',
-        lineSpots: gainSpots,
-        xLabels: labels,
-        lineColor: ColorHelpers.getColorForIndex(2),
-      ));
-
-      charts.add(ChartData.line(
-        title: '💰 Coûts cumulés',
-        lineSpots: coutSpots,
-        xLabels: labels,
-        lineColor: ColorHelpers.getColorForIndex(3),
-      ));
-    }
-
-    // 3️⃣ Répartition des gains (PieChart)
-    if (development.containsKey('3_autres_gains')) {
-      final gains = development['3_autres_gains'] as Map<String, dynamic>;
-      final data = gains.entries
-          .where((e) => e.key != 'total')
-          .map((e) => {
-                'label': e.key.replaceAll('_', ' '),
-                'valeur': _parseNumeric(e.value)
-              })
-          .toList();
-
-      final sections = data.asMap().entries.map((entry) {
-        final index = entry.key;
-        final item = entry.value;
-        final color = ColorHelpers.getColorForIndex(index);
-        return PieChartSectionData(
-          value: (item['valeur'] as num?)?.toDouble() ?? 0,
-          title: item['label'].toString(),
-          color: color.withValues(alpha: 0.85),
-          radius: 45,
-          showTitle: true,
-        );
-      }).toList();
-
-      charts.add(ChartData.pie(
-        title: '💡 Répartition des gains',
-        pieSections: sections,
-      ));
-    }
-
-    // 4️⃣ Répartition des coûts (BarChart)
-    if (development.containsKey('4_couts')) {
-      final couts = development['4_couts'] as Map<String, dynamic>;
-      final data = couts.entries
-          .map((e) => {
-                'label': e.key.replaceAll('_', ' '),
-                'valeur': _parseNumeric(e.value)
-              })
-          .toList();
-
-      final barGroups = data.asMap().entries.map((entry) {
-        final index = entry.key;
-        final item = entry.value;
-        return BarChartGroupData(
-          x: index,
-          barRods: [
-            BarChartRodData(
-              toY: (item['valeur'] as num?)?.toDouble() ?? 0,
-              color: ColorHelpers.getColorForIndex(index),
-              width: 18,
-              borderRadius: BorderRadius.circular(6),
-            ),
-          ],
-        );
-      }).toList();
-
-      final xLabels = data
-          .map((e) => Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: ResponsiveText.bodySmall(
-                  e['label'].toString(),
-                  style: const TextStyle(color: Colors.white70),
-                  maxLines: 1,
-                ),
-              ))
-          .toList();
-
-      charts.add(ChartData.bar(
-        title: '🏗️ Répartition des coûts',
-        barGroups: barGroups,
-        xLabels: xLabels,
-      ));
-    }
-
-    // 5️⃣ KPIs économiques globaux
-    if (development.containsKey('6_roi_global')) {
-      final roi = development['6_roi_global'] as Map<String, dynamic>;
-      final business = development['7_interpretation_business'] ?? {};
-
-      final kpis = <String, double>{
-        'ROI 3 ans': _parseNumeric(roi['roi_3_ans']),
-        'Gains totaux': _parseNumeric(roi['gains_totaux']),
-        'Coûts totaux': _parseNumeric(roi['couts_totaux']),
-        'Productivité': _parseNumeric(business['reactivite']),
-        'Temps économisé': _parseNumeric(business['temps_economise_total']),
-      };
-
-      final scatterSpots = <ScatterSpot>[];
-      var i = 0;
-      kpis.forEach((label, value) {
-        scatterSpots.add(
-          ScatterSpot(
-            i.toDouble() * 2,
-            value,
-            renderPriority: i,
-            dotPainter: FlDotCirclePainter(
-              color: ColorHelpers.getColorForIndex(i),
-              radius: (value / 1000).clamp(5, 16),
-              strokeWidth: 1.5,
-              strokeColor: Colors.white.withValues(alpha: 0.6),
-            ),
-          ),
-        );
-        i++;
-      });
-
-      charts.add(ChartData.scatter(
-        title: '💼 Indicateurs économiques clés',
-        scatterSpots: scatterSpots,
-        scatterColor: ColorHelpers.getColorForIndex(5),
-      ));
-    }
-
-    return charts;
-  }
-
-  /// Crée les données de tous les charts à partir de resultsMap
+  /// Crée tous les charts à partir de resultsMap
   static List<ChartData> createChartsFromResults(
       Map<String, dynamic> resultsMap) {
-    final charts = <ChartData>[];
+    final List<ChartData> charts = [];
 
-    if (resultsMap.containsKey('benchmark')) {
-      charts.addAll(_createBenchmarkCharts(resultsMap['benchmark']));
+    // 1. Extraire les KPI scalaires
+    final kpiValues = _extractKPIValues(resultsMap);
+    if (kpiValues.isNotEmpty) {
+      charts.add(ChartData.kpiCards(
+        title: 'Indicateurs clés de performance',
+        kpiValues: kpiValues,
+      ));
     }
 
-    // 1. KPI Cards
-    if (resultsMap.keys
-        .any((k) => ['roi', 'timeSaved', 'satisfaction'].contains(k))) {
-      charts.add(_createKPICards(resultsMap));
-    }
-
-    // 2. Ventes (BarChart)
-    if (resultsMap['ventes'] is List<Map<String, dynamic>>) {
-      final barData = _createBarChart(resultsMap['ventes']);
-      if (barData != null) charts.add(barData);
-    }
-
-    // 3. Clients (PieChart)
-    if (resultsMap['clients'] is List<Map<String, dynamic>>) {
-      final pieData = _createPieChart(
-        'Répartition des clients par âge',
-        resultsMap['clients'],
-        labelKey: 'age',
-        valueKey: 'nombre',
-      );
-      if (pieData != null) charts.add(pieData);
-    }
-
-    // 4. Démonstrations (LineChart)
+    // 2. Gérer les démonstrations (Line Chart)
     if (resultsMap.containsKey('demonstrations')) {
-      final lineData = _createLineChart(
-        'Démonstrations / événements',
-        resultsMap['demonstrations'],
-        'mois',
-        'evenements',
-        Colors.orangeAccent,
-      );
-      if (lineData != null) charts.add(lineData);
+      final demoChart =
+          _createDemonstrationsChart(resultsMap['demonstrations']);
+      if (demoChart != null) charts.add(demoChart);
     }
 
-    // 5. Vidéos (LineChart)
+    // 3. Gérer les vidéos (Bar Chart)
     if (resultsMap.containsKey('videos')) {
-      final lineData = _createLineChart(
-        'Audience par publications',
-        resultsMap['videos'],
-        'titre',
-        'vues',
-        Colors.greenAccent,
-        xLabelStep: 2,
-      );
-      if (lineData != null) charts.add(lineData);
+      final videoChart = _createVideosChart(resultsMap['videos']);
+      if (videoChart != null) charts.add(videoChart);
     }
 
-    // 6. Stock (PieChart)
-    if (resultsMap.containsKey('stock')) {
-      final pieData = _createPieChart(
-        'État du stock',
-        resultsMap['stock'],
-        labelKey: 'etat',
-      );
-      if (pieData != null) charts.add(pieData);
+    // 4. Gérer les ventes (si présentes)
+    if (resultsMap.containsKey('ventes')) {
+      final salesChart = _createSalesChart(resultsMap['ventes']);
+      if (salesChart != null) charts.add(salesChart);
     }
 
-    // 7. Diffusions (LineChart)
-    if (resultsMap.containsKey('diffusions')) {
-      final lineData = _createLineChart(
-        'Taux de publications par an',
-        resultsMap['diffusions'],
-        'annee',
-        'musics',
-        Colors.blueAccent,
-      );
-      if (lineData != null) charts.add(lineData);
+    // 5. Gérer les clients par âge (Pie Chart)
+    if (resultsMap.containsKey('clients')) {
+      final clientsChart = _createClientsChart(resultsMap['clients']);
+      if (clientsChart != null) charts.add(clientsChart);
     }
 
-    // 8. Représentations (LineChart)
-    if (resultsMap.containsKey('representations')) {
-      final lineData = _createLineChart(
-        'Participations aux événements',
-        resultsMap['representations'],
-        'annee',
-        'evenements',
-        Colors.purpleAccent,
-      );
-      if (lineData != null) charts.add(lineData);
-    }
-
-    // 9. Followers (PieChart)
+    // 6. Gérer les followers (si présentes)
     if (resultsMap.containsKey('followers')) {
-      final pieData = _createPieChart(
-          'Followers par plateforme', resultsMap['followers'],
-          labelKey: 'plateforme', valueKey: 'nombre');
-      if (pieData != null) charts.add(pieData);
+      final followersChart = _createFollowersChart(resultsMap['followers']);
+      if (followersChart != null) charts.add(followersChart);
     }
 
-    return charts;
-  }
-
-  static List<ChartData> _createBenchmarkCharts(dynamic benchmarkData) {
-    final charts = <ChartData>[];
-
-    // Si c'est un seul benchmark
-    if (benchmarkData is Map<String, dynamic>) {
-      final info = BenchmarkInfo.fromJson(benchmarkData);
-
-      final barGroups = [
-        BarChartGroupData(x: 0, barRods: [
-          BarChartRodData(
-              toY: info.performances.toDouble(),
-              color: ColorHelpers.getColorForIndex(0))
-        ]),
-        BarChartGroupData(x: 1, barRods: [
-          BarChartRodData(
-              toY: info.seo.toDouble(), color: ColorHelpers.getColorForIndex(1))
-        ]),
-        BarChartGroupData(x: 2, barRods: [
-          BarChartRodData(
-              toY: info.mobile.toDouble(),
-              color: ColorHelpers.getColorForIndex(2))
-        ]),
-        BarChartGroupData(x: 3, barRods: [
-          BarChartRodData(
-              toY: info.securite.toDouble(),
-              color: ColorHelpers.getColorForIndex(3))
-        ]),
-      ];
-
-      // Score global avec pie chart
-      charts.add(ChartData.benchmarkGlobal(
-        title: '📊 Score Global - ${info.projectTitle}',
-        benchmarkInfo: info,
-      ));
-
-      charts.add(ChartData.bar(
-        title: '📊 Performances globales -  ${info.projectTitle}',
-        barGroups: barGroups,
-      ));
-
-      // Radar chart
-      charts.add(ChartData.benchmarkRadar(
-        title: '🎯 Analyse Détaillée',
-        benchmarkInfo: info,
-      ));
+    // 7. Gérer les diffusions (si présentes)
+    if (resultsMap.containsKey('diffusions')) {
+      final diffusionsChart = _createDiffusionsChart(resultsMap['diffusions']);
+      if (diffusionsChart != null) charts.add(diffusionsChart);
     }
 
-    // Si c'est une liste de benchmarks (pour comparaison)
-    if (benchmarkData is List) {
-      final infos = benchmarkData
-          .map((item) => BenchmarkInfo.fromJson(item as Map<String, dynamic>))
-          .toList();
+    // 8. Gérer le stock (si présent)
+    if (resultsMap.containsKey('stock')) {
+      final stockChart = _createStockChart(resultsMap['stock']);
+      if (stockChart != null) charts.add(stockChart);
+    }
 
-      if (infos.isNotEmpty) {
-        // Comparaison par critères
-        charts.add(ChartData.benchmarkComparison(
-          title: '📊 Comparaison des Critères',
-          benchmarkComparison: infos,
+    // 9. Gérer les benchmarks
+    if (resultsMap.containsKey('benchmark')) {
+      final benchmarkData = resultsMap['benchmark'];
+
+      // Vérifier si c'est un benchmark unique ou une comparaison
+      if (benchmarkData is Map<String, dynamic>) {
+        // Benchmark unique
+        final benchmark = BenchmarkInfo.fromJson(benchmarkData);
+        charts.add(ChartData.benchmarkGlobal(
+          title: 'Score de performance global',
+          benchmarkInfo: benchmark,
         ));
 
-        // Tableau récapitulatif
+        charts.add(ChartData.benchmarkRadar(
+          title: 'Analyse radar des critères',
+          benchmarkInfo: benchmark,
+        ));
+      } else if (benchmarkData is List) {
+        // Comparaison de benchmarks
+        final benchmarks = benchmarkData
+            .map((b) => BenchmarkInfo.fromJson(b as Map<String, dynamic>))
+            .toList();
+
+        charts.add(ChartData.benchmarkComparison(
+          title: 'Comparaison des performances',
+          benchmarkComparison: benchmarks,
+        ));
+
         charts.add(ChartData.benchmarkTable(
-          title: '📋 Tableau Récapitulatif',
-          benchmarkComparison: infos,
+          title: 'Tableau détaillé des scores',
+          benchmarkComparison: benchmarks,
         ));
       }
     }
@@ -370,175 +99,335 @@ class ChartDataFactory {
     return charts;
   }
 
-  static ChartData _createKPICards(Map<String, dynamic> resultsMap) {
+  /// Extrait les valeurs KPI scalaires (chaînes et nombres)
+  static Map<String, String> _extractKPIValues(
+      Map<String, dynamic> resultsMap) {
     final kpis = <String, String>{};
 
-    // Mapping des KPIs avec icônes et formatage
-    final kpiConfig = {
-      'roi': {'label': '💰 ROI', 'suffix': ''},
-      'timeSaved': {'label': '⏰ Temps gagné', 'suffix': ''},
-      'clients': {'label': '👥 Utilisateurs', 'suffix': ''},
-      'projects': {'label': '🏗️ Projets', 'suffix': ''},
-      'satisfaction': {'label': '⭐ Satisfaction', 'suffix': ''},
-      'efficiency': {'label': '📈 Efficacité', 'suffix': ''},
-      'deployment': {'label': '🚀 Déploiement', 'suffix': ''},
-      'compliance': {'label': '✅ Conformité', 'suffix': ''},
+    // Clés KPI connues (étendre selon les besoins)
+    const kpiKeys = {
+      'roi': 'ROI',
+      'timeSaved': 'Temps gagné',
+      'clients': 'Clients',
+      'messages': 'Messages/mois',
+      'satisfaction': 'Satisfaction',
+      'efficiency': 'Efficacité',
+      'deployment': 'Déploiement',
+      'compliance': 'Conformité',
+      'pagesVisited': 'Pages visitées',
+      'pdfGenerated': 'PDF générés',
+      'sessionsTawk': 'Sessions chat',
+      'iotUpdates': 'Mises à jour IoT',
+      'visualizations3D': 'Visualisations 3D',
+      'projects': 'Projets',
+      'gainCA': 'Gain CA',
     };
 
-    kpiConfig.forEach((key, config) {
-      if (resultsMap.containsKey(key)) {
-        kpis[config['label']!] = '${resultsMap[key]}${config['suffix']}';
-      }
-    });
+    for (final entry in resultsMap.entries) {
+      // Ignorer les listes et objets complexes
+      if (entry.value is List || entry.value is Map) continue;
 
-    final mix = ColorHelpers.chartColors;
-
-    final pieSections = kpis.entries.toList().asMap().entries.map((entry) {
-      final i = entry.key;
-      final key = entry.value.key;
-      final val = entry.value.value;
-      final color = mix[i % mix.length];
-      final numeric = _parseNumeric(val);
-      return PieChartSectionData(
-        value: numeric == 0 ? 1 : numeric,
-        title: key,
-        color: color.withValues(alpha: 0.8),
-        radius: 45,
-        showTitle: false,
-      );
-    }).toList();
-
-    return ChartData.pie(
-      title: '📊 Indicateurs clés de performance',
-      pieSections: pieSections,
-    );
-  }
-
-  static ChartData? _createBarChart(List<dynamic> ventes) {
-    if (ventes.isEmpty) return null;
-
-    // Génère les BarGroups et les labels associés
-    final barGroups = <BarChartGroupData>[];
-    final labels = <String>[];
-
-    final uniqueLabels = labels.toSet().toList();
-
-    for (var i = 0; i < ventes.length; i++) {
-      final item = ventes[i];
-      final quantite = (item['quantite'] as num?)?.toDouble() ?? 0.0;
-      final label = item['gamme']?.toString() ??
-          item['label']?.toString() ??
-          'Catégorie ${i + 1}';
-
-      labels.add(label);
-
-      barGroups.add(
-        BarChartGroupData(
-          x: i,
-          barRods: [
-            BarChartRodData(
-              toY: quantite,
-              color: ColorHelpers.getColorForIndex(i),
-              width: 16,
-              borderRadius: BorderRadius.circular(4),
-            ),
-          ],
-        ),
-      );
+      // Convertir en string
+      final label = kpiKeys[entry.key] ?? _formatKey(entry.key);
+      kpis[label] = entry.value.toString();
     }
 
-    // ➜ On stocke les labels dans ChartData via xLabels (widgets)
-    final xLabels = uniqueLabels
-        .map(
-          (label) => Padding(
-            padding: const EdgeInsets.only(top: 4),
-            child: ResponsiveText.bodySmall(
-              label.isEmpty ? 'N/A' : label,
-              style: const TextStyle(
-                color: ColorHelpers.textGray,
-                overflow: TextOverflow.ellipsis,
-              ),
-              maxLines: 1,
-            ),
-          ),
-        )
-        .toList();
-
-    return ChartData.bar(
-      // ⚠️ on va créer une version bar étendue
-      title: '📦 Ventes par gamme de prix',
-      barGroups: barGroups, // placeholder, pas utilisé ici
-      xLabels: xLabels,
-    );
+    return kpis;
   }
 
-  static ChartData? _createPieChart(
-    String title,
-    List<dynamic> data, {
-    String labelKey = 'age',
-    String valueKey = 'nombre',
-  }) {
-    if (data.isEmpty) return null;
-    final mix = ColorHelpers.chartColors;
+  /// Crée un Line Chart pour les démonstrations
+  static ChartData? _createDemonstrationsChart(dynamic data) {
+    if (data is! List || data.isEmpty) return null;
 
-    final sections = data.asMap().entries.map((entry) {
-      final item = entry.value;
-      final color = mix[entry.key % mix.length];
-      final label = item[labelKey]?.toString() ?? '';
+    final spots = <FlSpot>[];
+    final labels = <Widget>[];
 
-      return PieChartSectionData(
-        value: (item[valueKey] as num).toDouble(),
-        title: label,
-        color: color.withValues(alpha: 0.8),
-        radius: 30,
-        showTitle: true,
-        borderSide: BorderSide(color: color, width: 2),
-        badgePositionPercentageOffset: 1.4,
-      );
-    }).toList();
+    for (int i = 0; i < data.length; i++) {
+      final item = data[i];
+      if (item is! Map) continue;
 
-    return ChartData.pie(title: title, pieSections: sections);
-  }
+      final evenements = _parseNumber(item['evenements']);
+      spots.add(FlSpot(i.toDouble(), evenements));
 
-  static ChartData? _createLineChart(
-    String title,
-    List<dynamic> data,
-    String xKey,
-    String yKey,
-    Color color, {
-    int xLabelStep = 1,
-  }) {
-    if (data.isEmpty) return null;
+      final label =
+          item['mois']?.toString() ?? item['annee']?.toString() ?? 'M$i';
+      labels.add(_buildLabel(label));
+    }
 
-    // 🔹 On filtre les doublons et on garde la première occurrence
-    final seen = <String>{};
-    final filteredData = data.where((item) {
-      final label = item[xKey]?.toString() ?? '';
-      if (seen.contains(label)) return false;
-      seen.add(label);
-      return true;
-    }).toList();
-
-    final spots = filteredData.asMap().entries.map((entry) {
-      return FlSpot(
-        entry.key.toDouble(),
-        (entry.value[yKey] as num).toDouble(),
-      );
-    }).toList();
-
-    final labels = filteredData.map((item) {
-      return ResponsiveText.bodySmall(
-        item[xKey]?.toString() ?? '',
-        style: const TextStyle(color: Colors.white70),
-      );
-    }).toList();
+    if (spots.isEmpty) return null;
 
     return ChartData.line(
-      title: title,
+      title: 'Évolution des démonstrations',
       lineSpots: spots,
       xLabels: labels,
-      lineColor: color,
-      xLabelStep: xLabelStep,
+      lineColor: Colors.greenAccent,
+      xLabelStep: 1,
     );
+  }
+
+  /// Crée un Bar Chart pour les vidéos
+  static ChartData? _createVideosChart(dynamic data) {
+    if (data is! List || data.isEmpty) return null;
+
+    final barGroups = <BarChartGroupData>[];
+    final labels = <Widget>[];
+
+    for (int i = 0; i < data.length; i++) {
+      final item = data[i];
+      if (item is! Map) continue;
+
+      final vues = _parseNumber(item['vues']);
+
+      barGroups.add(BarChartGroupData(
+        x: i,
+        barRods: [
+          BarChartRodData(
+            toY: vues,
+            color: Colors.purpleAccent,
+            width: 16,
+            borderRadius: BorderRadius.circular(4),
+          ),
+        ],
+      ));
+
+      final titre = item['titre']?.toString() ?? 'Video $i';
+      labels.add(_buildLabel(titre, maxLength: 15));
+    }
+
+    if (barGroups.isEmpty) return null;
+
+    return ChartData.bar(
+      title: 'Vues des vidéos',
+      barGroups: barGroups,
+      xLabels: labels,
+    );
+  }
+
+  /// Crée un Bar Chart pour les ventes
+  static ChartData? _createSalesChart(dynamic data) {
+    if (data is! List || data.isEmpty) return null;
+
+    final barGroups = <BarChartGroupData>[];
+    final labels = <Widget>[];
+
+    for (int i = 0; i < data.length; i++) {
+      final item = data[i];
+      if (item is! Map) continue;
+
+      final quantite = _parseNumber(item['quantite']);
+
+      barGroups.add(BarChartGroupData(
+        x: i,
+        barRods: [
+          BarChartRodData(
+            toY: quantite,
+            color: Colors.blueAccent,
+            width: 20,
+            borderRadius: BorderRadius.circular(4),
+          ),
+        ],
+      ));
+
+      final gamme = item['gamme']?.toString() ?? 'Gamme $i';
+      labels.add(_buildLabel(gamme));
+    }
+
+    if (barGroups.isEmpty) return null;
+
+    return ChartData.bar(
+      title: 'Ventes par gamme de prix',
+      barGroups: barGroups,
+      xLabels: labels,
+    );
+  }
+
+  /// Crée un Pie Chart pour les clients
+  static ChartData? _createClientsChart(dynamic data) {
+    if (data is! List || data.isEmpty) return null;
+
+    final sections = <PieChartSectionData>[];
+    final colors = [
+      Colors.blue,
+      Colors.green,
+      Colors.orange,
+      Colors.purple,
+      Colors.red,
+    ];
+
+    for (int i = 0; i < data.length; i++) {
+      final item = data[i];
+      if (item is! Map) continue;
+
+      final nombre = _parseNumber(item['nombre']);
+      final age =
+          item['age']?.toString() ?? item['plateforme']?.toString() ?? 'Cat $i';
+
+      sections.add(PieChartSectionData(
+        value: nombre,
+        title: age,
+        color: colors[i % colors.length],
+        radius: 60,
+        titleStyle: const TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+      ));
+    }
+
+    if (sections.isEmpty) return null;
+
+    return ChartData.pie(
+      title: 'Répartition des clients',
+      pieSections: sections,
+    );
+  }
+
+  /// Crée un Bar Chart pour les followers
+  static ChartData? _createFollowersChart(dynamic data) {
+    if (data is! List || data.isEmpty) return null;
+
+    final barGroups = <BarChartGroupData>[];
+    final labels = <Widget>[];
+
+    for (int i = 0; i < data.length; i++) {
+      final item = data[i];
+      if (item is! Map) continue;
+
+      final nombre = _parseNumber(item['nombre']);
+
+      barGroups.add(BarChartGroupData(
+        x: i,
+        barRods: [
+          BarChartRodData(
+            toY: nombre,
+            color: Colors.cyanAccent,
+            width: 18,
+            borderRadius: BorderRadius.circular(4),
+          ),
+        ],
+      ));
+
+      final plateforme = item['plateforme']?.toString() ?? 'Platform $i';
+      labels.add(_buildLabel(plateforme));
+    }
+
+    if (barGroups.isEmpty) return null;
+
+    return ChartData.bar(
+      title: 'Followers par plateforme',
+      barGroups: barGroups,
+      xLabels: labels,
+    );
+  }
+
+  /// Crée un Line Chart pour les diffusions
+  static ChartData? _createDiffusionsChart(dynamic data) {
+    if (data is! List || data.isEmpty) return null;
+
+    final spots = <FlSpot>[];
+    final labels = <Widget>[];
+
+    for (int i = 0; i < data.length; i++) {
+      final item = data[i];
+      if (item is! Map) continue;
+
+      final musics = _parseNumber(item['musics']);
+      spots.add(FlSpot(i.toDouble(), musics));
+
+      final annee = item['annee']?.toString() ?? '$i';
+      labels.add(_buildLabel(annee));
+    }
+
+    if (spots.isEmpty) return null;
+
+    return ChartData.line(
+      title: 'Diffusions musicales par année',
+      lineSpots: spots,
+      xLabels: labels,
+      lineColor: Colors.orangeAccent,
+      xLabelStep: 1,
+    );
+  }
+
+  /// Crée un Pie Chart pour le stock
+  static ChartData? _createStockChart(dynamic data) {
+    if (data is! List || data.isEmpty) return null;
+
+    final sections = <PieChartSectionData>[];
+
+    for (int i = 0; i < data.length; i++) {
+      final item = data[i];
+      if (item is! Map) continue;
+
+      final nombre = _parseNumber(item['nombre']);
+      final etat = item['etat']?.toString() ?? 'État $i';
+
+      sections.add(PieChartSectionData(
+        value: nombre,
+        title: '$etat\n$nombre',
+        color: etat.toLowerCase() == 'disponible' ? Colors.green : Colors.red,
+        radius: 70,
+        titleStyle: const TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+      ));
+    }
+
+    if (sections.isEmpty) return null;
+
+    return ChartData.pie(
+      title: 'État du stock',
+      pieSections: sections,
+    );
+  }
+
+  // === HELPERS ===
+
+  static double _parseNumber(dynamic value) {
+    if (value is num) return value.toDouble();
+    if (value is String) {
+      // Gérer les formats comme "2.5k", "300+", etc.
+      final cleaned = value
+          .replaceAll('+', '')
+          .replaceAll('k', '000')
+          .replaceAll('K', '000')
+          .replaceAll('M', '000000');
+      return double.tryParse(cleaned) ?? 0.0;
+    }
+    return 0.0;
+  }
+
+  static Widget _buildLabel(String text, {int maxLength = 20}) {
+    final truncated =
+        text.length > maxLength ? '${text.substring(0, maxLength)}...' : text;
+
+    return Text(
+      truncated,
+      style: const TextStyle(
+        color: Colors.white70,
+        fontSize: 10,
+      ),
+      textAlign: TextAlign.center,
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
+    );
+  }
+
+  static String _formatKey(String key) {
+    // Convertir camelCase en Title Case avec espaces
+    final words = key
+        .replaceAllMapped(
+          RegExp(r'([A-Z])'),
+          (match) => ' ${match.group(0)}',
+        )
+        .trim()
+        .split(' ');
+
+    return words
+        .map((w) => w[0].toUpperCase() + w.substring(1).toLowerCase())
+        .join(' ');
   }
 }

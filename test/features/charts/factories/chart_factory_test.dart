@@ -12,7 +12,7 @@ void main() {
       final dev = {
         '6_roi_global': {'roi_3_ans': '150%'}
       };
-      final charts = ChartDataFactory.createChartsFromDevelopment(dev);
+      final charts = ChartDataFactory.createChartsFromResults(dev);
       expect(charts, isNotEmpty);
       expect(charts.first.type, ChartType.scatterChart);
     });

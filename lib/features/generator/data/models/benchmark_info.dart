@@ -1,4 +1,3 @@
-// Données de benchmark
 class BenchmarkInfo {
   final String projectTitle;
   final int scoreGlobal;
@@ -24,30 +23,31 @@ class BenchmarkInfo {
     this.securiteMax = 10,
   });
 
-  int get total => performances + seo + mobile + securite;
-  int get maxTotal => performancesMax + seoMax + mobileMax + securiteMax;
-
   factory BenchmarkInfo.fromJson(Map<String, dynamic> json) {
-    // Parse "79/100" ou juste "79"
-    int parseScore(dynamic value) {
-      if (value is int) return value;
-      if (value is String) {
-        return int.tryParse(value.split('/').first) ?? 0;
-      }
-      return 0;
-    }
+    final scoreStr = json['score']?.toString() ?? '0/100';
+    final scoreParts = scoreStr.split('/');
+    final score = int.tryParse(scoreParts[0]) ?? 0;
 
     return BenchmarkInfo(
-      projectTitle: json['projectTitle'] ?? '',
-      scoreGlobal: parseScore(json['score']),
-      performances: parseScore(json['performances']),
-      performancesMax: json['performancesMax'] ?? 30,
-      seo: parseScore(json['seo']),
-      seoMax: json['seoMax'] ?? 30,
-      mobile: parseScore(json['mobile']),
-      mobileMax: json['mobileMax'] ?? 30,
-      securite: parseScore(json['sécurité'] ?? json['securite']),
-      securiteMax: json['securiteMax'] ?? 10,
+      projectTitle: json['projectTitle']?.toString() ?? 'Projet',
+      scoreGlobal: score,
+      performances: _parseInt(json['performances']),
+      performancesMax: _parseInt(json['performancesMax'], defaultValue: 30),
+      seo: _parseInt(json['seo']),
+      seoMax: _parseInt(json['seoMax'], defaultValue: 30),
+      mobile: _parseInt(json['mobile']),
+      mobileMax: _parseInt(json['mobileMax'], defaultValue: 30),
+      securite: _parseInt(json['sécurité'] ?? json['securite']),
+      securiteMax: _parseInt(json['securiteMax'], defaultValue: 10),
     );
+  }
+
+  static int _parseInt(dynamic value, {int defaultValue = 0}) {
+    if (value is int) return value;
+    if (value is String) {
+      final parsed = int.tryParse(value.split('/').first);
+      return parsed ?? defaultValue;
+    }
+    return defaultValue;
   }
 }

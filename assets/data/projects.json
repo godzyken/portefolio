@@ -554,7 +554,8 @@
       "🎨 Thème clair/sombre et design responsive (mobile, tablette, desktop)",
       "🌍 Multi-langues (FR, EN, ES, OC) via JSON et providers localisés",
       "🧠 Séparation stricte des responsabilités : domain / views / core / assets",
-      "🚀 Chargement asynchrone et cache automatique via Riverpod FutureProviders"
+      "🚀 Chargement asynchrone et cache automatique via Riverpod FutureProviders",
+      "📊 Simulation financière EMAP intégrée : analyse du chiffre d’affaires, rentabilité et seuil de croissance"
     ],
     "image": [
       "assets/images/logos/logo_emap.png",
@@ -578,7 +579,9 @@
       "TawkTo",
       "PDF",
       "ResponsiveUI",
-      "Multilangue"
+      "Multilangue",
+      "Finance",
+      "Simulation"
     ],
     "results": [
       "📞 Centralisation complète des informations de contact EMAP Services",
@@ -588,7 +591,8 @@
       "🧩 Architecture claire et évolutive, documentée dans ARCHITECTURE.md",
       "🧭 Gestion unifiée des couleurs et icônes par typage fort (type safety)",
       "⚙️ Maintenance simplifiée : configuration centralisée via JSON",
-      "🌐 Expérience fluide sur tous les appareils et navigateurs"
+      "🌐 Expérience fluide sur tous les appareils et navigateurs",
+      "📊 Simulation financière annuelle (micro-BIC) intégrée dans le tableau de bord EMAP"
     ],
     "resultsMap": {
       "roi": "185%",
@@ -602,6 +606,32 @@
       "pagesVisited": "12k+/mois",
       "pdfGenerated": "800+/mois",
       "sessionsTawk": "1.2k+",
+      "donnéesFinancières": {
+        "scénariosCA": {
+          "30k": {"revenuNet": 21600, "netMensuel": 1800},
+          "40k": {"revenuNet": 28900, "netMensuel": 2408},
+          "80k": {"revenuNet": 58000, "netMensuel": 4833},
+          "120k": {"revenuNet": 87100, "netMensuel": 7258},
+          "158k": {"revenuNet": 114740, "netMensuel": 9561}
+        },
+        "seuilRentabilité": "≈ 60k€/an",
+        "cotisationsMoy": "22%",
+        "impotsMoy": "10%",
+        "abattement": "50%",
+        "CFE": "300–600€/an",
+        "revenuNetMoyen": "≈ 2400€/mois à 40k de CA",
+        "strategie": {
+          "courtTerme": "Stabiliser trésorerie, déclarations trimestrielles Urssaf",
+          "moyenTerme": "Réinvestir 10% du CA dans outils et visibilité locale",
+          "longTerme": "Diversifier services, envisager changement de régime dès 80k"
+        },
+        "risques": [
+          "Trésorerie fragile si retards clients",
+          "Sous-financement de matériel et assurance",
+          "Difficulté d’accès au crédit pro",
+          "Croissance bloquée sous 50k€"
+        ]
+      },
       "demonstrations": [
         {"mois": "Jan", "evenements": 4},
         {"mois": "Fév", "evenements": 7},

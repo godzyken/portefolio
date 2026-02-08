@@ -1,3 +1,5 @@
+import 'dart:developer' as developer;
+
 import 'package:flutter/material.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
@@ -39,6 +41,13 @@ class _ResultsSectionState extends State<ResultsSection> {
       return;
     }
     _charts = ChartDataFactory.createChartsFromResults(resultats);
+
+    developer.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    developer.log('Données chargées : ${_charts.length}');
+    for (var chart in _charts) {
+      developer.log('  ✓ ${chart.title} (${chart.type})');
+    }
+    developer.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
   }
 
   @override
