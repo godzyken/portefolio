@@ -13,9 +13,9 @@ import 'dart:typed_data';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:portefolio/app.dart';
 import 'package:portefolio/core/provider/providers.dart';
 import 'package:portefolio/features/home/views/screens/home_screen.dart';
-import 'package:portefolio/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'services/bootstrap_service_test.dart';
