@@ -1,5 +1,43 @@
 [
   {
+    "id": "exp_23",
+    "entreprise": "EMAP Services",
+    "logo": "assets/images/entreprises/emap_3d.png",
+    "image": "assets/images/realisations/landing_page_emap.png",
+    "contexte": "Conception d'un site vitrine avec page de contact pour EMAP Services, visant à centraliser tous les canaux de communication (téléphone, email, réseaux sociaux) dans une interface moderne, interactive et responsive.",
+    "objectifs": [
+      "Créer une page de contact multi-canal fluide et responsive (mobile, tablette, desktop).",
+      "Offrir un accès rapide aux canaux de communication directs (appel, email, réseaux sociaux).",
+      "Faciliter les échanges entre clients et équipe via un formulaire validé en temps réel."
+    ],
+    "missions": [
+      "Conseil en stratégie globale : financement, digitalisation et structuration juridique/fiscale.",
+      "Conception et intégration d’un formulaire de contact interactif avec validation instantanée.",
+      "Ajout des canaux de communication directs : téléphone (`tel:`), email (`mailto:`), et localisation.",
+      "Intégration des réseaux sociaux (Facebook, Instagram, WhatsApp, LinkedIn).",
+      "Création d’une section 'urgence' avec bouton d’appel prioritaire et design distinctif.",
+      "Mise en œuvre d’un design responsive avec animations fluides et effets de survol.",
+      "Paramétrage des permissions iOS/Android pour le lancement d’URL (via `url_launcher`).",
+      "Option Supabase intégrée pour l’envoi d’emails avec backend."
+    ],
+    "code": "// Exemple Flutter – ouverture d’un lien WhatsApp\nvoid _launchWhatsApp() async {\n  final url = Uri.parse('https://wa.me/33648777661?text=Bonjour EMAP');\n  if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {\n    throw Exception('Impossible d’ouvrir WhatsApp');\n  }\n}",
+    "tags": ["Flutter", "UI/UX", "url_launcher", "Responsive Design", "Communication", "Supabase"],
+    "stack": {
+      "frontend": ["Flutter", "Dart"],
+      "packages": ["url_launcher", "Supabase"],
+      "design": ["Material 3", "Animations", "Cards ombrées", "Hover effects"],
+      "intégration": ["tel:", "mailto:", "https", "WhatsApp API"]
+    },
+    "periode": "Janvier 2026 – Janvier 2027",
+    "lienProjet": "https://www.emap.godzyken.com/",
+    "resultats": [
+      "Expérience utilisateur modernisée et intuitive sur tous les supports.",
+      "Communication client simplifiée avec accès direct aux canaux préférés.",
+      "Interface prête à être connectée au backend de Bat_Track_v1 pour production."
+    ],
+    "poste": "Directeur de projet digital"
+  },
+  {
     "id": "exp_22",
     "entreprise": "Armatis Bordeaux",
     "logo": "assets/images/entreprises/armatis_logo.png",
