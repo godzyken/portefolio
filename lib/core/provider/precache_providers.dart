@@ -6,10 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../notifier/precache_notifier.dart';
-import 'image_providers.dart';
-import 'json_data_provider.dart'; // Importe la classe AsyncNotifier
-
-// --- Structures de Données ---
+import 'json_data_provider.dart';
 
 class PrecacheReport {
   final int total;
@@ -22,13 +19,9 @@ class PrecacheReport {
       'PrecacheReport(total: $total, success: $success, failed: $failed)';
 }
 
-// --- Fonctions Utilitaires (Découplées du BuildContext) ---
-
-/// ✅ Précache une seule image avec timeout configurable utilisant ImageConfiguration.
-/// Cette fonction est publique pour être utilisée par le Notifier.
 Future<bool> precacheSingleImageWithConfig(
   String path,
-  ImageConfiguration config, // Remplace BuildContext
+  ImageConfiguration config,
   Duration timeout,
 ) async {
   try {
@@ -42,10 +35,7 @@ Future<bool> precacheSingleImageWithConfig(
 
     listener = ImageStreamListener(
       (ImageInfo? image, bool sync) {
-        if (!completer.isCompleted) {
-          completer.complete();
-        }
-        // IMPORTANT : Retirer immédiatement l'écouteur
+        if (!completer.isCompleted) completer.complete();
         stream.removeListener(listener!);
       },
       onError: (Object exception, StackTrace? stackTrace) {
@@ -53,22 +43,17 @@ Future<bool> precacheSingleImageWithConfig(
           completer.completeError(exception, stackTrace);
         }
         stream.removeListener(listener!);
-        developer.log('⚠️ Erreur stream précache: $path ($exception)');
       },
     );
     stream.addListener(listener);
 
-    // Attendre la complétion du Future ou le timeout
     await completer.future.timeout(
       timeout,
       onTimeout: () {
-        developer.log('⏰ Timeout précache: $path');
-        // Retirer l'écouteur si le timeout se produit
         stream.removeListener(listener!);
         throw TimeoutException('Precache timed out for $path');
       },
     );
-
     return true;
   } catch (e) {
     developer.log('⚠️ Échec précache: $path ($e)');
@@ -76,7 +61,6 @@ Future<bool> precacheSingleImageWithConfig(
   }
 }
 
-/// ✅ Précharge les polices si elles existent.
 Future<void> _loadFontIfExists(String path, String family) async {
   try {
     final data = await rootBundle.load(path);
@@ -90,8 +74,6 @@ Future<void> _loadFontIfExists(String path, String family) async {
   }
 }
 
-/// ✅ Précache par lots avec délai entre chaque lot.
-/// Utilise ImageConfiguration.
 Future<List<bool>> _precacheImagesInBatches(
   List<String> imagePaths,
   ImageConfiguration config, {
@@ -100,26 +82,17 @@ Future<List<bool>> _precacheImagesInBatches(
   Duration delayBetweenImages = const Duration(milliseconds: 20),
 }) async {
   final results = <bool>[];
-
-  final totalImages = imagePaths.length;
-
-  for (int i = 0; i < totalImages; i++) {
-    final path = imagePaths[i];
-
-    // 🎯 Précache l'image (séquentiellement)
-    final success = await precacheSingleImageWithConfig(path, config, timeout);
+  for (int i = 0; i < imagePaths.length; i++) {
+    final success =
+        await precacheSingleImageWithConfig(imagePaths[i], config, timeout);
     results.add(success);
-
-    // 🎯 Délai après chaque image pour décharger le pipeline
-    if (i < totalImages - 1) {
+    if (i < imagePaths.length - 1) {
       await Future.delayed(delayBetweenImages);
     }
   }
   return results;
 }
 
-/// ✅ Lance le reste du précache en arrière-plan (Fire and Forget)
-/// Utilise ImageConfiguration.
 void _precacheImagesInBackground(
   List<String> imagePaths,
   ImageConfiguration config,
@@ -129,25 +102,17 @@ void _precacheImagesInBackground(
 
   for (final path in imagePaths) {
     precacheSingleImageWithConfig(path, config, defaultTimeout).then(
-      (result) {
-        // Log minimaliste pour le Fire & Forget
-      },
+      (_) {},
       onError: (error) {
         developer.log('⚠️ Erreur Fire & Forget $path: $error');
       },
     );
-
     await Future.delayed(delayBetweenLaunches);
   }
-  developer.log(
-      '🎯 Précache de ${imagePaths.length} images lancé en background (Fire & Forget)');
 }
 
-// --- Fonction de Logique d'exécution (Le Cœur du Processus) ---
-
-/// ✅ Fonction de logique d'exécution complète. Appelée par l'AsyncNotifier.
 Future<PrecacheReport> runOptimizedPrecache(Ref ref) async {
-  developer.log('🚀 [1/4] Précache parallèle optimisé (Découplé)...');
+  developer.log('🚀 [1/4] Précache optimisé...');
   await Future.delayed(const Duration(milliseconds: 100));
 
   int success = 0;
@@ -156,7 +121,7 @@ Future<PrecacheReport> runOptimizedPrecache(Ref ref) async {
   try {
     const ImageConfiguration config = ImageConfiguration();
 
-    // Étape 1 : Chargement des JSONs
+    // ── Étape 1 : JSON ─────────────────────────────────────────────────
     developer.log('➡️ [2/4] Chargement JSON...');
     await Future.wait([
       ref.read(projectsProvider.future),
@@ -165,7 +130,7 @@ Future<PrecacheReport> runOptimizedPrecache(Ref ref) async {
       ref.read(comparaisonsJsonProvider.future),
     ]);
 
-    // Étape 2 : Chargement des Polices
+    // ── Étape 2 : Polices ───────────────────────────────────────────────
     developer.log('➡️ [3/4] Chargement polices...');
     await Future.wait([
       _loadFontIfExists(
@@ -178,12 +143,17 @@ Future<PrecacheReport> runOptimizedPrecache(Ref ref) async {
       ),
     ]);
 
-    // Étape 3 : Images Critiques (Blocage + Batches)
+    // ── Étape 3 : Images (via AssetManifest API) ────────────────────────
     developer.log('➡️ [4/4] Précache images critiques...');
-    final allImages = await ref.read(allImagesProvider
-        .future); // Utilisez appImagesProvider pour obtenir la liste complète
 
-    // Définition des filtres pour les images critiques
+    // ✅ Remplace rootBundle.loadString('AssetManifest.json')
+    //    Compatible Flutter ≥ 3.10 (web + mobile)
+    final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
+    final allImages = manifest
+        .listAssets()
+        .where((p) => p.startsWith('assets/images/'))
+        .toList();
+
     final criticalImages = allImages.where((path) {
       return path.contains('logo_godzyken') ||
           path.contains('pers_do_am') ||
@@ -203,23 +173,20 @@ Future<PrecacheReport> runOptimizedPrecache(Ref ref) async {
     success = results.where((r) => r).length;
     failed = results.where((r) => !r).length;
 
-    // Étape 4 : Lancement du reste en arrière-plan
+    // ── Étape 4 : Reste en background ────────────────────────────────────
     final remainingImages =
         allImages.where((p) => !criticalImages.contains(p)).toList();
-
     _precacheImagesInBackground(remainingImages, config);
 
-    developer.log('✅ Précache critique terminé. Le reste est en arrière-plan.');
+    developer.log('✅ Précache critique terminé.');
   } catch (e, st) {
-    developer.log('❌ Erreur précache dans runOptimizedPrecache: $e',
-        stackTrace: st);
+    developer.log('❌ Erreur précache: $e', stackTrace: st);
     rethrow;
   }
 
   return PrecacheReport(success + failed, success, failed);
 }
 
-/// 🔹 Le Provider d'état utilise l'AsyncNotifier pour gérer l'état asynchrone du précache.
 final precacheNotifierProvider =
     AsyncNotifierProvider<PrecacheAsyncNotifier, PrecacheReport>(
         PrecacheAsyncNotifier.new);

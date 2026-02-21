@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
@@ -14,37 +13,32 @@ class UnifiedImageManager with ChangeNotifier {
   factory UnifiedImageManager() => _instance;
   UnifiedImageManager._internal();
 
-  // Caches séparés par type
   final Map<String, ImageProvider> _rasterCache = {};
   final Map<String, PictureInfo> _svgCache = {};
   final Map<String, String> _assetManifest = {};
 
-  // État du chargement
   final Set<String> _loadingPaths = {};
   final Set<String> _loadedPaths = {};
   final Set<String> _failedPaths = {};
 
-  // Configuration
   ImageConfiguration? _baseConfig;
   bool _initialized = false;
-
   int _totalToLoad = 0;
 
-  /// Initialise le gestionnaire (à appeler au démarrage)
+  /// Initialise le gestionnaire — compatible Flutter 3.10+ (AssetManifest.bin)
   Future<void> initialize({ImageConfiguration? config}) async {
     if (_initialized) return;
 
     try {
-      final manifestContent = await rootBundle.loadString('AssetManifest.json');
-      final Map<String, dynamic> manifestMap = json.decode(manifestContent);
+      // ✅ AssetManifest.loadFromAssetBundle() gère automatiquement
+      //    .bin (Flutter ≥ 3.10) ET .json (Flutter < 3.10)
+      final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
+      final allAssets = manifest.listAssets();
 
-      // On vide pour repartir propre
       _assetManifest.clear();
-
-      for (String path in manifestMap.keys) {
+      for (final path in allAssets) {
         if (path.startsWith('assets/images/')) {
           _assetManifest[path] = path;
-          // On remplit automatiquement la config ici si besoin
           ImagePreloadConfig.registerImage(path);
         }
       }
@@ -60,10 +54,11 @@ class UnifiedImageManager with ChangeNotifier {
 
   List<String> getAssetPaths() => _assetManifest.keys.toList();
 
-  /// Précharge une image (raster ou SVG)
-  Future<bool> preloadImage(String path,
-      {BuildContext? context,
-      Duration timeout = const Duration(seconds: 3)}) async {
+  Future<bool> preloadImage(
+    String path, {
+    BuildContext? context,
+    Duration timeout = const Duration(seconds: 3),
+  }) async {
     if (!_initialized) return false;
 
     String cleanPath = path.trim();
@@ -76,16 +71,13 @@ class UnifiedImageManager with ChangeNotifier {
     if (_loadedPaths.contains(cleanPath)) return true;
     if (_loadingPaths.contains(cleanPath)) return false;
 
-    // 1. GESTION JSON/Lottie : On marque comme "chargé" mais on ne décode pas en image
     if (lowerPath.endsWith('.json')) {
       _loadedPaths.add(cleanPath);
       notifyListeners();
       return true;
     }
 
-    // 2. GESTION SVG : Branchement exclusif
     if (lowerPath.endsWith('.svg')) {
-      if (_loadedPaths.contains(cleanPath)) return true;
       _loadingPaths.add(cleanPath);
       try {
         await _preloadSvg(cleanPath, cleanPath.startsWith('http'), context);
@@ -100,14 +92,12 @@ class UnifiedImageManager with ChangeNotifier {
       }
     }
 
-    // 3. GESTION RASTER (PNG, JPG, WEBP)
     final bool isRaster = lowerPath.endsWith('.png') ||
         lowerPath.endsWith('.jpg') ||
         lowerPath.endsWith('.jpeg') ||
         lowerPath.endsWith('.webp');
 
     if (isRaster) {
-      if (_loadedPaths.contains(cleanPath)) return true;
       _loadingPaths.add(cleanPath);
       try {
         await _preloadRaster(cleanPath, cleanPath.startsWith('http'), timeout);
@@ -125,7 +115,6 @@ class UnifiedImageManager with ChangeNotifier {
     return false;
   }
 
-  /// Précharge plusieurs images en batch
   Future<PreloadResult> preloadBatch(
     List<String> paths, {
     BuildContext? context,
@@ -137,8 +126,6 @@ class UnifiedImageManager with ChangeNotifier {
 
     for (int i = 0; i < paths.length; i += batchSize) {
       final batch = paths.skip(i).take(batchSize).toList();
-
-      // On lance le batch
       final results = await Future.wait(
         batch.map((path) async {
           final result = await preloadImage(path, context: context);
@@ -150,7 +137,6 @@ class UnifiedImageManager with ChangeNotifier {
       success += results.where((r) => r).length;
       failed += results.where((r) => !r).length;
 
-      // Petite respiration pour l'UI Thread
       if (i + batchSize < paths.length) {
         await Future.delayed(delayBetweenBatches);
       }
@@ -160,25 +146,11 @@ class UnifiedImageManager with ChangeNotifier {
     return PreloadResult(success, failed);
   }
 
-  /// Obtient une ImageProvider depuis le cache
-  ImageProvider? getCachedImage(String path) {
-    if (_rasterCache.containsKey(path)) {
-      return _rasterCache[path];
-    }
-    return null;
-  }
+  ImageProvider? getCachedImage(String path) => _rasterCache[path];
+  PictureInfo? getCachedSvg(String path) => _svgCache[path];
+  bool isAvailable(String path) =>
+      _assetManifest.containsKey(path) || path.startsWith('http');
 
-  /// Obtient un SVG depuis le cache
-  PictureInfo? getCachedSvg(String path) {
-    return _svgCache[path];
-  }
-
-  /// Vérifie si une image est disponible
-  bool isAvailable(String path) {
-    return _assetManifest.containsKey(path) || path.startsWith('http');
-  }
-
-  /// Obtient les statistiques du cache
   CacheStats getStats() {
     return CacheStats(
       totalAssets: _totalToLoad > 0 ? _totalToLoad : _assetManifest.length,
@@ -189,20 +161,17 @@ class UnifiedImageManager with ChangeNotifier {
     );
   }
 
-  /// Nettoie le cache
   void clearCache() {
     for (final info in _svgCache.values) {
       info.picture.dispose();
     }
-
     _rasterCache.clear();
     _svgCache.clear();
     _loadedPaths.clear();
     _failedPaths.clear();
-    developer.log('🧹 Cache nettoyé et ressources SVG libérées');
+    developer.log('🧹 Cache nettoyé');
   }
 
-  /// Retire une image spécifique du cache
   void evict(String path) {
     _rasterCache.remove(path);
     _svgCache.remove(path);
@@ -215,49 +184,34 @@ class UnifiedImageManager with ChangeNotifier {
     notifyListeners();
   }
 
-  int getTotalToLoad() {
-    return _totalToLoad;
-  }
+  int getTotalToLoad() => _totalToLoad;
 
-  // ============================================================================
-  // MÉTHODES PRIVÉES
-  // ============================================================================
+  // ── Privé ──────────────────────────────────────────────────────────────
 
   Future<void> _preloadRaster(
     String path,
     bool isNetwork,
-    Duration timeout, {
-    int? cacheWidth,
-  }) async {
-    ImageProvider provider =
+    Duration timeout,
+  ) async {
+    final ImageProvider provider =
         isNetwork ? NetworkImage(path) : AssetImage(path) as ImageProvider;
 
-    if (cacheWidth != null && !isNetwork) {
-      provider = ResizeImage(provider as AssetImage, width: cacheWidth);
-    }
-
     final completer = Completer<void>();
-
-    final ImageConfiguration config = _baseConfig ?? const ImageConfiguration();
-    final ImageStream stream = provider.resolve(config);
-
+    final config = _baseConfig ?? const ImageConfiguration();
+    final stream = provider.resolve(config);
     ImageStreamListener? listener;
 
     listener = ImageStreamListener(
       (ImageInfo info, bool sync) {
         if (!completer.isCompleted) {
           _rasterCache[path] = provider;
-
           info.dispose();
-
           completer.complete();
         }
         stream.removeListener(listener!);
       },
-      onError: (error, stackTrace) {
-        if (!completer.isCompleted) {
-          completer.completeError(error, stackTrace);
-        }
+      onError: (error, st) {
+        if (!completer.isCompleted) completer.completeError(error, st);
         stream.removeListener(listener!);
       },
     );
@@ -265,18 +219,11 @@ class UnifiedImageManager with ChangeNotifier {
     stream.addListener(listener);
 
     try {
-      await completer.future.timeout(
-        timeout,
-        onTimeout: () {
-          stream.removeListener(listener!);
-          throw TimeoutException('Timeout lors du chargement de $path');
-        },
-      );
-    } on TimeoutException {
-      stream.removeListener(listener);
-
-      rethrow;
-    } catch (e) {
+      await completer.future.timeout(timeout, onTimeout: () {
+        stream.removeListener(listener!);
+        throw TimeoutException('Timeout: $path');
+      });
+    } catch (_) {
       stream.removeListener(listener);
       rethrow;
     }
@@ -287,33 +234,20 @@ class UnifiedImageManager with ChangeNotifier {
     bool isNetwork,
     BuildContext? context,
   ) async {
-    try {
-      final loader = isNetwork ? SvgNetworkLoader(path) : SvgAssetLoader(path);
-
-      // Charger en mémoire
-      final PictureInfo pictureInfo = await vg.loadPicture(loader, null);
-      _svgCache[path] = pictureInfo;
-    } catch (e) {
-      developer.log('⚠️ Erreur chargement SVG: $path ($e)');
-    }
+    final loader = isNetwork ? SvgNetworkLoader(path) : SvgAssetLoader(path);
+    final pictureInfo = await vg.loadPicture(loader, null);
+    _svgCache[path] = pictureInfo;
   }
 }
 
-// ============================================================================
-// CLASSES DE DONNÉES
-// ============================================================================
+// ── Data classes ────────────────────────────────────────────────────────────
 
 class PreloadResult {
   final int success;
   final int failed;
-
   const PreloadResult(this.success, this.failed);
-
   int get total => success + failed;
   double get successRate => total > 0 ? success / total : 0.0;
-
-  @override
-  String toString() => 'PreloadResult(success: $success, failed: $failed)';
 }
 
 class CacheStats {
@@ -333,33 +267,14 @@ class CacheStats {
 
   int get totalLoaded => loadedRaster + loadedSvg;
   double get loadProgress => totalAssets > 0 ? totalLoaded / totalAssets : 0.0;
-
-  @override
-  String toString() => '''
-CacheStats(
-  total: $totalAssets,
-  raster: $loadedRaster,
-  svg: $loadedSvg,
-  failed: $failed,
-  loading: $loading,
-  progress: ${(loadProgress * 100).toStringAsFixed(1)}%
-)''';
 }
 
-// ============================================================================
-// STRATÉGIES DE PRÉCHARGEMENT
-// ============================================================================
-
-enum PreloadStrategy {
-  critical, // Charger immédiatement
-  lazy, // Charger à la demande
-  background, // Charger en arrière-plan
-}
+enum PreloadStrategy { critical, lazy, background }
 
 class ImagePriority {
   final String path;
   final PreloadStrategy strategy;
-  final int priority; // 0 = max priority
+  final int priority;
 
   const ImagePriority(
     this.path, {
@@ -368,27 +283,22 @@ class ImagePriority {
   });
 }
 
-/// Extension pour faciliter le préchargement avec priorités
 extension UnifiedImageManagerExtension on UnifiedImageManager {
   Future<PreloadResult> preloadWithPriorities(
     List<ImagePriority> images, {
     BuildContext? context,
   }) async {
-    // Trier par priorité
     final sorted = List<ImagePriority>.from(images)
       ..sort((a, b) => a.priority.compareTo(b.priority));
 
-    // Séparer par stratégie
     final critical = sorted
         .where((i) => i.strategy == PreloadStrategy.critical)
         .map((i) => i.path)
         .toList();
-
     final lazy = sorted
         .where((i) => i.strategy == PreloadStrategy.lazy)
         .map((i) => i.path)
         .toList();
-
     final background = sorted
         .where((i) => i.strategy == PreloadStrategy.background)
         .map((i) => i.path)
@@ -397,26 +307,20 @@ extension UnifiedImageManagerExtension on UnifiedImageManager {
     int totalSuccess = 0;
     int totalFailed = 0;
 
-    // --- PHASE 1 : CRITIQUE (Bloquant pour le Splash) ---
     if (critical.isNotEmpty) {
-      developer.log('🚀 Chargement de ${critical.length} assets critiques...');
       final res = await preloadBatch(critical, context: context, batchSize: 3);
       totalSuccess += res.success;
       totalFailed += res.failed;
     }
 
-    // --- PHASE 2 : LAZY (Chargement séquentiel fluide) ---
     if (lazy.isNotEmpty) {
-      // Petite pause pour laisser l'UI respirer après les critiques
       await Future.delayed(const Duration(milliseconds: 200));
       final res = await preloadBatch(lazy, context: context, batchSize: 5);
       totalSuccess += res.success;
       totalFailed += res.failed;
     }
 
-    // --- PHASE 3 : BACKGROUND (Non-bloquant) ---
     if (background.isNotEmpty) {
-      // On lance sans 'await' pour rendre la main au Splash rapidement
       preloadBatch(background, context: context, batchSize: 2).then((res) {
         developer.log('✅ Background preload terminé (${res.success} succès)');
       });

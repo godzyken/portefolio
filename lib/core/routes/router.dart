@@ -7,6 +7,7 @@ import '../../features/contact/views/screens/contact_screen.dart';
 import '../../features/experience/views/screens/experiences_screen.dart';
 import '../../features/generator/views/screens/generator_extentions_screens.dart';
 import '../../features/home/views/screens/home_screen.dart';
+import '../../features/home/views/screens/splash_screen.dart';
 import '../../features/parametres/themes/views/screens/theme_settings_page.dart';
 import '../../features/projets/views/screens/projects_screen.dart';
 import '../affichage/navigator_key_provider.dart';
@@ -21,8 +22,16 @@ final goRouterProvider = Provider<GoRouter>((ref) {
     return GoRouter(
       navigatorKey: navigatorKey,
       observers: [],
-      initialLocation: '/',
+      initialLocation: '/splash',
       routes: [
+        // ── Splash (hors ShellRoute pour éviter la navbar) ─────────────
+        GoRoute(
+          path: '/splash',
+          name: 'splash',
+          builder: (_, __) => const SplashScreen(targetRoute: '/'),
+        ),
+
+        // ── Shell principal (navbar, scaffold partagé) ──────────────────
         ShellRoute(
           builder: (context, state, child) => MainScaffold(child: child),
           routes: [

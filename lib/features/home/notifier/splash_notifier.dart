@@ -23,7 +23,7 @@ class SplashNotifier extends Notifier<SplashState> {
   /// [minimumDisplayMs] : durée minimale du splash pour éviter un flash.
   Future<void> start({
     required BuildContext context,
-    String targetRoute = '/home',
+    String targetRoute = '/',
     int minimumDisplayMs = 1500,
   }) async {
     if (state.phase == SplashPhase.loading) return; // Protection ré-entrance
@@ -82,7 +82,7 @@ class SplashNotifier extends Notifier<SplashState> {
   /// Relance la séquence (bouton "Réessayer" sur l'écran d'erreur).
   Future<void> retry({
     required BuildContext context,
-    String targetRoute = '/home',
+    String targetRoute = '/',
   }) async {
     state = const SplashState();
     await start(context: context, targetRoute: targetRoute);
