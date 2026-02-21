@@ -28,7 +28,7 @@ class ServiceCardBackground extends StatelessWidget {
       return _buildFallbackGradient(theme);
     }
 
-    return SmartImageV2(
+    return SmartImage(
       path: service.cleanedImageUrl!,
       fit: BoxFit.cover,
       responsiveSize: ResponsiveImageSize.medium,

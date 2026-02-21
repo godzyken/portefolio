@@ -75,7 +75,7 @@ class ExperienceTimeline extends ConsumerWidget {
                     _showExperienceModal(context, experiences[index], info),
                 child: ClipOval(
                   clipBehavior: Clip.hardEdge,
-                  child: SmartImageV2(
+                  child: SmartImage(
                     path: experiences[index].logo,
                     responsiveSize: ResponsiveImageSize.medium,
                     fit: BoxFit.fill,

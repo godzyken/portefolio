@@ -158,7 +158,7 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
                 child: ClipRRect(
                   borderRadius:
                       const BorderRadius.vertical(top: Radius.circular(12)),
-                  child: SmartImageV2(
+                  child: SmartImage(
                     path: exp.image,
                     fit: BoxFit.cover,
                     enableShimmer: true,
@@ -409,7 +409,7 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
     return Stack(
       children: [
         Positioned.fill(
-          child: SmartImageV2(
+          child: SmartImage(
             path: 'assets/images/backgrounds/tapis_poker.png',
             responsiveSize: ResponsiveImageSize.xlarge,
             width: double.infinity,

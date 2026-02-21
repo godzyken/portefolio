@@ -351,7 +351,7 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
         fit: StackFit.expand,
         children: [
           if (hasImage)
-            SmartImageV2(
+            SmartImage(
               path: widget.experience.image,
               fit: BoxFit.cover,
               width: info.size.width * 0.5,
@@ -399,7 +399,7 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
 
     // CAS 3 : Image standard
     if (hasImage) {
-      return SmartImageV2(
+      return SmartImage(
         path: widget.experience.image,
         responsiveSize: ResponsiveImageSize.medium,
         fit: BoxFit.cover,

@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -17,7 +16,8 @@ class AssetService {
     final jsonStr = await rootBundle.loadString(path);
 
     // Optimisation : Pas de compute si on est en test (évite les crashs d'isolates)
-    if (kDebugMode && Platform.environment.containsKey('FLUTTER_TEST')) {
+    if (kDebugMode &&
+        bool.fromEnvironment('FLUTTER_TEST', defaultValue: false)) {
       final List<dynamic> jsonList = jsonDecode(jsonStr);
       return jsonList.map((e) => fromJson(e as Map<String, dynamic>)).toList();
     }
@@ -29,6 +29,8 @@ class AssetService {
     _jsonCache[path] = typedResult;
     return typedResult;
   }
+
+  void clearCache() => _jsonCache.clear();
 
   static List<dynamic> _parseJson(String jsonStr) => jsonDecode(jsonStr);
 }

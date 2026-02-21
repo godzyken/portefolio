@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 import '../service/unified_image_manager.dart';
+import '../ui/widgets/smart_image.dart';
 
 /// Provider pour le gestionnaire d'images unifié
 final unifiedImageManagerProvider =
@@ -170,7 +170,7 @@ class CachedImage extends ConsumerWidget {
 
     if (cached != null) {
       return CustomPaint(
-        painter: _SvgPainter(cached),
+        painter: SvgPainter(cached, fit),
         size: Size(width ?? double.infinity, height ?? double.infinity),
       );
     }
@@ -196,32 +196,6 @@ class CachedImage extends ConsumerWidget {
           height: height,
           child: const Icon(Icons.broken_image, color: Colors.grey),
         );
-  }
-}
-
-/// Painter personnalisé pour les SVG
-class _SvgPainter extends CustomPainter {
-  final PictureInfo pictureInfo;
-
-  _SvgPainter(this.pictureInfo);
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    canvas.save();
-
-    // Adapter la taille
-    final pictureSize = pictureInfo.size;
-    final scale = size.width / pictureSize.width;
-    canvas.scale(scale);
-
-    // Dessiner
-    canvas.drawPicture(pictureInfo.picture);
-    canvas.restore();
-  }
-
-  @override
-  bool shouldRepaint(_SvgPainter oldDelegate) {
-    return oldDelegate.pictureInfo != pictureInfo;
   }
 }
 
@@ -289,4 +263,16 @@ class _StatRow extends StatelessWidget {
       ),
     );
   }
+}
+
+// ---------------------------------------------------------------------------
+// Extensions de convenance (WidgetRef)
+// ---------------------------------------------------------------------------
+
+extension ImagePreloadExtension on WidgetRef {
+  Future<void> preloadImages(List<String> paths, {BuildContext? context}) =>
+      read(unifiedImageManagerProvider).preloadBatch(paths, context: context);
+
+  Future<void> preloadCriticalImages(BuildContext context) =>
+      read(preloadNotifierProvider.notifier).preloadCriticalImages(context);
 }

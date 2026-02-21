@@ -38,7 +38,7 @@ class _ProjectsScreenState extends ConsumerState<ProjectsScreen> {
       children: [
         // --- Image de fond ---
         Positioned.fill(
-          child: SmartImageV2(
+          child: SmartImage(
             key: UniqueKey(),
             path: "assets/images/backgrounds/line.svg", // ton image
             fit: BoxFit.fitWidth,

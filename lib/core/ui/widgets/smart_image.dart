@@ -1,9 +1,23 @@
 import 'dart:typed_data';
 
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:shimmer/shimmer.dart';
+
+import '../../affichage/colors_spec.dart';
+import '../../provider/unified_image_provider.dart';
+import '../../service/unified_image_manager.dart';
+import '../responsive_constants.dart';
+
+// ---------------------------------------------------------------------------
+// Types partagés
+// ---------------------------------------------------------------------------
+
 enum ResponsiveImageSize { small, medium, large, xlarge }
 
-// Transparent pixel placeholder
-const kTransparentImage = <int>[
+/// Placeholder transparent 1×1 px — évite un flash blanc lors des transitions.
+const List<int> kTransparentImage = [
   0x89,
   0x50,
   0x4E,
@@ -76,7 +90,71 @@ const kTransparentImage = <int>[
 
 final Uint8List transparentImage = Uint8List.fromList(kTransparentImage);
 
-/*class SmartImage extends ConsumerStatefulWidget {
+// ---------------------------------------------------------------------------
+// SvgPainter — source canonique unique dans tout le projet
+// ---------------------------------------------------------------------------
+
+/// [CustomPainter] pour les SVG avec support complet de [BoxFit].
+///
+/// Utilisé par [SmartImage] et [CachedImage] ; ne pas dupliquer ailleurs.
+class SvgPainter extends CustomPainter {
+  final PictureInfo pictureInfo;
+  final BoxFit fit;
+
+  const SvgPainter(this.pictureInfo, this.fit);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final ps = pictureInfo.size;
+    if (ps.width == 0 || ps.height == 0) return;
+
+    final scaleX = size.width / ps.width;
+    final scaleY = size.height / ps.height;
+
+    canvas.save();
+    switch (fit) {
+      case BoxFit.fill:
+        canvas.scale(scaleX, scaleY);
+      case BoxFit.cover:
+        _applyScale(canvas, size, ps, scaleX > scaleY ? scaleX : scaleY);
+      case BoxFit.fitWidth:
+        _applyScale(canvas, size, ps, scaleX);
+      case BoxFit.fitHeight:
+        _applyScale(canvas, size, ps, scaleY);
+      case BoxFit.none:
+        _applyScale(canvas, size, ps, 1.0);
+      case BoxFit.scaleDown:
+        _applyScale(
+            canvas, size, ps, (scaleX < scaleY ? scaleX : scaleY).clamp(0, 1));
+      case BoxFit.contain:
+      default:
+        _applyScale(canvas, size, ps, scaleX < scaleY ? scaleX : scaleY);
+    }
+    canvas.drawPicture(pictureInfo.picture);
+    canvas.restore();
+  }
+
+  void _applyScale(Canvas c, Size box, Size pic, double scale) {
+    c.translate(
+      (box.width - pic.width * scale) / 2,
+      (box.height - pic.height * scale) / 2,
+    );
+    c.scale(scale);
+  }
+
+  @override
+  bool shouldRepaint(SvgPainter old) =>
+      old.pictureInfo != pictureInfo || old.fit != fit;
+}
+
+/// Widget image universel : PNG / JPG / WEBP / SVG, local ou réseau.
+///
+/// - Préchargement transparent via [UnifiedImageManager]
+/// - Shimmer pendant le chargement
+/// - Fallback gradient + icône en cas d'erreur
+/// - Tailles responsives via [ResponsiveImageSize]
+/// - BorderRadius, border, boxShadow, BoxFit complets
+class SmartImage extends ConsumerStatefulWidget {
   final String path;
   final double? width;
   final double? height;
@@ -84,7 +162,7 @@ final Uint8List transparentImage = Uint8List.fromList(kTransparentImage);
   final IconData? fallbackIcon;
   final Color? fallbackColor;
   final ResponsiveImageSize? responsiveSize;
-  final bool useCache;
+  final bool autoPreload;
   final bool enableShimmer;
   final Duration fadeDuration;
   final Color? color;
@@ -102,7 +180,7 @@ final Uint8List transparentImage = Uint8List.fromList(kTransparentImage);
     this.fallbackIcon,
     this.fallbackColor,
     this.responsiveSize,
-    this.useCache = true,
+    this.autoPreload = true,
     this.enableShimmer = true,
     this.fadeDuration = const Duration(milliseconds: 400),
     this.color,
@@ -117,188 +195,164 @@ final Uint8List transparentImage = Uint8List.fromList(kTransparentImage);
 }
 
 class _SmartImageState extends ConsumerState<SmartImage> {
-  ImageProvider? _imageProvider;
+  bool _isLoading = true;
   bool _hasError = false;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final isSvg = widget.path.toLowerCase().endsWith('.svg');
-
-    if (widget.useCache && !isSvg) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted) return;
-        try {
-          final cacheNotifier =
-              ref.read(smartImageCacheNotifierProvider.notifier);
-          cacheNotifier.setContext(context);
-          cacheNotifier.preloadImage(widget.path, context);
-        } catch (e) {
-          debugPrint('❌ SmartImage precache suppressed: ${widget.path}');
-        }
-      });
-    }
+  void initState() {
+    super.initState();
+    _loadImage();
   }
 
   @override
-  void didUpdateWidget(covariant SmartImage oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    final isSvg = widget.path.toLowerCase().endsWith('.svg');
-    if (widget.path != oldWidget.path && widget.useCache && !isSvg) {
-      final cacheNotifier = ref.read(smartImageCacheNotifierProvider.notifier);
-      cacheNotifier.preloadImage(widget.path, context);
+  void didUpdateWidget(covariant SmartImage old) {
+    super.didUpdateWidget(old);
+    if (widget.path != old.path) {
+      setState(() {
+        _isLoading = true;
+        _hasError = false;
+      });
+      _loadImage();
+    }
+  }
+
+  Future<void> _loadImage() async {
+    if (!widget.autoPreload) {
+      if (mounted) setState(() => _isLoading = false);
+      return;
+    }
+    final manager = ref.read(unifiedImageManagerProvider);
+    try {
+      final success = await manager.preloadImage(widget.path, context: context);
+      if (mounted)
+        setState(() {
+          _isLoading = false;
+          _hasError = !success;
+        });
+    } catch (_) {
+      if (mounted)
+        setState(() {
+          _isLoading = false;
+          _hasError = true;
+        });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    double? finalWidth = widget.width;
-    double? finalHeight = widget.height;
+    double? w = widget.width;
+    double? h = widget.height;
 
     if (widget.responsiveSize != null) {
-      final constants = ref.watch(responsiveConstantsProvider);
-      final size = _getResponsiveSize(constants, widget.responsiveSize!);
-      finalWidth ??= size;
-      finalHeight ??= size;
+      final c = ref.watch(responsiveConstantsProvider);
+      final s = _resolveSize(c, widget.responsiveSize!);
+      w ??= s;
+      h ??= s;
     }
 
-    final borderRadius = widget.borderRadius ?? BorderRadius.circular(12);
-    final boxDecoration = BoxDecoration(
-      borderRadius: borderRadius,
-      border: widget.border,
-      boxShadow: widget.boxShadow,
-    );
+    final radius = widget.borderRadius ?? BorderRadius.circular(12);
 
-    // Détecte le type d'image
-    final isSvg = widget.path.toLowerCase().endsWith('.svg');
-    final isNetwork = widget.path.startsWith('http');
-    final useShimmer = widget.enableShimmer;
-
-    Widget child;
-
-    if (_hasError) {
-      child = _buildFallback(finalWidth, finalHeight);
-    } else if (isSvg) {
-      child = _buildSvg(finalWidth, finalHeight, isNetwork);
-    } else if (isNetwork) {
-      child = _buildNetworkImage(finalWidth, finalHeight, useShimmer);
-    } else {
-      child = _buildAssetImage(finalWidth, finalHeight);
-    }
+    final child = _hasError
+        ? _buildFallback(w, h)
+        : (_isLoading && widget.enableShimmer)
+            ? _buildShimmer(w, h)
+            : _buildImage(w, h);
 
     return ClipRRect(
-      borderRadius: borderRadius,
+      borderRadius: radius,
       child: Container(
-        decoration: boxDecoration.copyWith(boxShadow: null),
-        child: child,
+        decoration: BoxDecoration(
+          borderRadius: radius,
+          border: widget.border,
+          boxShadow: widget.boxShadow,
+        ),
+        child: AnimatedSwitcher(duration: widget.fadeDuration, child: child),
       ),
     );
   }
 
-  double _getResponsiveSize(
-      ResponsiveConstants constants, ResponsiveImageSize size) {
-    return switch (size) {
-      ResponsiveImageSize.small => constants.avatarS,
-      ResponsiveImageSize.medium => constants.avatarM,
-      ResponsiveImageSize.large => constants.avatarL,
-      ResponsiveImageSize.xlarge => constants.avatarXL,
-    };
-  }
+  Widget _buildImage(double? w, double? h) {
+    final manager = ref.watch(unifiedImageManagerProvider);
+    final isSvg = widget.path.toLowerCase().endsWith('.svg');
 
-  Widget _buildFallback(double? w, double? h) {
-    final color = ColorHelpers.createHarmoniousPalette(
-        widget.fallbackColor ?? Theme.of(context).colorScheme.primary);
-    return Shimmer.fromColors(
-        baseColor: color.first,
-        highlightColor: color.last,
-        direction: ShimmerDirection.ttb,
-        child: TweenAnimationBuilder<double>(
-          tween: Tween(begin: 0.8, end: 1.2),
-          duration: const Duration(seconds: 2),
-          curve: Curves.easeInOut,
-          builder: (context, scale, child) {
-            return Transform.scale(
-              scale: scale,
-              child: Container(
-                width: w,
-                height: h,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  borderRadius:
-                      widget.borderRadius ?? BorderRadius.circular(12),
-                  gradient: ColorHelpers.bgGradient,
-                ),
-                child: Icon(
-                  widget.fallbackIcon ?? Icons.broken_image_outlined,
-                  color: ColorHelpers.errorColor,
-                  size: (w ?? 100) * 0.4,
-                ),
-              ),
-            );
-          },
-          onEnd: () => setState(() {}),
-        ));
-  }
+    if (isSvg) {
+      final cached = manager.getCachedSvg(widget.path);
+      if (cached != null) {
+        return SizedBox(
+          width: w,
+          height: h,
+          child: CustomPaint(painter: SvgPainter(cached, widget.fit)),
+        );
+      }
+      // SVG pas encore en cache (chargement en cours) → direct Flutter SVG
+      return SvgPicture.asset(
+        widget.path,
+        width: w,
+        height: h,
+        fit: widget.fit,
+        colorFilter: _colorFilter,
+        placeholderBuilder: (_) => _buildShimmer(w, h),
+      );
+    }
 
-  Widget _buildShimmer(double? w, double? h) {
-    final baseColor = Colors.grey.withValues(alpha: 0.2);
-    final highlightColor = Colors.grey.withValues(alpha: 0.4);
-    return Shimmer.fromColors(
-      baseColor: baseColor,
-      highlightColor: highlightColor,
-      child: Container(
-        width: w ?? 100,
-        height: h ?? 100,
-        color: baseColor,
-      ),
-    );
-  }
+    final cached = manager.getCachedImage(widget.path);
+    final provider = cached ??
+        (widget.path.startsWith('http')
+            ? NetworkImage(widget.path)
+            : AssetImage(widget.path) as ImageProvider);
 
-  Widget _buildAssetImage(double? w, double? h) {
-    _imageProvider ??= AssetImage(widget.path);
-    return FadeInImage(
-      placeholder: MemoryImage(transparentImage),
-      image: _imageProvider!,
-      width: w,
-      height: h,
-      fit: widget.fit,
-      fadeInDuration: widget.fadeDuration,
-      imageErrorBuilder: (_, __, ___) => _buildFallback(w, h),
-    );
-  }
-
-  Widget _buildNetworkImage(double? w, double? h, bool shimmer) {
-    _imageProvider ??= NetworkImage(widget.path);
     return Image(
-      image: _imageProvider!,
+      image: provider,
       width: w,
       height: h,
       fit: widget.fit,
       color: widget.color,
       colorBlendMode: widget.colorBlendMode,
-      frameBuilder: (context, child, frame, _) {
-        if (frame == null && shimmer) return _buildShimmer(w, h);
-        return AnimatedOpacity(
-            opacity: 1, duration: widget.fadeDuration, child: child);
-      },
       errorBuilder: (_, __, ___) => _buildFallback(w, h),
     );
   }
 
-  Widget _buildSvg(double? w, double? h, bool isNetwork) {
-    final builder = isNetwork ? SvgPicture.network : SvgPicture.asset;
-    return builder(
-      widget.path,
-      width: w,
-      height: h,
-      fit: widget.fit,
-      colorFilter: (widget.color != null && widget.colorBlendMode != null)
-          ? ColorFilter.mode(widget.color!, widget.colorBlendMode!)
-          : null,
-      placeholderBuilder: (_) => widget.enableShimmer
-          ? _buildShimmer(w, h)
-          : SizedBox(width: w, height: h),
-      errorBuilder: (_, __, ___) => _buildFallback(w, h),
+  Widget _buildShimmer(double? w, double? h) {
+    final base = Colors.grey.withValues(alpha: 0.2);
+    return Shimmer.fromColors(
+      baseColor: base,
+      highlightColor: Colors.grey.withValues(alpha: 0.4),
+      child: Container(width: w ?? 100, height: h ?? 100, color: base),
     );
   }
-}*/
+
+  Widget _buildFallback(double? w, double? h) {
+    final palette = ColorHelpers.createHarmoniousPalette(
+      widget.fallbackColor ?? Theme.of(context).colorScheme.primary,
+    );
+    return Container(
+      width: w,
+      height: h,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [palette.first, palette.last],
+        ),
+      ),
+      child: Icon(
+        widget.fallbackIcon ?? Icons.broken_image_outlined,
+        color: Colors.white.withValues(alpha: 0.7),
+        size: (w ?? 100) * 0.4,
+      ),
+    );
+  }
+
+  ColorFilter? get _colorFilter =>
+      (widget.color != null && widget.colorBlendMode != null)
+          ? ColorFilter.mode(widget.color!, widget.colorBlendMode!)
+          : null;
+
+  double _resolveSize(ResponsiveConstants c, ResponsiveImageSize s) =>
+      switch (s) {
+        ResponsiveImageSize.small => c.avatarS,
+        ResponsiveImageSize.medium => c.avatarM,
+        ResponsiveImageSize.large => c.avatarL,
+        ResponsiveImageSize.xlarge => c.avatarXL,
+      };
+}

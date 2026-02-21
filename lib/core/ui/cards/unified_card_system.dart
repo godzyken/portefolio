@@ -9,7 +9,7 @@ import 'package:portefolio/core/affichage/screen_size_detector.dart';
 
 import '../../config/image_preload_config.dart';
 import '../../service/unified_image_manager.dart';
-import '../widgets/smart_image_v2.dart';
+import '../widgets/smart_image.dart';
 
 // ============================================================================
 // PARTIE 1: CONFIGURATION UNIFIÉE
@@ -309,7 +309,7 @@ class CardMedia implements CardComponent {
         width: double.infinity,
         // 🔹 Utilisation de SmartImageV2 pour profiter du cache unifié
         child: imagePath != null
-            ? SmartImageV2(
+            ? SmartImage(
                 path: imagePath!,
                 fit: fit,
               )

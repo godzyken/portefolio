@@ -147,7 +147,7 @@ class _AboutSectionState extends ConsumerState<AboutSection>
               paddingSize: ResponsiveSpacing.s,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(24),
-                child: SmartImageV2(
+                child: SmartImage(
                   path: Images.mePortrait2,
                   fit: BoxFit.cover,
                   width: imageSize,

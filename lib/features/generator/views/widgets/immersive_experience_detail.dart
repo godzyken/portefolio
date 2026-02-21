@@ -136,7 +136,7 @@ class _ImmersiveExperienceDetailState
           ],
         ),
         padding: const EdgeInsets.all(16),
-        child: SmartImageV2(
+        child: SmartImage(
           path: logoPath,
           responsiveSize: ResponsiveImageSize.medium,
           fit: BoxFit.contain,
@@ -321,7 +321,7 @@ class _ImmersiveExperienceDetailState
           children: [
             Transform.translate(
               offset: Offset(0, _scrollOffset * 0.5),
-              child: SmartImageV2(
+              child: SmartImage(
                 path: widget.experience.image,
                 fit: BoxFit.cover,
                 enableShimmer: true,

@@ -311,7 +311,7 @@ class _EnhancedWakaTimeSectionState
           child: Row(
             children: [
               if (logoPath != null)
-                SmartImageV2(
+                SmartImage(
                   path: logoPath,
                   width: 20,
                   height: 20,

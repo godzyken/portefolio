@@ -67,7 +67,7 @@ class ThreeDTechIcon extends ConsumerWidget {
         ),
         child: Center(
             child: path != null && path.isNotEmpty
-                ? SmartImageV2(
+                ? SmartImage(
                     path: path,
                     width: size * 0.45,
                     height: size * 0.45,
