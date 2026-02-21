@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../../../core/provider/unified_image_provider.dart';
@@ -9,12 +10,6 @@ import '../../../../core/ui/widgets/responsive_text.dart';
 import '../../controller/splash_state.dart';
 import '../../provider/splash_provider.dart';
 
-/// Écran de démarrage.
-///
-/// Usage dans GoRouter :
-/// ```dart
-/// GoRoute(path: '/', builder: (_, __) => const SplashScreen())
-/// ```
 class SplashScreen extends ConsumerStatefulWidget {
   final Widget? logo;
   final Color? backgroundColor;
@@ -24,7 +19,7 @@ class SplashScreen extends ConsumerStatefulWidget {
     super.key,
     this.logo,
     this.backgroundColor,
-    this.targetRoute = '/home',
+    this.targetRoute = '/',
   });
 
   @override
@@ -55,14 +50,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
     _controller.forward();
 
-    // Démarrage après le premier frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      ref.read(splashProvider.notifier).start(
-            context: context,
-            targetRoute: widget.targetRoute,
-            minimumDisplayMs: 1500,
-          );
+      // ✅ On lance le précache mais on NE passe plus le context au notifier
+      ref.read(splashProvider.notifier).start();
     });
   }
 
@@ -77,8 +68,13 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     final splashState = ref.watch(splashProvider);
     final stats = ref.watch(imageCacheStatsProvider);
 
-    // Progression : priorité à splashState.progress (plus granulaire),
-    // fallback sur les stats du manager si dispo.
+    // ✅ Navigation gérée ICI dans le widget, pas dans le notifier
+    ref.listen<SplashState>(splashProvider, (previous, next) {
+      if (next.phase == SplashPhase.ready && mounted) {
+        context.go(widget.targetRoute);
+      }
+    });
+
     final double progress = splashState.progress > 0
         ? splashState.progress
         : (stats.totalAssets > 0
@@ -96,7 +92,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       backgroundColor: bg,
       body: Stack(
         children: [
-          // ── Background gradient animé ──────────────────────────────────
           AnimatedBuilder(
             animation: _controller,
             builder: (context, _) => Container(
@@ -112,40 +107,26 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
               ),
             ),
           ),
-
-          // ── Contenu central ────────────────────────────────────────────
           Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Logo
                 _buildLogo(),
-
                 const SizedBox(height: 40),
-
-                // Titres
                 _buildAnimatedText('Godzyken', isTitle: true),
                 const SizedBox(height: 12),
                 _buildAnimatedText('Portfolio', isTitle: false),
-
                 const SizedBox(height: 60),
-
-                // Indicateur circulaire ou erreur
                 RepaintBoundary(
                   child: splashState.hasError
                       ? _buildError(splashState)
                       : _buildCircularProgress(progress, isFinished),
                 ),
-
                 const SizedBox(height: 24),
-
-                // Texte de statut
                 _buildStatusText(splashState, progress, isInitializing),
               ],
             ),
           ),
-
-          // ── Version en bas ─────────────────────────────────────────────
           const Positioned(
             bottom: 40,
             left: 0,
@@ -157,17 +138,12 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     );
   }
 
-  // ── Builders ─────────────────────────────────────────────────────────────
-
   Widget _buildLogo() {
     return AnimatedBuilder(
       animation: _scaleAnimation,
       builder: (context, child) => Transform.scale(
         scale: _scaleAnimation.value,
-        child: FadeTransition(
-          opacity: _fadeAnimation,
-          child: child,
-        ),
+        child: FadeTransition(opacity: _fadeAnimation, child: child),
       ),
       child: Container(
         width: 120,
@@ -299,9 +275,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
         ),
         const SizedBox(height: 20),
         FilledButton.icon(
-          onPressed: () => ref
-              .read(splashProvider.notifier)
-              .retry(context: context, targetRoute: widget.targetRoute),
+          onPressed: () => ref.read(splashProvider.notifier).start(),
           icon: const Icon(Icons.refresh),
           label: const Text('Réessayer'),
         ),
@@ -310,9 +284,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   }
 }
 
-// ---------------------------------------------------------------------------
-// _AppVersionText
-// ---------------------------------------------------------------------------
+// ── AppVersionText ────────────────────────────────────────────────────────────
 
 class _AppVersionText extends StatelessWidget {
   const _AppVersionText();
@@ -345,18 +317,14 @@ class _AppVersionText extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
-// _LoadingPainter
-// ---------------------------------------------------------------------------
+// ── LoadingPainter ────────────────────────────────────────────────────────────
 
-/// Indicateur de progression circulaire avec effet de lueur.
 class _LoadingPainter extends CustomPainter {
   final double progress;
   final Color color;
 
   _LoadingPainter({required this.progress, required this.color});
 
-  // Paint initialisés une seule fois (pas de reconstruction à chaque frame)
   late final _bgPaint = Paint()
     ..color = color.withValues(alpha: 0.1)
     ..style = PaintingStyle.stroke
@@ -379,10 +347,7 @@ class _LoadingPainter extends CustomPainter {
     final clampedProgress = progress.clamp(0.0, 1.0);
     final sweepAngle = 2 * math.pi * clampedProgress;
 
-    // Rail de fond
     canvas.drawCircle(center, radius, _bgPaint);
-
-    // Arc de progression
     canvas.drawArc(
       Rect.fromCircle(center: center, radius: radius),
       -math.pi / 2,
@@ -391,7 +356,6 @@ class _LoadingPainter extends CustomPainter {
       _progressPaint,
     );
 
-    // Lueur à l'extrémité
     if (clampedProgress > 0) {
       final angle = -math.pi / 2 + sweepAngle;
       final tip = Offset(
