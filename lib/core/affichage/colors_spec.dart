@@ -45,6 +45,13 @@ class ColorHelpers {
   static const darkBg = Color(0xFF1F2937);
   static const gridColor = Color(0xFF374151);
   static const textGray = Color(0xFF9CA3AF);
+  static const cyan = Color(0xFF00D9FF);
+  static const magenta = Color(0xFFFF2D78);
+  static const surface = Color(0xFF0D1117);
+  static const surfaceAlt = Color(0xFF111827);
+  static const border = Color(0xFF1E2D40);
+  static const textPrimary = Color(0xFFE8F4FD);
+  static const textSecondary = Color(0xFF8BA3BF);
 
   /// Gradient pour background space/dark
   static const bgGradient = LinearGradient(

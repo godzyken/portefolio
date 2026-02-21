@@ -1,72 +1,92 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
+import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
 
+import '../../../../core/affichage/colors_spec.dart';
 import '../../../generator/views/generator_widgets_extentions.dart';
 import '../../data/experiences_data.dart';
-import '../widgets/experience_widgets_extentions.dart';
+import '../widgets/ciberpunk_experience_card.dart';
 
+// ─────────────────────────────────────────────────────────────────────────────
+// EXPERIENCE SLIDE SCREEN
+// ─────────────────────────────────────────────────────────────────────────────
 class ExperienceSlideScreen extends ConsumerStatefulWidget {
   const ExperienceSlideScreen({super.key, required this.experiences});
   final List<Experience> experiences;
 
   @override
-  ConsumerState createState() => _ExperienceSlideScreenState();
+  ConsumerState<ExperienceSlideScreen> createState() =>
+      _ExperienceSlideScreenState();
 }
 
 class _ExperienceSlideScreenState extends ConsumerState<ExperienceSlideScreen>
-    with SingleTickerProviderStateMixin {
-  late PageController _controller;
+    with TickerProviderStateMixin {
+  late PageController _pageController;
   late AnimationController _autoSlideController;
-  bool _isControllerInitialized = false;
+  late AnimationController _entryController;
+  int _currentPage = 0;
+  bool _isDragging = false;
 
   @override
   void initState() {
     super.initState();
-    _controller = PageController(viewportFraction: 0.85);
 
-    _autoSlideController =
-        AnimationController(vsync: this, duration: const Duration(seconds: 5))
-          ..addStatusListener((status) {
-            if (status == AnimationStatus.completed) {
-              _nextPage();
-              _autoSlideController.forward(from: 0);
-            }
-          });
+    _pageController = PageController(viewportFraction: 0.82)
+      ..addListener(() {
+        final page = _pageController.page?.round() ?? 0;
+        if (page != _currentPage) setState(() => _currentPage = page);
+      });
+
+    _entryController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    )..forward();
+
+    _autoSlideController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 6),
+    )..addStatusListener((status) {
+        if (status == AnimationStatus.completed && !_isDragging) {
+          _nextPage();
+          _autoSlideController.forward(from: 0);
+        }
+      });
 
     _autoSlideController.forward();
   }
 
   void _nextPage() {
-    if (!_controller.hasClients) return;
+    if (!_pageController.hasClients) return;
+    final next = (_currentPage + 1) % widget.experiences.length;
+    _pageController.animateToPage(
+      next,
+      duration: const Duration(milliseconds: 600),
+      curve: Curves.easeInOutCubic,
+    );
+  }
 
-    final nextPage = (_controller.page?.round() ?? 0) + 1;
-    if (nextPage < widget.experiences.length) {
-      _controller.animateToPage(
-        nextPage,
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.easeInOut,
-      );
-    } else {
-      _controller.animateToPage(
-        0,
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.easeInOut,
-      );
-    }
+  void _goToPage(int index) {
+    _pageController.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeInOutCubic,
+    );
+    _pauseAutoSlide();
   }
 
   void _pauseAutoSlide() {
     _autoSlideController.stop();
-    Future.delayed(const Duration(seconds: 6), () {
+    Future.delayed(const Duration(seconds: 8), () {
       if (mounted) _autoSlideController.forward(from: 0);
     });
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _pageController.dispose();
     _autoSlideController.dispose();
+    _entryController.dispose();
     super.dispose();
   }
 
@@ -74,90 +94,193 @@ class _ExperienceSlideScreenState extends ConsumerState<ExperienceSlideScreen>
   Widget build(BuildContext context) {
     final info = ref.watch(responsiveInfoProvider);
 
-    if (!_isControllerInitialized) {
-      _controller = PageController(
-        viewportFraction: info.isPortrait ? 0.95 : 0.85,
-      );
-      _isControllerInitialized = true;
-    }
-
     if (widget.experiences.isEmpty) {
-      return const Center(child: Text('Aucune expérience pour ce filtre.'));
+      return const Center(
+        child: ResponsiveText('Aucune expérience.',
+            style: TextStyle(color: ColorHelpers.textSecondary)),
+      );
     }
 
-    return NotificationListener<ScrollNotification>(
-      onNotification: (notification) {
-        if (notification is ScrollStartNotification) {
-          _pauseAutoSlide();
-        }
-        return false;
-      },
-      child: PageView.builder(
-        controller: _controller,
-        itemCount: widget.experiences.length,
-        physics: const AlwaysScrollableScrollPhysics(),
-        itemBuilder: (context, index) {
-          return AnimatedBuilder(
-            animation: _controller,
-            builder: (context, child) {
-              double value = 0.0;
-              if (_controller.position.haveDimensions) {
-                value = ((_controller.page ?? _controller.initialPage) - index)
-                    .toDouble();
-              }
+    return FadeTransition(
+      opacity: CurvedAnimation(parent: _entryController, curve: Curves.easeOut),
+      child: Column(
+        children: [
+          _buildHeader(),
+          const SizedBox(height: 16),
+          Expanded(
+            child: NotificationListener<ScrollNotification>(
+              onNotification: (n) {
+                if (n is ScrollStartNotification) {
+                  _isDragging = true;
+                  _pauseAutoSlide();
+                } else if (n is ScrollEndNotification) {
+                  _isDragging = false;
+                }
+                return false;
+              },
+              child: PageView.builder(
+                controller: _pageController,
+                itemCount: widget.experiences.length,
+                physics: const BouncingScrollPhysics(),
+                itemBuilder: (context, index) {
+                  return AnimatedBuilder(
+                    animation: _pageController,
+                    builder: (context, child) {
+                      double offset = 0;
+                      if (_pageController.position.haveDimensions) {
+                        offset = ((_pageController.page ?? 0) - index);
+                      }
+                      final absOffset = offset.abs();
+                      final scale = (1 - absOffset * 0.12).clamp(0.88, 1.0);
+                      final opacity = (1 - absOffset * 0.5).clamp(0.4, 1.0);
+                      final rotateY = offset * -0.05;
 
-              // Parallax et scale
-              final scale = (1 - value.abs() * 0.2).clamp(0.85, 1.0);
-              final translateX = value * -40.0;
-              final parallax = value * 20;
-
-              return Transform.translate(
-                offset: Offset(translateX + parallax, 0),
-                child: Transform.scale(
-                  scale: scale,
-                  child: Center(
-                    child: SizedBox(
-                      width: info.isPortrait
-                          ? info.size.width * 0.95
-                          : info.size.width * 0.75,
-                      child: MouseRegion(
-                        cursor: SystemMouseCursors.click,
-                        child: GestureDetector(
-                          onTap: () => Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => ImmersiveExperienceDetail(
+                      return Opacity(
+                        opacity: opacity,
+                        child: Transform(
+                          transform: Matrix4.identity()
+                            ..setEntry(3, 2, 0.001)
+                            ..rotateY(rotateY)
+                            ..scale(scale),
+                          alignment: Alignment.center,
+                          child: child,
+                        ),
+                      );
+                    },
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: info.isMobile ? 8 : 16,
+                        vertical: 8,
+                      ),
+                      child: GestureDetector(
+                        onTap: () => Navigator.of(context).push(
+                          PageRouteBuilder(
+                            pageBuilder: (_, a, __) => FadeTransition(
+                              opacity: a,
+                              child: ImmersiveExperienceDetail(
                                 experience: widget.experiences[index],
                               ),
-                              fullscreenDialog: true,
                             ),
+                            transitionDuration:
+                                const Duration(milliseconds: 400),
+                            fullscreenDialog: true,
                           ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            child: FadeSlideAnimation(
-                              offset: const Offset(0, 0.1),
-                              delay: Duration(milliseconds: index * 100),
-                              child: PokerExperienceCard(
-                                experience: widget.experiences[index],
-                                isCenter: value == 0 ? true : false,
-                                onTap: () => Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) => ImmersiveExperienceDetail(
-                                        experience: widget.experiences[index]),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
+                        ),
+                        child: CyberpunkExperienceCard(
+                          experience: widget.experiences[index],
+                          isActive: index == _currentPage,
                         ),
                       ),
                     ),
-                  ),
-                ),
-              );
-            },
-          );
-        },
+                  );
+                },
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+          _buildPagination(),
+          const SizedBox(height: 24),
+        ],
       ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 3,
+                height: 18,
+                decoration: BoxDecoration(
+                  color: ColorHelpers.cyan,
+                  boxShadow: [
+                    BoxShadow(
+                      color: ColorHelpers.cyan.withValues(alpha: 0.6),
+                      blurRadius: 8,
+                    )
+                  ],
+                ),
+              ),
+              const SizedBox(width: 10),
+              const ResponsiveText.titleMedium(
+                'EXPÉRIENCES',
+                style: TextStyle(
+                  color: ColorHelpers.textSecondary,
+                  fontSize: 11,
+                  letterSpacing: 3,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+          ResponsiveText(
+            '${(_currentPage + 1).toString().padLeft(2, '0')} / ${widget.experiences.length.toString().padLeft(2, '0')}',
+            style: const TextStyle(
+              color: ColorHelpers.cyan,
+              fontSize: 13,
+              fontFamily: 'monospace',
+              letterSpacing: 2,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPagination() {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(widget.experiences.length, (index) {
+            final isActive = index == _currentPage;
+            return GestureDetector(
+              onTap: () => _goToPage(index),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOutCubic,
+                margin: const EdgeInsets.symmetric(horizontal: 4),
+                width: isActive ? 24 : 6,
+                height: 6,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(3),
+                  color: isActive ? ColorHelpers.cyan : ColorHelpers.border,
+                  boxShadow: isActive
+                      ? [
+                          BoxShadow(
+                            color: ColorHelpers.cyan.withValues(alpha: 0.6),
+                            blurRadius: 8,
+                          )
+                        ]
+                      : null,
+                ),
+              ),
+            );
+          }),
+        ),
+        const SizedBox(height: 12),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 48),
+          child: AnimatedBuilder(
+            animation: _autoSlideController,
+            builder: (_, __) => ClipRRect(
+              borderRadius: BorderRadius.circular(2),
+              child: LinearProgressIndicator(
+                value: _autoSlideController.value,
+                minHeight: 2,
+                backgroundColor: ColorHelpers.border,
+                valueColor:
+                    const AlwaysStoppedAnimation<Color>(ColorHelpers.cyan),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
