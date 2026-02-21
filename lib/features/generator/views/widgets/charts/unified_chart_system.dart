@@ -11,10 +11,6 @@ import '../../../data/models/chart_data.dart';
 /// Remplace : chart_renderer.dart, compact_charts_card.dart, chart_widgets_unified.dart
 /// Économie : ~1400 lignes → ~400 lignes
 
-// ============================================================================
-// CONFIGURATION
-// ============================================================================
-
 class ChartConfig {
   final ResponsiveInfo info;
   final Color primaryColor;
@@ -30,10 +26,6 @@ class ChartConfig {
     this.padding = const EdgeInsets.all(16),
   });
 }
-
-// ============================================================================
-// FACTORY PATTERN - Point d'entrée unique
-// ============================================================================
 
 class UnifiedChart extends StatelessWidget {
   final ChartData data;
@@ -65,10 +57,6 @@ class UnifiedChart extends StatelessWidget {
     };
   }
 }
-
-// ============================================================================
-// BUILDERS OPTIMISÉS
-// ============================================================================
 
 class _BarChartBuilder extends StatelessWidget {
   final ChartData data;

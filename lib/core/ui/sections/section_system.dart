@@ -1,8 +1,3 @@
-// ============================================================================
-// lib/core/ui/sections/section_system.dart
-// Système unifié de sections et cards - Remplace 8 fichiers
-// ============================================================================
-
 import 'package:flutter/material.dart';
 import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
 

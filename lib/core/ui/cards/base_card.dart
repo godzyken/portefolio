@@ -18,6 +18,10 @@ class CardConfig {
   final bool enableHover;
   final bool enableAnimation;
   final Duration animationDuration;
+  final Color? borderColor;
+  final double? borderWidth;
+  final double? minHeight;
+  final double? maxHeight;
 
   const CardConfig({
     this.margin,
@@ -33,6 +37,10 @@ class CardConfig {
     this.enableHover = true,
     this.enableAnimation = true,
     this.animationDuration = const Duration(milliseconds: 200),
+    this.borderColor,
+    this.borderWidth,
+    this.minHeight,
+    this.maxHeight,
   });
 
   factory CardConfig.compact() => const CardConfig(
@@ -125,6 +133,16 @@ class _BaseCardState extends ConsumerState<BaseCard> {
             gradient: config.gradient,
             color: config.backgroundColor ?? theme.cardColor,
             boxShadow: config.boxShadow ?? _defaultShadow(theme, _isHovered),
+            border: config.borderColor != null
+                ? Border.all(
+                    color: config.borderColor!,
+                    width: config.borderWidth ?? 1,
+                  )
+                : null,
+          ),
+          constraints: BoxConstraints(
+            minHeight: config.minHeight ?? 0,
+            maxHeight: config.maxHeight ?? double.infinity,
           ),
           child: widget.child,
         ),

@@ -145,39 +145,8 @@ class TechIconHelper {
 
   /// Vérifie si une technologie est liée à la programmation
   static bool isProgrammingTech(String tech) {
-    const programmingTags = [
-      'dart',
-      'flutter',
-      'angular',
-      'javascript',
-      'typescript',
-      'java',
-      'python',
-      'c#',
-      'c++',
-      'rust',
-      'github',
-      'git',
-      'go',
-      'php',
-      'swift',
-      'kotlin',
-      'mysql',
-      'prestashop',
-      'magento',
-      'ovh',
-      'html',
-      'css',
-      'laravel',
-      'e-commerce',
-      'digital',
-      'node',
-      'react',
-      'vue',
-    ];
-
     final techLower = tech.toLowerCase().trim();
-    return programmingTags.any((tag) => techLower.contains(tag));
+    return _programmingTags.any((tag) => techLower.contains(tag));
   }
 
   /// Obtient la catégorie d'une technologie

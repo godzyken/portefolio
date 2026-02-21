@@ -16,7 +16,6 @@ export 'widgets/charts/fullscreen_chart_dialog.dart';
 export 'widgets/code_high_light_list.dart';
 export 'widgets/fade_slide_animation.dart';
 export 'widgets/footer_bottom_bar.dart';
-export 'widgets/hover_card.dart';
 export 'widgets/images/logo_icon.dart';
 export 'widgets/immersive_detail_screen.dart';
 export 'widgets/immersive_experience_detail.dart';

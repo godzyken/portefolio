@@ -1,23 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
 
-/// 🎯 Configuration pour une stat card
-class StatCardConfig {
-  final String label;
-  final String value;
-  final IconData icon;
-  final Color? color;
-  final VoidCallback? onTap;
-
-  const StatCardConfig({
-    required this.label,
-    required this.value,
-    required this.icon,
-    this.color,
-    this.onTap,
-  });
-}
-
 /// 🎯 Factory pour créer différents types de cards statistiques
 class StatsCardFactory {
   /// Card verticale compacte

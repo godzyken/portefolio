@@ -56,10 +56,6 @@ class SectionManager {
     return sections;
   }
 
-  // ==========================================================================
-  // BUILDERS DE SECTIONS
-  // ==========================================================================
-
   ProjectSection _buildHeroSection() {
     return ProjectSection(
       id: 'hero',
@@ -142,10 +138,6 @@ class SectionManager {
     );
   }
 
-  // ==========================================================================
-  // DÉTECTION DE FEATURES
-  // ==========================================================================
-
   /// Détecte si le projet a des tags de programmation
   ///
   /// Vérifie:
@@ -226,10 +218,6 @@ class SectionManager {
         (project.resultsMap?.isNotEmpty ?? false);
   }
 
-  // ==========================================================================
-  // HELPERS D'ACCÈS AUX DONNÉES
-  // ==========================================================================
-
   /// Retourne la liste des images du projet
   List<String> getImages() {
     final images = project.cleanedImages ?? project.image;
@@ -254,10 +242,6 @@ class SectionManager {
       return null;
     }
   }
-
-  // ==========================================================================
-  // FORMATAGE ET UTILITAIRES
-  // ==========================================================================
 
   /// Formate une clé technique en texte lisible
   ///
