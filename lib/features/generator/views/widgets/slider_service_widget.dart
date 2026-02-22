@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/provider/unified_image_provider.dart';
 import 'package:portefolio/features/generator/data/extention_models.dart';
@@ -90,42 +89,39 @@ class _ServicesSliderState extends ConsumerState<ServicesSlider> {
         _isTogglingOverlay = false;
         return;
       }
+      try {
+        final newOverlay = ServiceExpertiseOverlay.createOverlay(
+          context: context,
+          buttonKey: btnKey,
+          cardKey: cardKey,
+          expertise: expertise,
+          info: info,
+          service: service,
+          currentSkillIndex: _currentSkillIndex,
+          onSkillTap: (index) {
+            setState(() {
+              _currentSkillIndex = index;
+              _overlayEntry?.markNeedsBuild();
+            });
+          },
+          onClose: () {
+            _removeOverlay();
+            setState(() {});
+          },
+        );
 
-      SchedulerBinding.instance.addPostFrameCallback((_) {
-        try {
-          final newOverlay = ServiceExpertiseOverlay.createOverlay(
-            context: context,
-            buttonKey: btnKey,
-            cardKey: cardKey,
-            expertise: expertise,
-            info: info,
-            service: service,
-            currentSkillIndex: _currentSkillIndex,
-            onSkillTap: (index) {
-              setState(() {
-                _currentSkillIndex = index;
-                _overlayEntry?.markNeedsBuild();
-              });
-            },
-            onClose: () {
-              _removeOverlay();
-              setState(() {});
-            },
-          );
-
-          if (newOverlay != null && mounted) {
-            Overlay.of(context).insert(newOverlay);
-            setState(() => _overlayEntry = newOverlay);
-          } else {
-            debugPrint('[CARD] ❌ Échec de création de l\'overlay');
-          }
-        } catch (e, stack) {
-          debugPrint('[CARD] ❌ Erreur lors de la création de l\'overlay: $e');
-          debugPrint('Stack: $stack');
-        } finally {
-          _isTogglingOverlay = false;
+        if (newOverlay != null && mounted) {
+          Overlay.of(context).insert(newOverlay);
+          setState(() => _overlayEntry = newOverlay);
+        } else {
+          debugPrint('[CARD] ❌ Échec de création de l\'overlay');
         }
-      });
+      } catch (e, stack) {
+        debugPrint('[CARD] ❌ Erreur lors de la création de l\'overlay: $e');
+        debugPrint('Stack: $stack');
+      } finally {
+        _isTogglingOverlay = false;
+      }
     });
   }
 

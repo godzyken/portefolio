@@ -19,8 +19,6 @@ export 'widgets/footer_bottom_bar.dart';
 export 'widgets/images/logo_icon.dart';
 export 'widgets/immersive_detail_screen.dart';
 export 'widgets/immersive_experience_detail.dart';
-export 'widgets/location_permission_dialog.dart';
-export 'widgets/map_cache_manager.dart';
 export 'widgets/navigation/project_navigations.dart';
 export 'widgets/particle_background.dart';
 export 'widgets/responsive_layout.dart';

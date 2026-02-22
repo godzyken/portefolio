@@ -24,13 +24,3 @@ final githubProjectAIProvider = FutureProvider.family
     .autoDispose<GithubProjectAIInfo, String>((ref, repoUrl) async {
   return await GithubProjectAIAnalyzer.analyzeRepoWithAI(repoUrl);
 });
-
-/*final githubReleasesProvider = FutureProvider.family
-    .autoDispose<List<GitHubRelease>, String>((ref, repoUrl) async {
-  return await GitHubAnalyzer.fetchReleases(repoUrl);
-});
-
-final githubLanguagesProvider = FutureProvider.family
-    .autoDispose<Map<String, int>, String>((ref, repoUrl) async {
-  return await GitHubAnalyzer.fetchLanguages(repoUrl);
-});*/

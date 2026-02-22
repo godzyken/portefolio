@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/features/generator/data/extention_models.dart';
 import 'package:portefolio/features/generator/views/generator_widgets_extentions.dart';
-import 'package:portefolio/features/home/views/widgets/extentions_widgets.dart';
 
 import '../../../../../core/affichage/screen_size_detector.dart';
 import '../../../../constants/tech_logos.dart';
+import '../../../../core/affichage/colors_spec.dart';
 import '../../../../core/provider/image_providers.dart';
 import '../../../../core/ui/ui_widgets_extentions.dart';
 
@@ -26,7 +26,7 @@ class ServiceSkillBubble extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final info = ref.watch(responsiveInfoProvider);
     final size = info.isMobile ? 50.0 : 70.0;
-    final color = ServiceCardHelpers.getColorForIndex(index);
+    final color = ColorHelpers.getColorForIndex(index);
     final String skillName = skill.name.toLowerCase();
     final String? logoPath = ref.watch(skillLogoPathProvider(skillName));
     final IconData skillIcon = getIconFromName(skillName);

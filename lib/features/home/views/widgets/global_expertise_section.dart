@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/affichage/screen_size_detector.dart';
 import '../../../../core/provider/expertise_provider.dart';
 import '../../../../core/ui/ui_widgets_extentions.dart';
-import '../../data/services_data.dart';
+import '../../../generator/data/extention_models.dart';
 
 /// Section affichant un résumé global des expertises
 class GlobalExpertiseSection extends ConsumerWidget {

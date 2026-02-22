@@ -3,6 +3,7 @@ import 'package:portefolio/core/ui/widgets/responsive_text.dart';
 import 'package:portefolio/features/generator/data/extention_models.dart';
 
 import '../../../../../core/affichage/screen_size_detector.dart';
+import '../../../../core/affichage/colors_spec.dart';
 import 'service_card_helpers.dart';
 
 class ServiceCardWidgets {
@@ -60,7 +61,7 @@ class ServiceCardWidgets {
         ),
       ),
       decoration: BoxDecoration(
-        color: ServiceCardHelpers.getColorForLevel(expertise.averageLevel),
+        color: ColorHelpers.getColorForLevel(expertise.averageLevel),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(

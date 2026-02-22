@@ -70,24 +70,6 @@ class ServiceCardHelpers {
     return !info.isWatch && !info.isMobile;
   }
 
-  static Color getColorForLevel(double level) {
-    if (level >= 0.9) return Colors.green.shade600;
-    if (level >= 0.7) return Colors.blue.shade600;
-    if (level >= 0.5) return Colors.orange.shade600;
-    return Colors.red.shade600;
-  }
-
-  static Color getColorForIndex(int index) {
-    final colors = [
-      Colors.blue.shade600,
-      Colors.green.shade600,
-      Colors.orange.shade600,
-      Colors.purple.shade600,
-      Colors.red.shade600,
-    ];
-    return colors[index % colors.length];
-  }
-
   static List<Color> getChartColors() {
     return [
       Colors.blue.shade600,

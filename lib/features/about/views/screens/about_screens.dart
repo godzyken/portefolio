@@ -221,7 +221,7 @@ class _AboutSectionState extends ConsumerState<AboutSection>
                 ),
                 const SizedBox(width: 8),
                 ResponsiveText.titleMedium(
-                  "Développeur Flutter Freelance",
+                  "Développeur Flutter",
                   style: GoogleFonts.openSans(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,

@@ -221,52 +221,6 @@ extension ServiceCategoryExtension on ServiceCategory {
   }
 }
 
-/// Services par défaut (fallback)
-final List<Service> defaultServices = [
-  Service(
-    id: 'mobile-dev',
-    title: 'Développement Mobile',
-    description: 'Applications Flutter cross-platform pour iOS et Android',
-    features: ['iOS', 'Android', 'Flutter', 'React Native'],
-    icon: Icons.phone_android,
-    imageUrl:
-        'https://storage.googleapis.com/cms-storage-bucket/build-more-with-flutter.f399274b364a6194c43d.png',
-    category: ServiceCategory.mobile,
-    priority: 1,
-  ),
-  Service(
-    id: 'web-dev',
-    title: 'Développement Web',
-    description: 'Sites web et applications web modernes',
-    features: ['Angular', 'React', 'Vue.js', 'Node.js'],
-    icon: Icons.web,
-    imageUrl: 'https://techpearl.com/wp-content/uploads/2021/11/Ionic-App.svg',
-    category: ServiceCategory.web,
-    priority: 2,
-  ),
-  Service(
-    id: 'cloud-solutions',
-    title: 'Solutions Cloud',
-    description: 'Architecture et déploiement cloud',
-    features: ['AWS', 'Firebase', 'Docker', 'CI/CD'],
-    icon: Icons.cloud,
-    imageUrl:
-        'https://www.tatvasoft.com/outsourcing/wp-content/uploads/2023/06/Angular-Architecture.jpg',
-    category: ServiceCategory.cloud,
-    priority: 3,
-  ),
-  Service(
-    id: 'support',
-    title: 'Support & Maintenance',
-    description: 'Support technique et maintenance continue',
-    features: ['24/7', 'Monitoring', 'Updates', 'Bug fixes'],
-    icon: Icons.build,
-    imageUrl: 'assets/images/transformation_digitale.jpg',
-    category: ServiceCategory.support,
-    priority: 4,
-  ),
-];
-
 /// Modèle pour représenter une compétence technique avec niveau d'expertise
 class TechSkill {
   final String name;
