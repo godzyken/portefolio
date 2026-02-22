@@ -52,6 +52,7 @@ class ColorHelpers {
   static const border = Color(0xFF1E2D40);
   static const textPrimary = Color(0xFFE8F4FD);
   static const textSecondary = Color(0xFF8BA3BF);
+  static const textMuted = Color(0xFF8BA3BF);
 
   /// Gradient pour background space/dark
   static const bgGradient = LinearGradient(
