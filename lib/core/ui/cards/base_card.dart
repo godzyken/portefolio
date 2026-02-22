@@ -272,29 +272,3 @@ extension CardConfigExtension on CardConfig {
     );
   }
 }
-
-// ============================================================================
-// AVANT / APRÈS
-// ============================================================================
-
-/*
-❌ AVANT : 3 fichiers différents (ServicesCard, ProjectCard, ExperienceCard)
-   - Chacun 200-400 lignes
-   - Duplication de la logique hover/animation/shadow
-   - Total : ~1000 lignes
-
-✅ APRÈS : 1 fichier centralisé
-   - BaseCard : 100 lignes
-   - UnifiedContentCard : 50 lignes
-   - Total : 150 lignes
-   - Réduction de 85% !
-
-// Utilisation simplifiée
-UnifiedContentCard(
-  title: 'Mon Service',
-  subtitle: 'Description',
-  leading: Icon(Icons.work),
-  config: CardConfig.compact(),
-  onTap: () => print('Tapped'),
-)
-*/

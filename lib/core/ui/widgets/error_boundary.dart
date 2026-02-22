@@ -1,20 +1,31 @@
+// lib/core/ui/widgets/error_boundary.dart
+//
+// CORRECTIONS vs l'ancienne version :
+//   • FlutterError.onError assigné UNE SEULE FOIS dans initState (plus dans didChangeDependencies)
+//   • Handler original sauvegardé et restauré dans dispose
+//   • setState() appelé avec _error/_stackTrace renseignés
+//   • debugPrint() supprimé → AppLogger
+//   • Propagation vers ErrorNotifier pour les dashboards de monitoring
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../exceptions/app_error.dart';
 import '../../exceptions/error/error_screen.dart';
+import '../../exceptions/error_notifier.dart';
 import '../../logging/app_logger.dart';
 import '../../provider/providers.dart';
 
-/// Widget qui capture les erreurs enfants et les envoie au logger.
 class ErrorBoundary extends ConsumerStatefulWidget {
   final Widget child;
-  final String? contextLabel;
+  final String contextLabel;
 
   const ErrorBoundary({
     super.key,
     required this.child,
-    this.contextLabel,
+    this.contextLabel = 'App',
   });
 
   @override
@@ -22,80 +33,91 @@ class ErrorBoundary extends ConsumerStatefulWidget {
 }
 
 class _ErrorBoundaryState extends ConsumerState<ErrorBoundary> {
-  Object? _error;
-  StackTrace? _stackTrace;
+  AppError? _localError;
+  StackTrace? _localStack;
+
+  /// Handler Flutter original — restauré au dispose pour ne pas polluer les tests
+  FlutterExceptionHandler? _previousFlutterHandler;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    // Gestion des erreurs Flutter globales dans ce sous-arbre.
-    FlutterError.onError = (FlutterErrorDetails details) {
-      _handleError(details.exception, details.stack);
-    };
+  void initState() {
+    super.initState();
+    // ✅ UNE SEULE FOIS ici, pas dans didChangeDependencies
+    _previousFlutterHandler = FlutterError.onError;
+    FlutterError.onError = _onFlutterError;
   }
 
-  void _handleError(Object error, StackTrace? stackTrace) {
-    if (!mounted) {
-      // Si le widget n'est plus monté, on ne peut rien faire de plus que de logger.
-      // On ne peut pas utiliser ref ni setState.
-      debugPrint('Erreur capturée sur un widget démonté: $error');
-      debugPrintStack(stackTrace: stackTrace);
-      return;
+  @override
+  void dispose() {
+    // ✅ Restauration du handler original
+    FlutterError.onError = _previousFlutterHandler;
+    super.dispose();
+  }
+
+  // ── Handlers ───────────────────────────────────────────────────────────────
+
+  void _onFlutterError(FlutterErrorDetails details) {
+    // Toujours appeler le handler précédent (console, DevTools, crash reporters)
+    _previousFlutterHandler?.call(details);
+    _capture(details.exception, details.stack);
+  }
+
+  void _capture(Object error, StackTrace? stackTrace) {
+    // Log via la catégorie de ce boundary
+    try {
+      ref.read(loggerProvider(widget.contextLabel)).log(
+            'Erreur capturée',
+            level: LogLevel.error,
+            error: error,
+            stackTrace: stackTrace,
+          );
+
+      // Propager vers ErrorNotifier (silent = true car le boundary gère l'UI local)
+      ref.read(errorNotifierProvider.notifier).report(
+            error,
+            stackTrace: stackTrace,
+            context: widget.contextLabel,
+            silent: true,
+          );
+    } catch (_) {
+      // Ne jamais crasher depuis un gestionnaire d'erreur
     }
 
-    // `ref` est maintenant sûr à utiliser
-    ref.read(loggerProvider(widget.contextLabel ?? 'ErrorBoundary')).log(
-          'Erreur capturée dans ErrorBoundary',
-          level: LogLevel.error,
-          error: error,
-          stackTrace: stackTrace,
-        );
-
+    // ✅ postFrameCallback : évite setState pendant un build/layout en cours
     SchedulerBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         setState(() {
-          // Ta mise à jour
+          // ✅ _error ET _stackTrace correctement renseignés
+          _localError = AppError.from(
+            error,
+            stackTrace: stackTrace,
+            context: widget.contextLabel,
+          );
+          _localStack = stackTrace;
         });
       }
     });
   }
 
-  void _resetError() {
+  void _reset() {
     setState(() {
-      _error = null;
-      _stackTrace = null;
+      _localError = null;
+      _localStack = null;
     });
   }
 
+  // ── Build ───────────────────────────────────────────────────────────────────
+
   @override
   Widget build(BuildContext context) {
-    if (_error != null) {
+    if (_localError != null) {
       return ErrorScreen(
-        error: _error!,
-        stackTrace: _stackTrace,
-        onRetry: _resetError,
+        error: _localError!.message,
+        stackTrace: _localStack,
+        onRetry: _reset,
       );
     }
 
-    // Zone protégée : capture des erreurs dans le build des enfants
-    return Builder(
-      builder: (context) {
-        try {
-          return widget.child;
-        } catch (e, st) {
-          // Cette erreur est synchrone, on peut appeler notre handler sûr.
-          // Il faut le faire dans un post-frame callback pour éviter
-          // de faire un setState pendant un build.
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            _handleError(e, st);
-          });
-
-          // On retourne immédiatement un placeholder.
-          // L'UI se mettra à jour au prochain frame avec l'écran d'erreur.
-          return const SizedBox.shrink();
-        }
-      },
-    );
+    return widget.child;
   }
 }

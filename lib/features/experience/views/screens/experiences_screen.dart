@@ -25,6 +25,8 @@ class _ExperiencesScreenState extends ConsumerState<ExperiencesScreen> {
   final _gameKey = GlobalKey(debugLabel: 'ExperienceJeuxScreen_key');
   final _freezeKey = GlobalKey(debugLabel: 'ExperienceTimeline_key');
 
+  late final ProviderSubscription _expSub;
+
   @override
   void initState() {
     super.initState();
@@ -38,9 +40,9 @@ class _ExperiencesScreenState extends ConsumerState<ExperiencesScreen> {
       ]);
     }
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.listen<AsyncValue<List<Experience>>>(experiencesProvider,
-          (prev, next) {
+    _expSub = ref.listenManual<AsyncValue<List<Experience>>>(
+      experiencesProvider,
+      (prev, next) {
         next.whenOrNull(error: (e, st) {
           ref.read(loggerProvider("ExperienceScreen")).log(
                 "Erreur lors du chargement des expériences",
@@ -49,21 +51,17 @@ class _ExperiencesScreenState extends ConsumerState<ExperiencesScreen> {
                 stackTrace: st,
               );
         });
-      });
+      },
+    );
 
-      // Initialiser le filtre de manière safe hors build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(experienceFilterProvider.notifier).setFilter("");
-
-      // ✅ DEBUG : Afficher le nombre d'expériences
-      final allExperiences = ref.read(experiencesProvider).value ?? [];
-      debugPrint('📊 Nombre total d\'expériences : ${allExperiences.length}');
-      debugPrint(
-          '📋 Tags disponibles : ${allExperiences.map((e) => e.tags).expand((t) => t).toSet()}');
     });
   }
 
   @override
   void dispose() {
+    _expSub.close(); // 🧹 nettoie l'écoute manuelle
     // Nettoyer à la destruction
     if (!kIsWeb) {
       SystemChrome.setPreferredOrientations([
@@ -76,6 +74,17 @@ class _ExperiencesScreenState extends ConsumerState<ExperiencesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<AsyncValue<List<Experience>>>(experiencesProvider, (prev, next) {
+      next.whenOrNull(error: (e, st) {
+        ref.read(loggerProvider("ExperienceScreen")).log(
+              "Erreur lors du chargement des expériences",
+              level: LogLevel.error,
+              error: e,
+              stackTrace: st,
+            );
+      });
+    });
+
     final experiencesAsync = ref.watch(experiencesProvider);
     final isPageView = ref.watch(isPageViewProvider);
     final info = ref.watch(responsiveInfoProvider);

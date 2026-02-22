@@ -1,8 +1,7 @@
-import 'dart:developer' as developer;
-
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:portefolio/core/ui/widgets/responsive_text.dart'; // facultatif, pour une animation fluide
+import 'package:portefolio/core/ui/widgets/responsive_text.dart';
 
 class ErrorScreen extends StatelessWidget {
   final Object error;
@@ -26,30 +25,21 @@ class ErrorScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: isDark ? Colors.black : Colors.grey[50],
       body: Center(
-        child: ResponsiveBox(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 500),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Animation Lottie
-                _buildLottieErrorAnimation(),
-                const ResponsiveBox(
-                  paddingSize: ResponsiveSpacing.l,
-                ),
-
-                ResponsiveText.bodyMedium(
-                  'Oups ! Quelque chose s’est mal passé...',
+                _buildAnimation(),
+                const SizedBox(height: 24),
+                ResponsiveText.titleLarge(
+                  'Oups ! Quelque chose s\'est mal passé…',
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
-                const ResponsiveBox(
-                  paddingSize: ResponsiveSpacing.m,
-                ),
-
+                const SizedBox(height: 12),
                 ResponsiveText.bodyMedium(
                   error.toString(),
                   textAlign: TextAlign.center,
@@ -57,71 +47,61 @@ class ErrorScreen extends StatelessWidget {
                     color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                   ),
                 ),
-                const ResponsiveBox(
-                  paddingSize: ResponsiveSpacing.l,
-                ),
-
+                const SizedBox(height: 32),
                 Wrap(
                   alignment: WrapAlignment.center,
                   spacing: 16,
-                  runSpacing: 8,
+                  runSpacing: 12,
                   children: [
                     if (onRetry != null)
-                      ResponsiveButton.icon(
+                      ElevatedButton.icon(
                         onPressed: onRetry,
                         icon: const Icon(Icons.refresh),
-                        label: 'Réessayer',
+                        label: const Text('Réessayer'),
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 24, vertical: 12),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
+                              borderRadius: BorderRadius.circular(12)),
                         ),
                       ),
                     if (onGoHome != null)
-                      ResponsiveButton.icon(
+                      OutlinedButton.icon(
                         onPressed: onGoHome,
                         icon: const Icon(Icons.home),
-                        label: 'Retour à l’accueil',
+                        label: const Text('Retour à l\'accueil'),
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 24, vertical: 12),
                           side: BorderSide(color: theme.colorScheme.primary),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
+                              borderRadius: BorderRadius.circular(12)),
                         ),
                       ),
                   ],
                 ),
-
-                const ResponsiveBox(
-                  paddingSize: ResponsiveSpacing.m,
-                ),
-
-                // Détails techniques (optionnel, affiché uniquement en debug)
-                if (!isReleaseMode)
+                // Détails techniques — debug uniquement
+                if (!kReleaseMode) ...[
+                  const SizedBox(height: 24),
                   ExpansionTile(
-                    title:
-                        const ResponsiveText.bodyMedium('Détails techniques'),
+                    title: const Text('Détails techniques',
+                        style: TextStyle(fontSize: 13)),
                     children: [
                       SizedBox(
-                        height:
-                            200, // ou MediaQuery.height / 2 pour plus de flexibilité
+                        height: 200,
                         child: SingleChildScrollView(
+                          padding: const EdgeInsets.all(12),
                           child: SelectableText(
                             stackTrace?.toString() ??
                                 'Aucune stacktrace disponible',
                             style: const TextStyle(
-                                fontFamily: 'monospace', fontSize: 12),
-                            scrollPhysics: const BouncingScrollPhysics(),
-                            maxLines: null, // pas de limite de lignes
+                                fontFamily: 'monospace', fontSize: 11),
                           ),
                         ),
-                      )
+                      ),
                     ],
                   ),
+                ],
               ],
             ),
           ),
@@ -130,36 +110,18 @@ class ErrorScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildLottieErrorAnimation() {
-    developer.log('isReleaseMode: $isReleaseMode');
-    developer.log('error: $error');
-    developer.log('stackTrace: $stackTrace');
-    developer.log('onRetry: $onRetry');
-    developer.log('onGoHome: $onGoHome');
-
+  Widget _buildAnimation() {
+    // ✅ Pas de developer.log() ici — l'UI n'est pas responsable du logging
     try {
       return Lottie.asset(
         'assets/images/animations/error.json',
-        width: 200,
+        width: 180,
         repeat: false,
-        errorBuilder: (_, __, ___) => const Icon(
-          Icons.error_outline,
-          size: 96,
-          color: Colors.redAccent,
-        ),
+        errorBuilder: (_, __, ___) =>
+            const Icon(Icons.error_outline, size: 96, color: Colors.redAccent),
       );
     } catch (_) {
-      developer.log('Erreur lors de la lecture de l’animation Lottie');
       return const Icon(Icons.error_outline, size: 96, color: Colors.redAccent);
     }
-  }
-
-  bool get isReleaseMode {
-    var inRelease = true;
-    assert(() {
-      inRelease = false;
-      return true;
-    }());
-    return inRelease;
   }
 }

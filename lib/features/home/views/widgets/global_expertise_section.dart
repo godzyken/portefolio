@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/affichage/colors_spec.dart';
 import '../../../../core/affichage/screen_size_detector.dart';
 import '../../../../core/provider/expertise_provider.dart';
 import '../../../../core/ui/ui_widgets_extentions.dart';
@@ -115,7 +116,7 @@ class GlobalExpertiseSection extends ConsumerWidget {
   Widget _buildSkillsList(List<TechSkill> skills, ThemeData theme) {
     return Column(
       children: skills.map((skill) {
-        final color = _getColorForLevel(skill.level);
+        final color = ColorHelpers.getExpertiseColor(skill.level);
 
         return ResponsiveBox(
           padding: const EdgeInsets.only(bottom: 16),
@@ -179,12 +180,5 @@ class GlobalExpertiseSection extends ConsumerWidget {
         );
       }).toList(),
     );
-  }
-
-  Color _getColorForLevel(double level) {
-    if (level >= 0.9) return Colors.green;
-    if (level >= 0.7) return Colors.blue;
-    if (level >= 0.5) return Colors.orange;
-    return Colors.red;
   }
 }

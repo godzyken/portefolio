@@ -225,26 +225,23 @@ class CompetencesPilesByNiveau extends ConsumerWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-          Flex(
+          const SizedBox(height: 10),
+          // ✅ Plus d’overflow ici
+          SingleChildScrollView(
+            scrollDirection: isVerticalLayout ? Axis.vertical : Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            child: Wrap(
               direction: isVerticalLayout ? Axis.vertical : Axis.horizontal,
+              alignment: WrapAlignment.center,
               spacing: spacing,
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              mainAxisSize: MainAxisSize.max,
-              clipBehavior: Clip.hardEdge,
+              runSpacing: spacing / 2,
+              crossAxisAlignment: WrapCrossAlignment.end,
               children: [
-                const SizedBox(
-                  height: 10,
-                ),
-                for (final niveau in piles) ...[
+                for (final niveau in piles)
                   CompetenceNiveauPile(niveau: niveau),
-                  if (niveau != piles.last)
-                    ResponsiveBox(
-                      width: spacing,
-                      height: spacing,
-                    )
-                ]
-              ])
+              ],
+            ),
+          ),
         ],
       ),
     );

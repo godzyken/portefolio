@@ -1,7 +1,6 @@
 export 'app_providers.dart';
 export 'comparatif_provider.dart';
 export 'config_env_provider.dart';
-export 'error_providers.dart';
 export 'experience_providers.dart';
 export 'expertise_provider.dart';
 export 'image_providers.dart';

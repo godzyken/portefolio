@@ -235,7 +235,7 @@ class _CyberpunkExperienceCardState extends State<CyberpunkExperienceCard>
       children: [
         // Poste (titre principal)
         ResponsiveText.titleSmall(
-          exp.poste ?? 'Poste',
+          exp.poste,
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
           style: const TextStyle(
@@ -267,7 +267,7 @@ class _CyberpunkExperienceCardState extends State<CyberpunkExperienceCard>
             const SizedBox(width: 8),
             Expanded(
               child: ResponsiveText.headlineMedium(
-                exp.entreprise ?? '',
+                exp.entreprise,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                   color: ColorHelpers.magenta,
@@ -371,7 +371,7 @@ class _CyberpunkExperienceCardState extends State<CyberpunkExperienceCard>
 
   // ── Tags ─────────────────────────────────────────────────────────────────
   Widget _buildTags(Experience exp) {
-    final tags = exp.tags ?? [];
+    final tags = exp.tags;
     if (tags.isEmpty) return const SizedBox.shrink();
     return Wrap(
       spacing: 6,
@@ -399,7 +399,7 @@ class _CyberpunkExperienceCardState extends State<CyberpunkExperienceCard>
 
   // ── Premier résultat mis en avant ────────────────────────────────────────
   Widget _buildResultats(Experience exp) {
-    final resultats = exp.resultats ?? [];
+    final resultats = exp.resultats;
     if (resultats.isEmpty) return const SizedBox.shrink();
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,

@@ -7,12 +7,11 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
-import 'package:portefolio/core/exceptions/handler/global_exeption_handler.dart';
 import 'package:portefolio/core/logging/app_logger.dart';
 
 import 'app.dart';
+import 'core/exceptions/app_provider_observer.dart';
 import 'core/provider/config_env_provider.dart';
-import 'core/provider/providers.dart';
 import 'core/provider/unified_image_provider.dart';
 import 'core/service/bootstrap_service.dart';
 import 'core/service/config_env.dart';
@@ -94,105 +93,160 @@ class MyRouterApp extends ConsumerWidget {
 // ÉTAPE 3 : Application complète
 // Version finale avec toutes les fonctionnalités
 // ====================
+const _log = AppLogger('Main');
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ENTRY POINT
+// ─────────────────────────────────────────────────────────────────────────────
+
 void main() {
-  //BindingBase.debugZoneErrorsAreFatal = false;
+  runZonedGuarded(_boot, _onUncaughtError);
+}
 
-  runZonedGuarded(
-    () async {
-      WidgetsFlutterBinding.ensureInitialized();
+// ─────────────────────────────────────────────────────────────────────────────
+// Boot
+// ─────────────────────────────────────────────────────────────────────────────
 
-      // ✅ Patch pour le bug du MouseTracker au démarrage web
-      if (kIsWeb) await Future.delayed(const Duration(milliseconds: 100));
+Future<void> _boot() async {
+  WidgetsFlutterBinding.ensureInitialized();
 
-      configurePerformance();
+  if (kIsWeb) await Future.delayed(const Duration(milliseconds: 100));
 
-      // ⚡ Bootstrap avant le runApp
-      final bootstrap = await BootstrapService.initialize();
-      developer.log(
-          '✅ Bootstrap terminé, prefs loaded: ${bootstrap.prefs.getKeys().length}');
+  _configurePerformance();
 
-      setUrlStrategy(const HashUrlStrategy());
+  // ── Intercepteurs d'erreurs ────────────────────────────────────────────────
 
-      // Debug Flutter
-      debugProfileBuildsEnabled = false;
-      debugProfilePaintsEnabled = false;
-      debugProfileLayoutsEnabled = false;
+  // 1. Erreurs Flutter (widget build, layout, paint…)
+  FlutterError.onError = _onFlutterError;
 
-      // Capturer les erreurs Flutter
-      FlutterError.onError = (details) {
-        debugPrint('Flutter Error: ${details.exceptionAsString()}');
-        debugPrint('Stack trace: ${details.stack}');
-      };
+  // 2. Erreurs Dart hors-Flutter (isolats, Future non catchés…)
+  PlatformDispatcher.instance.onError = (error, stack) {
+    _log.critical(
+      'PlatformDispatcher — erreur non interceptée',
+      error: error,
+      stackTrace: stack,
+    );
+    return true; // true = erreur gérée, pas de crash natif
+  };
 
-      final container = ProviderContainer();
-      final validation = container.read(envConfigValidationProvider);
+  // ── Bootstrap ──────────────────────────────────────────────────────────────
+  _log.info('Bootstrap en cours…');
+  final bootstrap = await BootstrapService.initialize();
+  _log.info(
+      'Bootstrap terminé — ${bootstrap.prefs.getKeys().length} clés SharedPreferences');
 
-      if (!validation.isValid) {
-        developer.log('⚠️ Erreurs de configuration:');
-        for (final e in validation.errors) {
-          developer.log('  - $e');
-        }
-      }
-      if (validation.hasWarnings) {
-        developer.log('⚠️ Warnings:');
-        for (final w in validation.warnings) {
-          developer.log('  - $w');
-        }
-      } else {
-        developer.log('✅ Configuration d’environnement OK');
-      }
+  setUrlStrategy(const HashUrlStrategy());
 
-      Env.init(container);
-      final imageManager = container.read(unifiedImageManagerProvider);
-      await imageManager.initialize();
+  // ── ProviderContainer racine ───────────────────────────────────────────────
+  final container = ProviderContainer(
+    observers: const [AppProviderObserver()],
+  );
 
-      runApp(UncontrolledProviderScope(
-        container: container,
-        child: ProviderScope(
-          overrides: [
-            sharedPreferencesProvider.overrideWithValue(bootstrap.prefs),
-            themeControllerProvider.overrideWith(ThemeController.new),
-          ],
-          child: ResponsiveScope(
-            child: MyFullApp(
-              bootstrap: bootstrap,
-            ),
-          ),
+  // ── Validation configuration ───────────────────────────────────────────────
+  _validateEnv(container);
+
+  // ── Images ────────────────────────────────────────────────────────────────
+  final imageManager = container.read(unifiedImageManagerProvider);
+  await imageManager.initialize();
+  _log.info('UnifiedImageManager initialisé');
+
+  // ── Singleton Env ──────────────────────────────────────────────────────────
+  Env.init(container);
+
+  // ── Lancement ─────────────────────────────────────────────────────────────
+  runApp(
+    UncontrolledProviderScope(
+      container: container,
+      child: ProviderScope(
+        observers: const [AppProviderObserver()],
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(bootstrap.prefs),
+          themeControllerProvider.overrideWith(ThemeController.new),
+        ],
+        child: ResponsiveScope(
+          child: MyFullApp(bootstrap: bootstrap),
         ),
-      ));
-    },
-    (error, stack) {
-      // Logger global en cas d'erreur non interceptée
-      globalContainer.read(loggerProvider('ZonedGuard')).log(
-            'Erreur non interceptée',
-            level: LogLevel.error,
-            error: error,
-            stackTrace: stack,
-          );
-    },
+      ),
+    ),
   );
 }
 
-void configurePerformance() {
-  // Désactiver les checks de debug pour de meilleures performances
+// ─────────────────────────────────────────────────────────────────────────────
+// Handlers
+// ─────────────────────────────────────────────────────────────────────────────
+
+void _onFlutterError(FlutterErrorDetails details) {
+  // Garde le comportement par défaut en debug (console rouge)
+  if (kDebugMode) FlutterError.dumpErrorToConsole(details);
+
+  _log.error(
+    'FlutterError — ${details.library ?? "inconnu"} — ${details.exceptionAsString()}',
+    error: details.exception,
+    stackTrace: details.stack,
+  );
+}
+
+void _onUncaughtError(Object error, StackTrace stack) {
+  // Dernier filet de sécurité : pas de ref disponible ici
+  developer.log(
+    '💥 [ZonedGuard] Erreur non interceptée',
+    name: 'ZonedGuard',
+    level: 1200,
+    error: error,
+    stackTrace: stack,
+  );
+  _log.critical('Erreur non interceptée (ZonedGuard)',
+      error: error, stackTrace: stack);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Validation config
+// ─────────────────────────────────────────────────────────────────────────────
+
+void _validateEnv(ProviderContainer container) {
+  final validation = container.read(envConfigValidationProvider);
+
+  if (!validation.isValid) {
+    for (final e in validation.errors) {
+      _log.warning('Config manquante : $e');
+    }
+  }
+  if (validation.hasWarnings) {
+    for (final w in validation.warnings) {
+      _log.warning('Config warning : $w');
+    }
+  }
+  if (validation.isValid && !validation.hasWarnings) {
+    _log.info('Configuration d\'environnement OK');
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Performance
+// ─────────────────────────────────────────────────────────────────────────────
+
+void _configurePerformance() {
   debugProfileBuildsEnabled = false;
   debugProfilePaintsEnabled = false;
   debugProfileLayoutsEnabled = false;
 
-  // ✅ Activer le cache des images
-  PaintingBinding.instance.imageCache.maximumSize = 100;
-  PaintingBinding.instance.imageCache.maximumSizeBytes =
-      50 * 1024 * 1024; // 50MB
+  PaintingBinding.instance.imageCache
+    ..maximumSize = 100
+    ..maximumSizeBytes = 50 * 1024 * 1024;
 
-  // ✅ Configurer le scheduleur
-  SchedulerBinding.instance.addTimingsCallback((timings) {
-    for (final timing in timings) {
-      final frameTime = timing.totalSpan.inMilliseconds;
-      if (frameTime > 16) {
-        debugPrint('⚠️ Frame lente détectée: ${frameTime}ms');
+  // Frames lentes — debug uniquement, developer.log (pas debugPrint)
+  assert(() {
+    SchedulerBinding.instance.addTimingsCallback((timings) {
+      for (final t in timings) {
+        final ms = t.totalSpan.inMilliseconds;
+        if (ms > 16) {
+          developer.log('⚠️ Frame lente : ${ms}ms',
+              name: 'Performance', level: 900);
+        }
       }
-    }
-  });
+    });
+    return true;
+  }());
 
-  debugPrint('✅ Configuration de performance appliquée');
+  _log.info('Configuration performance appliquée');
 }

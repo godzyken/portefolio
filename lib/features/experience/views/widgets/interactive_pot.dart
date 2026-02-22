@@ -35,10 +35,7 @@ class _InteractivePotState extends ConsumerState<InteractivePot>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scale;
-
   final List<OverlayEntry> _fallingTags = [];
-
-  /// 🔥 positions mémorisées pour chaque jeton
   final Map<String, Offset> _chipPositions = {};
 
   @override
@@ -48,10 +45,8 @@ class _InteractivePotState extends ConsumerState<InteractivePot>
       vsync: this,
       duration: const Duration(milliseconds: 300),
     );
-    _scale = Tween<double>(
-      begin: 1.0,
-      end: 1.2,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
+    _scale = Tween<double>(begin: 1.0, end: 1.15).animate(
+        CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
   }
 
   void _triggerFeedback() {
@@ -60,7 +55,6 @@ class _InteractivePotState extends ConsumerState<InteractivePot>
 
   void _fallTag(String tag, Offset start, Offset target) {
     final overlay = Overlay.of(context);
-
     final entry = OverlayEntry(
       builder: (context) => FallingTag(
         start: start,
@@ -68,10 +62,8 @@ class _InteractivePotState extends ConsumerState<InteractivePot>
         child: CompetenceChip(competenceName: tag, opacity: 1.0),
       ),
     );
-
     _fallingTags.add(entry);
     overlay.insert(entry);
-
     Future.delayed(const Duration(milliseconds: 600), () {
       entry.remove();
       _fallingTags.remove(entry);
@@ -82,7 +74,6 @@ class _InteractivePotState extends ConsumerState<InteractivePot>
     const size = Size(50, 50);
     final start = _chipPositions[tag] ?? const Offset(0, 0);
     final overlay = Overlay.of(context);
-
     late OverlayEntry entry;
     entry = OverlayEntry(
       builder: (_) => AnimatedCardOverlay(
@@ -93,36 +84,29 @@ class _InteractivePotState extends ConsumerState<InteractivePot>
         onEnd: () => entry.remove(),
       ),
     );
-
     overlay.insert(entry);
   }
 
   void _onCoinDrop(String tag) {
-    // Trouver la compétence
     final comp = competences.firstWhere(
       (c) => c.nom.toLowerCase() == tag.toLowerCase(),
     );
-
     final cardsToFly = widget.experiences
         .where((e) => comp.entreprises.contains(e.entreprise))
         .toList();
-
     widget.onCardsArrivedInPot?.call(cardsToFly);
   }
 
-  /// 🔥 helper pour créer un TagChip qui mémorise sa position
   Widget _buildTagChip(String tag, {double opacity = 1.0}) {
-    return Builder(
-      builder: (context) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          final rb = context.findRenderObject() as RenderBox?;
-          if (rb != null && mounted) {
-            _chipPositions[tag] = rb.localToGlobal(Offset.zero);
-          }
-        });
-        return CompetenceChip(competenceName: tag, opacity: opacity);
-      },
-    );
+    return Builder(builder: (context) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final rb = context.findRenderObject() as RenderBox?;
+        if (rb != null && mounted) {
+          _chipPositions[tag] = rb.localToGlobal(Offset.zero);
+        }
+      });
+      return CompetenceChip(competenceName: tag, opacity: opacity);
+    });
   }
 
   @override
@@ -132,14 +116,11 @@ class _InteractivePotState extends ConsumerState<InteractivePot>
     final cardNotifier = ref.read(cardFlightProvider.notifier);
     final info = ref.read(responsiveInfoProvider);
 
-    // Taille du pot responsive
     final potSize = info.isMobile
         ? 120.0
         : info.isTablet
             ? 140.0
             : 160.0;
-    final chipStackWidth = potSize;
-    final chipStackHeight = potSize;
 
     return Positioned(
       bottom: info.isPortrait ? 20 : 10,
@@ -147,13 +128,10 @@ class _InteractivePotState extends ConsumerState<InteractivePot>
       child: DragTarget<String>(
         onAcceptWithDetails: (details) {
           final tag = details.data;
-
-          debugPrint('[Pot] received tag: $tag');
           _triggerFeedback();
 
           if (!activeTags.contains(tag)) {
             tagsNotifier.setTags([...activeTags, tag]);
-
             _onCoinDrop(tag);
 
             final cardsToFly =
@@ -174,10 +152,7 @@ class _InteractivePotState extends ConsumerState<InteractivePot>
               cardsToFly.map((e) => e.entreprise).toList(),
             );
 
-            // 🔥 animation chip qui vole vers le centre
             _flyChip(tag, target);
-
-            // 🔥 animation de chute dans le pot
             final startPos = details.offset;
             final endPos = Offset(info.size.width - potSize / 2 - 20,
                 info.size.height - potSize / 2 - 20);
@@ -196,82 +171,92 @@ class _InteractivePotState extends ConsumerState<InteractivePot>
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: Colors.black.withValues(alpha: 120),
-                border:
-                    glow ? Border.all(color: Colors.yellow, width: 4) : null,
+                border: glow
+                    ? Border.all(color: Colors.yellowAccent, width: 4)
+                    : null,
                 boxShadow: [
                   if (glow)
                     BoxShadow(
-                      color: Colors.yellow.withValues(alpha: 150),
+                      color: Colors.yellowAccent.withValues(alpha: 150),
                       blurRadius: 25,
                     ),
                 ],
               ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  if (activeTags.isEmpty)
-                    const ResponsiveText.bodyMedium(
-                      "Glisse un jeton ici",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
+              child: SingleChildScrollView(
+                physics: const NeverScrollableScrollPhysics(),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min, // ✅ empêche le débordement
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (activeTags.isEmpty)
+                      const ResponsiveText.bodyMedium(
+                        "Glisse un jeton ici",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ResponsiveBox(
+                      width: potSize * 0.9,
+                      height: potSize * 0.9,
+                      child: Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          for (int i = 0; i < activeTags.length; i++)
+                            Positioned(
+                              left: (i * 6).toDouble(),
+                              top: (i * 4).toDouble(),
+                              child: _buildTagChip(
+                                activeTags[i],
+                                opacity: 0.9 - i * 0.1,
+                              ),
+                            ),
+                        ],
                       ),
                     ),
-                  ResponsiveBox(
-                    width: chipStackWidth,
-                    height: chipStackHeight,
-                    child: Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        for (int i = 0; i < activeTags.length; i++)
-                          Positioned(
-                            left: (i * 6).toDouble(), // décalage horizontal
-                            top: (i * 4).toDouble(), // décalage vertical
-                            child: _buildTagChip(
-                              activeTags[i],
-                              opacity: 0.9 - i * 0.1,
-                            ),
+                    if (activeTags.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: ResponsiveButton(
+                          onPressed: () {
+                            tagsNotifier.clearTags();
+                            widget.onPotCleared?.call();
+
+                            for (var e in _fallingTags) {
+                              e.remove();
+                            }
+                            _fallingTags.clear();
+
+                            final cardWidth = info.cardWidth;
+                            final cardHeight = cardWidth * info.cardHeightRatio;
+
+                            for (var e in widget.experiences) {
+                              final ctx = widget.cardKeys[e.id]?.currentContext;
+                              if (ctx != null &&
+                                  ctx.findRenderObject() is RenderBox) {
+                                final rb = ctx.findRenderObject() as RenderBox;
+                                final target = rb.localToGlobal(Offset(
+                                  info.size.width * 0.15 - cardWidth / 2,
+                                  info.size.height / 2 - cardHeight / 2,
+                                ));
+                                widget.flyCard(e, target, context,
+                                    flyUp: false);
+                              }
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red,
+                            minimumSize: Size(potSize * 0.8, 36),
                           ),
-                      ],
-                    ),
-                  ),
-                  if (activeTags.isNotEmpty)
-                    ResponsiveButton(
-                      onPressed: () {
-                        tagsNotifier.clearTags();
-
-                        widget.onPotCleared?.call();
-
-                        setState(() {
-                          for (var e in _fallingTags) {
-                            e.remove();
-                          }
-                          _fallingTags.clear();
-                        });
-
-                        final cardWidth = info.cardWidth;
-                        final cardHeight = cardWidth * info.cardHeightRatio;
-
-                        for (var e in widget.experiences) {
-                          final ctx = widget.cardKeys[e.id]?.currentContext;
-                          if (ctx != null &&
-                              ctx.findRenderObject() is RenderBox) {
-                            final rb = ctx.findRenderObject() as RenderBox;
-                            final target = rb.localToGlobal(Offset(
-                              info.size.width * 0.15 - cardWidth / 2,
-                              info.size.height / 2 - cardHeight / 2,
-                            ));
-                            widget.flyCard(e, target, context, flyUp: false);
-                          }
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
-                          minimumSize: Size(potSize * 0.8, 36)),
-                      child: const ResponsiveText.bodySmall("Vider le pot",
-                          style: TextStyle(color: Colors.white)),
-                    ),
-                ],
+                          child: const ResponsiveText.bodySmall(
+                            "Vider le pot",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               ),
             ),
           );

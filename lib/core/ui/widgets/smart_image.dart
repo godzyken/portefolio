@@ -127,7 +127,6 @@ class SvgPainter extends CustomPainter {
         _applyScale(
             canvas, size, ps, (scaleX < scaleY ? scaleX : scaleY).clamp(0, 1));
       case BoxFit.contain:
-      default:
         _applyScale(canvas, size, ps, scaleX < scaleY ? scaleX : scaleY);
     }
     canvas.drawPicture(pictureInfo.picture);

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/exceptions/error/error_screen.dart';
-import 'core/provider/error_providers.dart';
+import 'core/exceptions/error_notifier.dart';
 import 'core/routes/router.dart';
 import 'core/service/bootstrap_service.dart';
 import 'core/ui/widgets/error_boundary.dart';
@@ -21,10 +21,8 @@ class MyFullApp extends ConsumerWidget {
     final router = ref.watch(goRouterProvider);
     final themeMode = ref.watch(themeControllerProvider);
     final themeData = themeMode.toThemeData();
-    final globalError = ref.watch(globalErrorProvider);
 
-    // ✅ Thème non chargé → on laisse GoRouter afficher /splash naturellement
-    // (plus de SplashScreen ici comme fallback du thème)
+    // ── Thème en cours de chargement ──────────────────────────────────────────
     if (themeAsync.isLoading) {
       return MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -38,6 +36,7 @@ class MyFullApp extends ConsumerWidget {
       );
     }
 
+    // ── Erreur de chargement du thème ─────────────────────────────────────────
     if (themeAsync.hasError) {
       return MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -48,18 +47,23 @@ class MyFullApp extends ConsumerWidget {
       );
     }
 
-    if (globalError != null) {
+    // ── Erreur globale critique seulement (ex: ForceUpdate) ───────────────────
+    // Les erreurs non-critiques (réseau, permission…) sont gérées localement
+    // par chaque écran via errorNotifierProvider.
+    final globalError = ref.watch(errorNotifierProvider);
+    if (globalError != null && globalError.isCritical) {
       return MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: themeData,
         home: ErrorScreen(
           error: globalError.message,
-          onRetry: () => ref.read(globalErrorProvider.notifier).clearError(),
-          onGoHome: () => ref.read(globalErrorProvider.notifier).clearError(),
+          onRetry: () => ref.read(errorNotifierProvider.notifier).clear(),
+          onGoHome: () => ref.read(errorNotifierProvider.notifier).clear(),
         ),
       );
     }
 
+    // ── Application complète ──────────────────────────────────────────────────
     return MaterialApp.router(
       title: 'Portfolio',
       theme: themeData,

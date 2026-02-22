@@ -252,11 +252,10 @@ class _PeriodeLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      child: Text(
+      child: ResponsiveText.titleMedium(
         periode,
         style: const TextStyle(
           color: ColorHelpers.textMuted,
-          fontSize: 10,
           fontFamily: 'monospace',
           letterSpacing: 0.5,
         ),
