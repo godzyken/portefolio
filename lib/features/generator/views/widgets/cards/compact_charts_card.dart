@@ -1,5 +1,5 @@
+import 'dart:math' as math;
 import 'dart:math';
-import 'dart:ui';
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -21,15 +21,13 @@ class CompactKPICards extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final crossAxisCount = info.isMobile ? 2 : (info.isTablet ? 3 : 4);
     return GridView.builder(
+      shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: info.isMobile
-            ? 2
-            : info.isTablet
-                ? 3
-                : 4,
-        childAspectRatio: info.isMobile ? 2.1 : 2.5,
+        crossAxisCount: crossAxisCount,
+        childAspectRatio: info.isMobile ? 1.8 : 2.2,
         crossAxisSpacing: 8,
         mainAxisSpacing: 8,
       ),
@@ -41,33 +39,34 @@ class CompactKPICards extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.blue.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: Colors.blue.withValues(alpha: 0.3),
-            ),
+            border: Border.all(color: Colors.blue.withValues(alpha: 0.3)),
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ResponsiveText.bodySmall(
-                entry.key,
-                style: const TextStyle(
-                  color: Colors.white70,
-                  fontSize: 10,
+              Flexible(
+                child: ResponsiveText.bodySmall(
+                  entry.key,
+                  style: const TextStyle(color: Colors.white70, fontSize: 10),
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                textAlign: TextAlign.center,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 4),
-              ResponsiveText.titleMedium(
-                entry.value,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
+              Flexible(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    entry.value,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                    maxLines: 1,
+                  ),
                 ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
@@ -106,7 +105,6 @@ class _CompactBarChartState extends State<CompactBarChart>
       vsync: this,
       duration: const Duration(milliseconds: 1000),
     )..forward();
-
     _animation = CurvedAnimation(
       parent: _controller,
       curve: Curves.easeOutCubic,
@@ -121,147 +119,130 @@ class _CompactBarChartState extends State<CompactBarChart>
 
   @override
   Widget build(BuildContext context) {
+    // Réserver de l'espace pour les labels en bas si présents
+    final hasLabels = widget.xLabels != null && widget.xLabels!.isNotEmpty;
+    final bottomReservedSize =
+        hasLabels ? (widget.info.isMobile ? 36.0 : 44.0) : 0.0;
+
     return ChartAnimator(
-        duration: const Duration(milliseconds: 800),
-        curve: Curves.easeOutBack,
-        child: AnimatedBuilder(
-          animation: _animation,
-          builder: (context, child) {
-            return LayoutBuilder(
-              builder: (context, constraints) {
-                return Stack(
-                  children: [
-                    BarChart(
-                      BarChartData(
-                        barGroups: List.generate(widget.barGroups.length, (i) {
-                          final group = widget.barGroups[i];
-                          return BarChartGroupData(
-                            x: group.x,
-                            barRods: group.barRods.map((rod) {
-                              return BarChartRodData(
-                                toY: rod.toY *
-                                    (Curves.easeOutCubic.transform(
-                                      (_animation.value * (1.0 - i * 0.05))
-                                          .clamp(0.0, 1.0),
-                                    )),
-                                color: rod.color ??
-                                    Colors.blueAccent.withValues(alpha: 0.8),
-                                width: rod.width,
-                                borderRadius: BorderRadius.circular(4),
-                                backDrawRodData: BackgroundBarChartRodData(
-                                  show: true,
-                                  toY: rod.toY,
-                                  color: Colors.white.withValues(alpha: 0.05),
-                                ),
-                              );
-                            }).toList(),
-                          );
-                        }),
-                        groupsSpace: 18,
-                        alignment: BarChartAlignment.spaceAround,
-                        titlesData: FlTitlesData(
-                          show: true,
-                          leftTitles: AxisTitles(
-                            sideTitles: SideTitles(
-                              showTitles: true,
-                              reservedSize: 28,
-                              getTitlesWidget: (value, meta) {
-                                var numb = formatCompact(value.toInt());
-                                return ResponsiveText.bodySmall(
-                                  numb,
-                                  style: const TextStyle(
-                                    color: Colors.white70,
-                                  ),
-                                );
-                              },
-                            ),
+      duration: const Duration(milliseconds: 800),
+      curve: Curves.easeOutBack,
+      child: AnimatedBuilder(
+        animation: _animation,
+        builder: (context, child) {
+          return BarChart(
+            BarChartData(
+              barGroups: List.generate(widget.barGroups.length, (i) {
+                final group = widget.barGroups[i];
+                return BarChartGroupData(
+                  x: group.x,
+                  barRods: group.barRods.map((rod) {
+                    return BarChartRodData(
+                      toY: rod.toY *
+                          Curves.easeOutCubic.transform(
+                            (_animation.value * (1.0 - i * 0.05))
+                                .clamp(0.0, 1.0),
                           ),
-                          bottomTitles: AxisTitles(
-                            sideTitles: SideTitles(
-                              showTitles: true,
-                              reservedSize: widget.info.isMobile ? 40 : 50,
-                              interval: 1,
-                              getTitlesWidget: (value, meta) {
-                                final labels = widget.xLabels;
-                                if (labels == null || labels.isEmpty) {
-                                  return const SizedBox.shrink();
-                                }
-
-                                final index = value.round();
-                                if (index < 0 || index >= labels.length) {
-                                  return const SizedBox.shrink();
-                                }
-
-                                // 🔹 Espacement dynamique selon la largeur
-                                // Trop de labels ? On en saute
-                                final total = labels.length;
-                                final step = total > 8 ? (total / 8).ceil() : 1;
-                                if (index % step != 0) {
-                                  return const SizedBox.shrink();
-                                }
-
-                                return Padding(
-                                  padding: const EdgeInsets.only(top: 8),
-                                  child: Transform.rotate(
-                                    origin: Offset(-2.0, -1.5),
-                                    alignment: Alignment.center,
-                                    angle: -0.8,
-                                    child: labels[index],
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                          rightTitles: const AxisTitles(
-                            sideTitles: SideTitles(showTitles: false),
-                          ),
-                          topTitles: const AxisTitles(
-                            sideTitles: SideTitles(showTitles: false),
-                          ),
-                        ),
-                        gridData: FlGridData(
-                          show: true,
-                          drawVerticalLine: false,
-                          horizontalInterval: 5,
-                          getDrawingHorizontalLine: (value) {
-                            return FlLine(
-                              color: Colors.white.withValues(alpha: 0.1),
-                              strokeWidth: 1,
-                            );
-                          },
-                        ),
-                        borderData: FlBorderData(show: false),
-                        barTouchData: BarTouchData(
-                          touchTooltipData: BarTouchTooltipData(
-                              getTooltipColor: (group) {
-                            final color =
-                                group.barRods.first.color ?? Colors.blueAccent;
-                            final alpha = color.withValues(alpha: 0.9);
-                            final red = color.withValues(red: 255);
-                            final green = color.withValues(green: 255);
-                            final blue = color.withValues(blue: 255);
-                            return Color.from(
-                                alpha: alpha.a,
-                                red: red.r,
-                                green: green.g,
-                                blue: blue.b);
-                          }, getTooltipItem:
-                                  (group, groupIndex, rod, rodIndex) {
-                            return BarTooltipItem(formatCompact(rod.toY),
-                                const TextStyle(color: Colors.white));
-                          }),
-                        ),
-                        backgroundColor: Colors.white.withValues(alpha: 0.05),
+                      color:
+                          rod.color ?? Colors.blueAccent.withValues(alpha: 0.8),
+                      width: rod.width,
+                      borderRadius: BorderRadius.circular(4),
+                      backDrawRodData: BackgroundBarChartRodData(
+                        show: true,
+                        toY: rod.toY,
+                        color: Colors.white.withValues(alpha: 0.05),
                       ),
-                      duration: const Duration(milliseconds: 700),
-                      curve: Curves.easeOutCubic,
-                    ),
-                  ],
+                    );
+                  }).toList(),
                 );
-              },
-            );
-          },
-        ));
+              }),
+              groupsSpace: 12,
+              alignment: BarChartAlignment.spaceAround,
+              titlesData: FlTitlesData(
+                show: true,
+                leftTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    reservedSize: 30,
+                    getTitlesWidget: (value, meta) {
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 4),
+                        child: Text(
+                          formatCompact(value.toInt()),
+                          style: const TextStyle(
+                              color: Colors.white60, fontSize: 9),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                bottomTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: hasLabels,
+                    reservedSize: bottomReservedSize,
+                    interval: 1,
+                    getTitlesWidget: (value, meta) {
+                      if (!hasLabels) return const SizedBox.shrink();
+                      final labels = widget.xLabels!;
+                      final index = value.round();
+                      if (index < 0 || index >= labels.length) {
+                        return const SizedBox.shrink();
+                      }
+                      final total = labels.length;
+                      final step = total > 6 ? (total / 6).ceil() : 1;
+                      if (index % step != 0) {
+                        return const SizedBox.shrink();
+                      }
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Transform.rotate(
+                          angle: -0.7,
+                          alignment: Alignment.centerLeft,
+                          child: labels[index],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                rightTitles:
+                    const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                topTitles:
+                    const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              ),
+              gridData: FlGridData(
+                show: true,
+                drawVerticalLine: false,
+                horizontalInterval: 5,
+                getDrawingHorizontalLine: (value) => FlLine(
+                  color: Colors.white.withValues(alpha: 0.08),
+                  strokeWidth: 1,
+                ),
+              ),
+              borderData: FlBorderData(show: false),
+              barTouchData: BarTouchData(
+                touchTooltipData: BarTouchTooltipData(
+                  getTooltipColor: (group) {
+                    final color =
+                        group.barRods.first.color ?? Colors.blueAccent;
+                    return color.withValues(alpha: 0.85);
+                  },
+                  getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                    return BarTooltipItem(
+                      formatCompact(rod.toY),
+                      const TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold),
+                    );
+                  },
+                ),
+              ),
+              backgroundColor: Colors.white.withValues(alpha: 0.03),
+            ),
+            duration: const Duration(milliseconds: 700),
+            curve: Curves.easeOutCubic,
+          );
+        },
+      ),
+    );
   }
 }
 
@@ -292,7 +273,6 @@ class _CompactLineChartState extends State<CompactLineChart>
   @override
   void initState() {
     super.initState();
-
     _lineController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1200),
@@ -311,144 +291,127 @@ class _CompactLineChartState extends State<CompactLineChart>
 
   @override
   Widget build(BuildContext context) {
+    if (widget.spots.isEmpty) return const SizedBox.shrink();
+
     return ChartAnimator(
-        duration: const Duration(milliseconds: 800),
-        curve: Curves.easeOutBack,
-        child: AnimatedBuilder(
-          animation: _lineAnimation,
-          builder: (context, child) {
-            final progress = _lineAnimation.value;
+      duration: const Duration(milliseconds: 800),
+      curve: Curves.easeOutBack,
+      child: AnimatedBuilder(
+        animation: _lineAnimation,
+        builder: (context, child) {
+          final progress = _lineAnimation.value;
+          final animatedSpots =
+              widget.spots.map((s) => FlSpot(s.x, s.y * progress)).toList();
+          final lightSpot = animatedSpots.last;
 
-            if (widget.spots.isEmpty) return const SizedBox.shrink();
+          return LayoutBuilder(
+            builder: (context, constraints) {
+              final availableWidth = constraints.maxWidth;
+              // Calcul dynamique du step pour éviter les labels qui se chevauchent
+              final labelWidth = 40.0;
+              final visibleCount = (availableWidth / labelWidth).floor();
+              final step = widget.xLabels.isEmpty
+                  ? 1
+                  : (widget.xLabels.length / visibleCount).ceil().clamp(1, 6);
 
-            // On multiplie le y de chaque point par progress
-            final animatedSpots =
-                widget.spots.map((s) => FlSpot(s.x, s.y * progress)).toList();
-
-            // Point lumineux : dernier point actuel
-            final lightSpot = animatedSpots.last;
-
-            return LayoutBuilder(
-              builder: (context, constraints) {
-                return Stack(
-                  children: [
-                    // Ligne principale (courbe)
-                    LineChart(
-                      LineChartData(
-                        lineBarsData: [
-                          LineChartBarData(
-                            spots: animatedSpots,
-                            isCurved: true,
-                            color: widget.color.withValues(alpha: 0.9),
-                            barWidth: 2.5,
-                            isStrokeCapRound: true,
-                            dotData: FlDotData(
-                              show: false,
-                              getDotPainter: (spot, percent, bar, index) =>
-                                  FlDotCirclePainter(
-                                radius: 3.5 + 2 * _lineAnimation.value,
-                                color: widget.color.withValues(
-                                    alpha: (0.5 + 0.5 * _lineAnimation.value)),
-                                strokeWidth: 1.5,
-                                strokeColor:
-                                    Colors.white.withValues(alpha: 0.8),
-                              ),
-                            ),
-                            belowBarData: BarAreaData(
-                              show: true,
-                              color: widget.color.withValues(alpha: 0.15),
-                            ),
+              return Stack(
+                children: [
+                  LineChart(
+                    LineChartData(
+                      lineBarsData: [
+                        LineChartBarData(
+                          spots: animatedSpots,
+                          isCurved: true,
+                          color: widget.color.withValues(alpha: 0.9),
+                          barWidth: 2.5,
+                          isStrokeCapRound: true,
+                          dotData: const FlDotData(show: false),
+                          belowBarData: BarAreaData(
+                            show: true,
+                            color: widget.color.withValues(alpha: 0.12),
                           ),
-                        ],
-                        titlesData: FlTitlesData(
-                          show: true,
-                          leftTitles: AxisTitles(
-                            sideTitles: SideTitles(
-                              showTitles: true,
-                              reservedSize: 28,
-                              getTitlesWidget: (value, meta) {
-                                var numb = formatCompact(value.toInt());
-                                return ResponsiveText.bodySmall(
-                                  numb,
+                        ),
+                      ],
+                      titlesData: FlTitlesData(
+                        show: true,
+                        leftTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            reservedSize: 30,
+                            getTitlesWidget: (value, meta) {
+                              return Padding(
+                                padding: const EdgeInsets.only(right: 4),
+                                child: Text(
+                                  formatCompact(value.toInt()),
                                   style: const TextStyle(
-                                    color: Colors.white70,
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                          bottomTitles: AxisTitles(
-                            sideTitles: SideTitles(
-                              showTitles: true,
-                              reservedSize: 40,
-                              getTitlesWidget: (value, meta) {
-                                final index = value.toInt();
-                                // 🔹 Saut d’un label sur 2 en mobile, ou sur 1 en desktop
-                                final availableWidth = constraints.maxWidth;
-                                final labelWidth = 60.0;
-                                final visibleCount =
-                                    (availableWidth / labelWidth).floor();
-                                final step =
-                                    (widget.xLabels.length / visibleCount)
-                                        .ceil()
-                                        .clamp(1, 5);
-
-                                if (index % step != 0 ||
-                                    index >= widget.xLabels.length) {
-                                  return const SizedBox.shrink();
-                                }
-
-                                return Padding(
-                                  padding: const EdgeInsets.only(top: 6),
-                                  child: Transform.rotate(
-                                    origin: Offset(-2.0, -1.5),
-                                    alignment: Alignment.center,
-                                    angle: -0.8,
-                                    child: widget.xLabels[index],
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                          rightTitles: const AxisTitles(
-                            sideTitles: SideTitles(showTitles: false),
-                          ),
-                          topTitles: const AxisTitles(
-                            sideTitles: SideTitles(showTitles: false),
+                                      color: Colors.white60, fontSize: 9),
+                                ),
+                              );
+                            },
                           ),
                         ),
-                        gridData: FlGridData(
-                          show: true,
-                          drawVerticalLine: false,
-                          getDrawingHorizontalLine: (value) {
-                            return FlLine(
-                              color: Colors.white.withValues(alpha: 0.1),
-                              strokeWidth: 1,
-                            );
-                          },
+                        bottomTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: widget.xLabels.isNotEmpty,
+                            reservedSize: 32,
+                            getTitlesWidget: (value, meta) {
+                              if (widget.xLabels.isEmpty)
+                                return const SizedBox.shrink();
+                              final index = value.toInt();
+                              if (index < 0 ||
+                                  index >= widget.xLabels.length ||
+                                  index % step != 0) {
+                                return const SizedBox.shrink();
+                              }
+                              return Padding(
+                                padding: const EdgeInsets.only(top: 4),
+                                child: Transform.rotate(
+                                  angle: -0.7,
+                                  alignment: Alignment.centerLeft,
+                                  child: widget.xLabels[index],
+                                ),
+                              );
+                            },
+                          ),
                         ),
-                        borderData: FlBorderData(show: false),
+                        rightTitles: const AxisTitles(
+                            sideTitles: SideTitles(showTitles: false)),
+                        topTitles: const AxisTitles(
+                            sideTitles: SideTitles(showTitles: false)),
                       ),
-                      duration: const Duration(milliseconds: 600),
-                      curve: Curves.easeOutCubic,
+                      gridData: FlGridData(
+                        show: true,
+                        drawVerticalLine: false,
+                        getDrawingHorizontalLine: (value) => FlLine(
+                          color: Colors.white.withValues(alpha: 0.08),
+                          strokeWidth: 1,
+                        ),
+                      ),
+                      borderData: FlBorderData(show: false),
+                      clipData:
+                          const FlClipData.all(), // ← évite les débordements
                     ),
-                    Positioned.fill(
-                      child: IgnorePointer(
-                        child: CustomPaint(
-                          painter: TrailingLightPainter(
-                            spot: lightSpot,
-                            color: widget.color,
-                            opacity: progress,
-                          ),
+                    duration: const Duration(milliseconds: 600),
+                    curve: Curves.easeOutCubic,
+                  ),
+                  Positioned.fill(
+                    child: IgnorePointer(
+                      child: CustomPaint(
+                        painter: TrailingLightPainter(
+                          spot: lightSpot,
+                          color: widget.color,
+                          opacity: progress,
                         ),
                       ),
                     ),
-                  ],
-                );
-              },
-            );
-          },
-        ));
+                  ),
+                ],
+              );
+            },
+          );
+        },
+      ),
+    );
   }
 }
 
@@ -470,7 +433,6 @@ class CompactPieChart extends StatefulWidget {
 class _CompactPieChartState extends State<CompactPieChart>
     with SingleTickerProviderStateMixin {
   int? touchedIndex;
-
   late AnimationController _controller;
   late Animation<double> _animation;
 
@@ -481,7 +443,6 @@ class _CompactPieChartState extends State<CompactPieChart>
       vsync: this,
       duration: const Duration(milliseconds: 1200),
     )..forward();
-
     _animation = CurvedAnimation(
       parent: _controller,
       curve: Curves.easeOutCubic,
@@ -496,156 +457,136 @@ class _CompactPieChartState extends State<CompactPieChart>
 
   @override
   Widget build(BuildContext context) {
-    final info = widget.info;
-
     return ChartAnimator(
-        duration: const Duration(milliseconds: 1200),
-        curve: Curves.easeOutBack,
-        child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.08),
-              borderRadius: BorderRadius.circular(24),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.1),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-              border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
-              backgroundBlendMode: BlendMode.modulate,
-            ),
-            padding: const EdgeInsets.all(8),
-            child: ClipRRect(
-                borderRadius: BorderRadius.circular(24),
-                child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-                    child: LayoutBuilder(
-                      builder: (context, constraints) {
-                        final size = constraints.biggest;
-                        final minSide = size.shortestSide;
+      duration: const Duration(milliseconds: 1200),
+      curve: Curves.easeOutBack,
+      child: AnimatedBuilder(
+        animation: _animation,
+        builder: (context, child) {
+          return LayoutBuilder(
+            builder: (context, constraints) {
+              final h = constraints.maxHeight;
+              final w = constraints.maxWidth;
 
-                        // 🔹 Rayon adaptatif (plus petit sur mobile, plus large sur grand écran)
-                        final baseRadius = (minSide / 3.2).clamp(30.0, 70.0);
-                        final centerSpace = baseRadius / 2;
+              // 36px pour la légende scrollable en bas
+              const legendH = 36.0;
+              const gap = 8.0;
+              // Espace réel pour le chart (avec une borne min)
+              final chartH = (h - legendH - gap).clamp(60.0, 500.0);
 
-                        return AnimatedBuilder(
-                          animation: _animation,
-                          builder: (context, child) {
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Transform.scale(
-                                  scale: 0.9 + 0.1 * _animation.value,
-                                  alignment: Alignment.center,
-                                  child: AnimatedContainer(
-                                    duration: const Duration(milliseconds: 400),
-                                    height: info.isMobile
-                                        ? info.cardWidth
-                                        : info.cardHeightRatio * size.height,
-                                    curve: Curves.easeOutBack,
-                                    child: PieChart(
-                                      PieChartData(
-                                          sectionsSpace: 4,
-                                          centerSpaceRadius: centerSpace,
-                                          pieTouchData: PieTouchData(
-                                            touchCallback: (event, response) {
-                                              if (!event
-                                                      .isInterestedForInteractions ||
-                                                  response == null) {
-                                                setState(
-                                                    () => touchedIndex = null);
-                                                return;
-                                              }
-                                              setState(() => touchedIndex =
-                                                  response.touchedSection
-                                                      ?.touchedSectionIndex);
-                                            },
-                                          ),
-                                          sections: List.generate(
-                                              widget.sections.length, (i) {
-                                            final section = widget.sections[i];
-                                            final isTouched = i == touchedIndex;
-                                            final double radius = isTouched
-                                                ? baseRadius * 1.2
-                                                : baseRadius;
-                                            return PieChartSectionData(
-                                              title: section.title,
-                                              value: section.value,
-                                              color: section.color,
-                                              gradient: section.gradient,
-                                              titleStyle: TextStyle(
-                                                fontSize: isTouched ? 18 : 14,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.white,
-                                                shadows: [
-                                                  Shadow(
-                                                      color: Colors.black
-                                                          .withValues(
-                                                              alpha: 0.3),
-                                                      blurRadius: 12),
-                                                ],
-                                              ),
-                                              radius: radius,
-                                            );
-                                          }),
-                                          startDegreeOffset: -45),
-                                      duration:
-                                          const Duration(milliseconds: 1000),
-                                      curve: Curves.easeInOutCubic,
+              // Rayon déduit de la plus petite dimension disponible
+              final minSide = math.min(w, chartH);
+              final baseRadius = (minSide / 4.2).clamp(20.0, 64.0);
+              final centerSpace = baseRadius * 0.5;
+
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // ── Pie chart ──
+                  SizedBox(
+                    height: chartH,
+                    width: w,
+                    child: Transform.scale(
+                      scale: 0.88 + 0.12 * _animation.value,
+                      child: PieChart(
+                        PieChartData(
+                          sectionsSpace: 3,
+                          centerSpaceRadius: centerSpace,
+                          pieTouchData: PieTouchData(
+                            touchCallback: (event, response) {
+                              if (!event.isInterestedForInteractions ||
+                                  response == null) {
+                                setState(() => touchedIndex = null);
+                                return;
+                              }
+                              setState(() => touchedIndex =
+                                  response.touchedSection?.touchedSectionIndex);
+                            },
+                          ),
+                          sections: List.generate(
+                            widget.sections.length,
+                            (i) {
+                              final s = widget.sections[i];
+                              final isTouched = i == touchedIndex;
+                              // Ne montre les titres que si le rayon est suffisant
+                              final showTitle = baseRadius >= 36;
+                              return PieChartSectionData(
+                                title: showTitle ? s.title : '',
+                                value: s.value,
+                                color: s.color,
+                                gradient: s.gradient,
+                                titleStyle: TextStyle(
+                                  fontSize: isTouched ? 13 : 10,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                                radius:
+                                    isTouched ? baseRadius * 1.12 : baseRadius,
+                              );
+                            },
+                          ),
+                          startDegreeOffset: -45,
+                        ),
+                        duration: const Duration(milliseconds: 800),
+                        curve: Curves.easeInOutCubic,
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: gap),
+
+                  // ── Légende scrollable horizontale ──
+                  AnimatedOpacity(
+                    opacity: _animation.value,
+                    duration: const Duration(milliseconds: 600),
+                    child: SizedBox(
+                      height: legendH,
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: widget.sections.map((s) {
+                            return Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 5),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                                    width: 9,
+                                    height: 9,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      gradient: s.gradient ??
+                                          LinearGradient(colors: [
+                                            s.color,
+                                            s.color.withValues(alpha: 0.7),
+                                          ]),
                                     ),
                                   ),
-                                ),
-                                const SizedBox(height: 12),
-                                AnimatedOpacity(
-                                  opacity: _animation.value,
-                                  duration: const Duration(milliseconds: 600),
-                                  child: Wrap(
-                                    alignment: WrapAlignment.center,
-                                    crossAxisAlignment:
-                                        WrapCrossAlignment.center,
-                                    spacing: 12,
-                                    runSpacing: 8,
-                                    children: widget.sections.map((s) {
-                                      return Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            AnimatedContainer(
-                                              duration: const Duration(
-                                                  milliseconds: 600),
-                                              width: 12,
-                                              height: 12,
-                                              decoration: BoxDecoration(
-                                                shape: BoxShape.circle,
-                                                gradient: s.gradient ??
-                                                    LinearGradient(
-                                                      colors: [
-                                                        s.color,
-                                                        s.color.withValues(
-                                                            alpha: 0.7)
-                                                      ],
-                                                    ),
-                                              ),
-                                            ),
-                                            const SizedBox(width: 6),
-                                            ResponsiveText.bodySmall(
-                                              "${s.title}: ${formatCompact(s.value)}",
-                                              style: TextStyle(
-                                                color: Colors.white
-                                                    .withValues(alpha: 0.9),
-                                                fontSize: 13,
-                                              ),
-                                            ),
-                                          ]);
-                                    }).toList(),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    '${s.title}: ${formatCompact(s.value)}',
+                                    style: TextStyle(
+                                      color:
+                                          Colors.white.withValues(alpha: 0.82),
+                                      fontSize: 10,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             );
-                          },
-                        );
-                      },
-                    )))));
+                          }).toList(),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          );
+        },
+      ),
+    );
   }
 }
 
@@ -681,7 +622,6 @@ class _CompactScatterTrendChartState extends State<CompactScatterTrendChart>
       vsync: this,
       duration: const Duration(milliseconds: 1200),
     )..forward();
-
     _animation = CurvedAnimation(
       parent: _controller,
       curve: Curves.easeOutCubic,
@@ -702,29 +642,27 @@ class _CompactScatterTrendChartState extends State<CompactScatterTrendChart>
 
     return LayoutBuilder(
       builder: (context, constraints) {
+        // Si la hauteur est infinie (ex: dans un Column sans contrainte),
+        // on utilise une hauteur par défaut raisonnable.
+        final height = constraints.maxHeight.isInfinite
+            ? 200.0
+            : constraints.maxHeight.clamp(140.0, 260.0);
         final width = constraints.maxWidth;
-        final height = (constraints.maxHeight).clamp(200.0, 320.0);
 
-        return Center(
-          child: ChartAnimator(
-              child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-            child: ClipRect(
-              child: Align(
-                alignment: Alignment.center,
-                child: SizedBox(
-                  width: width * 0.95,
-                  height: height * 0.9,
-                  child: BuildAnimatedChartContent(
-                      animation: _animation,
-                      height: height * 0.9,
-                      widget: widget,
-                      maxValue: maxValue,
-                      width: width * 0.9),
-                ),
+        return ChartAnimator(
+          child: ClipRect(
+            child: SizedBox(
+              width: width,
+              height: height,
+              child: BuildAnimatedChartContent(
+                animation: _animation,
+                height: height,
+                widget: widget,
+                maxValue: maxValue,
+                width: width,
               ),
             ),
-          )),
+          ),
         );
       },
     );

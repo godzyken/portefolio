@@ -17,26 +17,22 @@ class BenchmarkGlobalWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double pieSize = info.isMobile ? 80 : 100;
-    final double centerRadius = info.isMobile ? 35 : 40;
-
     return Container(
-      padding: EdgeInsets.all(12),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: ColorHelpers.darkBg.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: Colors.white.withValues(alpha: 0.1),
-          width: 2,
+          width: 1.5,
         ),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          ResponsiveText.titleMedium(
+          ResponsiveText.titleSmall(
             benchmark.projectTitle,
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,
             ),
@@ -44,66 +40,61 @@ class BenchmarkGlobalWidget extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
-          Expanded(
-              child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+          const SizedBox(height: 12),
+          // Pie chart score
+          SizedBox(
+            width: 100,
+            height: 100,
+            child: Stack(
+              alignment: Alignment.center,
               children: [
-                // Pie Chart
-                SizedBox(
-                  width: pieSize,
-                  height: pieSize,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      PieChart(
-                        PieChartData(
-                          sectionsSpace: 3,
-                          centerSpaceRadius: centerRadius,
-                          sections: [
-                            PieChartSectionData(
-                              value: benchmark.scoreGlobal.toDouble(),
-                              color: ColorHelpers.green,
-                              radius: 20,
-                              title: '',
-                            ),
-                            PieChartSectionData(
-                              value: (100 - benchmark.scoreGlobal).toDouble(),
-                              color: ColorHelpers.gray.withValues(alpha: 0.3),
-                              radius: 20,
-                              title: '',
-                            ),
-                          ],
-                        ),
-                      )
+                PieChart(
+                  PieChartData(
+                    sectionsSpace: 3,
+                    centerSpaceRadius: 32,
+                    sections: [
+                      PieChartSectionData(
+                        value: benchmark.scoreGlobal.toDouble(),
+                        color: ColorHelpers.green,
+                        radius: 18,
+                        title: '',
+                      ),
+                      PieChartSectionData(
+                        value: (100 - benchmark.scoreGlobal).toDouble(),
+                        color: ColorHelpers.gray.withValues(alpha: 0.3),
+                        radius: 18,
+                        title: '',
+                      ),
                     ],
                   ),
                 ),
-                SizedBox(
-                  height: 8,
-                ),
-                // Score
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ResponsiveText.displaySmall(
-                      '${benchmark.scoreGlobal}/100',
-                      style: TextStyle(
-                        color: ColorHelpers.green,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-                ResponsiveText.bodySmall(
-                  'Score global',
-                  style: TextStyle(
-                    color: ColorHelpers.textGray,
+                Text(
+                  '${benchmark.scoreGlobal}',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
                   ),
                 ),
               ],
             ),
-          )),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Score: ${benchmark.scoreGlobal}/100',
+            style: TextStyle(
+              color: ColorHelpers.green,
+              fontWeight: FontWeight.bold,
+              fontSize: 13,
+            ),
+          ),
+          Text(
+            'Score global',
+            style: TextStyle(
+              color: ColorHelpers.textGray,
+              fontSize: 11,
+            ),
+          ),
         ],
       ),
     );
@@ -124,197 +115,164 @@ class BenchmarkComparisonWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     if (benchmarks.isEmpty) return const SizedBox.shrink();
 
-    // Préparer les données pour le bar chart
-    final List<BarChartGroupData> barGroups = [];
+    // Critères avec max
+    final criteria = [
+      _Criterion('Perfs', 30, (b) => b.performances),
+      _Criterion('SEO', 30, (b) => b.seo),
+      _Criterion('Mobile', 30, (b) => b.mobile),
+      _Criterion('Sécu', 10, (b) => b.securite),
+    ];
 
-    // 4 critères : Performances, SEO, Mobile, Sécurité
-    for (int i = 0; i < 4; i++) {
-      final rods = <BarChartRodData>[];
-
-      // Barre grise pour le maximum
-      final maxValues = [30.0, 30.0, 30.0, 10.0];
-      rods.add(BarChartRodData(
-        toY: maxValues[i],
-        color: ColorHelpers.gridColor,
-        width: info.isMobile ? 12 : 16,
-      ));
-
-      // Barres colorées pour chaque projet
-      for (int j = 0; j < benchmarks.length; j++) {
-        final benchmark = benchmarks[j];
-        final values = [
-          benchmark.performances.toDouble(),
-          benchmark.seo.toDouble(),
-          benchmark.mobile.toDouble(),
-          benchmark.securite.toDouble(),
-        ];
-
-        rods.add(BarChartRodData(
-          toY: values[i],
-          color: ColorHelpers.getProjectColor(j),
-          width: info.isMobile ? 12 : 16,
-        ));
-      }
-
-      barGroups.add(BarChartGroupData(
-        x: i,
-        barRods: rods,
-        barsSpace: 4,
-      ));
-    }
-
-    return ResponsiveBox(
-      padding: EdgeInsets.all(info.isMobile ? 20 : 24),
+    return Container(
+      padding: EdgeInsets.all(info.isMobile ? 12 : 16),
       decoration: BoxDecoration(
         color: ColorHelpers.darkBg.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: Colors.white.withValues(alpha: 0.1),
-          width: 2,
+          width: 1.5,
         ),
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ResponsiveText.titleLarge(
-            'Comparaison des Critères (${benchmarks.length} projets)',
+          Text(
+            'Comparaison des critères',
             style: TextStyle(
               color: Colors.white,
-              fontSize: info.isMobile ? 20 : 24,
               fontWeight: FontWeight.bold,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          ResponsiveBox(height: info.isMobile ? 16 : 24),
-          ResponsiveBox(
-            height: info.isMobile ? 300 : 400,
-            child: BarChart(
-              BarChartData(
-                alignment: BarChartAlignment.spaceAround,
-                maxY: 35,
-                barGroups: barGroups,
-                gridData: FlGridData(
-                  show: true,
-                  drawVerticalLine: false,
-                  horizontalInterval: 10,
-                  getDrawingHorizontalLine: (value) => FlLine(
-                    color: ColorHelpers.gridColor,
-                    strokeWidth: 1,
-                    dashArray: [3, 3],
-                  ),
-                ),
-                titlesData: FlTitlesData(
-                  show: true,
-                  bottomTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      getTitlesWidget: (value, meta) {
-                        final labels = ['Perfs', 'SEO', 'Mobile', 'Sécu'];
-                        if (value.toInt() < labels.length) {
-                          return ResponsiveBox(
-                            padding: const EdgeInsets.only(top: 8),
-                            child: ResponsiveText.displayMedium(
-                              labels[value.toInt()],
-                              style: TextStyle(
-                                color: ColorHelpers.textGray,
-                                fontSize: info.isMobile ? 10 : 12,
-                              ),
-                            ),
-                          );
-                        }
-                        return const SizedBox.shrink();
-                      },
-                    ),
-                  ),
-                  leftTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      reservedSize: 30,
-                      getTitlesWidget: (value, meta) {
-                        return ResponsiveText.displaySmall(
-                          value.toInt().toString(),
-                          style: TextStyle(
-                            color: ColorHelpers.textGray,
-                            fontSize: info.isMobile ? 10 : 12,
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  topTitles: const AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
-                  ),
-                  rightTitles: const AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
-                  ),
-                ),
-                borderData: FlBorderData(show: false),
-                barTouchData: BarTouchData(
-                  touchTooltipData: BarTouchTooltipData(
-                    getTooltipColor: (_) => Colors.black87,
-                    tooltipPadding: const EdgeInsets.all(8),
-                    tooltipMargin: 8,
-                    getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                      String label = '';
-                      if (rodIndex == 0) {
-                        label = 'Max: ${rod.toY.toInt()}';
-                      } else if (rodIndex <= benchmarks.length) {
-                        label =
-                            '${benchmarks[rodIndex - 1].projectTitle}: ${rod.toY.toInt()}';
-                      }
-                      return BarTooltipItem(
-                        label,
-                        const TextStyle(color: Colors.white),
-                      );
-                    },
-                  ),
-                ),
-              ),
+              fontSize: info.isMobile ? 13 : 15,
             ),
           ),
-          // Légende
-          ResponsiveBox(
-              paddingSize: ResponsiveSpacing.s,
-              height: info.isMobile ? 12 : 16),
+          const SizedBox(height: 12),
+
+          // Légende projets
           Wrap(
-            spacing: 16,
-            runSpacing: 8,
-            alignment: WrapAlignment.center,
-            children: [
-              _buildLegendItem('Maximum', ColorHelpers.gridColor),
-              ...benchmarks.asMap().entries.map((entry) {
-                return _buildLegendItem(
-                  entry.value.projectTitle,
-                  ColorHelpers.getProjectColor(entry.key),
-                );
-              }),
-            ],
+            spacing: 8,
+            runSpacing: 4,
+            children: benchmarks.asMap().entries.map((e) {
+              return Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 10,
+                    height: 10,
+                    decoration: BoxDecoration(
+                      color: ColorHelpers.getProjectColor(e.key),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    e.value.projectTitle.length > 12
+                        ? '${e.value.projectTitle.substring(0, 12)}…'
+                        : e.value.projectTitle,
+                    style: TextStyle(
+                      color: ColorHelpers.textGray,
+                      fontSize: 11,
+                    ),
+                  ),
+                ],
+              );
+            }).toList(),
           ),
+          const SizedBox(height: 12),
+
+          // Barres horizontales par critère — plus lisibles que des barres verticales
+          ...criteria.map((criterion) =>
+              _CriterionRow(criterion: criterion, benchmarks: benchmarks)),
         ],
       ),
     );
   }
+}
 
-  Widget _buildLegendItem(String label, Color color) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        ResponsiveBox(
-          width: 12,
-          height: 12,
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(2),
+class _Criterion {
+  final String label;
+  final int max;
+  final int Function(BenchmarkInfo) getValue;
+  const _Criterion(this.label, this.max, this.getValue);
+}
+
+class _CriterionRow extends StatelessWidget {
+  final _Criterion criterion;
+  final List<BenchmarkInfo> benchmarks;
+
+  const _CriterionRow({
+    required this.criterion,
+    required this.benchmarks,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            children: [
+              SizedBox(
+                width: 52,
+                child: Text(
+                  criterion.label,
+                  style: const TextStyle(
+                    color: Colors.white70,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              Text(
+                '/${criterion.max}',
+                style: TextStyle(color: ColorHelpers.textGray, fontSize: 10),
+              ),
+            ],
           ),
-        ),
-        const ResponsiveBox(width: 6),
-        ResponsiveText.bodyMedium(
-          label,
-          style: TextStyle(
-            color: ColorHelpers.textGray,
-            fontSize: 12,
-          ),
-        ),
-      ],
+          const SizedBox(height: 4),
+          // Une barre par projet
+          ...benchmarks.asMap().entries.map((entry) {
+            final value = criterion.getValue(entry.value);
+            final ratio = value / criterion.max;
+            final color = ColorHelpers.getProjectColor(entry.key);
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 3),
+              child: Row(
+                children: [
+                  // Barre
+                  Expanded(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(3),
+                      child: LinearProgressIndicator(
+                        value: ratio.clamp(0.0, 1.0),
+                        backgroundColor: Colors.white.withValues(alpha: 0.08),
+                        valueColor: AlwaysStoppedAnimation<Color>(color),
+                        minHeight: 8,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  // Valeur
+                  SizedBox(
+                    width: 22,
+                    child: Text(
+                      '$value',
+                      style: TextStyle(
+                        color: color,
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.right,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
+        ],
+      ),
     );
   }
 }
@@ -333,27 +291,41 @@ class BenchmarkRadarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveBox(
-      padding: EdgeInsets.all(info.isMobile ? 20 : 24),
+    final size = info.isMobile ? 180.0 : 220.0;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: ColorHelpers.darkBg.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: Colors.white.withValues(alpha: 0.1),
-          width: 2,
+          width: 1.5,
         ),
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          ResponsiveBox(height: 8),
-          ResponsiveBox(
-            height: info.isMobile ? 100 : 120,
+          Text(
+            benchmark.projectTitle,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 13,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: size,
+            height: size,
             child: RadarChart(
               RadarChartData(
                 radarShape: RadarShape.polygon,
                 radarBorderData: BorderSide(
                   color: ColorHelpers.gridColor,
-                  width: 2,
+                  width: 1.5,
                 ),
                 gridBorderData: BorderSide(
                   color: ColorHelpers.gridColor,
@@ -362,15 +334,15 @@ class BenchmarkRadarWidget extends StatelessWidget {
                 tickBorderData: BorderSide(
                   color: ColorHelpers.gridColor.withValues(alpha: 0.5),
                 ),
-                tickCount: 4,
+                tickCount: 3,
                 ticksTextStyle: TextStyle(
                   color: ColorHelpers.textGray,
-                  fontSize: 10,
+                  fontSize: 9,
                 ),
                 radarBackgroundColor: Colors.transparent,
                 dataSets: [
                   RadarDataSet(
-                    fillColor: color.withValues(alpha: 0.6),
+                    fillColor: color.withValues(alpha: 0.5),
                     borderColor: color,
                     borderWidth: 2,
                     entryRadius: 3,
@@ -378,14 +350,12 @@ class BenchmarkRadarWidget extends StatelessWidget {
                       RadarEntry(value: benchmark.performances.toDouble()),
                       RadarEntry(value: benchmark.seo.toDouble()),
                       RadarEntry(value: benchmark.mobile.toDouble()),
-                      RadarEntry(
-                          value: benchmark.securite.toDouble() *
-                              3), // Normaliser à 30
+                      RadarEntry(value: benchmark.securite.toDouble() * 3),
                     ],
                   ),
                 ],
                 getTitle: (index, angle) {
-                  final labels = ['Perfs', 'SEO', 'Mobile', 'Sécu'];
+                  const labels = ['Perfs', 'SEO', 'Mobile', 'Sécu'];
                   return RadarChartTitle(
                     text: labels[index],
                     angle: angle,
@@ -393,7 +363,7 @@ class BenchmarkRadarWidget extends StatelessWidget {
                 },
                 titleTextStyle: TextStyle(
                   color: ColorHelpers.textGray,
-                  fontSize: info.isMobile ? 12 : 14,
+                  fontSize: info.isMobile ? 11 : 13,
                 ),
                 titlePositionPercentageOffset: 0.2,
               ),
@@ -419,155 +389,126 @@ class BenchmarkTableWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     if (benchmarks.isEmpty) return const SizedBox.shrink();
 
-    return ResponsiveBox(
-      padding: EdgeInsets.all(info.isMobile ? 16 : 24),
+    return Container(
+      padding: EdgeInsets.all(info.isMobile ? 12 : 16),
       decoration: BoxDecoration(
         color: ColorHelpers.darkBg.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: Colors.white.withValues(alpha: 0.1),
-          width: 2,
+          width: 1.5,
         ),
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ResponsiveText.titleLarge(
-            'Tableau Récapitulatif (${benchmarks.length} projets)',
+          Text(
+            'Tableau récapitulatif',
             style: TextStyle(
               color: Colors.white,
-              fontSize: info.isMobile ? 20 : 24,
               fontWeight: FontWeight.bold,
+              fontSize: info.isMobile ? 13 : 15,
             ),
-            textAlign: TextAlign.center,
           ),
-          ResponsiveBox(height: info.isMobile ? 16 : 24),
+          const SizedBox(height: 12),
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
-            child: DataTable(
-              headingRowColor: WidgetStateProperty.all(
-                Colors.white.withValues(alpha: 0.05),
-              ),
-              dataRowColor: WidgetStateProperty.resolveWith((states) {
-                return states.contains(WidgetState.selected)
-                    ? ColorHelpers.purple.withValues(alpha: 0.1)
-                    : null;
-              }),
-              border: TableBorder.all(
-                color: Colors.white.withValues(alpha: 0.1),
-                width: 1,
-              ),
-              columns: [
-                DataColumn(
-                  label: ResponsiveText.displayMedium(
-                    'Critère',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: info.isMobile ? 12 : 14,
-                    ),
-                  ),
-                ),
-                DataColumn(
-                  label: ResponsiveText.displayMedium(
-                    'Maximum',
-                    style: TextStyle(
-                      color: ColorHelpers.textGray,
-                      fontWeight: FontWeight.bold,
-                      fontSize: info.isMobile ? 12 : 14,
-                    ),
-                  ),
-                ),
-                ...benchmarks.map((b) => DataColumn(
-                      label: ResponsiveText.displayMedium(
-                        b.projectTitle.length > 15
-                            ? '${b.projectTitle.substring(0, 15)}...'
-                            : b.projectTitle,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: info.isMobile ? 12 : 14,
-                        ),
-                      ),
-                    )),
-              ],
-              rows: [
-                _buildDataRow(
-                    '⚡ Performances', 30, benchmarks, (b) => b.performances),
-                _buildDataRow('🔍 SEO', 30, benchmarks, (b) => b.seo),
-                _buildDataRow('📱 Mobile', 30, benchmarks, (b) => b.mobile),
-                _buildDataRow(
-                    '🛡️ Sécurité', 10, benchmarks, (b) => b.securite),
-                _buildTotalRow(benchmarks),
-              ],
-            ),
+            child: _buildTable(context),
           ),
         ],
       ),
     );
   }
 
-  DataRow _buildDataRow(
-    String label,
-    int max,
-    List<BenchmarkInfo> benchmarks,
-    int Function(BenchmarkInfo) getValue,
-  ) {
-    return DataRow(
-      cells: [
-        DataCell(ResponsiveText.displaySmall(
-          label,
-          style: const TextStyle(color: Colors.white),
-        )),
-        DataCell(ResponsiveText.displaySmall(
-          max.toString(),
-          style: TextStyle(color: ColorHelpers.textGray),
-          textAlign: TextAlign.center,
-        )),
-        ...benchmarks.asMap().entries.map((entry) {
-          return DataCell(ResponsiveText.displaySmall(
-            getValue(entry.value).toString(),
-            style: TextStyle(
-              color: ColorHelpers.getProjectColor(entry.key),
-              fontWeight: FontWeight.bold,
-            ),
-            textAlign: TextAlign.center,
-          ));
+  Widget _buildTable(BuildContext context) {
+    final criteria = [
+      ('⚡ Performances', 30, (BenchmarkInfo b) => b.performances),
+      ('🔍 SEO', 30, (BenchmarkInfo b) => b.seo),
+      ('📱 Mobile', 30, (BenchmarkInfo b) => b.mobile),
+      ('🛡️ Sécurité', 10, (BenchmarkInfo b) => b.securite),
+    ];
+
+    const headerStyle = TextStyle(
+      color: Colors.white70,
+      fontWeight: FontWeight.bold,
+      fontSize: 11,
+    );
+    const cellStyle = TextStyle(color: Colors.white, fontSize: 11);
+    const maxStyle = TextStyle(color: Colors.white38, fontSize: 11);
+
+    return Table(
+      border: TableBorder.all(
+        color: Colors.white.withValues(alpha: 0.08),
+        width: 1,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      defaultColumnWidth: const IntrinsicColumnWidth(),
+      children: [
+        // Header row
+        TableRow(
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.05),
+          ),
+          children: [
+            _cell('Critère', headerStyle, isHeader: true),
+            _cell('Max', maxStyle, isHeader: true),
+            ...benchmarks.map((b) => _cell(
+                  b.projectTitle.length > 10
+                      ? '${b.projectTitle.substring(0, 10)}…'
+                      : b.projectTitle,
+                  headerStyle,
+                  isHeader: true,
+                )),
+          ],
+        ),
+        // Data rows
+        ...criteria.map((row) {
+          final (label, max, getValue) = row;
+          return TableRow(
+            children: [
+              _cell(label, cellStyle),
+              _cell('$max', maxStyle),
+              ...benchmarks.asMap().entries.map((entry) {
+                final value = getValue(entry.value);
+                return _cell(
+                  '$value',
+                  TextStyle(
+                    color: ColorHelpers.getProjectColor(entry.key),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 11,
+                  ),
+                );
+              }),
+            ],
+          );
         }),
+        // Total row
+        TableRow(
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.05),
+          ),
+          children: [
+            _cell('📊 TOTAL', headerStyle),
+            _cell('100', maxStyle),
+            ...benchmarks.asMap().entries.map((entry) => _cell(
+                  '${entry.value.scoreGlobal}',
+                  TextStyle(
+                    color: ColorHelpers.getProjectColor(entry.key),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                  ),
+                )),
+          ],
+        ),
       ],
     );
   }
 
-  DataRow _buildTotalRow(List<BenchmarkInfo> benchmarks) {
-    return DataRow(
-      color: WidgetStateProperty.all(Colors.white.withValues(alpha: 0.05)),
-      cells: [
-        const DataCell(ResponsiveText.displayMedium(
-          '📊 SCORE TOTAL',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        )),
-        DataCell(ResponsiveText.displayMedium(
-          '100',
-          style: TextStyle(
-            color: ColorHelpers.textGray,
-            fontWeight: FontWeight.bold,
-          ),
-          textAlign: TextAlign.center,
-        )),
-        ...benchmarks.asMap().entries.map((entry) {
-          return DataCell(ResponsiveText.displayMedium(
-            entry.value.scoreGlobal.toString(),
-            style: TextStyle(
-              color: ColorHelpers.getProjectColor(entry.key),
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-            ),
-            textAlign: TextAlign.center,
-          ));
-        }),
-      ],
+  Widget _cell(String text, TextStyle style, {bool isHeader = false}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      child: Text(text, style: style),
     );
   }
 }
@@ -585,118 +526,96 @@ class BenchmarkRecommendationsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (benchmarks.isEmpty) return const SizedBox.shrink();
-    // Limiter à 2 benchmarks maximum pour éviter l'erreur d'index
-    final limitedBenchmarks = benchmarks.take(3).toList();
+    final limited = benchmarks.take(3).toList();
 
     return Column(
-      children: limitedBenchmarks.asMap().entries.map((entry) {
-        final gradient = ColorHelpers.getProjectGradient(entry.key);
+      mainAxisSize: MainAxisSize.min,
+      children: limited.asMap().entries.map((entry) {
+        final color = ColorHelpers.getProjectColor(entry.key);
+        final recs = _buildRecommendations(entry.value);
 
-        return ResponsiveBox(
-          padding: const EdgeInsets.only(bottom: 16),
-          child: ResponsiveBox(
-            padding: EdgeInsets.all(info.isMobile ? 20 : 24),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: gradient,
-              ),
-              borderRadius: BorderRadius.circular(24),
-              border: Border.all(
-                color: gradient[2].withValues(alpha: 0.6),
-                width: 2,
-              ),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ResponsiveText.titleMedium(
-                  '🎯 ${entry.value.projectTitle}',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
+        return Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: color.withValues(alpha: 0.3)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                '🎯 ${entry.value.projectTitle}',
+                style: TextStyle(
+                  color: color,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
                 ),
-                const ResponsiveBox(
-                  paddingSize: ResponsiveSpacing.m,
-                ),
-                ..._buildRecommendations(entry.value).map((rec) {
-                  return ResponsiveBox(
-                    padding: const EdgeInsets.only(bottom: 8),
+              ),
+              const SizedBox(height: 8),
+              ...recs.map((rec) => Padding(
+                    padding: const EdgeInsets.only(bottom: 5),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        ResponsiveText.bodySmall(
-                          rec['icon']!,
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                        const ResponsiveBox(width: 8),
+                        Text(rec['icon']!,
+                            style: const TextStyle(fontSize: 13)),
+                        const SizedBox(width: 6),
                         Expanded(
-                          child: ResponsiveText.bodySmall(
+                          child: Text(
                             rec['text']!,
                             style: const TextStyle(
                               color: Colors.white,
-                              fontSize: 14,
+                              fontSize: 12,
                             ),
                           ),
                         ),
                       ],
                     ),
-                  );
-                }),
-              ],
-            ),
+                  )),
+            ],
           ),
         );
       }).toList(),
     );
   }
 
-  List<Map<String, String>> _buildRecommendations(BenchmarkInfo benchmark) {
-    final recommendations = <Map<String, String>>[];
-
-    if (benchmark.seo >= 25) {
-      recommendations.add({
+  List<Map<String, String>> _buildRecommendations(BenchmarkInfo b) {
+    final recs = <Map<String, String>>[];
+    if (b.seo >= 25) {
+      recs.add({'icon': '✅', 'text': 'Excellent SEO (${b.seo}/${b.seoMax})'});
+    }
+    if (b.securite >= 8) {
+      recs.add({
         'icon': '✅',
-        'text': 'Excellent SEO (${benchmark.seo}/${benchmark.seoMax})'
+        'text': 'Bonne sécurité (${b.securite}/${b.securiteMax})'
       });
     }
-    if (benchmark.securite >= 8) {
-      recommendations.add({
-        'icon': '✅',
-        'text':
-            'Bonne sécurité (${benchmark.securite}/${benchmark.securiteMax})'
-      });
-    }
-    if (benchmark.performances < 20) {
-      recommendations.add({
+    if (b.performances < 20) {
+      recs.add({
         'icon': '⚠️',
         'text':
-            'Performances à améliorer (${benchmark.performances}/${benchmark.performancesMax})'
+            'Performances à améliorer (${b.performances}/${b.performancesMax})'
       });
     }
-    if (benchmark.mobile < 25) {
-      recommendations.add({
+    if (b.mobile < 25) {
+      recs.add({
         'icon': '⚠️',
-        'text':
-            'Optimisation mobile perfectible (${benchmark.mobile}/${benchmark.mobileMax})'
+        'text': 'Optimisation mobile (${b.mobile}/${b.mobileMax})'
       });
     }
-    if (benchmark.securite < 6) {
-      recommendations.add({
+    if (b.securite < 6) {
+      recs.add({
         'icon': '❌',
-        'text':
-            'Sécurité critique (${benchmark.securite}/${benchmark.securiteMax})'
+        'text': 'Sécurité critique (${b.securite}/${b.securiteMax})'
       });
     }
-    if (benchmark.seo < 20) {
-      recommendations.add({
-        'icon': '⚠️',
-        'text': 'SEO à optimiser (${benchmark.seo}/${benchmark.seoMax})'
-      });
+    if (b.seo < 20) {
+      recs.add(
+          {'icon': '⚠️', 'text': 'SEO à optimiser (${b.seo}/${b.seoMax})'});
     }
-
-    return recommendations;
+    return recs;
   }
 }

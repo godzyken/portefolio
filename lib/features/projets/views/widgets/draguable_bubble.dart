@@ -55,7 +55,6 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
       vsync: this,
       duration: const Duration(milliseconds: 500),
     );
-
     _expandAnim = CurvedAnimation(
       parent: _expandCtrl,
       curve: Curves.elasticOut,
@@ -65,7 +64,6 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
       vsync: this,
       duration: const Duration(milliseconds: 600),
     );
-
     _centerAnim = CurvedAnimation(
       parent: _centerCtrl,
       curve: Curves.easeInOutCubic,
@@ -118,14 +116,9 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
       builder: (context, child) {
         final expandValue = _expandAnim.value;
         final centerValue = _centerAnim.value;
-
-        // Échelle élastique (rebond)
         final scale = 1.0 + (expandValue * 0.8);
-
-        // Redressement progressif (rotation 0)
         final rotation = lerpDouble(widget.rotationAngle, 0.0, centerValue)!;
 
-        // Déplacement vers le centre progressif
         final targetOffset = Offset(
           (screenSize.width - deviceSpec.size.width) / 2,
           (screenSize.height - deviceSpec.size.height) / 2,
@@ -138,7 +131,6 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
         return Stack(
           clipBehavior: Clip.none,
           children: [
-            // === DEVICE ANIMÉ ===
             Positioned(
               left: currentOffset.dx,
               top: currentOffset.dy,
@@ -157,49 +149,31 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
                       onPanStart: (_) => setState(() => isDragging = true),
                       onPanEnd: (_) => setState(() => isDragging = false),
                       onPanUpdate: (details) {
-                        if (isExpanded) {
-                          return; // Désactive drag pendant expansion
-                        }
-
+                        if (isExpanded) return;
                         setState(() {
-                          // 1. On récupère le delta brut
                           Offset delta = details.delta;
-
-                          // 2. Correction mathématique : On fait pivoter le delta
-                          // selon l'angle inverse de la bulle pour annuler l'effet du Transform.rotate
                           final double angle = widget.rotationAngle;
                           final double cosAn = math.cos(angle);
                           final double sinAn = math.sin(angle);
-
-                          // Formule de rotation de vecteur
                           Offset correctedDelta = Offset(
                             delta.dx * cosAn - delta.dy * sinAn,
                             delta.dx * sinAn + delta.dy * cosAn,
                           );
-
-                          // 3. Calcul de la nouvelle position avec les limites de l'écran
                           Offset newOffset = offset + correctedDelta;
-
-                          // On récupère la taille actuelle de la bulle via les specs du device
                           final bubbleSize = _getDeviceSpec().size;
-
-                          // 4. Empêcher de sortir de l'écran (Clamping)
                           double clampedX = newOffset.dx
                               .clamp(0.0, screenSize.width - bubbleSize.width);
                           double clampedY = newOffset.dy.clamp(
                               0.0, screenSize.height - bubbleSize.height);
-
                           offset = Offset(clampedX, clampedY);
                         });
-
                         widget.onPositionChanged(offset);
                       },
                       child: SizedBox(
                         child: Stack(
                           children: [
                             _buildDevice(deviceSpec, isSelected),
-                            // === OVERLAY AVEC INFOS ET ACTIONS ===
-                            if (isExpanded) _buildDetailsOverlay(deviceSpec)
+                            if (isExpanded) _buildDetailsOverlay(deviceSpec),
                           ],
                         ),
                       ),
@@ -236,11 +210,12 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
               blurRadius: 20,
               spreadRadius: 4,
               offset: const Offset(0, 8),
-            )
+            ),
         ],
       ),
       child: Stack(
         children: [
+          // Corps du device
           ResponsiveBox(
             decoration: BoxDecoration(
               borderRadius: spec.borderRadius,
@@ -259,6 +234,8 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
               ),
             ),
           ),
+
+          // Image ou fond vide
           if (hasImages)
             Positioned.fill(
               child: ClipRRect(
@@ -266,10 +243,8 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
                 child: images.length > 1
                     ? PageView(
                         children: images
-                            .map((img) => CachedImage(
-                                  path: img,
-                                  fit: BoxFit.cover,
-                                ))
+                            .map((img) =>
+                                CachedImage(path: img, fit: BoxFit.cover))
                             .toList(),
                       )
                     : CachedImage(path: images.first, fit: BoxFit.cover),
@@ -288,9 +263,19 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
                 ),
               ),
             ),
+
+          // Détails du device (caméra, boutons, etc.)
           ...spec.buildDeviceDetails(widget.project),
 
-          // Indicateur de sélection (coin supérieur droit)
+          // ── Badge titre minimaliste (bas du device) ──
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: _TitleBadge(title: widget.project.title),
+          ),
+
+          // Badge sélection
           if (isSelected)
             Positioned(
               top: 8,
@@ -308,11 +293,7 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
                     ),
                   ],
                 ),
-                child: const Icon(
-                  Icons.check,
-                  color: Colors.white,
-                  size: 16,
-                ),
+                child: const Icon(Icons.check, color: Colors.white, size: 14),
               ),
             ),
         ],
@@ -322,7 +303,7 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
 
   Widget _buildDetailsOverlay(DeviceSpec spec) {
     return Positioned(
-      bottom: 2, // Décalage du bord inférieur
+      bottom: 2,
       left: 3,
       right: 3,
       child: FadeTransition(
@@ -330,69 +311,70 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
         child: ClipRRect(
           borderRadius: BorderRadius.circular(16),
           child: BackdropFilter(
-            filter:
-                ImageFilter.blur(sigmaX: 2, sigmaY: 1), // Effet flou Premium
+            filter: ImageFilter.blur(sigmaX: 2, sigmaY: 1),
             child: ResponsiveBox(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.transparent.withValues(alpha: 0.7),
+                color: Colors.black.withValues(alpha: 0.6),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: Colors.transparent.withValues(alpha: 0.1),
-                  width: 1.5,
+                  color: Colors.white.withValues(alpha: 0.1),
+                  width: 1,
                 ),
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Titre et Bouton Immersif
                   Row(
                     children: [
                       Expanded(
-                        child: ResponsiveText.titleSmall(
+                        child: Text(
                           widget.project.title,
                           style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
-                            fontSize: 10,
+                            fontSize: 11,
                           ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      // Le bouton pour naviguer
-                      IconButton(
-                        tooltip: 'Voir les détails',
-                        onPressed: _openImmersiveDetail,
-                        icon: const Icon(Icons.data_array_rounded,
-                            color: Colors.blueAccent, size: 10),
-                        style: IconButton.styleFrom(
-                          backgroundColor:
-                              Colors.transparent.withValues(alpha: 0.1),
+                      GestureDetector(
+                        onTap: _openImmersiveDetail,
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: Colors.blueAccent.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: const Icon(
+                            Icons.open_in_new,
+                            color: Colors.blueAccent,
+                            size: 14,
+                          ),
                         ),
                       ),
                     ],
                   ),
-
-                  const Divider(color: Colors.white24, height: 10),
-
-                  // SECTION TECHS : Tes Bulles 3D ici
-                  if (widget.project.tags != null)
+                  if (widget.project.tags != null) ...[
+                    const SizedBox(height: 8),
                     SizedBox(
-                      height: 16,
+                      height: 20,
                       child: ListView.separated(
                         scrollDirection: Axis.horizontal,
                         shrinkWrap: true,
-                        itemCount: widget.project.tags!.take(5).length,
-                        separatorBuilder: (_, __) => const SizedBox(width: 8),
+                        itemCount: widget.project.tags!.take(4).length,
+                        separatorBuilder: (_, __) => const SizedBox(width: 6),
                         itemBuilder: (context, index) {
-                          final tagName = widget.project.tags![index];
                           return ThreeDTechIcon(
-                            logoPath: tagName,
+                            logoPath: widget.project.tags![index],
                             color: Colors.blueAccent,
-                            size: 15, // Taille de la bulle
+                            size: 18,
                           );
                         },
                       ),
                     ),
+                  ],
                 ],
               ),
             ),
@@ -411,5 +393,50 @@ class _DraggableBubbleState extends ConsumerState<DraggableBubble>
     if (platforms.contains('desktop')) return DeviceSpec.desktop();
     if (platforms.contains('largedesktop')) return DeviceSpec.largeDesktop();
     return DeviceSpec.smartphone();
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// Badge titre minimaliste en bas du device
+// ─────────────────────────────────────────────────────────────
+class _TitleBadge extends StatelessWidget {
+  final String title;
+
+  const _TitleBadge({required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: const BorderRadius.vertical(bottom: Radius.circular(16)),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.transparent,
+                Colors.black.withValues(alpha: 0.75),
+              ],
+            ),
+          ),
+          child: Text(
+            title,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 9,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.2,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ),
+    );
   }
 }

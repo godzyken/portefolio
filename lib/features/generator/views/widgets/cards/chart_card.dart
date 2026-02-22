@@ -3,17 +3,14 @@ import 'dart:math';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
-import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
 
 import '../../../data/extention_models.dart';
 import '../../generator_widgets_extentions.dart';
 
-/// Card wrapper pour un graphique individuel
+/// Card wrapper pour un graphique individuel.
 ///
-/// Affiche:
-/// - Titre du graphique
-/// - Bouton plein écran
-/// - Contenu du graphique (délégué aux ChartBuilders)
+/// [height] est imposé de l'extérieur par [CompactChartsGrid].
+/// Le graphique occupe tout l'espace disponible sous le header fixe.
 class ChartCard extends StatelessWidget {
   final ChartData chart;
   final ResponsiveInfo info;
@@ -28,41 +25,92 @@ class ChartCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dominantColor =
-        chart.lineColor ?? chart.pieSections?.first.color ?? Colors.white;
+    final dominantColor = chart.lineColor ??
+        (chart.pieSections?.isNotEmpty == true
+            ? chart.pieSections!.first.color
+            : Colors.white);
 
     return Container(
+      height: height,
       decoration: BoxDecoration(
-        gradient: LinearGradient(colors: [
-          dominantColor.withValues(alpha: 0.05),
-          Colors.white.withValues(alpha: 0.03),
-        ], begin: Alignment.topLeft, end: Alignment.bottomRight),
-        borderRadius: BorderRadius.circular(16),
+        gradient: LinearGradient(
+          colors: [
+            dominantColor.withValues(alpha: 0.06),
+            Colors.white.withValues(alpha: 0.02),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: dominantColor.withValues(alpha: 0.15),
+          color: dominantColor.withValues(alpha: 0.18),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: dominantColor.withValues(alpha: 0.25),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+            color: dominantColor.withValues(alpha: 0.15),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
           ),
         ],
       ),
-      padding: const EdgeInsets.all(12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildHeader(context),
-          const SizedBox(height: 8),
+          // Header fixe 40px — titre + bouton plein écran
+          SizedBox(
+            height: 40,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(10, 0, 4, 0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      chart.title,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: info.isMobile ? 11 : 12,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.fullscreen, size: 16),
+                    color: Colors.white38,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    visualDensity: VisualDensity.compact,
+                    onPressed: () => showChartFullscreen(
+                      context: context,
+                      chart: chart,
+                      info: info,
+                      themeColor: dominantColor,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // Séparateur
+          Divider(
+            height: 1,
+            thickness: 1,
+            color: dominantColor.withValues(alpha: 0.1),
+          ),
+
+          // Corps du graphique — prend tout l'espace restant
           Expanded(
             child: Padding(
-              padding: EdgeInsets.only(
-                top: info.isMobile ? 4 : 8,
-                bottom: info.isMobile ? 4 : 12,
+              padding: EdgeInsets.fromLTRB(
+                info.isMobile ? 6 : 10,
+                6,
+                info.isMobile ? 6 : 10,
+                info.isMobile ? 6 : 10,
               ),
-              child: _buildChartContent(),
+              child: _buildWithDelay(),
             ),
           ),
         ],
@@ -70,66 +118,21 @@ class ChartCard extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(BuildContext context) {
-    final dominantColor =
-        chart.lineColor ?? chart.pieSections?.first.color ?? Colors.white;
-
-    return Row(
-      children: [
-        Expanded(
-          child: ResponsiveText.bodyLarge(
-            chart.title,
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
-              fontSize: 14,
+  Widget _buildWithDelay() {
+    final delay = Duration(milliseconds: Random().nextInt(200));
+    return FutureBuilder(
+      future: Future.delayed(delay),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: SizedBox(
+              width: 18,
+              height: 18,
+              child: CircularProgressIndicator(strokeWidth: 1.5),
             ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-        IconButton(
-          icon: const Icon(Icons.fullscreen, size: 18),
-          color: Colors.white70,
-          padding: EdgeInsets.zero,
-          constraints: const BoxConstraints(),
-          onPressed: () => showChartFullscreen(
-            context: context,
-            chart: chart,
-            info: info,
-            themeColor: dominantColor,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildChartContent() {
-    final randomDelay = Duration(milliseconds: Random().nextInt(300));
-
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return SizedBox(
-          height: constraints.maxHeight,
-          child: AnimatedOpacity(
-            duration: const Duration(milliseconds: 600),
-            opacity: 1,
-            child: AnimatedScale(
-              duration: const Duration(milliseconds: 700),
-              scale: 1,
-              curve: Curves.easeOutBack,
-              child: FutureBuilder(
-                future: Future.delayed(randomDelay),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const SizedBox.shrink();
-                  }
-                  return _buildChart();
-                },
-              ),
-            ),
-          ),
-        );
+          );
+        }
+        return _buildChart();
       },
     );
   }
@@ -137,42 +140,30 @@ class ChartCard extends StatelessWidget {
   Widget _buildChart() {
     switch (chart.type) {
       case ChartType.kpiCards:
-        return CompactKPICards(
-          kpiValues: chart.kpiValues!,
-          info: info,
-        );
+        return CompactKPICards(kpiValues: chart.kpiValues!, info: info);
 
       case ChartType.benchmarkGlobal:
         return BenchmarkGlobalWidget(
-          benchmark: chart.benchmarkInfo!,
-          info: info,
-        );
+            benchmark: chart.benchmarkInfo!, info: info);
 
       case ChartType.benchmarkComparison:
-        return BenchmarkComparisonWidget(
-          benchmarks: chart.benchmarkComparison!,
-          info: info,
+        return SingleChildScrollView(
+          child: BenchmarkComparisonWidget(
+              benchmarks: chart.benchmarkComparison!, info: info),
         );
 
       case ChartType.benchmarkRadar:
         return BenchmarkRadarWidget(
-          benchmark: chart.benchmarkInfo!,
-          info: info,
-        );
+            benchmark: chart.benchmarkInfo!, info: info);
 
       case ChartType.benchmarkTable:
         return SingleChildScrollView(
           child: BenchmarkTableWidget(
-            benchmarks: chart.benchmarkComparison!,
-            info: info,
-          ),
+              benchmarks: chart.benchmarkComparison!, info: info),
         );
 
       case ChartType.barChart:
-        return CompactBarChart(
-          barGroups: chart.barGroups!,
-          info: info,
-        );
+        return CompactBarChart(barGroups: chart.barGroups!, info: info);
 
       case ChartType.lineChart:
         return CompactLineChart(
@@ -183,23 +174,21 @@ class ChartCard extends StatelessWidget {
         );
 
       case ChartType.pieChart:
-        return CompactPieChart(
-          sections: chart.pieSections!,
-          info: info,
-        );
+        return CompactPieChart(sections: chart.pieSections!, info: info);
 
       case ChartType.scatterChart:
         return CompactScatterTrendChart(
-            spots: chart.scatterSpots!.map((s) => FlSpot(s.x, s.y)).toList(),
-            labels: [
-              'ROI 3 ans',
-              'Gains',
-              'Coûts',
-              'Productivité',
-              'Temps économisé'
-            ],
-            color: chart.scatterColor ?? Colors.tealAccent,
-            info: info);
+          spots: chart.scatterSpots!.map((s) => FlSpot(s.x, s.y)).toList(),
+          labels: const [
+            'ROI 3 ans',
+            'Gains',
+            'Coûts',
+            'Productivité',
+            'Temps éco.'
+          ],
+          color: chart.scatterColor ?? Colors.tealAccent,
+          info: info,
+        );
     }
   }
 }
