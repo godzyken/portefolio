@@ -7,7 +7,6 @@ import '../../../../core/affichage/screen_size_detector.dart';
 import '../../../../core/provider/expertise_provider.dart';
 import '../../../../core/provider/json_data_provider.dart';
 import '../../../../core/ui/ui_widgets_extentions.dart';
-import '../../../home/views/widgets/service_expertise_overlay.dart';
 
 class ServicesSlider extends ConsumerStatefulWidget {
   const ServicesSlider({super.key});
@@ -22,7 +21,6 @@ class _ServicesSliderState extends ConsumerState<ServicesSlider> {
   // Gestion de l'overlay
   OverlayEntry? _overlayEntry;
   bool _isTogglingOverlay = false;
-  int _currentSkillIndex = 0;
   final Map<String, GlobalKey> _buttonKeys = {};
   final Map<String, GlobalKey> _cardKeys = {};
 
@@ -82,47 +80,6 @@ class _ServicesSliderState extends ConsumerState<ServicesSlider> {
       _isTogglingOverlay = false;
       return;
     }
-
-    // Utilisation de votre logique existante
-    Future.delayed(const Duration(milliseconds: 50), () {
-      if (!mounted) {
-        _isTogglingOverlay = false;
-        return;
-      }
-      try {
-        final newOverlay = ServiceExpertiseOverlay.createOverlay(
-          context: context,
-          buttonKey: btnKey,
-          cardKey: cardKey,
-          expertise: expertise,
-          info: info,
-          service: service,
-          currentSkillIndex: _currentSkillIndex,
-          onSkillTap: (index) {
-            setState(() {
-              _currentSkillIndex = index;
-              _overlayEntry?.markNeedsBuild();
-            });
-          },
-          onClose: () {
-            _removeOverlay();
-            setState(() {});
-          },
-        );
-
-        if (newOverlay != null && mounted) {
-          Overlay.of(context).insert(newOverlay);
-          setState(() => _overlayEntry = newOverlay);
-        } else {
-          debugPrint('[CARD] ❌ Échec de création de l\'overlay');
-        }
-      } catch (e, stack) {
-        debugPrint('[CARD] ❌ Erreur lors de la création de l\'overlay: $e');
-        debugPrint('Stack: $stack');
-      } finally {
-        _isTogglingOverlay = false;
-      }
-    });
   }
 
   @override
