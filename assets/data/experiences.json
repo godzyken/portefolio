@@ -116,7 +116,7 @@
       "Réduction du temps de latence de l’application de 30 %",
       "Code désormais modulaire, testable et évolutif"
     ],
-    "poste": "Conseiller Flutter architecture"
+    "poste": "Architecte Flutter & Performance"
   },
   {
     "id": "exp_19",
@@ -156,7 +156,7 @@
   },
   {
     "id": "exp_18",
-    "entreprise": "EGOTE+RMC Rénovation et Services",
+    "entreprise": "EGOTe + RMC",
     "logo": "assets/images/entreprises/egote_foto.png",
     "image": "assets/images/realisations/bat_track_form_intervention.png",
     "contexte": "TPE du secteur BTP/électricité sans outil numérique unifié: devis sur Excel, suivi chantier papier, facturation Word… Objectif: digitaliser l’ensemble du cycle de vente et de production via une application Flutter multi‑modules.",
@@ -189,7 +189,7 @@
       "Adoption immédiate par les équipes terrain (score de satisfaction interne: 4,7/5)",
       "Pipeline CI/CD robuste: déploiement et rollback automatisé"
     ],
-    "poste": "Responsable du secteur informatique"
+    "poste": "Directeur de projet digital"
   },
   {
     "id": "exp_17",
@@ -271,10 +271,10 @@
   },
   {
     "id": "exp_15",
-    "entreprise": "Wayma Group - StartUp Nursery",
+    "entreprise": "Wayma Group",
     "logo": "assets/images/entreprises/wayma_logo.png",
     "image": "assets/images/entreprises/startup_nursery.png",
-    "contexte": "Wayma Group est un incubateur multi‑projets axé sur l’innovation numérique (marketplaces, IA, IoT). Le stage visait à plonger dans un environnement start‑up pour contribuer activement au delivery.",
+    "contexte": "Wayma Group est un incubateur de la Startup Nursery avec de multiple projets axé sur l’innovation numérique (marketplaces, IA, IoT). Le stage visait à plonger dans un environnement de start‑up pour contribuer activement au delivery.",
     "objectifs": [
       "Observer et assimiler les méthodes agiles et DevOps de l’équipe",
       "Participer au développement full‑stack de modules clés sur plusieurs projets",
@@ -376,7 +376,7 @@
       "Mise en place d’automates pour le conditionnement (gain de 15% de cadence)",
       "Réduction de la pénibilité ergonomique (taux d’incidents -40%)"
     ],
-    "poste": "Opérateur de production"
+    "poste": "Tech Production Industrielle"
   },
   {
     "id": "exp_12",
@@ -410,7 +410,7 @@
       "Optimisation du conditionnement: rejets transport −15%",
       "Cycle d’assemblage réduit de 12% par rationalisation des gestes"
     ],
-    "poste": "Agent de Fabrication"
+    "poste": "Tech Production Industrielle"
   },
   {
     "id": "exp_11",
@@ -446,7 +446,7 @@
       "Mise en place d’un log traçabilité numérique (recherche lot < 30s)",
       "Réduction des rebuts atelier de 8% par ajustement paramètres CNC"
     ],
-    "poste": "Technicien polyvalent usinage, contrôle et industrialisation (aéronautique)"
+    "poste": "Tech Usinage & Contrôle"
   },
   {
     "id": "exp_10",
@@ -482,7 +482,7 @@
       "Catalogue dynamique de pièces moto avec import fournisseur.",
       "Identité visuelle professionnelle alignée sur l’univers motard."
     ],
-    "poste": "Développeur Web Freelance"
+    "poste": "Développeur Web"
   },
   {
     "id": "exp_09",
@@ -517,7 +517,7 @@
       "Temps de test réduit de 10% grâce à l’automatisation tablette",
       "Formation de 3 opérateurs à la méthode 5S électronique"
     ],
-    "poste": "Opérateur test et qualité en électronique (aéronautique/défense)"
+    "poste": "Tech Test & Qualité électronique"
   },
   {
     "id": "exp_08",
@@ -540,7 +540,7 @@
       "100% de conformité aux tests fonctionnels",
       "Optimisation du processus de conditionnement réduisant les rejets de 15%"
     ],
-    "poste": "Agent de Fabrication"
+    "poste": "Tech Production Industrielle"
   },
   {
     "id": "exp_07",
@@ -565,7 +565,7 @@
       "Zéro retour client signalé sur les lots traités",
       "Polyvalence acquise entre assemblage et contrôle qualité"
     ],
-    "poste": "Contrôlleur HQ"
+    "poste": "Tech Usinage & Contrôle"
   },
   {
     "id": "exp_06",
@@ -666,6 +666,6 @@
       "Taux de satisfaction client de 98%",
       "Respect de 100% des créneaux de livraison"
     ],
-    "poste": "Chauffeur Livreur - monteur"
+    "poste": "Chauffeur Livreur Monteur"
   }
 ]

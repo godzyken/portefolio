@@ -3,12 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
-import 'package:portefolio/features/experience/views/widgets/experience_widgets_extentions.dart';
 import 'package:timelines_plus/timelines_plus.dart';
 
 import '../../../../core/affichage/colors_spec.dart';
 import '../../../../core/affichage/screen_size_detector.dart';
-import '../../../generator/views/generator_widgets_extentions.dart';
 import '../../controllers/providers/timeline_scroll_controller_provider.dart';
 import '../../data/experiences_data.dart';
 
@@ -142,81 +140,103 @@ class ExperienceTimeline extends ConsumerWidget {
   }
 
   void _showExperienceModal(
-      BuildContext context, Experience experience, ResponsiveInfo info) {
+    BuildContext context,
+    Experience experience,
+    ResponsiveInfo info,
+  ) {
     showModalBottomSheet(
       context: context,
       useSafeArea: true,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => OrientationBuilder(
-        builder: (context, orientation) {
-          final initialSize = orientation == Orientation.portrait ? 0.5 : 0.7;
-          return DraggableScrollableSheet(
-            expand: false,
-            initialChildSize: initialSize,
-            minChildSize: 0.5,
-            maxChildSize: 0.95,
-            builder: (context, scrollController) {
-              return Container(
-                decoration: BoxDecoration(
-                  color: ColorHelpers.surface,
-                  borderRadius:
-                      const BorderRadius.vertical(top: Radius.circular(20)),
-                  border: Border(
-                    top: BorderSide(
-                      color: ColorHelpers.cyan.withValues(alpha: 0.4),
-                      width: 1.5,
+      builder: (_) => DraggableScrollableSheet(
+        expand: false,
+        initialChildSize: 0.7,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        builder: (context, scrollController) {
+          return Container(
+            decoration: BoxDecoration(
+              color: ColorHelpers.surface,
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(24)),
+              border: Border(
+                top: BorderSide(
+                  color: ColorHelpers.cyan.withValues(alpha: 0.3),
+                  width: 1.5,
+                ),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: ColorHelpers.cyan.withValues(alpha: 0.12),
+                  blurRadius: 40,
+                  spreadRadius: -8,
+                  offset: const Offset(0, -6),
+                ),
+              ],
+            ),
+            child: SingleChildScrollView(
+              controller: scrollController,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              child: UnifiedContentCard(
+                title: experience.entreprise,
+                subtitle: "${experience.poste} • ${experience.periode}",
+                leading: Hero(
+                  tag: experience.id,
+                  child: ClipOval(
+                    child: SmartImage(
+                      path: experience.logo,
+                      width: 64,
+                      height: 64,
+                      fit: BoxFit.cover,
                     ),
                   ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: ColorHelpers.cyan.withValues(alpha: 0.15),
-                      blurRadius: 32,
-                      spreadRadius: -4,
-                      offset: const Offset(0, -8),
-                    ),
-                  ],
                 ),
-                child: Column(
+                content: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // ── Handle ──
-                    Padding(
-                      padding: const EdgeInsets.only(top: 12, bottom: 8),
-                      child: Container(
-                        width: 40,
-                        height: 4,
-                        decoration: BoxDecoration(
-                          color: ColorHelpers.cyan.withValues(alpha: 0.4),
-                          borderRadius: BorderRadius.circular(2),
+                    if (experience.contexte.isNotEmpty) ...[
+                      ResponsiveText(
+                        experience.contexte,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                      const SizedBox(height: 12),
+                    ],
+                    if (experience.missions.isNotEmpty) ...[
+                      ResponsiveText("🎯 Missions",
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleSmall
+                              ?.copyWith(fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 4),
+                      ...experience.missions.map(
+                        (m) => Padding(
+                          padding: const EdgeInsets.only(bottom: 4),
+                          child: Text("• $m",
+                              style: Theme.of(context).textTheme.bodySmall),
                         ),
                       ),
-                    ),
-                    // ── Contenu ──
-                    Expanded(
-                      child: SingleChildScrollView(
-                        controller: scrollController,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 8),
-                        child: ConstrainedBox(
-                          constraints: BoxConstraints(
-                            minHeight: info.size.height * initialSize - 60,
-                          ),
-                          child: PokerExperienceCard(
-                            experience: experience,
-                            onTap: () => Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => ImmersiveExperienceDetail(
-                                    experience: experience),
-                              ),
-                            ),
-                          ),
+                      const SizedBox(height: 16),
+                    ],
+                    if (experience.resultats.isNotEmpty) ...[
+                      ResponsiveText("🏁 Résultats",
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleSmall
+                              ?.copyWith(fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 4),
+                      ...experience.resultats.map(
+                        (r) => Padding(
+                          padding: const EdgeInsets.only(bottom: 4),
+                          child: Text("• $r",
+                              style: Theme.of(context).textTheme.bodySmall),
                         ),
                       ),
-                    ),
+                    ],
                   ],
                 ),
-              );
-            },
+              ),
+            ),
           );
         },
       ),
@@ -255,81 +275,88 @@ class _LogoTile extends StatefulWidget {
 }
 
 class _LogoTileState extends State<_LogoTile> {
-  // ValueNotifier → rebuild uniquement ce widget, pas le parent
-  final _hovered = ValueNotifier<bool>(false);
-
-  @override
-  void dispose() {
-    _hovered.dispose();
-    super.dispose();
-  }
+  bool _hovered = false;
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return MouseRegion(
       cursor: SystemMouseCursors.click,
-      onEnter: (_) => _hovered.value = true,
-      onExit: (_) => _hovered.value = false,
-      child: GestureDetector(
-        onTap: widget.onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
-          child: ValueListenableBuilder<bool>(
-            valueListenable: _hovered,
-            builder: (context, isHovered, _) {
-              return AnimatedContainer(
-                duration: const Duration(milliseconds: 250),
-                curve: Curves.easeOutCubic,
-                width: 72,
-                height: 72,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: isHovered ? ColorHelpers.cyan : ColorHelpers.border,
-                    width: isHovered ? 2 : 1.5,
-                  ),
-                  boxShadow: isHovered
-                      ? [
-                          BoxShadow(
-                            color: ColorHelpers.cyan.withValues(alpha: 0.5),
-                            blurRadius: 20,
-                            spreadRadius: 2,
-                          ),
-                          BoxShadow(
-                            color: ColorHelpers.magenta.withValues(alpha: 0.2),
-                            blurRadius: 36,
-                            spreadRadius: -4,
-                          ),
-                        ]
-                      : [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.4),
-                            blurRadius: 8,
-                          ),
-                        ],
+      onEnter: (_) => setState(() => _hovered = true),
+      onExit: (_) => setState(() => _hovered = false),
+      child: AnimatedScale(
+        scale: _hovered ? 1.05 : 1.0,
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOut,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 220),
+          curve: Curves.easeOut,
+          margin: const EdgeInsets.all(6),
+          decoration: BoxDecoration(
+            color: _hovered
+                ? ColorHelpers.surface.withValues(alpha: 0.9)
+                : ColorHelpers.surface.withValues(alpha: 0.75),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: _hovered
+                  ? ColorHelpers.cyan.withValues(alpha: 0.7)
+                  : ColorHelpers.border.withValues(alpha: 0.4),
+              width: _hovered ? 2 : 1,
+            ),
+            boxShadow: [
+              if (_hovered)
+                BoxShadow(
+                  color: ColorHelpers.cyan.withValues(alpha: 0.25),
+                  blurRadius: 20,
+                  spreadRadius: 2,
                 ),
-                child: AnimatedScale(
-                  scale: isHovered ? 1.1 : 1.0,
-                  duration: const Duration(milliseconds: 200),
-                  child: ClipOval(
+            ],
+          ),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(14),
+            onTap: widget.onTap,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ClipOval(
                     child: SmartImage(
                       path: widget.experience.logo,
-                      responsiveSize: ResponsiveImageSize.medium,
+                      width: 48,
+                      height: 48,
                       fit: BoxFit.cover,
-                      width: 72,
-                      height: 72,
                       enableShimmer: true,
-                      autoPreload: true,
-                      colorBlendMode:
-                          isHovered ? BlendMode.darken : BlendMode.luminosity,
-                      color: isHovered ? null : Colors.black38,
-                      fallbackColor: ColorHelpers.border,
-                      borderRadius: BorderRadius.circular(100),
                     ),
                   ),
-                ),
-              );
-            },
+                  const SizedBox(width: 10),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ResponsiveText.titleMedium(
+                        widget.experience.entreprise,
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
+                      ),
+                      ResponsiveText.bodyMedium(
+                        widget.experience.poste,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: ColorHelpers.textMuted,
+                          height: 1.2,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ),
