@@ -71,7 +71,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     // ✅ Navigation gérée ICI dans le widget, pas dans le notifier
     ref.listen<SplashState>(splashProvider, (previous, next) {
       if (next.phase == SplashPhase.ready && mounted) {
-        context.go(widget.targetRoute);
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+          context.go(widget.targetRoute);
+        });
       }
     });
 

@@ -4,10 +4,12 @@ import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart' as svg;
 
 import '../notifier/precache_notifier.dart';
 import 'json_data_provider.dart';
 
+/// Résumé du précache : total, succès, échecs.
 class PrecacheReport {
   final int total;
   final int success;
@@ -19,6 +21,10 @@ class PrecacheReport {
       'PrecacheReport(total: $total, success: $success, failed: $failed)';
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// PRÉCACHE D'IMAGES ET RESSOURCES
+// ─────────────────────────────────────────────────────────────────────────────
+
 Future<bool> precacheSingleImageWithConfig(
   String path,
   ImageConfiguration config,
@@ -29,8 +35,8 @@ Future<bool> precacheSingleImageWithConfig(
         ? NetworkImage(path)
         : AssetImage(path)) as ImageProvider;
 
-    final Completer<void> completer = Completer<void>();
-    final ImageStream stream = provider.resolve(config);
+    final completer = Completer<void>();
+    final stream = provider.resolve(config);
     ImageStreamListener? listener;
 
     listener = ImageStreamListener(
@@ -39,21 +45,19 @@ Future<bool> precacheSingleImageWithConfig(
         stream.removeListener(listener!);
       },
       onError: (Object exception, StackTrace? stackTrace) {
-        if (!completer.isCompleted) {
+        if (!completer.isCompleted)
           completer.completeError(exception, stackTrace);
-        }
         stream.removeListener(listener!);
       },
     );
+
     stream.addListener(listener);
 
-    await completer.future.timeout(
-      timeout,
-      onTimeout: () {
-        stream.removeListener(listener!);
-        throw TimeoutException('Precache timed out for $path');
-      },
-    );
+    await completer.future.timeout(timeout, onTimeout: () {
+      stream.removeListener(listener!);
+      throw TimeoutException('Precache timed out for $path');
+    });
+
     return true;
   } catch (e) {
     developer.log('⚠️ Échec précache: $path ($e)');
@@ -61,6 +65,7 @@ Future<bool> precacheSingleImageWithConfig(
   }
 }
 
+/// Charge dynamiquement une police si elle existe
 Future<void> _loadFontIfExists(String path, String family) async {
   try {
     final data = await rootBundle.load(path);
@@ -74,6 +79,7 @@ Future<void> _loadFontIfExists(String path, String family) async {
   }
 }
 
+/// Précache les images raster (PNG/JPG/WebP), ignore les SVG
 Future<List<bool>> _precacheImagesInBatches(
   List<String> imagePaths,
   ImageConfiguration config, {
@@ -83,9 +89,17 @@ Future<List<bool>> _precacheImagesInBatches(
 }) async {
   final results = <bool>[];
   for (int i = 0; i < imagePaths.length; i++) {
-    final success =
-        await precacheSingleImageWithConfig(imagePaths[i], config, timeout);
+    final path = imagePaths[i];
+
+    if (path.toLowerCase().endsWith('.svg')) {
+      final ok = await _precacheSvg(path);
+      results.add(ok);
+      continue;
+    }
+
+    final success = await precacheSingleImageWithConfig(path, config, timeout);
     results.add(success);
+
     if (i < imagePaths.length - 1) {
       await Future.delayed(delayBetweenImages);
     }
@@ -93,6 +107,20 @@ Future<List<bool>> _precacheImagesInBatches(
   return results;
 }
 
+/// (Optionnel) Précache manuel des SVG via flutter_svg
+Future<bool> _precacheSvg(String path) async {
+  try {
+    final loader = svg.SvgAssetLoader(path);
+    await svg.vg.loadPicture(loader, null);
+    developer.log('✅ SVG précaché: $path');
+    return true;
+  } catch (e) {
+    developer.log('⚠️ Échec précache SVG: $path ($e)');
+    return false;
+  }
+}
+
+/// Précache les images restantes en tâche de fond
 void _precacheImagesInBackground(
   List<String> imagePaths,
   ImageConfiguration config,
@@ -101,16 +129,20 @@ void _precacheImagesInBackground(
   const delayBetweenLaunches = Duration(milliseconds: 100);
 
   for (final path in imagePaths) {
+    if (path.toLowerCase().endsWith('.svg')) continue;
+
     precacheSingleImageWithConfig(path, config, defaultTimeout).then(
       (_) {},
       onError: (error) {
         developer.log('⚠️ Erreur Fire & Forget $path: $error');
       },
     );
+
     await Future.delayed(delayBetweenLaunches);
   }
 }
 
+/// Exécution complète du précache (JSON → Fonts → Images)
 Future<PrecacheReport> runOptimizedPrecache(Ref ref) async {
   developer.log('🚀 [1/4] Précache optimisé...');
   await Future.delayed(const Duration(milliseconds: 100));
@@ -121,7 +153,7 @@ Future<PrecacheReport> runOptimizedPrecache(Ref ref) async {
   try {
     const ImageConfiguration config = ImageConfiguration();
 
-    // ── Étape 1 : JSON ─────────────────────────────────────────────────
+    // ── Étape 1 : JSON ───────────────────────────────
     developer.log('➡️ [2/4] Chargement JSON...');
     await Future.wait([
       ref.read(projectsProvider.future),
@@ -130,7 +162,7 @@ Future<PrecacheReport> runOptimizedPrecache(Ref ref) async {
       ref.read(comparaisonsJsonProvider.future),
     ]);
 
-    // ── Étape 2 : Polices ───────────────────────────────────────────────
+    // ── Étape 2 : Polices ─────────────────────────────
     developer.log('➡️ [3/4] Chargement polices...');
     await Future.wait([
       _loadFontIfExists(
@@ -143,15 +175,17 @@ Future<PrecacheReport> runOptimizedPrecache(Ref ref) async {
       ),
     ]);
 
-    // ── Étape 3 : Images (via AssetManifest API) ────────────────────────
+    // ── Étape 3 : Images ─────────────────────────────
     developer.log('➡️ [4/4] Précache images critiques...');
-
-    // ✅ Remplace rootBundle.loadString('AssetManifest.json')
-    //    Compatible Flutter ≥ 3.10 (web + mobile)
     final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
+
     final allImages = manifest
         .listAssets()
         .where((p) => p.startsWith('assets/images/'))
+        .where((p) =>
+            !p.contains('/2.0x/') &&
+            !p.contains('/3.0x/') &&
+            !p.contains('/4.0x/'))
         .toList();
 
     final criticalImages = allImages.where((path) {
@@ -173,7 +207,7 @@ Future<PrecacheReport> runOptimizedPrecache(Ref ref) async {
     success = results.where((r) => r).length;
     failed = results.where((r) => !r).length;
 
-    // ── Étape 4 : Reste en background ────────────────────────────────────
+    // ── Étape 4 : Reste en background ─────────────────
     final remainingImages =
         allImages.where((p) => !criticalImages.contains(p)).toList();
     _precacheImagesInBackground(remainingImages, config);

@@ -13,7 +13,6 @@ class PrecacheAsyncNotifier extends AsyncNotifier<PrecacheReport> {
     } catch (e, st) {
       developer.log('❌ Échec de la construction du précache',
           error: e, stackTrace: st);
-
       rethrow;
     }
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../affichage/screen_size_detector.dart';
+import '../widgets/responsive_text.dart';
 
 /// Configuration centralisée pour tous les types de cards
 class CardConfig {
@@ -193,48 +194,58 @@ class UnifiedContentCard extends StatelessWidget {
     final theme = Theme.of(context);
 
     return BaseCard(
-      config: config.copyWith(onTap: onTap),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header
-          Row(
-            children: [
-              if (leading != null) ...[leading!, const SizedBox(width: 12)],
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
+        config: config.copyWith(onTap: onTap),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Header
+                  Row(
+                    children: [
+                      if (leading != null) ...[
+                        leading!,
+                        const SizedBox(width: 12)
+                      ],
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ResponsiveText.titleMedium(
+                              title,
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            if (subtitle != null)
+                              ResponsiveText.bodySmall(
+                                subtitle!,
+                                style: theme.textTheme.bodySmall,
+                              ),
+                          ],
+                        ),
                       ),
-                    ),
-                    if (subtitle != null)
-                      Text(
-                        subtitle!,
-                        style: theme.textTheme.bodySmall,
-                      ),
-                  ],
-                ),
-              ),
-              if (statusBadge != null) ...[
-                statusBadge!,
-                const SizedBox(width: 8),
-              ],
-              if (trailing != null) trailing!,
-            ],
-          ),
+                      if (statusBadge != null) ...[
+                        statusBadge!,
+                        const SizedBox(width: 8),
+                      ],
+                      if (trailing != null) trailing!,
+                    ],
+                  ),
 
-          // Content
-          if (content != null) ...[
-            const SizedBox(height: 16),
-            content!,
-          ],
-        ],
-      ),
-    );
+                  // Content
+                  if (content != null) ...[
+                    const SizedBox(height: 16),
+                    content!,
+                  ],
+                ],
+              ),
+            );
+          },
+        ));
   }
 }
 
