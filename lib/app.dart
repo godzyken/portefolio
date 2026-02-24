@@ -26,6 +26,7 @@ class MyFullApp extends ConsumerWidget {
     if (themeAsync.isLoading) {
       return MaterialApp(
         debugShowCheckedModeBanner: false,
+        showPerformanceOverlay: true,
         theme: themeData,
         home: const Scaffold(
           backgroundColor: Color(0xFF0A0A0A),

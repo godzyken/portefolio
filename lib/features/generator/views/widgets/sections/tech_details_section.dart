@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:portefolio/core/affichage/colors_spec.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
 
@@ -65,10 +66,10 @@ class _TechDetailCard extends StatelessWidget {
       width: info.isMobile ? double.infinity : 200,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.blue.withValues(alpha: 0.1),
+        color: ColorHelpers.withAlpha(Colors.blue, 0.1),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: Colors.blue.withValues(alpha: 0.3),
+          color: ColorHelpers.withAlpha(Colors.blue, 0.3),
         ),
       ),
       child: Column(
