@@ -223,17 +223,19 @@ class _SmartImageState extends ConsumerState<SmartImage> {
     final manager = ref.read(unifiedImageManagerProvider);
     try {
       final success = await manager.preloadImage(widget.path, context: context);
-      if (mounted)
+      if (mounted) {
         setState(() {
           _isLoading = false;
           _hasError = !success;
         });
+      }
     } catch (_) {
-      if (mounted)
+      if (mounted) {
         setState(() {
           _isLoading = false;
           _hasError = true;
         });
+      }
     }
   }
 

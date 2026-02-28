@@ -355,8 +355,9 @@ class _CompactLineChartState extends State<CompactLineChart>
                             showTitles: widget.xLabels.isNotEmpty,
                             reservedSize: 32,
                             getTitlesWidget: (value, meta) {
-                              if (widget.xLabels.isEmpty)
+                              if (widget.xLabels.isEmpty) {
                                 return const SizedBox.shrink();
+                              }
                               final index = value.toInt();
                               if (index < 0 ||
                                   index >= widget.xLabels.length ||

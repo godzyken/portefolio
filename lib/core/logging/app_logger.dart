@@ -89,8 +89,9 @@ class AppLogger {
 
     for (final line in lines) {
       // On cherche les frames du projet (pas des frameworks)
-      if (!line.contains('package:portefolio') && !line.contains('lib/'))
+      if (!line.contains('package:portefolio') && !line.contains('lib/')) {
         continue;
+      }
       if (line.contains('app_logger.dart')) continue;
       if (line.contains('dart:')) continue;
 
@@ -121,7 +122,9 @@ class AppLogger {
               l.contains('package:flutter/') ||
               l.contains('package:riverpod/') ||
               l.contains('package:flutter_riverpod/') ||
-              l.contains('app_logger.dart')) return false;
+              l.contains('app_logger.dart')) {
+            return false;
+          }
           return true;
         })
         .take(maxLines)
@@ -197,8 +200,9 @@ class AppErrorPolicy {
     if (_isLayoutError(error)) return LogLevel.warning;
     if (_isLifecycleError(error)) return LogLevel.warning;
     if (_isAssetError(error) || _isImageError(error)) return LogLevel.warning;
-    if (_isNetworkError(error) || _isTimeoutError(error))
+    if (_isNetworkError(error) || _isTimeoutError(error)) {
       return LogLevel.warning;
+    }
     return LogLevel.error;
   }
 

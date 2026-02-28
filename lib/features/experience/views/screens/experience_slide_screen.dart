@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
+import 'package:vector_math/vector_math_64.dart' as vm;
 
 import '../../../../core/affichage/colors_spec.dart';
 import '../../../generator/views/generator_widgets_extentions.dart';
@@ -141,7 +142,7 @@ class _ExperienceSlideScreenState extends ConsumerState<ExperienceSlideScreen>
                           transform: Matrix4.identity()
                             ..setEntry(3, 2, 0.001)
                             ..rotateY(rotateY)
-                            ..scale(scale),
+                            ..scaleByVector3(vm.Vector3(scale, scale, scale)),
                           alignment: Alignment.center,
                           child: child,
                         ),

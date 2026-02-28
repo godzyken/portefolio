@@ -45,8 +45,9 @@ Future<bool> precacheSingleImageWithConfig(
         stream.removeListener(listener!);
       },
       onError: (Object exception, StackTrace? stackTrace) {
-        if (!completer.isCompleted)
+        if (!completer.isCompleted) {
           completer.completeError(exception, stackTrace);
+        }
         stream.removeListener(listener!);
       },
     );
