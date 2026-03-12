@@ -3,8 +3,8 @@
         "id": "4878360e-ca54-4d1e-a842-67267c31fb0a",
         "user_id": "d44d9645-f329-4729-a92d-c1c4ce039e23",
         "range": "last_7_days",
-        "start": "2026-03-03T23:00:00Z",
-        "end": "2026-03-10T22:59:59Z",
+        "start": "2026-03-04T23:00:00Z",
+        "end": "2026-03-11T22:59:59Z",
         "timeout": 15,
         "writes_only": false,
         "timezone": "Europe/Paris",
@@ -12,152 +12,122 @@
         "ai_deletions": 0,
         "human_additions": 0,
         "human_deletions": 0,
-        "holidays": 4,
+        "holidays": 5,
         "status": "ok",
         "created_at": "2026-02-26T03:17:27Z",
-        "modified_at": "2026-03-11T02:36:48Z",
-        "daily_average": 8763.0,
-        "editors": [
+        "modified_at": "2026-03-12T02:07:19Z",
+        "categories": [
             {
-                "total_seconds": 26289.638,
-                "name": "Android Studio",
+                "name": "Coding",
+                "total_seconds": 7252.553,
                 "percent": 100.0,
-                "digital": "7:18",
-                "decimal": "7.30",
-                "text": "7 hrs 18 mins",
-                "hours": 7,
-                "minutes": 18
-            }
-        ],
-        "days_minus_holidays": 3,
-        "is_up_to_date": true,
-        "dependencies": [],
-        "daily_average_including_other_language": 8763.0,
-        "languages": [
-            {
-                "name": "Dart",
-                "total_seconds": 26282.701,
-                "percent": 99.97,
-                "digital": "7:18",
-                "decimal": "7.30",
-                "text": "7 hrs 18 mins",
-                "hours": 7,
-                "minutes": 18
-            },
-            {
-                "name": "YAML",
-                "total_seconds": 6.447,
-                "percent": 0.02,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
-                "hours": 0,
-                "minutes": 0
-            },
-            {
-                "name": "Markdown",
-                "total_seconds": 0.49,
-                "percent": 0.0,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
-                "hours": 0,
+                "digital": "2:00",
+                "decimal": "2.00",
+                "text": "2 hrs",
+                "hours": 2,
                 "minutes": 0
             }
         ],
-        "is_already_updating": false,
-        "operating_systems": [
-            {
-                "total_seconds": 26289.638,
-                "name": "Windows",
-                "percent": 100.0,
-                "digital": "7:18",
-                "decimal": "7.30",
-                "text": "7 hrs 18 mins",
-                "hours": 7,
-                "minutes": 18
-            }
-        ],
-        "best_day": {
-            "date": "2026-03-04",
-            "total_seconds": 19037.085,
-            "text": "5 hrs 17 mins"
-        },
+        "percent_calculated": 100,
         "projects": [
             {
-                "total_seconds": 24851.83,
+                "total_seconds": 6751.09,
                 "name": "compta4me",
                 "ai_additions": 0,
                 "ai_deletions": 0,
                 "human_additions": 0,
                 "human_deletions": 0,
-                "percent": 94.53,
-                "digital": "6:54",
-                "decimal": "6.90",
-                "text": "6 hrs 54 mins",
-                "hours": 6,
-                "minutes": 54
+                "percent": 93.09,
+                "digital": "1:52",
+                "decimal": "1.87",
+                "text": "1 hr 52 mins",
+                "hours": 1,
+                "minutes": 52
             },
             {
-                "total_seconds": 1437.808,
+                "total_seconds": 501.463,
                 "name": "default",
                 "ai_additions": 0,
                 "ai_deletions": 0,
                 "human_additions": 0,
                 "human_deletions": 0,
-                "percent": 5.47,
-                "digital": "0:23",
-                "decimal": "0.38",
-                "text": "23 mins",
+                "percent": 6.91,
+                "digital": "0:08",
+                "decimal": "0.13",
+                "text": "8 mins",
                 "hours": 0,
-                "minutes": 23
+                "minutes": 8
             }
         ],
-        "is_stuck": false,
-        "total_seconds": 26289.638,
-        "human_readable_daily_average": "2 hrs 26 mins",
-        "total_seconds_including_other_language": 26289.638,
-        "days_including_holidays": 7,
-        "is_up_to_date_pending_future": false,
-        "human_readable_daily_average_including_other_language": "2 hrs 26 mins",
-        "categories": [
+        "daily_average": 3626.0,
+        "human_readable_daily_average_including_other_language": "1 hr",
+        "total_seconds": 7252.553,
+        "best_day": {
+            "date": "2026-03-05",
+            "total_seconds": 5235.057,
+            "text": "1 hr 27 mins"
+        },
+        "is_up_to_date": true,
+        "is_already_updating": false,
+        "editors": [
             {
-                "name": "Coding",
-                "total_seconds": 26289.148,
+                "total_seconds": 7252.553,
+                "name": "Android Studio",
                 "percent": 100.0,
-                "digital": "7:18",
-                "decimal": "7.30",
-                "text": "7 hrs 18 mins",
-                "hours": 7,
-                "minutes": 18
-            },
-            {
-                "name": "Writing Docs",
-                "total_seconds": 0.49,
-                "percent": 0.0,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
-                "hours": 0,
+                "digital": "2:00",
+                "decimal": "2.00",
+                "text": "2 hrs",
+                "hours": 2,
                 "minutes": 0
             }
         ],
+        "human_readable_total_including_other_language": "2 hrs",
         "machines": [
             {
-                "total_seconds": 26289.638,
+                "total_seconds": 7252.553,
                 "name": "LAPTOP-CUKQT8S6",
                 "machine_name_id": "39e83e77-85e0-4aff-a627-a51512bab407",
                 "percent": 100.0,
-                "digital": "7:18",
-                "decimal": "7.30",
-                "text": "7 hrs 18 mins",
-                "hours": 7,
-                "minutes": 18
+                "digital": "2:00",
+                "decimal": "2.00",
+                "text": "2 hrs",
+                "hours": 2,
+                "minutes": 0
             }
         ],
-        "human_readable_total_including_other_language": "7 hrs 18 mins",
-        "human_readable_total": "7 hrs 18 mins",
-        "percent_calculated": 100,
+        "is_stuck": false,
+        "total_seconds_including_other_language": 7252.553,
+        "human_readable_daily_average": "1 hr",
+        "operating_systems": [
+            {
+                "total_seconds": 7252.553,
+                "name": "Windows",
+                "percent": 100.0,
+                "digital": "2:00",
+                "decimal": "2.00",
+                "text": "2 hrs",
+                "hours": 2,
+                "minutes": 0
+            }
+        ],
+        "daily_average_including_other_language": 3626.0,
+        "languages": [
+            {
+                "name": "Dart",
+                "total_seconds": 7252.553,
+                "percent": 100.0,
+                "digital": "2:00",
+                "decimal": "2.00",
+                "text": "2 hrs",
+                "hours": 2,
+                "minutes": 0
+            }
+        ],
+        "days_minus_holidays": 2,
+        "is_up_to_date_pending_future": false,
+        "human_readable_total": "2 hrs",
+        "days_including_holidays": 7,
+        "dependencies": [],
         "is_cached": true,
         "username": "addi_kichi",
         "is_including_today": false,
