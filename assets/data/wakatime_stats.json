@@ -3,8 +3,8 @@
         "id": "2154c0c7-0e23-4ac3-a9e3-8c527bb345d0",
         "user_id": "d44d9645-f329-4729-a92d-c1c4ce039e23",
         "range": "last_7_days",
-        "start": "2026-03-05T23:00:00Z",
-        "end": "2026-03-12T22:59:59Z",
+        "start": "2026-03-06T23:00:00Z",
+        "end": "2026-03-13T22:59:59Z",
         "timeout": 15,
         "writes_only": false,
         "timezone": "Europe/Paris",
@@ -15,105 +15,105 @@
         "holidays": 6,
         "status": "ok",
         "created_at": "2026-03-13T03:06:30Z",
-        "modified_at": "2026-03-13T03:06:30Z",
-        "is_up_to_date": true,
-        "total_seconds": 2017.496,
-        "editors": [
-            {
-                "total_seconds": 2017.496,
-                "name": "Android Studio",
-                "percent": 100.0,
-                "digital": "0:33",
-                "decimal": "0.55",
-                "text": "33 mins",
-                "hours": 0,
-                "minutes": 33
-            }
-        ],
-        "is_up_to_date_pending_future": false,
-        "machines": [
-            {
-                "total_seconds": 2017.496,
-                "name": "LAPTOP-CUKQT8S6",
-                "machine_name_id": "4b328562-12e7-4b1f-8028-58d872821de1",
-                "percent": 100.0,
-                "digital": "0:33",
-                "decimal": "0.55",
-                "text": "33 mins",
-                "hours": 0,
-                "minutes": 33
-            }
-        ],
+        "modified_at": "2026-03-14T02:05:27Z",
+        "daily_average": 23157.0,
+        "total_seconds": 23156.78,
+        "days_including_holidays": 7,
+        "human_readable_total_including_other_language": "6 hrs 25 mins",
         "languages": [
             {
                 "name": "Dart",
-                "total_seconds": 2017.496,
+                "total_seconds": 23156.78,
                 "percent": 100.0,
-                "digital": "0:33",
-                "decimal": "0.55",
-                "text": "33 mins",
-                "hours": 0,
-                "minutes": 33
+                "digital": "6:25",
+                "decimal": "6.42",
+                "text": "6 hrs 25 mins",
+                "hours": 6,
+                "minutes": 25
             }
         ],
+        "editors": [
+            {
+                "total_seconds": 23156.78,
+                "name": "Android Studio",
+                "percent": 100.0,
+                "digital": "6:25",
+                "decimal": "6.42",
+                "text": "6 hrs 25 mins",
+                "hours": 6,
+                "minutes": 25
+            }
+        ],
+        "percent_calculated": 100,
+        "is_up_to_date_pending_future": false,
+        "is_already_updating": false,
         "is_stuck": false,
+        "is_up_to_date": true,
+        "machines": [
+            {
+                "total_seconds": 23156.78,
+                "name": "LAPTOP-CUKQT8S6",
+                "machine_name_id": "4d422256-5634-4243-8296-929787d75467",
+                "percent": 100.0,
+                "digital": "6:25",
+                "decimal": "6.42",
+                "text": "6 hrs 25 mins",
+                "hours": 6,
+                "minutes": 25
+            }
+        ],
+        "operating_systems": [
+            {
+                "total_seconds": 23156.78,
+                "name": "Windows",
+                "percent": 100.0,
+                "digital": "6:25",
+                "decimal": "6.42",
+                "text": "6 hrs 25 mins",
+                "hours": 6,
+                "minutes": 25
+            }
+        ],
         "projects": [
             {
-                "total_seconds": 2017.496,
+                "total_seconds": 23156.78,
                 "name": "compta4me",
                 "ai_additions": 0,
                 "ai_deletions": 0,
                 "human_additions": 0,
                 "human_deletions": 0,
                 "percent": 100.0,
-                "digital": "0:33",
-                "decimal": "0.55",
-                "text": "33 mins",
-                "hours": 0,
-                "minutes": 33
+                "digital": "6:25",
+                "decimal": "6.42",
+                "text": "6 hrs 25 mins",
+                "hours": 6,
+                "minutes": 25
             }
         ],
-        "human_readable_total": "33 mins",
-        "percent_calculated": 100,
+        "daily_average_including_other_language": 23157.0,
+        "dependencies": [],
         "best_day": {
-            "date": "2026-03-06",
-            "total_seconds": 2017.496,
-            "text": "33 mins"
+            "date": "2026-03-13",
+            "total_seconds": 23156.78,
+            "text": "6 hrs 25 mins"
         },
-        "is_already_updating": false,
-        "human_readable_total_including_other_language": "33 mins",
-        "daily_average_including_other_language": 2017.0,
-        "total_seconds_including_other_language": 2017.496,
-        "days_including_holidays": 7,
-        "human_readable_daily_average_including_other_language": "33 mins",
+        "human_readable_daily_average_including_other_language": "6 hrs 25 mins",
         "days_minus_holidays": 1,
-        "daily_average": 2017.0,
-        "human_readable_daily_average": "33 mins",
-        "operating_systems": [
-            {
-                "total_seconds": 2017.496,
-                "name": "Windows",
-                "percent": 100.0,
-                "digital": "0:33",
-                "decimal": "0.55",
-                "text": "33 mins",
-                "hours": 0,
-                "minutes": 33
-            }
-        ],
+        "human_readable_daily_average": "6 hrs 25 mins",
+        "human_readable_total": "6 hrs 25 mins",
+        "total_seconds_including_other_language": 23156.78,
         "categories": [
             {
                 "name": "Coding",
-                "total_seconds": 2017.496,
+                "total_seconds": 23156.78,
                 "percent": 100.0,
-                "digital": "0:33",
-                "decimal": "0.55",
-                "text": "33 mins",
-                "hours": 0,
-                "minutes": 33
+                "digital": "6:25",
+                "decimal": "6.42",
+                "text": "6 hrs 25 mins",
+                "hours": 6,
+                "minutes": 25
             }
         ],
-        "dependencies": [],
         "is_cached": true,
         "username": "addi_kichi",
         "is_including_today": false,
