@@ -3,8 +3,8 @@
         "id": "2154c0c7-0e23-4ac3-a9e3-8c527bb345d0",
         "user_id": "d44d9645-f329-4729-a92d-c1c4ce039e23",
         "range": "last_7_days",
-        "start": "2026-03-11T23:00:00Z",
-        "end": "2026-03-18T22:59:59Z",
+        "start": "2026-03-12T23:00:00Z",
+        "end": "2026-03-19T22:59:59Z",
         "timeout": 15,
         "writes_only": false,
         "timezone": "Europe/Paris",
@@ -12,40 +12,41 @@
         "ai_deletions": 0,
         "human_additions": 0,
         "human_deletions": 0,
-        "holidays": 3,
+        "holidays": 2,
         "status": "ok",
         "created_at": "2026-03-13T03:06:30Z",
-        "modified_at": "2026-03-19T02:05:42Z",
-        "total_seconds": 46962.508,
+        "modified_at": "2026-03-20T02:05:10Z",
+        "is_already_updating": false,
+        "days_including_holidays": 7,
+        "total_seconds": 47378.02,
         "machines": [
             {
-                "total_seconds": 46962.508,
+                "total_seconds": 47378.02,
                 "name": "LAPTOP-CUKQT8S6",
                 "machine_name_id": "4d422256-5634-4243-8296-929787d75467",
                 "percent": 100.0,
-                "digital": "13:02",
-                "decimal": "13.03",
-                "text": "13 hrs 2 mins",
+                "digital": "13:09",
+                "decimal": "13.15",
+                "text": "13 hrs 9 mins",
                 "hours": 13,
-                "minutes": 2
+                "minutes": 9
             }
         ],
-        "is_already_updating": false,
         "categories": [
             {
                 "name": "Coding",
-                "total_seconds": 44362.15,
-                "percent": 94.46,
-                "digital": "12:19",
-                "decimal": "12.32",
-                "text": "12 hrs 19 mins",
+                "total_seconds": 44777.662,
+                "percent": 94.51,
+                "digital": "12:26",
+                "decimal": "12.43",
+                "text": "12 hrs 26 mins",
                 "hours": 12,
-                "minutes": 19
+                "minutes": 26
             },
             {
                 "name": "Writing Tests",
                 "total_seconds": 2575.957,
-                "percent": 5.49,
+                "percent": 5.44,
                 "digital": "0:42",
                 "decimal": "0.70",
                 "text": "42 mins",
@@ -63,92 +64,66 @@
                 "minutes": 0
             }
         ],
-        "is_up_to_date": true,
         "is_up_to_date_pending_future": false,
         "operating_systems": [
             {
-                "total_seconds": 46962.508,
+                "total_seconds": 47378.02,
                 "name": "Windows",
                 "percent": 100.0,
-                "digital": "13:02",
-                "decimal": "13.03",
-                "text": "13 hrs 2 mins",
+                "digital": "13:09",
+                "decimal": "13.15",
+                "text": "13 hrs 9 mins",
                 "hours": 13,
-                "minutes": 2
+                "minutes": 9
+            }
+        ],
+        "daily_average_including_other_language": 9476.0,
+        "human_readable_daily_average": "2 hrs 37 mins",
+        "human_readable_total": "13 hrs 9 mins",
+        "days_minus_holidays": 5,
+        "human_readable_total_including_other_language": "13 hrs 9 mins",
+        "human_readable_daily_average_including_other_language": "2 hrs 37 mins",
+        "is_stuck": false,
+        "editors": [
+            {
+                "total_seconds": 47378.02,
+                "name": "Android Studio",
+                "percent": 100.0,
+                "digital": "13:09",
+                "decimal": "13.15",
+                "text": "13 hrs 9 mins",
+                "hours": 13,
+                "minutes": 9
             }
         ],
         "percent_calculated": 100,
-        "total_seconds_including_other_language": 46962.508,
-        "editors": [
-            {
-                "total_seconds": 46962.508,
-                "name": "Android Studio",
-                "percent": 100.0,
-                "digital": "13:02",
-                "decimal": "13.03",
-                "text": "13 hrs 2 mins",
-                "hours": 13,
-                "minutes": 2
-            }
-        ],
-        "daily_average_including_other_language": 11741.0,
-        "projects": [
-            {
-                "total_seconds": 42907.699,
-                "name": "compta4me",
-                "ai_additions": 0,
-                "ai_deletions": 0,
-                "human_additions": 0,
-                "human_deletions": 0,
-                "percent": 91.37,
-                "digital": "11:55",
-                "decimal": "11.92",
-                "text": "11 hrs 55 mins",
-                "hours": 11,
-                "minutes": 55
-            },
-            {
-                "total_seconds": 4054.809,
-                "name": "portefolio",
-                "ai_additions": 0,
-                "ai_deletions": 0,
-                "human_additions": 0,
-                "human_deletions": 0,
-                "percent": 8.63,
-                "digital": "1:07",
-                "decimal": "1.12",
-                "text": "1 hr 7 mins",
-                "hours": 1,
-                "minutes": 7
-            }
-        ],
-        "days_including_holidays": 7,
-        "human_readable_daily_average_including_other_language": "3 hrs 15 mins",
+        "dependencies": [],
         "best_day": {
             "date": "2026-03-13",
             "total_seconds": 23156.78,
             "text": "6 hrs 25 mins"
         },
+        "daily_average": 9476.0,
         "languages": [
             {
                 "name": "Dart",
-                "total_seconds": 45154.874,
-                "percent": 96.15,
-                "digital": "12:32",
-                "decimal": "12.53",
-                "text": "12 hrs 32 mins",
+                "total_seconds": 45416.536,
+                "percent": 95.86,
+                "digital": "12:36",
+                "decimal": "12.60",
+                "text": "12 hrs 36 mins",
                 "hours": 12,
-                "minutes": 32
+                "minutes": 36
             },
             {
                 "name": "JSON",
-                "total_seconds": 1692.919,
-                "percent": 3.6,
-                "digital": "0:28",
-                "decimal": "0.47",
-                "text": "28 mins",
+                "total_seconds": 1846.769,
+                "percent": 3.9,
+                "digital": "0:30",
+                "decimal": "0.50",
+                "text": "30 mins",
                 "hours": 0,
-                "minutes": 28
+                "minutes": 30
             },
             {
                 "name": "YAML",
@@ -181,13 +156,38 @@
                 "minutes": 0
             }
         ],
-        "is_stuck": false,
-        "dependencies": [],
-        "human_readable_daily_average": "3 hrs 15 mins",
-        "days_minus_holidays": 4,
-        "human_readable_total": "13 hrs 2 mins",
-        "human_readable_total_including_other_language": "13 hrs 2 mins",
-        "daily_average": 11741.0,
+        "projects": [
+            {
+                "total_seconds": 42907.699,
+                "name": "compta4me",
+                "ai_additions": 0,
+                "ai_deletions": 0,
+                "human_additions": 0,
+                "human_deletions": 0,
+                "percent": 90.56,
+                "digital": "11:55",
+                "decimal": "11.92",
+                "text": "11 hrs 55 mins",
+                "hours": 11,
+                "minutes": 55
+            },
+            {
+                "total_seconds": 4470.321,
+                "name": "portefolio",
+                "ai_additions": 0,
+                "ai_deletions": 0,
+                "human_additions": 0,
+                "human_deletions": 0,
+                "percent": 9.44,
+                "digital": "1:14",
+                "decimal": "1.23",
+                "text": "1 hr 14 mins",
+                "hours": 1,
+                "minutes": 14
+            }
+        ],
+        "total_seconds_including_other_language": 47378.02,
+        "is_up_to_date": true,
         "is_cached": true,
         "username": "addi_kichi",
         "is_including_today": false,
