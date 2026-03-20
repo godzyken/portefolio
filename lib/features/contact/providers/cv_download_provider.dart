@@ -1,5 +1,3 @@
-import 'dart:developer' as developer;
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/provider/config_env_provider.dart';
@@ -11,13 +9,8 @@ final cvDownloadServiceProvider = Provider<CvDownloadService>((ref) {
 });
 
 /// Provider pour l'URL du CV depuis .env
-final cvUrlProvider = Provider<String>((ref) {
-  try {
-    return ref.watch(cvOneDriveUrlProvider);
-  } catch (e) {
-    developer.log('⚠️ CV_ONEDRIVE_URL non configuré: $e');
-    return '';
-  }
+final cvUrlProvider = Provider<String?>((ref) {
+  return ref.watch(cvOneDriveUrlProvider);
 });
 
 /// Provider pour vérifier si le CV est disponible

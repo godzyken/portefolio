@@ -161,22 +161,25 @@ class ContactConversionOption extends ConsumerWidget {
     showDialog(
       context: context,
       barrierDismissible: true,
-      builder: (context) => const CalendarDialog(),
+      builder: (_) => CalendarDialog(
+        key: UniqueKey(),
+      ),
     );
   }
 
   /// Chip pour CV avec Riverpod safe
   Widget _buildCvActionChip(
       ThemeData theme, WidgetRef ref, BuildContext context) {
-    final cvUrlAsync = ref.watch(cvUrlProvider);
+    final cvUrl = ref.watch(cvUrlProvider);
     final isAvailableAsync = ref.watch(isCvAvailableProvider);
 
-    if (cvUrlAsync.isEmpty || isAvailableAsync != true) {
+    if (cvUrl == null || cvUrl.isEmpty || isAvailableAsync != true) {
       return _buildActionChip(
         theme,
         Icons.hourglass_empty,
         'CV en cours de chargement...',
         () {},
+        disabled: true,
       );
     }
 
@@ -186,23 +189,39 @@ class ContactConversionOption extends ConsumerWidget {
       theme,
       Icons.download,
       'Télécharger mon CV',
-      () => cvService.downloadCv(context, cvUrlAsync),
+      () => cvService.downloadCv(context, cvUrl),
     );
   }
 
   /// Chip helper
   Widget _buildActionChip(
-      ThemeData theme, IconData icon, String label, VoidCallback onTap) {
+    ThemeData theme,
+    IconData icon,
+    String label,
+    VoidCallback onTap, {
+    bool disabled = false,
+  }) {
     return ActionChip(
-      avatar: Icon(icon, color: theme.colorScheme.primary),
+      avatar: Icon(
+        icon,
+        color: disabled
+            ? theme.colorScheme.onSurface.withValues(alpha: 0.38)
+            : theme.colorScheme.primary,
+      ),
       label: ResponsiveText.headlineMedium(label),
-      onPressed: onTap,
+      onPressed: disabled ? null : onTap,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      backgroundColor: theme.colorScheme.surface,
-      elevation: 2,
+      backgroundColor: disabled
+          ? theme.colorScheme.surface.withValues(alpha: 0.5)
+          : theme.colorScheme.surface,
+      elevation: disabled ? 0 : 2,
       shadowColor: theme.colorScheme.primary.withValues(alpha: 0.2),
-      labelStyle:
-          theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
+      labelStyle: theme.textTheme.bodyMedium?.copyWith(
+        fontWeight: FontWeight.bold,
+        color: disabled
+            ? theme.colorScheme.onSurface.withValues(alpha: 0.38)
+            : null,
+      ),
     );
   }
 }

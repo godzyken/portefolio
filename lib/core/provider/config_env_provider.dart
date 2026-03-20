@@ -56,11 +56,11 @@ final whatsappPhoneProvider = Provider<String>((ref) {
 });
 
 // OneDrive
-final cvOneDriveUrlProvider = Provider<String>((ref) {
+final cvOneDriveUrlProvider = Provider<String?>((ref) {
   final config = ref.watch(envConfigProvider);
-  if (config.oneDriveUrl.isEmpty) {
-    throw Exception('CV_ONEDRIVE_URL non configuré');
-  }
+
+  if (config.oneDriveUrl.isEmpty) return null;
+
   return config.oneDriveUrl;
 });
 

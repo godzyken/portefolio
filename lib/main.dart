@@ -184,6 +184,11 @@ void _onFlutterError(FlutterErrorDetails details) {
     error: details.exception,
     stackTrace: details.stack,
   );
+
+  if (details.exception.toString().contains('GlobalKey')) {
+    _log.info(
+        '=== GlobalKey STACK === — ${details.stack.toString() ?? "inconnu"} — ${details.exceptionAsString()}');
+  }
 }
 
 void _onUncaughtError(Object error, StackTrace stack) {

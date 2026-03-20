@@ -545,17 +545,17 @@
     "id": "projet_11",
     "title": "emap_services",
     "points": [
-      "💧 Application Flutter pour EMAP Services - Plomberie, Chauffage, Climatisation",
-      "📍 Intégration complète de Google Maps pour la géolocalisation et la navigation client",
-      "💬 Chat en direct avec Tawk.to intégré pour l’assistance en temps réel",
-      "📄 Génération et téléchargement de PDF (mentions légales, devis, factures)",
-      "🗺️ Données dynamiques via Supabase (formulaires, analytics, messages)",
-      "⚡ Architecture Riverpod 3 modulaire et typée (providers, modèles, vues)",
-      "🎨 Thème clair/sombre et design responsive (mobile, tablette, desktop)",
-      "🌍 Multi-langues (FR, EN, ES, OC) via JSON et providers localisés",
-      "🧠 Séparation stricte des responsabilités : domain / views / core / assets",
-      "🚀 Chargement asynchrone et cache automatique via Riverpod FutureProviders",
-      "📊 Simulation financière EMAP intégrée : analyse du chiffre d’affaires, rentabilité et seuil de croissance"
+      "💧 Application Flutter professionnelle pour EMAP Services (plomberie, chauffage, climatisation)",
+      "📍 Géolocalisation et navigation client via intégration complète de Google Maps",
+      "💬 Support client instantané grâce au chat en direct intégré (Tawk.to)",
+      "📄 Génération et téléchargement automatisé de documents PDF (mentions légales, devis, factures)",
+      "🗺️ Gestion dynamique des données via Supabase (formulaires, analytics, messages)",
+      "⚡ Architecture logicielle modulaire basée sur Riverpod 3 (providers typés, modèles, vues)",
+      "🎨 Interface moderne avec thème clair/sombre et design responsive (mobile, tablette, desktop)",
+      "🌍 Application multilingue (FR, EN, ES, OC) avec gestion centralisée via JSON et providers",
+      "🧠 Architecture propre avec séparation stricte des couches : domain / core / views / assets",
+      "🚀 Chargement asynchrone optimisé et gestion du cache avec Riverpod FutureProviders",
+      "📊 Module de simulation financière intégré : analyse de rentabilité, projection de chiffre d’affaires et seuil de croissance"
     ],
     "image": [
       "assets/images/logos/logo_emap.png",
@@ -579,20 +579,20 @@
       "TawkTo",
       "PDF",
       "ResponsiveUI",
-      "Multilangue",
-      "Finance",
-      "Simulation"
+      "Multilingual",
+      "Analytics",
+      "FinancialSimulation"
     ],
     "results": [
-      "📞 Centralisation complète des informations de contact EMAP Services",
-      "💬 Interaction directe client-entreprise via chat intégré",
-      "🗺️ Amélioration de la visibilité locale grâce à Google Maps",
-      "📈 Base de données Supabase assurant un suivi analytique des interactions",
-      "🧩 Architecture claire et évolutive, documentée dans ARCHITECTURE.md",
-      "🧭 Gestion unifiée des couleurs et icônes par typage fort (type safety)",
-      "⚙️ Maintenance simplifiée : configuration centralisée via JSON",
-      "🌐 Expérience fluide sur tous les appareils et navigateurs",
-      "📊 Simulation financière annuelle (micro-BIC) intégrée dans le tableau de bord EMAP"
+      "📞 Centralisation des informations et services de contact EMAP Services",
+      "💬 Interaction directe et instantanée entre l’entreprise et ses clients via chat intégré",
+      "🗺️ Amélioration de la visibilité locale et de l’accessibilité grâce à Google Maps",
+      "📈 Suivi analytique des interactions clients via la base de données Supabase",
+      "🧩 Architecture logicielle claire et évolutive documentée dans ARCHITECTURE.md",
+      "🧭 Gestion centralisée du design system (couleurs, icônes, typographie) avec typage fort",
+      "⚙️ Maintenance simplifiée grâce à une configuration modulaire et centralisée en JSON",
+      "🌐 Expérience utilisateur fluide et cohérente sur tous les appareils et navigateurs",
+      "📊 Simulation financière annuelle intégrée pour l’analyse de rentabilité (micro-BIC)"
     ],
     "resultsMap": {
       "roi": "185%",
@@ -621,15 +621,15 @@
         "CFE": "300–600€/an",
         "revenuNetMoyen": "≈ 2400€/mois à 40k de CA",
         "strategie": {
-          "courtTerme": "Stabiliser trésorerie, déclarations trimestrielles Urssaf",
-          "moyenTerme": "Réinvestir 10% du CA dans outils et visibilité locale",
-          "longTerme": "Diversifier services, envisager changement de régime dès 80k"
+          "courtTerme": "Stabilisation de la trésorerie et gestion des déclarations Urssaf",
+          "moyenTerme": "Réinvestissement d’environ 10% du chiffre d’affaires dans les outils et la visibilité locale",
+          "longTerme": "Diversification des services et évolution du statut juridique au-delà de 80k€ de CA"
         },
         "risques": [
-          "Trésorerie fragile si retards clients",
-          "Sous-financement de matériel et assurance",
-          "Difficulté d’accès au crédit pro",
-          "Croissance bloquée sous 50k€"
+          "Tensions de trésorerie en cas de retards de paiement clients",
+          "Sous-investissement dans le matériel ou les assurances professionnelles",
+          "Accès limité au financement bancaire pour les micro-entreprises",
+          "Plafonnement potentiel de la croissance sous le seuil des 50k€"
         ]
       },
       "demonstrations": [
@@ -643,7 +643,7 @@
       "videos": [
         {"titre": "Présentation EMAP Services", "vues": 2500},
         {"titre": "Démo du chat client", "vues": 3200},
-        {"titre": "Tutoriel PDF mentions légales", "vues": 2800},
+        {"titre": "Tutoriel génération PDF", "vues": 2800},
         {"titre": "Intégration Google Maps", "vues": 4100},
         {"titre": "Expérience responsive multi-appareils", "vues": 3700}
       ],
