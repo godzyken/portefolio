@@ -96,6 +96,7 @@ class MainScaffold extends ConsumerWidget {
                 // Rien à faire, le menu gère lui-même son état
               },
               child: BubbleNavigationMenu(
+                key: ValueKey('menu_${currentTab.path}'),
                 activeIcon: currentTab.icon,
                 menuPosition: Alignment.topLeft,
                 items: bubbleItems,
