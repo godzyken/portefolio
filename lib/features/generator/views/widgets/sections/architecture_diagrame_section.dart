@@ -211,247 +211,182 @@ String _generateSvg(_ArchDiagram d, bool isDark) {
   const innerX = 60.0;
   const innerW = 560.0;
 
-  // Définition des couleurs en fonction du thème (plus de CSS)
-  final bg = isDark ? '#2C2C2A' : '#F8F7F4';
-  final stroke = isDark ? '#5F5E5A' : '#D3D1C7';
-  final textColor = isDark ? '#CECBF6' : '#3C3489';
-  final subColor = isDark ? '#AFA9EC' : '#534AB7';
+  // 1. Définition des couleurs selon le thème (Inline)
+  final outerBg = isDark ? '#2C2C2A' : '#F8F7F4';
+  final outerStroke = isDark ? '#5F5E5A' : '#D3D1C7';
+  final arrowColor = isDark ? '#888780' : '#B4B2A9';
+  final mainTitleColor = isDark ? '#D3D1C7' : '#444441';
+  final subTitleColor = isDark ? '#B4B2A9' : '#5F5E5A';
 
-  // Pour les lignes (flèches), dessine un petit triangle manuellement au bout
-  // Exemple de helper pour une flèche compatible :
-  String _drawCompatibleArrow(double x, double y1, double y2, String color) {
+  // Helper pour obtenir les styles d'un nœud selon sa couleur et le thème
+  (String bg, String stroke, String txt, String sub) _getStyles(_NodeColor c) {
+    if (isDark) {
+      return switch (c) {
+        _NodeColor.purple => ('#3C3489', '#AFA9EC', '#CECBF6', '#AFA9EC'),
+        _NodeColor.teal => ('#085041', '#5DCAA5', '#9FE1CB', '#5DCAA5'),
+        _NodeColor.coral => ('#712B13', '#F0997B', '#F5C4B3', '#F0997B'),
+        _NodeColor.gray => ('#444441', '#B4B2A9', '#D3D1C7', '#B4B2A9'),
+      };
+    } else {
+      return switch (c) {
+        _NodeColor.purple => ('#EEEDFE', '#534AB7', '#3C3489', '#534AB7'),
+        _NodeColor.teal => ('#E1F5EE', '#0F6E56', '#085041', '#0F6E56'),
+        _NodeColor.coral => ('#FAECE7', '#993C1D', '#712B13', '#993C1D'),
+        _NodeColor.gray => ('#F1EFE8', '#5F5E5A', '#444441', '#5F5E5A'),
+      };
+    }
+  }
+
+  // Helper pour dessiner une flèche compatible (sans marker)
+  String _drawArrow(double x1, double y1, double x2, double y2, String color) {
     return '''
-      <line x1="$x" y1="$y1" x2="$x" y2="$y2" stroke="$color" stroke-width="1" />
-      <path d="M ${x - 4} ${y2 - 6} L $x $y2 L ${x + 4} ${y2 - 6}" fill="none" stroke="$color" stroke-width="1" />
+      <line x1="$x1" y1="$y1" x2="$x2" y2="$y2" stroke="$color" stroke-width="1" />
+      <path d="M ${x2 - 4} ${y2 - 6} L $x2 $y2 L ${x2 + 4} ${y2 - 6}" fill="none" stroke="$color" stroke-width="1" stroke-linecap="round" />
     ''';
   }
 
-  // Palette
-  const colors = {
-    'purple-fill': '#EEEDFE',
-    'purple-stroke': '#534AB7',
-    'purple-text': '#3C3489',
-    'purple-sub': '#534AB7',
-    'teal-fill': '#E1F5EE',
-    'teal-stroke': '#0F6E56',
-    'teal-text': '#085041',
-    'teal-sub': '#0F6E56',
-    'gray-fill': '#F1EFE8',
-    'gray-stroke': '#5F5E5A',
-    'gray-text': '#444441',
-    'gray-sub': '#5F5E5A',
-    'coral-fill': '#FAECE7',
-    'coral-stroke': '#993C1D',
-    'coral-text': '#712B13',
-    'coral-sub': '#993C1D',
-    'dark-purple-fill': '#3C3489',
-    'dark-purple-stroke': '#AFA9EC',
-    'dark-purple-text': '#CECBF6',
-    'dark-purple-sub': '#AFA9EC',
-    'dark-teal-fill': '#085041',
-    'dark-teal-stroke': '#5DCAA5',
-    'dark-teal-text': '#9FE1CB',
-    'dark-teal-sub': '#5DCAA5',
-    'dark-gray-fill': '#444441',
-    'dark-gray-stroke': '#B4B2A9',
-    'dark-gray-text': '#D3D1C7',
-    'dark-gray-sub': '#B4B2A9',
-  };
-
   // Calcule la hauteur totale
-  var curY = outerPad + 40.0; // after outer header
-  // users row
-  curY += rowH + rowGap;
-  // frontend
-  curY += rowH + rowGap;
-  // state (optional)
+  var curY = outerPad + 46.0;
+  curY += rowH + rowGap; // Users
+  curY += rowH + rowGap; // Frontend
   if (d.hasState) curY += rowH + rowGap;
-  // backend (optional)
   if (d.hasBackend) curY += rowH + rowGap;
-  // services (optional)
   if (d.hasServices) curY += rowH + rowGap;
-  // storage (optional)
   if (d.hasStorage) curY += rowH + rowGap;
   final outerH = curY + outerPad;
-  final totalH = outerH + 20;
 
   final buf = StringBuffer();
   buf.writeln(
-      '<svg width="100%" viewBox="0 0 $w $totalH" xmlns="http://www.w3.org/2000/svg">');
+      '<svg width="$w" height="${outerH + 20}" viewBox="0 0 $w ${outerH + 20}" xmlns="http://www.w3.org/2000/svg">');
 
-  // ── Styles dark-mode ──
-  buf.writeln('<style>');
-  buf.writeln('@media (prefers-color-scheme:dark){');
-  buf.writeln('.lp{fill:#3C3489;stroke:#AFA9EC}');
-  buf.writeln('.lpt{fill:#CECBF6}.lps{fill:#AFA9EC}');
-  buf.writeln('.lt{fill:#085041;stroke:#5DCAA5}');
-  buf.writeln('.ltt{fill:#9FE1CB}.lts{fill:#5DCAA5}');
-  buf.writeln('.lg{fill:#444441;stroke:#B4B2A9}');
-  buf.writeln('.lgt{fill:#D3D1C7}.lgs{fill:#B4B2A9}');
-  buf.writeln('.lc{fill:#712B13;stroke:#F0997B}');
-  buf.writeln('.lct{fill:#F5C4B3}.lcs{fill:#F0997B}');
-  buf.writeln('.outer{fill:#2C2C2A;stroke:#5F5E5A}');
-  buf.writeln('.arrow-line{stroke:#888780}');
-  buf.writeln('}');
-  buf.writeln('@media (prefers-color-scheme:light){');
-  buf.writeln('.lp{fill:#EEEDFE;stroke:#534AB7}');
-  buf.writeln('.lpt{fill:#3C3489}.lps{fill:#534AB7}');
-  buf.writeln('.lt{fill:#E1F5EE;stroke:#0F6E56}');
-  buf.writeln('.ltt{fill:#085041}.lts{fill:#0F6E56}');
-  buf.writeln('.lg{fill:#F1EFE8;stroke:#5F5E5A}');
-  buf.writeln('.lgt{fill:#444441}.lgs{fill:#5F5E5A}');
-  buf.writeln('.lc{fill:#FAECE7;stroke:#993C1D}');
-  buf.writeln('.lct{fill:#712B13}.lcs{fill:#993C1D}');
-  buf.writeln('.outer{fill:#F8F7F4;stroke:#D3D1C7}');
-  buf.writeln('.arrow-line{stroke:#B4B2A9}');
-  buf.writeln('}');
-  buf.writeln('text{font-family:sans-serif;font-size:13px}');
-  buf.writeln('.th{font-weight:500;font-size:13px}.ts{font-size:11px}');
-  buf.writeln('</style>');
+  // Container extérieur
+  buf.writeln(
+      '<rect x="20" y="10" width="${w - 40}" height="$outerH" rx="16" fill="$outerBg" stroke="$outerStroke" stroke-width="0.5"/>');
 
-  // ── Arrow marker ──
-  buf.writeln('<defs>'
-      '<marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" '
-      'markerWidth="6" markerHeight="6" orient="auto-start-reverse">'
-      '<path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" '
-      'stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>'
-      '</marker>'
-      '</defs>');
-
-  // ── Container extérieur ──
-  buf.writeln('<rect class="outer" x="20" y="10" '
-      'width="${w - 40}" height="$outerH" rx="16" stroke-width="0.5"/>');
-  // titre container
-  final appLabel = _truncate(d.appName, 24);
-  buf.writeln(_text(w / 2, 10 + 26, appLabel, 'th lgt', 'middle'));
-  // plateformes en petites pills
-  final platStr = d.platforms.join(' · ');
-  buf.writeln(_text(w / 2, 10 + 43, platStr, 'ts lgs', 'middle'));
+  // Titre et Plateformes
+  buf.writeln(_text(
+      w / 2, 36, _truncate(d.appName, 24), mainTitleColor, 'middle', true));
+  buf.writeln(_text(
+      w / 2, 53, d.platforms.join(' · '), subTitleColor, 'middle', false,
+      size: 11));
 
   double y = 10 + outerPad + 46;
 
   // ── Utilisateurs ──
-  buf.writeln(_row(y, innerX, innerW, rowH, 'lg', 'lgt', 'lgs', 'Utilisateurs',
+  final userStyle = _getStyles(_NodeColor.gray);
+  buf.writeln(_rowInline(y, innerX, innerW, rowH, userStyle, 'Utilisateurs',
       'Clients · Techniciens · Admin'));
   y += rowH + rowGap;
 
-  // ── Arrow ──
-  buf.write(_arrow(w / 2, y - rowGap, y, '#888780'));
+  // ── Flèche vers Frontend ──
+  buf.write(_drawArrow(w / 2, y - rowGap, w / 2, y, arrowColor));
 
   // ── Frontend ──
-  final feSub = d.frontendTechs.join(' · ');
-  buf.writeln(
-      _row(y, innerX, innerW, rowH, 'lp', 'lpt', 'lps', 'Frontend', feSub));
+  final feStyle = _getStyles(_NodeColor.purple);
+  buf.writeln(_rowInline(y, innerX, innerW, rowH, feStyle, 'Frontend',
+      d.frontendTechs.join(' · ')));
   y += rowH + rowGap;
 
-  // ── State management ──
+  // ── State Management ──
   if (d.hasState) {
-    buf.write(_arrow(w / 2, y - rowGap, y, '#7F77DD'));
-    final stSub = d.stateTechs.join(' · ');
-    buf.writeln(_row(y, innerX, innerW, rowH, 'lp', 'lpt', 'lps',
-        'State management', stSub));
+    buf.write(_drawArrow(w / 2, y - rowGap, w / 2, y, feStyle.$2));
+    buf.writeln(_rowInline(y, innerX, innerW, rowH, feStyle, 'State Management',
+        d.stateTechs.join(' · ')));
     y += rowH + rowGap;
   }
 
-  // ── Backend / Services Core ──
+  // ── Backend ──
   if (d.hasBackend) {
-    buf.write(_arrow(w / 2, y - rowGap, y, '#7F77DD'));
-    final bkSub = d.backendTechs.join(' · ');
-    buf.writeln(_row(
-        y, innerX, innerW, rowH, 'lp', 'lpt', 'lps', 'Services core', bkSub));
+    buf.write(_drawArrow(w / 2, y - rowGap, w / 2, y, feStyle.$2));
+    buf.writeln(_rowInline(y, innerX, innerW, rowH, feStyle, 'Services Core',
+        d.backendTechs.join(' · ')));
     y += rowH + rowGap;
   }
 
-  // ── Services externes (multi-colonnes) ──
+  // ── Services Externes ──
   if (d.hasServices) {
-    final services = d.externalServices;
-    final n = services.length;
+    final n = d.externalServices.length;
     final gap = 12.0;
     final boxW = (innerW - gap * (n - 1)) / n;
+    final serviceColor = isDark ? '#5DCAA5' : '#1D9E75';
 
-    // Flèches descendantes depuis le nœud précédent
     for (var i = 0; i < n; i++) {
       final cx = innerX + boxW / 2 + i * (boxW + gap);
-      // L-bend depuis le centre de la ligne précédente
-      final prevCx = w / 2;
       final midY = y - rowGap / 2;
-      buf.write('<path d="M $prevCx ${y - rowGap} L $prevCx $midY '
-          'L $cx $midY L $cx $y" '
-          'fill="none" stroke="#1D9E75" stroke-width="1" '
-          'marker-end="url(#arr)"/>');
-    }
+      buf.write(
+          '<path d="M ${w / 2} ${y - rowGap} L ${w / 2} $midY L $cx $midY L $cx $y" fill="none" stroke="$serviceColor" stroke-width="1" />');
+      buf.write(
+          '<path d="M ${cx - 4} ${y - 6} L $cx $y L ${cx + 4} ${y - 6}" fill="none" stroke="$serviceColor" stroke-width="1" />');
 
-    for (var i = 0; i < n; i++) {
-      final sx = innerX + i * (boxW + gap);
-      final node = services[i];
-      final cls = _colorClass(node.color);
-      buf.writeln(_row(y, sx, boxW, rowH, cls.$1, cls.$2, cls.$3, node.label,
-          node.subtitle));
+      final node = d.externalServices[i];
+      buf.writeln(_rowInline(y, innerX + i * (boxW + gap), boxW, rowH,
+          _getStyles(node.color), node.label, node.subtitle));
     }
     y += rowH + rowGap;
   }
 
   // ── Stockage ──
   if (d.hasStorage) {
-    // Flèches convergentes
-    if (d.hasServices) {
-      final n = d.externalServices.length;
-      final gap = 12.0;
-      final boxW = (innerW - gap * (n - 1)) / n;
-      final destCx = w / 2;
-      final midY = y - rowGap / 2;
-      for (var i = 0; i < n; i++) {
-        final srcCx = innerX + boxW / 2 + i * (boxW + gap);
-        buf.write('<path d="M $srcCx ${y - rowGap} L $srcCx $midY '
-            'L $destCx $midY L $destCx $y" '
-            'fill="none" stroke="#888780" stroke-width="1" '
-            'marker-end="url(#arr)"/>');
-      }
-    } else {
-      buf.write(_arrow(w / 2, y - rowGap, y, '#888780'));
-    }
-    final stgSub = d.storageTechs.join(' · ');
-    buf.writeln(_row(y, innerX, innerW, rowH, 'lg', 'lgt', 'lgs', 'Stockage',
-        stgSub.isEmpty ? 'Données persistantes' : stgSub));
-    y += rowH + rowGap;
+    buf.write(_drawArrow(w / 2, y - rowGap, w / 2, y, arrowColor));
+    buf.writeln(_rowInline(y, innerX, innerW, rowH, userStyle, 'Stockage',
+        d.storageTechs.join(' · ')));
   }
 
   buf.writeln('</svg>');
   return buf.toString();
 }
 
+// Helpers avec styles INLINE obligatoires pour flutter_svg
+String _rowInline(double y, double x, double w, double h,
+    (String, String, String, String) s, String title, String sub) {
+  final cx = x + w / 2;
+  return '''
+    <rect x="$x" y="$y" width="$w" height="$h" rx="8" fill="${s.$1}" stroke="${s.$2}" stroke-width="0.5"/>
+    ${_text(cx, y + h * 0.38, _truncate(title, 30), s.$3, 'middle', true)}
+    ${sub.isNotEmpty ? _text(cx, y + h * 0.68, _truncate(sub, 50), s.$4, 'middle', false, size: 11) : ''}
+  ''';
+}
+
+String _text(
+    double x, double y, String content, String color, String anchor, bool bold,
+    {double size = 13}) {
+  final weight = bold ? 'font-weight="500"' : '';
+  return '<text x="$x" y="$y" text-anchor="$anchor" dominant-baseline="central" fill="$color" font-family="sans-serif" font-size="$size" $weight>$content</text>';
+}
 // ─────────────────────────────────────────────────────────────────────────────
 // Helpers SVG
 // ─────────────────────────────────────────────────────────────────────────────
 
-String _row(double y, double x, double w, double h, String bgCls,
+/*String _row(double y, double x, double w, double h, String bgCls,
     String textCls, String subCls, String title, String sub) {
   final cx = x + w / 2;
   final ty = y + h * 0.38;
   final sy = y + h * 0.68;
-  return '<rect class="$bgCls" x="$x" y="$y" width="$w" height="$h" '
-      'rx="8" stroke-width="0.5"/>'
-      '${_text(cx, ty, _truncate(title, 30), 'th $textCls', 'middle')}'
-      '${sub.isNotEmpty ? _text(cx, sy, _truncate(sub, 50), 'ts $subCls', 'middle') : ''}';
-}
 
-String _text(double x, double y, String content, String cls, String anchor) =>
-    '<text x="$x" y="$y" text-anchor="$anchor" '
-    'dominant-baseline="central" class="$cls">$content</text>';
+  return '''
+    <rect class="$bgCls" x="$x" y="$y" width="$w" height="$h" rx="8" stroke-width="0.5"/>
+    
+    ${_text(cx, ty, _truncate(title, 30), textCls, 'middle', true)}
+    
+    ${sub.isNotEmpty ? _text(cx, sy, _truncate(sub, 50), subCls, 'middle', false, size: 11) : ''}
+  ''';
+}
 
 String _arrow(double x, double y1, double y2, String stroke) =>
     '<line x1="$x" y1="$y1" x2="$x" y2="$y2" '
-    'stroke="$stroke" stroke-width="1" marker-end="url(#arr)"/>';
+    'stroke="$stroke" stroke-width="1" marker-end="url(#arr)"/>';*/
 
 String _truncate(String s, int max) =>
     s.length > max ? '${s.substring(0, max - 1)}…' : s;
 
+/*
 (String, String, String) _colorClass(_NodeColor c) => switch (c) {
       _NodeColor.purple => ('lp', 'lpt', 'lps'),
       _NodeColor.teal => ('lt', 'ltt', 'lts'),
       _NodeColor.coral => ('lc', 'lct', 'lcs'),
       _NodeColor.gray => ('lg', 'lgt', 'lgs'),
     };
+*/
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Widget Flutter
