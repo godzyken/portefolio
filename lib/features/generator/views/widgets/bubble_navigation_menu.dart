@@ -164,6 +164,7 @@ class _BubbleNavigationMenuState extends State<BubbleNavigationMenu>
 
   Widget _buildCentralButton() {
     return FloatingActionButton(
+      heroTag: null,
       elevation: _isOpen ? 8.0 : 2.0,
       backgroundColor: Theme.of(context).colorScheme.primary.withValues(
             alpha: _isOpen ? 1.0 : 0.4,
@@ -183,7 +184,7 @@ class _BubbleNavigationMenuState extends State<BubbleNavigationMenu>
 
   Widget _buildBubble(BubbleMenuItem item) {
     return FloatingActionButton(
-      heroTag: item.label,
+      heroTag: 'bubble_${item.label}_${Object.hash(item.label, this)}',
       mini: true,
       backgroundColor: Theme.of(context).colorScheme.secondary,
       onPressed: () {

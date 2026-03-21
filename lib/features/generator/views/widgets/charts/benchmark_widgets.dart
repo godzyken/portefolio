@@ -18,7 +18,7 @@ class BenchmarkGlobalWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: ColorHelpers.darkBg.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(16),
@@ -43,15 +43,15 @@ class BenchmarkGlobalWidget extends StatelessWidget {
           const SizedBox(height: 12),
           // Pie chart score
           SizedBox(
-            width: 100,
-            height: 100,
+            width: 85,
+            height: 85,
             child: Stack(
               alignment: Alignment.center,
               children: [
                 PieChart(
                   PieChartData(
                     sectionsSpace: 3,
-                    centerSpaceRadius: 32,
+                    centerSpaceRadius: 28,
                     sections: [
                       PieChartSectionData(
                         value: benchmark.scoreGlobal.toDouble(),
@@ -69,7 +69,7 @@ class BenchmarkGlobalWidget extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  '${benchmark.scoreGlobal}',
+                  '${benchmark.scoreGlobal}/100',
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -291,8 +291,6 @@ class BenchmarkRadarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final size = info.isMobile ? 180.0 : 220.0;
-
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -316,10 +314,8 @@ class BenchmarkRadarWidget extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
-          const SizedBox(height: 12),
-          SizedBox(
-            width: size,
-            height: size,
+          const SizedBox(height: 8),
+          Expanded(
             child: RadarChart(
               RadarChartData(
                 radarShape: RadarShape.polygon,

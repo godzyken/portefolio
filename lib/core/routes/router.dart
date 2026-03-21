@@ -10,17 +10,19 @@ import '../../features/home/views/screens/home_screen.dart';
 import '../../features/home/views/screens/splash_screen.dart';
 import '../../features/parametres/themes/views/screens/theme_settings_page.dart';
 import '../../features/projets/views/screens/projects_screen.dart';
-import '../affichage/navigator_key_provider.dart';
 import '../notifier/notifiers.dart';
 import '../provider/providers.dart';
 
 final goRouterProvider = Provider<GoRouter>((ref) {
   final notifier = ref.read(routerNotifierProvider.notifier);
-  final navigatorKey = ref.read(navigatorKeyProvider);
+  // On crée les clés DIRECTEMENT ici
+  // Elles seront recréées si le provider est invalidé (ex: logout)
+  final rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
+  final shellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'shell');
 
   try {
     return GoRouter(
-      navigatorKey: navigatorKey,
+      navigatorKey: rootNavigatorKey,
       observers: [],
       initialLocation: '/splash',
       routes: [
@@ -33,6 +35,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
 
         // ── Shell principal (navbar, scaffold partagé) ──────────────────
         ShellRoute(
+          navigatorKey: shellNavigatorKey,
           builder: (context, state, child) => MainScaffold(child: child),
           routes: [
             GoRoute(

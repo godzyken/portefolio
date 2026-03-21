@@ -21,8 +21,6 @@ class _ServicesSliderState extends ConsumerState<ServicesSlider> {
   // Gestion de l'overlay
   OverlayEntry? _overlayEntry;
   bool _isTogglingOverlay = false;
-  final Map<String, GlobalKey> _buttonKeys = {};
-  final Map<String, GlobalKey> _cardKeys = {};
 
   @override
   void initState() {
@@ -66,7 +64,7 @@ class _ServicesSliderState extends ConsumerState<ServicesSlider> {
   }
 
   void _toggleSkillBubbles(Service service, ServiceExpertise expertise,
-      ResponsiveInfo info, GlobalKey btnKey, GlobalKey cardKey) {
+      ResponsiveInfo info, GlobalKey btnKey, ValueKey cardKey) {
     if (_isTogglingOverlay) {
       debugPrint('[CARD] ⚠️ Toggle déjà en cours...');
       return;
@@ -103,11 +101,10 @@ class _ServicesSliderState extends ConsumerState<ServicesSlider> {
             itemCount: services.length,
             itemBuilder: (context, index) {
               final service = services[index];
-              final btnKey = _buttonKeys.putIfAbsent(
-                  service.id, () => GlobalObjectKey('btn_${service.id}'));
-
-              final cardKey = _cardKeys.putIfAbsent(
-                  service.id, () => GlobalObjectKey('card_${service.id}'));
+              final btnKey = GlobalKey(
+                  debugLabel: 'btn_${service.id}'); // Clé unique par instance
+              final cardKey =
+                  ValueKey('card_${service.id}'); // Clé unique par instance
 
               return AnimatedBuilder(
                 animation: controller,
