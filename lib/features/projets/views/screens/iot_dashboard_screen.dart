@@ -72,6 +72,7 @@ class _EnhancedIotDashboardScreenState
         ],
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Header avec titre et contrôles
@@ -114,6 +115,7 @@ class _EnhancedIotDashboardScreenState
       children: [
         Expanded(
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const ResponsiveText(
@@ -179,48 +181,48 @@ class _EnhancedIotDashboardScreenState
     final sensors = ref.watch(sensorProvider);
     final activeFilters = ref.watch(iotSensorFilterProvider);
 
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: sensors.keys.map((sensorName) {
-        final isActive = activeFilters.contains(sensorName);
-        final color = IoTSensorHelpers.getColor(sensorName);
+    return SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: sensors.keys.map((sensorName) {
+            final isActive = activeFilters.contains(sensorName);
+            final color = IoTSensorHelpers.getColor(sensorName);
 
-        return FilterChip(
-          label: ResponsiveText(
-            sensorName,
-            style: TextStyle(
-              color: isActive ? Colors.white : Colors.white70,
-              fontSize: 12,
-              fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
-            ),
-          ),
-          selected: isActive,
-          onSelected: (selected) {
-            final notifier = ref.read(iotSensorFilterProvider.notifier);
-            final newFilters = Set<String>.from(activeFilters);
+            return FilterChip(
+              label: ResponsiveText(
+                sensorName,
+                style: TextStyle(
+                  color: isActive ? Colors.white : Colors.white70,
+                  fontSize: 12,
+                  fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+                ),
+              ),
+              selected: isActive,
+              onSelected: (selected) {
+                final notifier = ref.read(iotSensorFilterProvider.notifier);
+                final newFilters = Set<String>.from(activeFilters);
 
-            if (selected) {
-              newFilters.add(sensorName);
-            } else {
-              // Garder au moins un capteur actif
-              if (newFilters.length > 1) {
-                newFilters.remove(sensorName);
-              }
-            }
+                if (selected) {
+                  newFilters.add(sensorName);
+                } else {
+                  // Garder au moins un capteur actif
+                  if (newFilters.length > 1) {
+                    newFilters.remove(sensorName);
+                  }
+                }
 
-            notifier.toggleSensor(sensorName);
-          },
-          backgroundColor: color.withValues(alpha: 0.2),
-          selectedColor: color.withValues(alpha: 0.4),
-          checkmarkColor: Colors.white,
-          side: BorderSide(
-            color: isActive ? color : color.withValues(alpha: 0.3),
-            width: 1.5,
-          ),
-        );
-      }).toList(),
-    );
+                notifier.toggleSensor(sensorName);
+              },
+              backgroundColor: color.withValues(alpha: 0.2),
+              selectedColor: color.withValues(alpha: 0.4),
+              checkmarkColor: Colors.white,
+              side: BorderSide(
+                color: isActive ? color : color.withValues(alpha: 0.3),
+                width: 1.5,
+              ),
+            );
+          }).toList(),
+        ));
   }
 
   Widget _buildGridView(Map<String, double> sensors, ResponsiveInfo info) {
@@ -233,7 +235,8 @@ class _EnhancedIotDashboardScreenState
 
     return LayoutBuilder(builder: (context, constraints) {
       final double itemWidth = constraints.maxWidth / crossAxisCount;
-      final double aspectRatio = (itemWidth / 180).clamp(1.0, 1.6);
+      final double aspectRatio =
+          (itemWidth / (info.isMobile ? 150 : 180)).clamp(0.8, 1.2);
 
       return GridView.builder(
         itemCount: sensors.length,
@@ -280,7 +283,7 @@ class _EnhancedIotDashboardScreenState
 
   Widget _buildRealtimeChart(Map<String, double> sensors, ResponsiveInfo info) {
     return ResponsiveBox(
-      height: 120,
+      height: info.isMobile ? 80 : 120,
       child: LineChart(
         LineChartData(
           gridData: const FlGridData(show: false),

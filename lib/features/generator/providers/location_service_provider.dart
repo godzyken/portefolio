@@ -7,4 +7,4 @@ final locationServiceProvider = Provider<LocationService>((ref) {
 
   ref.onDispose(() => service.dispose());
   return service;
-});
+}, name: 'LocationService');

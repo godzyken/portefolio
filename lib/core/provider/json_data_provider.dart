@@ -32,16 +32,16 @@ Future<List<T>> loadJsonFile<T>(
 /// 🔹 Providers
 final projectsProvider = FutureProvider<List<ProjectInfo>>((ref) async {
   return loadJsonFile('assets/data/projects.json', ProjectInfo.fromJson);
-});
+}, name: 'Projects');
 
 final experiencesProvider = FutureProvider<List<Experience>>((ref) async {
   return loadJsonFile('assets/data/experiences.json', Experience.fromJson);
-});
+}, name: 'Experiences');
 
 final servicesJsonProvider = FutureProvider<List<Service>>((ref) async {
   return loadJsonFile('assets/data/services.json', Service.fromJson);
-});
+}, name: 'Services');
 
 final comparaisonsJsonProvider = FutureProvider<List<Comparatif>>((ref) async {
   return loadJsonFile('assets/data/comparaisons.json', Comparatif.fromJson);
-});
+}, name: 'Comparaisons');

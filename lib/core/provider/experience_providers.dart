@@ -7,7 +7,8 @@ import 'json_data_provider.dart';
 /// 🔹 Filtre des expériences
 final experienceFilterProvider =
     NotifierProvider<ExperienceFilterNotifier, String?>(
-        ExperienceFilterNotifier.new);
+        ExperienceFilterNotifier.new,
+        name: 'ExperienceFilter');
 
 final filterExperiencesProvider = Provider<List<Experience>>((ref) {
   final List<Experience> all = ref
@@ -18,4 +19,4 @@ final filterExperiencesProvider = Provider<List<Experience>>((ref) {
   if (filter == null || filter.isEmpty) return all;
 
   return all.where((exp) => exp.tags.contains(filter)).toList();
-});
+}, name: 'FilterExperiences');

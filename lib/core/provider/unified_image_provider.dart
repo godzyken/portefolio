@@ -9,19 +9,19 @@ import '../ui/widgets/smart_image.dart';
 final unifiedImageManagerProvider =
     ChangeNotifierProvider<UnifiedImageManager>((ref) {
   return UnifiedImageManager();
-});
+}, name: 'UnifiedImageManager');
 
 /// Provider d'initialisation
 final imageManagerInitProvider = FutureProvider<void>((ref) async {
   final manager = ref.read(unifiedImageManagerProvider);
   await manager.initialize();
-});
+}, name: 'ImageManagerInit');
 
 /// Provider pour les statistiques du cache
 final imageCacheStatsProvider = Provider<CacheStats>((ref) {
   final manager = ref.watch(unifiedImageManagerProvider);
   return manager.getStats();
-});
+}, name: 'ImageCacheStats');
 
 /// Notifier pour gérer l'état du préchargement
 class PreloadNotifier extends AsyncNotifier<PreloadResult?> {
@@ -97,6 +97,7 @@ class PreloadNotifier extends AsyncNotifier<PreloadResult?> {
 final preloadNotifierProvider =
     AsyncNotifierProvider<PreloadNotifier, PreloadResult?>(
   PreloadNotifier.new,
+  name: 'PreloadNotifier',
 );
 
 /// Widget CachedImage optimisé qui utilise le cache unifié

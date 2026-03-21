@@ -20,14 +20,14 @@ final locationPermissionProvider =
     FutureProvider<LocationPermissionStatus>((ref) async {
   final service = ref.watch(locationServiceProvider);
   return await service.checkPermission();
-});
+}, name: 'LocationPermission');
 
 /// 🔹 Provider pour activer/demander la permission
 final requestLocationPermissionProvider =
     FutureProvider<LocationPermissionStatus>((ref) async {
   final service = ref.watch(locationServiceProvider);
   return await service.requestPermission();
-});
+}, name: 'RequestLocationPermission');
 
 /// 🔹 Provider pour le flux en temps réel (mise à jour continue)
 final locationStreamProvider = StreamProvider.autoDispose<LocationData>((ref) {
@@ -39,13 +39,13 @@ final locationStreamProvider = StreamProvider.autoDispose<LocationData>((ref) {
         .read(locationErrorProvier.notifier)
         .setError(e is GeolocationException ? e : null);
   });
-});
+}, name: 'LocationStream');
 
 /// 🔹 Provider pour savoir si le GPS est activé
 final isGpsEnabledProvider = FutureProvider<bool>((ref) async {
   final service = ref.watch(locationServiceProvider);
   return await service.isLocationEnabled();
-});
+}, name: 'IsGpsEnabled');
 
 /// 🔹 Gère la configuration des options de la carte de manière centralisée
 final mapConfigProvider = Provider.family<MapOptions, LatLng>((ref, centerPos) {
@@ -83,11 +83,12 @@ final mapConfigProvider = Provider.family<MapOptions, LatLng>((ref, centerPos) {
     maxZoom: 18.0,
     keepAlive: true,
   );
-});
+}, name: 'MapConfig');
 
 final userLocationProvider =
     StreamNotifierProvider<UserLocationNotifier, LocationData>(
-        UserLocationNotifier.new);
+        UserLocationNotifier.new,
+        name: 'UserLocation');
 
 final sigPointsProvider = Provider.family<List<LatLng>, LatLng>((ref, center) {
   final rng = Random();
@@ -98,7 +99,7 @@ final sigPointsProvider = Provider.family<List<LatLng>, LatLng>((ref, center) {
             center.latitude + (rng.nextDouble() - 0.5) / 500,
             center.longitude + (rng.nextDouble() - 0.5) / 500,
           ));
-});
+}, name: 'SigPoints');
 
 /// 🔹 Points SIG proches basés sur la dernière position utilisateur
 final nearbySigPointsProvider = Provider<AsyncValue<List<LatLng>>>((ref) {
@@ -106,11 +107,11 @@ final nearbySigPointsProvider = Provider<AsyncValue<List<LatLng>>>((ref) {
     final userLatLng = LatLng(pos.latitude, pos.longitude);
     return ref.watch(sigPointsProvider(userLatLng));
   });
-});
+}, name: 'NearbySigPoints');
 
 final satelliteModeProvider = NotifierProvider<BooleanNotifier, bool>(
-  () => BooleanNotifier(false),
-);
+    () => BooleanNotifier(false),
+    name: 'SatelliteMode');
 
 final mapTileProvider = Provider<TileProvider>((ref) {
   if (kIsWeb) {
@@ -127,7 +128,7 @@ final mapTileProvider = Provider<TileProvider>((ref) {
     cachedValidDuration: const Duration(days: 30), // Cache longue durée
     recordHitsAndMisses: true,
   );
-});
+}, name: 'MapTile');
 
 /// 🔹 Regroupe l'état global du service de localisation (GPS activé + Permission)
 final locationStateProvider = FutureProvider<bool>((ref) async {
@@ -139,14 +140,14 @@ final locationStateProvider = FutureProvider<bool>((ref) async {
   final permission = await service.checkPermission();
   return permission == LocationPermissionStatus.granted ||
       permission == LocationPermissionStatus.grantedLimited;
-});
+}, name: 'LocationState');
 
 final workExperiencesProvider =
     FutureProvider<List<WorkExperience>>((ref) async {
   // Simulez le chargement ou utilisez rootBundle.loadString('assets/data/experiences.json')
   final List<dynamic> data = [/* Votre JSON ici */];
   return data.map((e) => WorkExperience.fromJson(e)).toList();
-});
+}, name: 'WorkExperiences');
 
 /// 🔹 Filtre les points SIG pour n'afficher que les lieux de travail
 final experienceMarkersProvider = Provider<List<Marker>>((ref) {
@@ -183,14 +184,15 @@ final experienceMarkersProvider = Provider<List<Marker>>((ref) {
       ),
     );
   }).toList();
-});
+}, name: 'ExperienceMarkers');
 
 /// 🔹 Index actuel de la visite guidée (-1 si inactive)
-final tourIndexProvider =
-    NotifierProvider<TourIndexNotifier, int>(TourIndexNotifier.new);
+final tourIndexProvider = NotifierProvider<TourIndexNotifier, int>(
+    TourIndexNotifier.new,
+    name: 'TourIndex');
 
 final careerPathProvider = Provider<List<LatLng>>((ref) {
   final experiences = ref.watch(workExperiencesProvider).value ?? [];
   // On récupère les points de chaque expérience dans l'ordre du JSON
   return experiences.map((e) => e.location).toList();
-});
+}, name: 'CareerPath');

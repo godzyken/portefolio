@@ -9,7 +9,7 @@ final expertisesProvider = FutureProvider<List<ServiceExpertise>>((ref) async {
     'assets/data/expertise.json',
     ServiceExpertise.fromJson,
   );
-});
+}, name: 'Expertises');
 
 /// Provider pour obtenir l'expertise d'un service spécifique
 final serviceExpertiseProvider = Provider.family<ServiceExpertise?, String>(
@@ -37,6 +37,7 @@ final serviceExpertiseProvider = Provider.family<ServiceExpertise?, String>(
       },
     );
   },
+  name: 'ServiceExpertise',
 );
 
 /// Provider pour les statistiques globales de toutes les expertises
@@ -78,7 +79,7 @@ final globalExpertiseStatsProvider = Provider<GlobalExpertiseStats>((ref) {
     loading: () => const GlobalExpertiseStats.empty(),
     error: (_, __) => const GlobalExpertiseStats.empty(),
   );
-});
+}, name: 'GlobalExpertiseStats');
 
 /// Statistiques globales d'expertise
 class GlobalExpertiseStats {
@@ -123,4 +124,4 @@ final skillsByCategoryProvider = Provider<Map<String, List<TechSkill>>>((ref) {
     loading: () => {},
     error: (_, __) => {},
   );
-});
+}, name: 'SkillsByCategory');

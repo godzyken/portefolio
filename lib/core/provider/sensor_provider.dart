@@ -5,4 +5,4 @@ import '../notifier/sensor_notifier.dart';
 final sensorProvider =
     NotifierProvider<SensorNotifier, Map<String, double>>(() {
   return SensorNotifier();
-});
+}, name: 'Sensor');

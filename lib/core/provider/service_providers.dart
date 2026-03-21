@@ -9,12 +9,14 @@ import 'json_data_provider.dart';
 final servicesFilterProvider =
     NotifierProvider<ServiceFilterNotifier, ServiceCategory?>(
   ServiceFilterNotifier.new,
+  name: 'ServicesFilter',
 );
 
 /// 🔹 Provider pour les services sélectionnés
 final selectedServicesProvider =
     NotifierProvider<CollectionNotifier<Service>, List<Service>>(
   () => CollectionNotifier<Service>(),
+  name: 'SelectedServices',
 );
 
 /// 🔹 Provider des services filtrés
@@ -25,7 +27,7 @@ final filteredServicesProvider = Provider<List<Service>>((ref) {
   if (filter == null) return services;
 
   return services.where((s) => s.category == filter).toList();
-});
+}, name: 'FilteredServices');
 
 /// 🔹 Provider pour obtenir un service par ID
 final serviceByIdProvider = Provider.family<Service?, String>((ref, id) {
@@ -35,7 +37,7 @@ final serviceByIdProvider = Provider.family<Service?, String>((ref, id) {
   } catch (_) {
     return null;
   }
-});
+}, name: 'ServiceById');
 
 /// 🔹 Provider pour obtenir les catégories disponibles
 final availableCategoriesProvider = Provider<List<ServiceCategory>>((ref) {
@@ -43,11 +45,11 @@ final availableCategoriesProvider = Provider<List<ServiceCategory>>((ref) {
   final categories = services.map((s) => s.category).toSet().toList();
   categories.sort((a, b) => a.displayName.compareTo(b.displayName));
   return categories;
-});
+}, name: 'AvailableCategories');
 
 /// 🔹 Provider pour compter les services par catégorie
 final serviceCountByCategoryProvider =
     Provider.family<int, ServiceCategory>((ref, category) {
   final services = ref.watch(servicesJsonProvider).asData?.value ?? [];
   return services.where((s) => s.category == category).length;
-});
+}, name: 'ServiceCountByCategory');

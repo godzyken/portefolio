@@ -4,4 +4,5 @@ import '../notifier/generic_notifier.dart';
 
 final visitedPagesProvider = NotifierProvider<SetNotifier<String>, Set<String>>(
   () => SetNotifier<String>(),
+  name: 'VisitedPages',
 );

@@ -224,4 +224,5 @@ Future<PrecacheReport> runOptimizedPrecache(Ref ref) async {
 
 final precacheNotifierProvider =
     AsyncNotifierProvider<PrecacheAsyncNotifier, PrecacheReport>(
-        PrecacheAsyncNotifier.new);
+        PrecacheAsyncNotifier.new,
+        name: 'PrecacheNotifier');

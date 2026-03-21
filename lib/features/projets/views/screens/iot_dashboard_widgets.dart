@@ -149,25 +149,33 @@ class IoTSensorCard extends StatelessWidget {
                     },
                   ),
                   const SizedBox(height: 12),
-                  ResponsiveText.displaySmall(
-                    title,
-                    style: const TextStyle(color: Colors.white70),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 8),
-                  AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 500),
-                    child: ResponsiveText.bodySmall(
-                      value,
-                      key: ValueKey(value),
-                      style: TextStyle(
-                        color: color,
-                        fontWeight: FontWeight.bold,
-                      ),
+                  Expanded(
+                      child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Column(
+                      children: [
+                        ResponsiveText.displaySmall(
+                          title,
+                          style: const TextStyle(color: Colors.white70),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 4),
+                        AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 500),
+                          child: ResponsiveText.bodySmall(
+                            value,
+                            key: ValueKey(value),
+                            style: TextStyle(
+                              color: color,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        IoTTrendIndicator(trend: trend, color: color),
+                      ],
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  IoTTrendIndicator(trend: trend, color: color),
+                  ))
                 ],
               ),
             ),

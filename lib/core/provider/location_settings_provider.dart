@@ -25,4 +25,4 @@ final locationSettingsProvider = Provider<Map<String, dynamic>>((ref) {
   } else {
     return {'accuracy': 'high', 'distanceFilter': 100};
   }
-});
+}, name: 'LocationSettings');

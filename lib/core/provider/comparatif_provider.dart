@@ -10,7 +10,7 @@ final comparatifByIdProvider = Provider.family<Comparatif?, String>((ref, id) {
   } catch (_) {
     return null;
   }
-});
+}, name: 'ComparatifById');
 
 final comparisonBubbleVisibilityProvider = Provider.family<bool, String>(
   (ref, currentPath) {
@@ -29,4 +29,5 @@ final comparisonBubbleVisibilityProvider = Provider.family<bool, String>(
     // Vérifier si le chemin actuel est exclu
     return !excludedPaths.any((path) => currentPath.contains(path));
   },
+  name: 'ComparisonBubbleVisibility',
 );

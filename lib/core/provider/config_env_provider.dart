@@ -53,7 +53,7 @@ final whatsappPhoneProvider = Provider<String>((ref) {
     throw Exception('WHATSAPP_PHONE non configuré');
   }
   return config.whatsappPhone;
-});
+}, name: 'WhatsappPhone');
 
 // OneDrive
 final cvOneDriveUrlProvider = Provider<String?>((ref) {
@@ -62,18 +62,18 @@ final cvOneDriveUrlProvider = Provider<String?>((ref) {
   if (config.oneDriveUrl.isEmpty) return null;
 
   return config.oneDriveUrl;
-});
+}, name: 'CvOneDriveUrl');
 
 // WakaTime
 final wakaTimeApiKeyConfigProvider = Provider<String?>((ref) {
   final config = ref.watch(envConfigProvider);
   return config.wakaTimeApiKey;
-});
+}, name: 'WakaTimeApiKey');
 
 final googleCalendarClientIdProvider = Provider<String?>((ref) {
   final config = ref.watch(envConfigProvider);
   return config.googleCalendarClientId;
-});
+}, name: 'GoogleCalendarClientId');
 
 /// Provider de validation globale
 final envConfigValidationProvider = Provider<EnvConfigValidation>((ref) {
@@ -85,7 +85,7 @@ final envConfigValidationProvider = Provider<EnvConfigValidation>((ref) {
     errors: errors,
     warnings: _generateWarnings(config),
   );
-});
+}, name: 'EnvConfigValidation');
 
 List<String> _generateWarnings(EnvConfigService config) {
   final warnings = <String>[];

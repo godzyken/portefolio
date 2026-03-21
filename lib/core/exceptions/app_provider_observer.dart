@@ -13,9 +13,11 @@ base class AppProviderObserver extends ProviderObserver {
     Object? value,
   ) {
     assert(() {
+      final name = _name(context);
+
       if (value is AsyncError) {
         _log.warning(
-          'AsyncError à la création de ${context.provider}',
+          'AsyncError à la création de $name',
           error: value.error,
           stackTrace: value.stackTrace,
         );
@@ -31,9 +33,11 @@ base class AppProviderObserver extends ProviderObserver {
     Object? newValue,
   ) {
     assert(() {
+      final name = _name(context);
+
       if (newValue is AsyncError) {
         _log.warning(
-          'AsyncError dans ${context.provider}',
+          'AsyncError dans $name',
           error: newValue.error,
           stackTrace: newValue.stackTrace,
         );
@@ -49,7 +53,7 @@ base class AppProviderObserver extends ProviderObserver {
     StackTrace stackTrace,
   ) {
     _log.error(
-      'Provider en erreur : ${context.provider}',
+      'Provider en erreur : ${_name(context)}',
       error: error,
       stackTrace: stackTrace,
     );
@@ -60,7 +64,7 @@ base class AppProviderObserver extends ProviderObserver {
     ProviderObserverContext context,
     Object? value,
   ) {
-    _log.info('Provider supprimé : ${context.provider}');
+    _log.info('Provider supprimé : ${_name(context)}');
   }
 
   String _name(ProviderObserverContext context) =>

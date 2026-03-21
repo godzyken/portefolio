@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// Provider pour le store de cache des tuiles
 final mapCacheStoreProvider = Provider<FMTCStore>((ref) {
   return FMTCStore('mapStore');
-});
+}, name: 'MapCacheStore');
 
 /// Provider pour initialiser FMTC
 final fmtcInitializationProvider = FutureProvider<void>((ref) async {
@@ -24,7 +24,7 @@ final fmtcInitializationProvider = FutureProvider<void>((ref) async {
     final expiry = DateTime.timestamp().subtract(const Duration(days: 30));
     await store.manage.removeTilesOlderThan(expiry: expiry);
   }
-});
+}, name: 'FMTCInitialization');
 
 final cacheSizeProvider = StreamProvider<double>((ref) async* {
   if (kIsWeb) {
@@ -65,4 +65,4 @@ final cacheSizeProvider = StreamProvider<double>((ref) async* {
   await for (final _ in changeSignal) {
     yield await fetchSize();
   }
-});
+}, name: 'CacheSize');
