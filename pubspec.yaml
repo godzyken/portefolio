@@ -46,7 +46,7 @@ dependencies:
   flutter_dotenv: ^6.0.0
   emailjs: ^4.0.0
   flutter_highlight: ^0.7.0
-  timelines_plus: ^1.0.7
+  timelines_plus: ^2.0.0
   flutter_animate: ^4.5.2
   hive: ^2.2.3
   flutter_colorpicker: ^1.1.0

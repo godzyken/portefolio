@@ -22,44 +22,40 @@ class ExperienceJeuxScreen extends ConsumerStatefulWidget {
 
 class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
   late final Map<String, GlobalKey> _cardKeys = {};
-  Experience? activeExperience;
+
+  /// La carte affichée en vue détail centrale (mode card unique).
+  Experience? _activeExperience;
+
+  /// Les cartes dans le "pot" (mode main de poker, ≤4 cartes).
   final List<Experience> _potCards = [];
+
+  // ─── Initialisation ────────────────────────────────────────────────────────
 
   @override
   void initState() {
     super.initState();
+    _initializeCardKeys();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
-    _initializeCardKeys();
-
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
   }
 
   void _initializeCardKeys() {
     _cardKeys.clear();
-    for (var exp in widget.experiences) {
+    for (final exp in widget.experiences) {
       _cardKeys[exp.id] = GlobalKey(debugLabel: 'card_${exp.id}');
     }
   }
 
   @override
-  void didUpdateWidget(ExperienceJeuxScreen oldWidget) {
-    super.didUpdateWidget(oldWidget);
-
-    if (oldWidget.experiences.length != widget.experiences.length ||
-        !_isSameExperienceList(oldWidget.experiences, widget.experiences)) {
+  void didUpdateWidget(ExperienceJeuxScreen old) {
+    super.didUpdateWidget(old);
+    if (old.experiences.length != widget.experiences.length ||
+        !_areSameLists(old.experiences, widget.experiences)) {
       _initializeCardKeys();
     }
-  }
-
-  bool _isSameExperienceList(List<Experience> list1, List<Experience> list2) {
-    if (list1.length != list2.length) return false;
-    for (int i = 0; i < list1.length; i++) {
-      if (list1[i].id != list2[i].id) return false;
-    }
-    return true;
   }
 
   @override
@@ -70,6 +66,57 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
     ]);
     super.dispose();
   }
+
+  bool _areSameLists(List<Experience> a, List<Experience> b) {
+    if (a.length != b.length) return false;
+    for (int i = 0; i < a.length; i++) {
+      if (a[i].id != b[i].id) return false;
+    }
+    return true;
+  }
+
+  // ─── Navigation vers le détail ─────────────────────────────────────────────
+
+  void _openDetail(Experience exp) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => ImmersiveExperienceDetail(experience: exp),
+      ),
+    );
+  }
+
+  // ─── Gestion de l'état central (drop) ──────────────────────────────────────
+
+  /// Appelé quand une carte est droppée dans la zone centrale.
+  void _onCardDroppedCenter(Experience exp) {
+    if (!mounted) return;
+    setState(() {
+      _activeExperience = exp;
+      _potCards.clear();
+    });
+  }
+
+  /// Appelé quand les cartes arrivent dans le pot (via drag de jeton).
+  void _onCardsArrivedInPot(List<Experience> cards) {
+    if (!mounted) return;
+    setState(() {
+      _activeExperience = null;
+      _potCards
+        ..clear()
+        ..addAll(cards.take(4));
+    });
+  }
+
+  /// Vide le pot et remet à zéro.
+  void _onPotCleared() {
+    if (!mounted) return;
+    setState(() {
+      _potCards.clear();
+      _activeExperience = null;
+    });
+  }
+
+  // ─── Animation de vol de carte (overlay) ───────────────────────────────────
 
   void _flyCard(
     Experience exp,
@@ -93,7 +140,6 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
         );
 
     late OverlayEntry entry;
-
     entry = OverlayEntry(
       builder: (_) => AnimatedCardOverlay(
         key: ValueKey(
@@ -101,156 +147,95 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
         start: start,
         end: target,
         size: size,
-        child: _cardClone(exp),
+        child: _CardClone(exp: exp),
         onEnd: () {
           entry.remove();
           ref.read(cardFlightProvider.notifier).setStateForCard(
                 exp.id,
                 flyUp ? CardFlightState.inTop : CardFlightState.inPile,
               );
-
-          if (mounted) {
-            setState(() {
-              if (flyUp) {
-                if (!_potCards.contains(exp) && _potCards.length < 4) {
-                  _potCards.add(exp);
-                }
-                activeExperience = null;
-              } else {
-                activeExperience = exp;
-                _potCards.clear();
-              }
-            });
-          }
         },
       ),
     );
-
     overlay.insert(entry);
   }
 
-  void _onCardsArrivedInPot(List<Experience> cards) {
-    if (!mounted) return;
-    setState(() {
-      activeExperience = null;
-      _potCards.clear();
-      _potCards.addAll(cards.take(4));
-    });
-  }
+  // ─── Clone léger d'une carte (stateless) ───────────────────────────────────
 
-  void _onPotCleared() {
-    if (!mounted) return;
-    setState(() {
-      _potCards.clear();
-      activeExperience = null;
-    });
-  }
-
-  Widget _cardClone(Experience exp) {
-    return RepaintBoundary(
-      child: Card(
-        elevation: 6,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        child: Column(
-          children: [
-            if (exp.image.isNotEmpty)
-              Expanded(
-                child: ClipRRect(
-                  borderRadius:
-                      const BorderRadius.vertical(top: Radius.circular(12)),
-                  child: SmartImage(
-                    path: exp.image,
-                    fit: BoxFit.cover,
-                    enableShimmer: true,
-                  ),
-                ),
-              ),
-            Padding(
-              padding: const EdgeInsets.all(4),
-              child: ResponsiveText.bodySmall(
-                exp.entreprise,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  // ─── Pile de cartes (colonne gauche) ───────────────────────────────────────
 
   Widget _buildCardPile(ResponsiveInfo info) {
-    final pile = widget.experiences
-        .where(
-          (e) =>
-              (ref.watch(cardFlightProvider)[e.id] ?? CardFlightState.inPile) ==
-              CardFlightState.inPile,
-        )
-        .toList();
+    final flightStates = ref.watch(cardFlightProvider);
+    final pile = widget.experiences.where((e) {
+      final state = flightStates[e.id] ?? CardFlightState.inPile;
+      return state == CardFlightState.inPile;
+    }).toList();
 
     const double maxCardWidth = 80;
-    final proportionalCardWidth = info.size.width * 0.11;
-    final cardWidth = min(proportionalCardWidth, maxCardWidth);
+    final cardWidth =
+        min(info.size.width * 0.11, maxCardWidth).clamp(50.0, 80.0);
     final cardHeight = cardWidth * 1.33;
 
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: ResponsiveBox(
-        width: info.size.width * 0.2,
+    // ✅ FIX layout : ListView avec items de hauteur fixe — pas de Stack
+    // dans un ScrollView à hauteur infinie, ce qui causait RenderTransform
+    // "infinite size" (unbounded height constraint).
+    return SizedBox(
+      width: info.size.width * 0.22,
+      child: ListView.builder(
         padding: EdgeInsets.only(
-          top: info.size.height * 0.12, // ~12% de l'écran pour le menu
+          top: info.size.height * 0.12,
           left: 8,
+          right: 8,
+          bottom: 16,
         ),
-        child: Stack(
-          alignment: Alignment.center,
-          fit: StackFit.loose,
-          clipBehavior: Clip.hardEdge,
-          children: pile.asMap().entries.map((entry) {
-            final exp = entry.value;
-            final angle =
-                (entry.key % 2 == 0 ? 1 : -1) * (5 + entry.key).toDouble();
+        itemCount: pile.length,
+        itemExtent: cardHeight + 10, // hauteur fixe par item → pas d'infini
+        itemBuilder: (context, index) {
+          final exp = pile[index];
+          final angle = (index % 2 == 0 ? 1 : -1) * ((index % 5) + 3.0);
 
-            return Positioned(
-              top: (cardHeight * 0.15) * entry.key,
-              left: 1,
-              child: Transform.rotate(
-                angle: angle * pi / 180,
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Transform.rotate(
+              angle: angle * pi / 180,
+              // ✅ alignment centre pour éviter le débordement lors de la rotation
+              alignment: Alignment.center,
+              child: SizedBox(
+                width: cardWidth,
+                height: cardHeight,
                 child: Draggable<Experience>(
                   data: exp,
                   feedback: Material(
                     color: Colors.transparent,
-                    child: ResponsiveBox(
+                    child: SizedBox(
                       width: cardWidth,
                       height: cardHeight,
-                      child: _cardClone(exp),
+                      child: _CardClone(exp: exp),
                     ),
                   ),
-                  childWhenDragging: ResponsiveBox(
+                  childWhenDragging: SizedBox(
                     width: cardWidth,
                     height: cardHeight,
                     child: Opacity(
                       opacity: 0.3,
-                      child: RepaintBoundary(child: _cardClone(exp)),
+                      child: _CardClone(exp: exp),
                     ),
                   ),
-                  child: ResponsiveBox(
+                  child: SizedBox(
+                    key: _cardKeys[exp.id],
                     width: cardWidth,
                     height: cardHeight,
-                    child: Card(
-                      key: ValueKey('card_${exp.id}'),
-                      child: _cardClone(exp),
-                    ),
+                    child: _CardClone(exp: exp),
                   ),
                 ),
               ),
-            );
-          }).toList(),
-        ),
+            ),
+          );
+        },
       ),
     );
   }
+  // ─── Zone cible centrale ───────────────────────────────────────────────────
 
   Widget _buildCardTarget(ResponsiveInfo info) {
     final width =
@@ -259,155 +244,105 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
         info.isLandscape ? info.size.height * 0.7 : info.size.height * 0.6;
 
     const double maxCardWidth = 120.0;
-    final proportionalCardWidth = info.size.width * 0.10;
-    final cardWidth = min(proportionalCardWidth, maxCardWidth);
+    final cardWidth = min(info.size.width * 0.10, maxCardWidth);
     final cardHeight = cardWidth * 1.33;
 
     return DragTarget<Experience>(
-      onAcceptWithDetails: (details) {
-        if (!mounted) return;
-        setState(() {
-          activeExperience = details.data;
-          _potCards.clear();
-        });
-      },
+      onAcceptWithDetails: (details) => _onCardDroppedCenter(details.data),
       builder: (context, candidateData, rejectedData) {
-        if (activeExperience != null && _potCards.isEmpty) {
-          return Align(
-            alignment: Alignment.center,
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 400),
-              width: width,
-              height: height,
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: const [
-                  BoxShadow(blurRadius: 12, color: Colors.black26),
-                ],
-              ),
-              child: RepaintBoundary(
-                child: PokerExperienceCard(
-                  experience: activeExperience!,
-                  isCenter: true,
-                  onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute(
-                        builder: (_) => ImmersiveExperienceDetail(
-                            experience: activeExperience!)),
-                  ),
-                ),
-              ),
-            ),
+        final isHovering = candidateData.isNotEmpty;
+
+        // ── Vue "main de poker" (plusieurs cartes dans le pot) ──────────────
+        if (_potCards.isNotEmpty && _activeExperience == null) {
+          return _PokerHandView(
+            potCards: _potCards,
+            cardWidth: cardWidth,
+            cardHeight: cardHeight,
+            isHovering: isHovering,
           );
         }
 
-        if (_potCards.isNotEmpty) {
-          return Align(
-            alignment: Alignment.center,
-            child: ResponsiveBox(
-              paddingSize: ResponsiveSpacing.m,
-              decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha: 0.7),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.yellow, width: 3),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.yellow.withValues(alpha: 0.5),
-                    blurRadius: 15,
-                    spreadRadius: 2,
-                  ),
-                ],
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const ResponsiveText.titleLarge(
-                    "🎰 Main de Poker 🎰",
-                    style: TextStyle(
-                      color: Colors.yellow,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const ResponsiveBox(
-                    paddingSize: ResponsiveSpacing.m,
-                  ),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: _potCards.take(4).map((exp) {
-                      return ResponsiveBox(
-                        paddingSize: ResponsiveSpacing.s,
-                        child: ResponsiveBox(
-                          width: cardWidth,
-                          height: cardHeight,
-                          child: _cardClone(exp),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                  const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
-                  ResponsiveText.headlineSmall(
-                    "${_potCards.length} carte(s) sélectionnée(s)",
-                    style: const TextStyle(color: Colors.white, fontSize: 16),
-                  ),
-                ],
-              ),
-            ),
-          );
-        }
-
-        return Align(
-          alignment: Alignment.center,
-          child: ResponsiveBox(
+        // ── Vue "carte unique" (drop d'une carte) ───────────────────────────
+        if (_activeExperience != null && _potCards.isEmpty) {
+          return AnimatedContainer(
+            duration: const Duration(milliseconds: 400),
             width: width,
             height: height,
-            alignment: Alignment.center,
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey.withValues(alpha: 0.5)),
-              borderRadius: BorderRadius.circular(12),
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: const [
+                BoxShadow(blurRadius: 12, color: Colors.black26),
+              ],
             ),
-            child: const ResponsiveText.headlineMedium(
-              "👉 Glisse une carte ici\n🎰 ou utilise les jetons",
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.white, fontSize: 18),
+            child: PokerExperienceCard(
+              experience: _activeExperience!,
+              isCenter: true,
+              onTap: () => _openDetail(_activeExperience!),
             ),
+          );
+        }
+
+        // ── Zone vide (état initial ou après reset) ─────────────────────────
+        return AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          width: width,
+          height: height,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: isHovering
+                  ? Colors.yellowAccent
+                  : Colors.grey.withValues(alpha: 0.5),
+              width: isHovering ? 3 : 1,
+            ),
+            borderRadius: BorderRadius.circular(12),
+            color:
+                isHovering ? Colors.yellowAccent.withValues(alpha: 0.08) : null,
+          ),
+          child: const ResponsiveText.headlineMedium(
+            "👉 Glisse une carte ici\n🎰 ou dépose un jeton",
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.white, fontSize: 18),
           ),
         );
       },
     );
   }
 
+  // ─── Jetons éparpillés (colonne droite) ────────────────────────────────────
+
   List<Widget> _buildScatteredChips(ResponsiveInfo info) {
     const double maxChipSize = 80.0;
-    final proportionalChipSize = info.size.height * 0.15;
-    final chipSize = min(proportionalChipSize, maxChipSize);
+    final chipSize = min(info.size.height * 0.15, maxChipSize);
 
     final positions = [
-      [0.15, 0.10, 'Flutter'], // 15% du haut, 10% de la droite
-      [0.16, 0.15, 'Qualite'],
-      [0.20, 0.12, 'Relation Client'],
-      [0.09, 0.07, 'Logistique'],
+      (0.10, 0.08, 'Flutter'),
+      (0.18, 0.14, 'Full-Stack'),
+      (0.28, 0.09, 'CI/CD'),
+      (0.06, 0.06, 'Riverpod'),
     ];
 
     return positions.map((pos) {
-      final competenceName = pos[2] as String;
-
       return Positioned(
-        top: info.size.height * (pos[0] as double),
-        right: info.size.width * (pos[1] as double),
-        key: ValueKey('scattered_chip_${competenceName}_${pos[0]}_${pos[1]}'),
+        top: info.size.height * pos.$1,
+        right: info.size.width * pos.$2,
+        key: ValueKey('chip_${pos.$3}'),
         child: CompetenceChip(
-          competenceName: competenceName,
+          competenceName: pos.$3,
           size: chipSize,
         ),
       );
     }).toList();
   }
 
+  // ─── Layout principal ──────────────────────────────────────────────────────
+
   Widget _buildLayout(ResponsiveInfo info) {
     return Stack(
       children: [
+        // Fond
         Positioned.fill(
           child: SmartImage(
             path: 'assets/images/backgrounds/tapis_poker.png',
@@ -418,93 +353,90 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
             enableShimmer: true,
           ),
         ),
+
         Column(
           children: [
-            // ✅ ROW 1: Pile de cartes, Cible, Jetons éparpillés
+            // ── Ligne principale ────────────────────────────────────────────
             Expanded(
               flex: 85,
               child: Row(
                 children: [
-                  // Colonne 1: Pile de cartes
+                  // Colonne gauche : pile de cartes
                   Expanded(
-                    flex: 30,
-                    child: ResponsiveBox(
-                      child: _buildCardPile(info),
-                    ),
+                    flex: 25,
+                    child: _buildCardPile(info),
                   ),
-                  // Colonne 2: Zone cible centrale
+                  // Colonne centrale : zone de drop
                   Expanded(
                     flex: 50,
-                    child: ResponsiveBox(
+                    child: Padding(
                       padding: EdgeInsets.symmetric(
                         horizontal: info.size.width * 0.01,
                         vertical: info.size.height * 0.02,
                       ),
-                      child: _buildCardTarget(info),
+                      child: Center(child: _buildCardTarget(info)),
                     ),
                   ),
-                  // Colonne 3: Jetons éparpillés
+                  // Colonne droite : jetons
                   Expanded(
-                    flex: 30,
-                    child: ResponsiveBox(
+                    flex: 25,
+                    child: Padding(
                       padding: EdgeInsets.only(
                         right: info.size.width * 0.01,
                         left: info.size.width * 0.02,
                         top: info.size.height * 0.05,
                       ),
                       child: Stack(
-                        children: _buildScatteredChips(info),
-                      ),
+                          fit: StackFit.expand,
+                          children: _buildScatteredChips(info)),
                     ),
                   ),
                 ],
               ),
             ),
-            // ✅ ROW 2: Compétences et Pot
+
+            // ── Ligne inférieure : compétences + pot ────────────────────────
             Expanded(
               flex: 40,
               child: Row(
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.end,
-                spacing: 33,
                 children: [
-                  // Colonne 1: Rangée de compétences
+                  // Compétences par niveau
                   Expanded(
-                      flex: 60,
-                      child: Stack(
-                        children: [
-                          Positioned.fill(
-                            child: ResponsiveBox(
-                              alignment: Alignment.bottomCenter,
-                              child: const CompetencesPilesByNiveau(),
-                            ),
-                          )
-                        ],
-                      )),
-                  // Colonne 2: Pot
+                    flex: 60,
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        Positioned.fill(
+                          child: Align(
+                            alignment: Alignment.bottomCenter,
+                            child: const CompetencesPilesByNiveau(),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Pot interactif
                   Expanded(
-                      flex: 40,
-                      child: ResponsiveBox(
-                        padding: EdgeInsets.only(
-                          right: info.size.width * 0.02,
-                          left: info.size.width * 0.02,
-                          bottom: info.size.height * 0.02,
-                          top: info.size.height * 0.02,
-                        ),
-                        child: Stack(
-                          clipBehavior: Clip.none,
-                          children: [
-                            InteractivePot(
-                              experiences: widget.experiences,
-                              cardKeys: _cardKeys,
-                              flyCard: _flyCard,
-                              onCardsArrivedInPot: _onCardsArrivedInPot,
-                              onPotCleared: _onPotCleared,
-                            ),
-                          ],
-                        ),
-                      )),
+                    flex: 40,
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                        right: info.size.width * 0.02,
+                        left: info.size.width * 0.02,
+                        bottom: info.size.height * 0.02,
+                        top: info.size.height * 0.02,
+                      ),
+                      child: InteractivePot(
+                        experiences: widget.experiences,
+                        cardKeys: _cardKeys,
+                        flyCard: _flyCard,
+                        onCardsArrivedInPot: _onCardsArrivedInPot,
+                        onPotCleared: _onPotCleared,
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -513,6 +445,8 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
       ],
     );
   }
+
+  // ─── Build ─────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
@@ -524,20 +458,17 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
       return Scaffold(
         backgroundColor: Colors.black,
         body: Center(
-          child: ResponsiveBox(
-            paddingSize: ResponsiveSpacing.l,
+          child: Padding(
+            padding: const EdgeInsets.all(32),
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.screen_rotation,
-                    size: 80, color: Colors.yellow),
-                const ResponsiveBox(height: 24),
+              children: const [
+                Icon(Icons.screen_rotation, size: 80, color: Colors.yellow),
+                SizedBox(height: 24),
                 ResponsiveText.headlineMedium(
-                  isSmartphone
-                      ? "🔄 Tourne ton appareil en mode paysage\npour accéder au jeu !"
-                      : "📺 L'écran est trop petit pour le mode jeu.\nEssaie sur un appareil plus grand.",
+                  "🔄 Tourne ton appareil en mode paysage\npour accéder au jeu !",
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Colors.white,
                     fontSize: 20,
                     height: 1.4,
@@ -550,8 +481,126 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
       );
     }
 
-    return Scaffold(
-      body: _buildLayout(info),
+    return Scaffold(body: _buildLayout(info));
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Clone léger d'une carte (widget stateless, pas de loading)
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _CardClone extends StatelessWidget {
+  final Experience exp;
+  const _CardClone({required this.exp});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 6,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Column(
+        children: [
+          if (exp.image.isNotEmpty)
+            Expanded(
+              child: ClipRRect(
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(12)),
+                child: SmartImage(
+                  path: exp.image,
+                  fit: BoxFit.cover,
+                  // ✅ FIX 2 : pas de shimmer dans les clones pour éviter
+                  // le chargement circulaire infini
+                  enableShimmer: false,
+                  autoPreload: false,
+                  fallbackIcon: Icons.business,
+                ),
+              ),
+            ),
+          Padding(
+            padding: const EdgeInsets.all(4),
+            child: ResponsiveText.bodySmall(
+              exp.entreprise,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Vue "main de poker" (plusieurs cartes dans le pot)
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _PokerHandView extends StatelessWidget {
+  final List<Experience> potCards;
+  final double cardWidth;
+  final double cardHeight;
+  final bool isHovering;
+
+  const _PokerHandView({
+    required this.potCards,
+    required this.cardWidth,
+    required this.cardHeight,
+    required this.isHovering,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.black.withValues(alpha: isHovering ? 0.8 : 0.7),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: isHovering ? Colors.white : Colors.yellow,
+          width: 3,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.yellow.withValues(alpha: 0.5),
+            blurRadius: 15,
+            spreadRadius: 2,
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const ResponsiveText.titleLarge(
+            "🎰 Main de Poker 🎰",
+            style: TextStyle(
+              color: Colors.yellow,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: potCards.take(4).map((exp) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: SizedBox(
+                  width: cardWidth,
+                  height: cardHeight,
+                  child: _CardClone(exp: exp),
+                ),
+              );
+            }).toList(),
+          ),
+          const SizedBox(height: 8),
+          ResponsiveText.headlineSmall(
+            "${potCards.length} carte(s) sélectionnée(s)",
+            style: const TextStyle(color: Colors.white, fontSize: 16),
+          ),
+        ],
+      ),
     );
   }
 }

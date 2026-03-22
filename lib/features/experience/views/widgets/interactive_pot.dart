@@ -64,8 +64,10 @@ class _InteractivePotState extends ConsumerState<InteractivePot>
     );
     _fallingTags.add(entry);
     overlay.insert(entry);
-    Future.delayed(const Duration(milliseconds: 600), () {
-      entry.remove();
+    Future.delayed(const Duration(milliseconds: 900), () {
+      if (entry.mounted) {
+        entry.remove();
+      }
       _fallingTags.remove(entry);
     });
   }
@@ -81,19 +83,43 @@ class _InteractivePotState extends ConsumerState<InteractivePot>
         end: target,
         size: size,
         child: CompetenceChip(competenceName: tag),
-        onEnd: () => entry.remove(),
+        onEnd: () {
+          if (entry.mounted) entry.remove();
+        },
       ),
     );
     overlay.insert(entry);
   }
 
-  void _onCoinDrop(String tag) {
-    final comp = competences.firstWhere(
-      (c) => c.nom.toLowerCase() == tag.toLowerCase(),
-    );
-    final cardsToFly = widget.experiences
-        .where((e) => comp.entreprises.contains(e.entreprise))
-        .toList();
+  /// ✅ FIX 3 : correspondance insensible à la casse entre tag de compétence
+  /// et tags de l'expérience.
+  void _onCoinDrop(String competenceTag) {
+    // Cherche la compétence par nom (insensible à la casse)
+    Competence? comp;
+    try {
+      comp = competences.firstWhere(
+        (c) => c.nom.toLowerCase() == competenceTag.toLowerCase(),
+      );
+    } catch (_) {
+      // Compétence non trouvée → rien à faire
+      return;
+    }
+
+    // Récupère les expériences dont l'entreprise est listée dans la compétence
+    // OU dont un tag correspond au nom de la compétence (comparaison souple)
+    final cardsToFly = widget.experiences.where((e) {
+      // Correspondance par entreprise (référence directe dans la compétence)
+      if (comp!.entreprises.any(
+        (ent) => ent.toLowerCase() == e.entreprise.toLowerCase(),
+      )) {
+        return true;
+      }
+      // Correspondance par tags de l'expérience (insensible à la casse)
+      return e.tags.any(
+        (t) => t.toLowerCase() == competenceTag.toLowerCase(),
+      );
+    }).toList();
+
     widget.onCardsArrivedInPot?.call(cardsToFly);
   }
 
@@ -122,152 +148,188 @@ class _InteractivePotState extends ConsumerState<InteractivePot>
             ? 140.0
             : 160.0;
 
-    return Positioned(
-      bottom: info.isPortrait ? 20 : 10,
-      right: info.isPortrait ? 30 : 10,
-      child: DragTarget<String>(
-        onAcceptWithDetails: (details) {
-          final tag = details.data;
-          _triggerFeedback();
+    return DragTarget<String>(
+      onAcceptWithDetails: (details) {
+        final tag = details.data;
+        _triggerFeedback();
 
-          if (!activeTags.contains(tag)) {
-            tagsNotifier.setTags([...activeTags, tag]);
-            _onCoinDrop(tag);
+        if (activeTags.contains(tag)) return; // Jeton déjà dans le pot
 
-            final cardsToFly =
-                widget.experiences.where((e) => e.tags.contains(tag)).toList();
+        tagsNotifier.setTags([...activeTags, tag]);
 
+        // ✅ FIX 3 : déclenche la récupération des cartes liées
+        _onCoinDrop(tag);
+
+        // Calcule la cible (centre de l'écran)
+        final cardWidth = info.cardWidth;
+        final cardHeight = cardWidth * info.cardHeightRatio;
+        final target = Offset(
+          info.size.width / 2 - cardWidth / 2,
+          info.size.height / 2 - cardHeight / 2,
+        );
+
+        // Anime les cartes correspondantes vers le centre
+        final relatedCards = widget.experiences.where((e) {
+          Competence? comp;
+          try {
+            comp = competences.firstWhere(
+              (c) => c.nom.toLowerCase() == tag.toLowerCase(),
+            );
+          } catch (_) {
+            return false;
+          }
+          return comp.entreprises.any(
+                (ent) => ent.toLowerCase() == e.entreprise.toLowerCase(),
+              ) ||
+              e.tags.any((t) => t.toLowerCase() == tag.toLowerCase());
+        }).toList();
+
+        for (final exp in relatedCards) {
+          widget.flyCard(exp, target, context, flyUp: true);
+        }
+
+        if (relatedCards.isNotEmpty) {
+          cardNotifier.flyCardsUp(relatedCards.map((e) => e.id).toList());
+        }
+
+        // Animation du jeton
+        _flyChip(tag, target);
+        final startPos = details.offset;
+        final endPos = Offset(
+          info.size.width - potSize / 2 - 20,
+          info.size.height - potSize / 2 - 20,
+        );
+        _fallTag(tag, startPos, endPos);
+      },
+      builder: (context, candidateData, rejectedData) {
+        final glow = candidateData.isNotEmpty;
+
+        return ScaleTransition(
+          scale: _scale,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            width: potSize,
+            height: potSize,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.black.withValues(alpha: 0.75),
+              border: glow
+                  ? Border.all(color: Colors.yellowAccent, width: 4)
+                  : Border.all(
+                      color: Colors.white.withValues(alpha: 0.2), width: 1),
+              boxShadow: [
+                if (glow)
+                  BoxShadow(
+                    color: Colors.yellowAccent.withValues(alpha: 0.6),
+                    blurRadius: 25,
+                  ),
+              ],
+            ),
+            child: activeTags.isEmpty
+                ? _buildEmptyPot()
+                : _buildFilledPot(activeTags, potSize, info),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildEmptyPot() {
+    return const Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(Icons.casino_outlined, color: Colors.white54, size: 28),
+        SizedBox(height: 4),
+        ResponsiveText.bodySmall(
+          "Dépose\nun jeton",
+          style: TextStyle(color: Colors.white70, fontSize: 10),
+          textAlign: TextAlign.center,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFilledPot(
+    List<String> activeTags,
+    double potSize,
+    ResponsiveInfo info,
+  ) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Jetons empilés
+        SizedBox(
+          width: potSize * 0.8,
+          height: potSize * 0.5,
+          child: Stack(
+            alignment: Alignment.center,
+            clipBehavior: Clip.none,
+            children: activeTags.take(4).toList().asMap().entries.map((e) {
+              return Positioned(
+                left: e.key * 6.0,
+                top: e.key * 4.0,
+                child: _buildTagChip(e.value, opacity: 0.9 - e.key * 0.15),
+              );
+            }).toList(),
+          ),
+        ),
+        const SizedBox(height: 4),
+        // Bouton "Vider"
+        GestureDetector(
+          onTap: () {
+            ref.read(activeTagsProvider.notifier).clearTags();
+            widget.onPotCleared?.call();
+
+            for (final entry in List.from(_fallingTags)) {
+              if (entry.mounted) entry.remove();
+            }
+            _fallingTags.clear();
+
+            // Remet les cartes dans la pile
             final cardWidth = info.cardWidth;
             final cardHeight = cardWidth * info.cardHeightRatio;
-            final target = Offset(
-              info.size.width / 2 - cardWidth / 2,
-              info.size.height / 2 - cardHeight / 2,
-            );
 
-            for (var exp in cardsToFly) {
-              widget.flyCard(exp, target, context, flyUp: true);
+            for (final exp in widget.experiences) {
+              final ctx = widget.cardKeys[exp.id]?.currentContext;
+              if (ctx != null && ctx.findRenderObject() is RenderBox) {
+                final rb = ctx.findRenderObject() as RenderBox;
+                final target = rb.localToGlobal(Offset(
+                  info.size.width * 0.15 - cardWidth / 2,
+                  info.size.height / 2 - cardHeight / 2,
+                ));
+                widget.flyCard(exp, target, context, flyUp: false);
+              }
             }
-
-            cardNotifier.flyCardsUp(
-              cardsToFly.map((e) => e.entreprise).toList(),
-            );
-
-            _flyChip(tag, target);
-            final startPos = details.offset;
-            final endPos = Offset(info.size.width - potSize / 2 - 20,
-                info.size.height - potSize / 2 - 20);
-            _fallTag(tag, startPos, endPos);
-          }
-        },
-        builder: (context, candidateData, rejectedData) {
-          final glow = candidateData.isNotEmpty;
-          return ScaleTransition(
-            scale: _scale,
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              width: potSize,
-              height: potSize,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.black.withValues(alpha: 120),
-                border: glow
-                    ? Border.all(color: Colors.yellowAccent, width: 4)
-                    : null,
-                boxShadow: [
-                  if (glow)
-                    BoxShadow(
-                      color: Colors.yellowAccent.withValues(alpha: 150),
-                      blurRadius: 25,
-                    ),
-                ],
-              ),
-              child: SingleChildScrollView(
-                physics: const NeverScrollableScrollPhysics(),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min, // ✅ empêche le débordement
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    if (activeTags.isEmpty)
-                      const ResponsiveText.bodyMedium(
-                        "Glisse un jeton ici",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ResponsiveBox(
-                      width: potSize * 0.9,
-                      height: potSize * 0.9,
-                      child: Stack(
-                        clipBehavior: Clip.none,
-                        children: [
-                          for (int i = 0; i < activeTags.length; i++)
-                            Positioned(
-                              left: (i * 6).toDouble(),
-                              top: (i * 4).toDouble(),
-                              child: _buildTagChip(
-                                activeTags[i],
-                                opacity: 0.9 - i * 0.1,
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                    if (activeTags.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: ResponsiveButton(
-                          onPressed: () {
-                            tagsNotifier.clearTags();
-                            widget.onPotCleared?.call();
-
-                            for (var e in _fallingTags) {
-                              e.remove();
-                            }
-                            _fallingTags.clear();
-
-                            final cardWidth = info.cardWidth;
-                            final cardHeight = cardWidth * info.cardHeightRatio;
-
-                            for (var e in widget.experiences) {
-                              final ctx = widget.cardKeys[e.id]?.currentContext;
-                              if (ctx != null &&
-                                  ctx.findRenderObject() is RenderBox) {
-                                final rb = ctx.findRenderObject() as RenderBox;
-                                final target = rb.localToGlobal(Offset(
-                                  info.size.width * 0.15 - cardWidth / 2,
-                                  info.size.height / 2 - cardHeight / 2,
-                                ));
-                                widget.flyCard(e, target, context,
-                                    flyUp: false);
-                              }
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red,
-                            minimumSize: Size(potSize * 0.8, 36),
-                          ),
-                          child: const ResponsiveText.bodySmall(
-                            "Vider le pot",
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.red.withValues(alpha: 0.8),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const ResponsiveText.bodySmall(
+              "Vider",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
               ),
             ),
-          );
-        },
-      ),
+          ),
+        ),
+      ],
     );
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    for (final entry in _fallingTags) {
+      if (entry.mounted) entry.remove();
+    }
     super.dispose();
   }
 }
