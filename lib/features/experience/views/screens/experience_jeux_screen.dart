@@ -43,12 +43,15 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
   }
 
   void _initializeCardKeys() {
-    // On ne vide plus brutalement la map avec .clear()
-    // pour éviter de perdre les références stables.
-    for (final exp in widget.experiences) {
-      // ✅ On utilise putIfAbsent : on crée la clé uniquement si l'ID est nouveau
-      _cardKeys.putIfAbsent(
-          exp.id, () => GlobalKey(debugLabel: 'card_${exp.id}'));
+    _cardKeys
+        .clear(); // Dans ce cas précis, on vide pour reconstruire proprement par index
+
+    for (int i = 0; i < widget.experiences.length; i++) {
+      final exp = widget.experiences[i];
+      // On crée une clé basée sur l'index + l'entreprise pour être sûr à 100%
+      final uniqueId = "${exp.entreprise}_$i";
+      _cardKeys[exp.id.isEmpty ? uniqueId : exp.id] =
+          GlobalKey(debugLabel: 'card_$uniqueId');
     }
 
     // Optionnel : Nettoyer les clés des expériences qui ne sont plus dans la liste
@@ -183,61 +186,57 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
         min(info.size.width * 0.11, maxCardWidth).clamp(50.0, 80.0);
     final cardHeight = cardWidth * 1.33;
 
-    // ✅ FIX layout : ListView avec items de hauteur fixe — pas de Stack
-    // dans un ScrollView à hauteur infinie, ce qui causait RenderTransform
-    // "infinite size" (unbounded height constraint).
-    return SizedBox(
-      width: info.size.width * 0.22,
-      child: ListView.builder(
-        padding: EdgeInsets.only(
-          top: info.size.height * 0.12,
-          left: 8,
-          right: 8,
-          bottom: 16,
-        ),
-        itemCount: pile.length,
-        itemExtent: cardHeight + 10, // hauteur fixe par item → pas d'infini
-        itemBuilder: (context, index) {
-          final exp = pile[index];
-          final angle = (index % 2 == 0 ? 1 : -1) * ((index % 5) + 3.0);
+    // Espace entre les cartes dans la pile (chevauchement)
+    final double overlapShift = cardHeight * 0.15;
 
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4),
-            child: Transform.rotate(
-              angle: angle * pi / 180,
-              // ✅ alignment centre pour éviter le débordement lors de la rotation
-              alignment: Alignment.center,
-              child: SizedBox(
-                key: _cardKeys[exp.id],
-                width: cardWidth,
-                height: cardHeight,
-                child: Draggable<Experience>(
-                  data: exp,
-                  feedback: Material(
-                    color: Colors.transparent,
+    return Container(
+      width: info.size.width * 0.22,
+      child: SingleChildScrollView(
+        padding: EdgeInsets.only(top: info.size.height * 0.05, bottom: 20),
+        // On donne assez de place pour scroller si la pile est grande
+        child: Container(
+          height: (pile.length * overlapShift) + cardHeight + 50,
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: List.generate(pile.length, (index) {
+              final exp = pile[index];
+              final angle = (index % 2 == 0 ? 1 : -1) * ((index % 5) + 2.0);
+
+              // ✅ CRUCIAL : Générer la même clé que dans _initializeCardKeys
+              final keyId =
+                  exp.id.isEmpty ? "${exp.entreprise}_$index" : exp.id;
+
+              return Positioned(
+                top: index * overlapShift,
+                left: 8,
+                child: Transform.rotate(
+                  angle: angle * pi / 180,
+                  child: Draggable<Experience>(
+                    data: exp,
+                    feedback: Material(
+                      color: Colors.transparent,
+                      child: _CardClone(exp: exp),
+                    ),
+                    childWhenDragging: Opacity(
+                      opacity: 0.2,
+                      child: _CardClone(exp: exp),
+                    ),
                     child: SizedBox(
+                      key: _cardKeys[keyId],
                       width: cardWidth,
                       height: cardHeight,
                       child: _CardClone(exp: exp),
                     ),
                   ),
-                  childWhenDragging: SizedBox(
-                    width: cardWidth,
-                    height: cardHeight,
-                    child: Opacity(
-                      opacity: 0.3,
-                      child: _CardClone(exp: exp),
-                    ),
-                  ),
-                  child: _CardClone(exp: exp),
                 ),
-              ),
-            ),
-          );
-        },
+              );
+            }),
+          ),
+        ),
       ),
     );
   }
+
   // ─── Zone cible centrale ───────────────────────────────────────────────────
 
   Widget _buildCardTarget(ResponsiveInfo info) {
@@ -357,93 +356,79 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
           ),
         ),
 
-        Column(
-          children: [
-            // ── Ligne principale ────────────────────────────────────────────
-            Expanded(
-              flex: 85,
-              child: Row(
-                children: [
-                  // Colonne gauche : pile de cartes
-                  Expanded(
-                    flex: 25,
-                    child: _buildCardPile(info),
-                  ),
-                  // Colonne centrale : zone de drop
-                  Expanded(
-                    flex: 50,
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: info.size.width * 0.01,
-                        vertical: info.size.height * 0.02,
+        LayoutBuilder(
+          builder: (context, constraints) {
+            return Column(
+              children: [
+                // ── Ligne principale ────────────────────────────────────────────
+                Expanded(
+                  flex: 58,
+                  child: Row(
+                    children: [
+                      // Colonne gauche : pile de cartes
+                      Expanded(
+                        flex: 25,
+                        child: _buildCardPile(info),
                       ),
-                      child: Center(child: _buildCardTarget(info)),
-                    ),
-                  ),
-                  // Colonne droite : jetons
-                  Expanded(
-                    flex: 25,
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                        right: info.size.width * 0.01,
-                        left: info.size.width * 0.02,
-                        top: info.size.height * 0.05,
+                      // Colonne centrale : zone de drop
+                      Expanded(
+                        flex: 50,
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: info.size.width * 0.01,
+                            vertical: info.size.height * 0.02,
+                          ),
+                          child: Center(child: _buildCardTarget(info)),
+                        ),
                       ),
-                      child: Stack(
-                          fit: StackFit.expand,
-                          children: _buildScatteredChips(info)),
-                    ),
+                      // Colonne droite : jetons
+                      Expanded(
+                        flex: 25,
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                            right: info.size.width * 0.01,
+                            left: info.size.width * 0.02,
+                            top: info.size.height * 0.05,
+                          ),
+                          child: Stack(
+                              fit: StackFit.expand,
+                              children: _buildScatteredChips(info)),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
+                ),
 
-            // ── Ligne inférieure : compétences + pot ────────────────────────
-            Expanded(
-              flex: 40,
-              child: Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  // Compétences par niveau
-                  Expanded(
-                    flex: 60,
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        Positioned.fill(
-                          child: Align(
-                            alignment: Alignment.bottomCenter,
-                            child: const CompetencesPilesByNiveau(),
+                // ── Ligne inférieure : compétences + pot ────────────────────────
+                Expanded(
+                  flex:
+                      38, // Un peu moins de 40 pour garder une marge de sécurité
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Expanded(
+                          flex: 60, child: const CompetencesPilesByNiveau()),
+                      Expanded(
+                        flex: 40,
+                        child: Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: InteractivePot(
+                            experiences: widget.experiences,
+                            cardKeys: _cardKeys,
+                            flyCard: _flyCard,
+                            onCardsArrivedInPot: _onCardsArrivedInPot,
+                            onPotCleared: _onPotCleared,
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                  // Pot interactif
-                  Expanded(
-                    flex: 40,
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                        right: info.size.width * 0.02,
-                        left: info.size.width * 0.02,
-                        bottom: info.size.height * 0.02,
-                        top: info.size.height * 0.02,
                       ),
-                      child: InteractivePot(
-                        experiences: widget.experiences,
-                        cardKeys: _cardKeys,
-                        flyCard: _flyCard,
-                        onCardsArrivedInPot: _onCardsArrivedInPot,
-                        onPotCleared: _onPotCleared,
-                      ),
-                    ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-          ],
+                ),
+                // ✅ Petite marge de sécurité en bas (les fameux 2% restants)
+                const Spacer(flex: 4),
+              ],
+            );
+          },
         ),
       ],
     );
@@ -507,34 +492,37 @@ class _CardClone extends StatelessWidget {
           height: h,
           child: Card(
             elevation: 6,
+            margin: EdgeInsets.zero,
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 if (exp.image.isNotEmpty)
-                  SizedBox(
-                    height: h * 0.70,
-                    child: ClipRRect(
-                      borderRadius:
-                          const BorderRadius.vertical(top: Radius.circular(12)),
-                      child: SmartImage(
-                        path: exp.image,
-                        fit: BoxFit.cover,
-                        // ✅ FIX 2 : pas de shimmer dans les clones pour éviter
-                        // le chargement circulaire infini
-                        enableShimmer: false,
-                        autoPreload: false,
-                        fallbackIcon: Icons.business,
+                  Expanded(
+                    // ✅ Remplace le SizedBox fixe. L'image prend tout l'espace RESTANT
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: ClipRRect(
+                        borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(12)),
+                        child: SmartImage(
+                          path: exp.image,
+                          fit: BoxFit.cover,
+                          enableShimmer: false,
+                          autoPreload: false,
+                          fallbackIcon: Icons.business,
+                        ),
                       ),
                     ),
                   ),
                 Padding(
-                  padding: const EdgeInsets.all(4),
+                  padding: const EdgeInsets.fromLTRB(4, 2, 4, 4),
                   child: ResponsiveText.bodySmall(
                     exp.entreprise,
                     style: const TextStyle(fontWeight: FontWeight.bold),
                     textAlign: TextAlign.center,
-                    maxLines: 2,
+                    maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
