@@ -43,10 +43,17 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
   }
 
   void _initializeCardKeys() {
-    _cardKeys.clear();
+    // On ne vide plus brutalement la map avec .clear()
+    // pour éviter de perdre les références stables.
     for (final exp in widget.experiences) {
-      _cardKeys[exp.id] = GlobalKey(debugLabel: 'card_${exp.id}');
+      // ✅ On utilise putIfAbsent : on crée la clé uniquement si l'ID est nouveau
+      _cardKeys.putIfAbsent(
+          exp.id, () => GlobalKey(debugLabel: 'card_${exp.id}'));
     }
+
+    // Optionnel : Nettoyer les clés des expériences qui ne sont plus dans la liste
+    final currentIds = widget.experiences.map((e) => e.id).toSet();
+    _cardKeys.removeWhere((id, _) => !currentIds.contains(id));
   }
 
   @override
@@ -201,6 +208,7 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
               // ✅ alignment centre pour éviter le débordement lors de la rotation
               alignment: Alignment.center,
               child: SizedBox(
+                key: _cardKeys[exp.id],
                 width: cardWidth,
                 height: cardHeight,
                 child: Draggable<Experience>(
@@ -495,39 +503,51 @@ class _CardClone extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 6,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Column(
-        children: [
-          if (exp.image.isNotEmpty)
-            Expanded(
-              child: ClipRRect(
-                borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(12)),
-                child: SmartImage(
-                  path: exp.image,
-                  fit: BoxFit.cover,
-                  // ✅ FIX 2 : pas de shimmer dans les clones pour éviter
-                  // le chargement circulaire infini
-                  enableShimmer: false,
-                  autoPreload: false,
-                  fallbackIcon: Icons.business,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final w = constraints.hasBoundedWidth ? constraints.maxWidth : 80.0;
+        final h = constraints.hasBoundedHeight ? constraints.maxHeight : 106.0;
+        return SizedBox(
+          width: w,
+          height: h,
+          child: Card(
+            elevation: 6,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            child: Column(
+              children: [
+                if (exp.image.isNotEmpty)
+                  SizedBox(
+                    height: h * 0.70,
+                    child: ClipRRect(
+                      borderRadius:
+                          const BorderRadius.vertical(top: Radius.circular(12)),
+                      child: SmartImage(
+                        path: exp.image,
+                        fit: BoxFit.cover,
+                        // ✅ FIX 2 : pas de shimmer dans les clones pour éviter
+                        // le chargement circulaire infini
+                        enableShimmer: false,
+                        autoPreload: false,
+                        fallbackIcon: Icons.business,
+                      ),
+                    ),
+                  ),
+                Padding(
+                  padding: const EdgeInsets.all(4),
+                  child: ResponsiveText.bodySmall(
+                    exp.entreprise,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-              ),
-            ),
-          Padding(
-            padding: const EdgeInsets.all(4),
-            child: ResponsiveText.bodySmall(
-              exp.entreprise,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
+              ],
             ),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
