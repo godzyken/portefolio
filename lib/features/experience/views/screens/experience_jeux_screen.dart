@@ -184,7 +184,7 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
     const double maxCardWidth = 80;
     final cardWidth =
         min(info.size.width * 0.11, maxCardWidth).clamp(50.0, 80.0);
-    final cardHeight = cardWidth * 1.33;
+    final cardHeight = cardWidth * 1.4;
 
     // Espace entre les cartes dans la pile (chevauchement)
     final double overlapShift = cardHeight * 0.15;
