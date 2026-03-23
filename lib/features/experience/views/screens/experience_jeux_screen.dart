@@ -229,12 +229,7 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
                       child: _CardClone(exp: exp),
                     ),
                   ),
-                  child: SizedBox(
-                    key: _cardKeys[exp.id],
-                    width: cardWidth,
-                    height: cardHeight,
-                    child: _CardClone(exp: exp),
-                  ),
+                  child: _CardClone(exp: exp),
                 ),
               ),
             ),
