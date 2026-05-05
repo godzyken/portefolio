@@ -20,52 +20,42 @@ class EnvConfigService {
   // Google Calendar
   final String? googleCalendarClientId;
 
-  const EnvConfigService({
+  const EnvConfigService._({
     required this.emailJsServiceId,
     required this.emailJsTemplateId,
     required this.emailJsPublicKey,
     required this.whatsappPhone,
     required this.oneDriveUrl,
-    this.wakaTimeApiKey,
-    this.googleCalendarClientId,
+    required this.wakaTimeApiKey,
+    required this.googleCalendarClientId,
   });
 
   /// Factory qui charge depuis String.fromEnvironment
   /// ✅ Compatible avec --dart-define et GitHub Actions
   factory EnvConfigService.fromEnvironment() {
-    return EnvConfigService(
-      emailJsServiceId: const String.fromEnvironment(
-        'EMAILJS_SERVICE_ID',
-        defaultValue: '',
-      ),
-      emailJsTemplateId: const String.fromEnvironment(
-        'EMAILJS_TEMPLATE_ID',
-        defaultValue: '',
-      ),
-      emailJsPublicKey: const String.fromEnvironment(
-        'EMAILJS_PUBLIC_KEY',
-        defaultValue: '',
-      ),
-      whatsappPhone: const String.fromEnvironment(
-        'WHATSAPP_PHONE',
-        defaultValue: '',
-      ),
-      oneDriveUrl: const String.fromEnvironment(
-        'CV_ONEDRIVE_URL',
-        defaultValue: '',
-      ),
-      wakaTimeApiKey: const String.fromEnvironment(
-        'WAKATIME_API_KEY',
-        defaultValue: '',
-      ).isNotEmpty
-          ? const String.fromEnvironment('WAKATIME_API_KEY')
-          : null,
-      googleCalendarClientId: const String.fromEnvironment(
-        'GCC_CLIENT_ID',
-        defaultValue: '',
-      ).isNotEmpty
-          ? const String.fromEnvironment('GCC_CLIENT_ID')
-          : null,
+    final emailJsServiceId = const String.fromEnvironment('EMAILJS_SERVICE_ID');
+
+    final emailJsTemplateId =
+        const String.fromEnvironment('EMAILJS_TEMPLATE_ID');
+
+    final emailJsPublicKey = const String.fromEnvironment('EMAILJS_PUBLIC_KEY');
+
+    final whatsappPhone = const String.fromEnvironment('WHATSAPP_PHONE');
+
+    final oneDriveUrl = const String.fromEnvironment('CV_ONEDRIVE_URL');
+
+    final waka = const String.fromEnvironment('WAKATIME_API_KEY');
+
+    final gcc = const String.fromEnvironment('GCC_CLIENT_ID');
+
+    return EnvConfigService._(
+      emailJsServiceId: emailJsServiceId,
+      emailJsTemplateId: emailJsTemplateId,
+      emailJsPublicKey: emailJsPublicKey,
+      whatsappPhone: whatsappPhone,
+      oneDriveUrl: oneDriveUrl,
+      wakaTimeApiKey: waka.isEmpty ? null : waka,
+      googleCalendarClientId: gcc.isEmpty ? null : gcc,
     );
   }
 
@@ -88,10 +78,11 @@ class EnvConfigService {
     if (oneDriveUrl.isEmpty) {
       errors.add('CV_ONEDRIVE_URL manquant');
     }
-    if (wakaTimeApiKey == null || wakaTimeApiKey!.isEmpty) {
+    if ((wakaTimeApiKey ?? '').isEmpty) {
       errors.add('WAKATIME_API_KEY manquant');
     }
-    if (googleCalendarClientId == null || googleCalendarClientId!.isEmpty) {
+
+    if ((googleCalendarClientId ?? '').isEmpty) {
       errors.add('GCC_CLIENT_ID manquant');
     }
 
@@ -114,6 +105,13 @@ EnvConfigService(
 }
 
 List<Service> parseServices(String responseBody) {
-  final parsed = jsonDecode(responseBody).cast<Map<String, dynamic>>();
-  return parsed.map<Service>((json) => Service.fromJson(json)).toList();
+  final decoded = jsonDecode(responseBody);
+
+  if (decoded is! List) {
+    throw Exception('Format JSON invalide: attendu une liste');
+  }
+
+  return decoded
+      .map<Service>((e) => Service.fromJson(e as Map<String, dynamic>))
+      .toList();
 }

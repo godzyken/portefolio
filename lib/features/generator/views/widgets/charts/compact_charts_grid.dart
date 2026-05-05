@@ -111,9 +111,6 @@ class CompactChartsGrid extends StatelessWidget {
       case ChartType.benchmarkTable:
         final n = chart.benchmarkComparison?.length ?? 1;
         return (160 + n * 30).clamp(200.0, 380.0).toDouble();
-
-      default:
-        return m ? 210.0 : 250.0;
     }
   }
 }

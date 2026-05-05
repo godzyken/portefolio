@@ -25,6 +25,9 @@ linter:
     # prefer_single_quotes: true  # Uncomment to enable the `prefer_single_quotes` rule
     - avoid_unused_constructor_parameters
     - unreachable_from_main  # détecte les classes/fonctions jamais appelées
+    - avoid_print
+    - prefer_final_fields
+    - always_declare_return_types
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options
@@ -36,3 +39,7 @@ analyzer:
   exclude:
     - "**/*.g.dart"
     - "**/*.freezed.dart"
+
+dart_code_metrics:
+  rules:
+    - avoid-non-null-assertion

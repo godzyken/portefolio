@@ -1,3 +1,4 @@
+import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../logging/app_logger.dart';
@@ -32,9 +33,9 @@ base class AppProviderObserver extends ProviderObserver {
     Object? previousValue,
     Object? newValue,
   ) {
-    assert(() {
-      final name = _name(context);
+    final name = _name(context);
 
+    assert(() {
       if (newValue is AsyncError) {
         _log.warning(
           'AsyncError dans $name',
@@ -47,24 +48,51 @@ base class AppProviderObserver extends ProviderObserver {
   }
 
   @override
-  void didFailProvider(
+  void didDisposeProvider(ProviderObserverContext context) {
+    final name = _name(context);
+
+    _log.info('Dispose de $name');
+  }
+
+  @override
+  void mutationReset(
+      ProviderObserverContext context, Mutation<Object?> mutation) {
+    assert(() {
+      _log.debug('Mutation reset : ${_name(context)}');
+      return true;
+    }());
+  }
+
+  @override
+  void mutationStart(
+      ProviderObserverContext context, Mutation<Object?> mutation) {
+    assert(() {
+      _log.debug('Mutation start : ${_name(context)}');
+      return true;
+    }());
+  }
+
+  @override
+  void mutationError(
     ProviderObserverContext context,
+    Mutation<Object?> mutation,
     Object error,
     StackTrace stackTrace,
   ) {
     _log.error(
-      'Provider en erreur : ${_name(context)}',
+      'Mutation error dans ${_name(context)}',
       error: error,
       stackTrace: stackTrace,
     );
   }
 
   @override
-  void didRemoveProvider(
-    ProviderObserverContext context,
-    Object? value,
-  ) {
-    _log.info('Provider supprimé : ${_name(context)}');
+  void mutationSuccess(ProviderObserverContext context,
+      Mutation<Object?> mutation, Object? result) {
+    assert(() {
+      _log.debug('Mutation success : ${_name(context)}');
+      return true;
+    }());
   }
 
   String _name(ProviderObserverContext context) =>

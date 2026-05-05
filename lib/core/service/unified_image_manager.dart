@@ -220,17 +220,23 @@ class UnifiedImageManager with ChangeNotifier {
             info.dispose();
             completer.complete();
           }
-          stream.removeListener(listener!);
+          if (listener != null) {
+            stream.removeListener(listener);
+          }
         },
         onError: (Object error, StackTrace? st) {
           if (!completer.isCompleted) completer.completeError(error, st);
-          stream.removeListener(listener!);
+          if (listener != null) {
+            stream.removeListener(listener);
+          }
         },
       );
       stream.addListener(listener);
 
       await completer.future.timeout(timeout, onTimeout: () {
-        stream.removeListener(listener!);
+        if (listener != null) {
+          stream.removeListener(listener);
+        }
         throw TimeoutException('Timeout: $cleanPath');
       });
 

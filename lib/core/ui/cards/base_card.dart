@@ -85,9 +85,15 @@ class BaseCard extends ConsumerStatefulWidget {
 class _BaseCardState extends ConsumerState<BaseCard> {
   bool _isHovered = false;
 
+  static final _hoverTransform = (Matrix4.identity()
+    ..translateByDouble(0.0, -4.0, 0.0, 0.0)
+    ..scaleByDouble(1.02, 1.02, 1.0, 1.0));
+
+  static final _normalTransform = Matrix4.identity();
+
   @override
   Widget build(BuildContext context) {
-    final info = ref.watch(responsiveInfoProvider);
+    final info = ref.read(responsiveInfoProvider);
     final theme = Theme.of(context);
     final config = widget.config.copyWith(
       margin: widget.config.margin ??
@@ -125,21 +131,20 @@ class _BaseCardState extends ConsumerState<BaseCard> {
           margin: config.margin,
           padding: config.padding,
           transform: config.enableAnimation && _isHovered
-              ? (Matrix4.identity()
-                ..translateByDouble(0.0, -4.0, 0.0, 0.0)
-                ..scaleByDouble(1.02, 1.02, 1.0, 1.0))
-              : Matrix4.identity(),
+              ? _hoverTransform
+              : _normalTransform,
           decoration: BoxDecoration(
             borderRadius: config.borderRadius ?? BorderRadius.circular(12),
             gradient: config.gradient,
             color: config.backgroundColor ?? theme.cardColor,
             boxShadow: config.boxShadow ?? _defaultShadow(theme, _isHovered),
-            border: config.borderColor != null
-                ? Border.all(
-                    color: config.borderColor!,
-                    width: config.borderWidth ?? 1,
-                  )
-                : null,
+            border: switch (config.borderColor) {
+              final color? => Border.all(
+                  color: color,
+                  width: config.borderWidth ?? 1,
+                ),
+              null => null,
+            },
           ),
           constraints: BoxConstraints(
             minHeight: config.minHeight ?? 0,
@@ -206,9 +211,8 @@ class UnifiedContentCard extends StatelessWidget {
                   // Header
                   Row(
                     children: [
-                      if (leading != null) ...[
-                        leading!,
-                        const SizedBox(width: 12)
+                      if (leading case final widget?) ...[
+                        widget,
                       ],
                       Expanded(
                         child: Column(
@@ -220,26 +224,25 @@ class UnifiedContentCard extends StatelessWidget {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            if (subtitle != null)
+                            if (subtitle case final text?)
                               ResponsiveText.bodySmall(
-                                subtitle!,
+                                text,
                                 style: theme.textTheme.bodySmall,
                               ),
                           ],
                         ),
                       ),
-                      if (statusBadge != null) ...[
-                        statusBadge!,
-                        const SizedBox(width: 8),
+                      if (statusBadge case final badge?) ...[
+                        badge,
                       ],
-                      if (trailing != null) trailing!,
+                      if (trailing case final t?) t,
                     ],
                   ),
 
                   // Content
-                  if (content != null) ...[
+                  if (content case final c?) ...[
                     const SizedBox(height: 16),
-                    content!,
+                    c,
                   ],
                 ],
               ),

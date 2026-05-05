@@ -187,7 +187,7 @@ void _onFlutterError(FlutterErrorDetails details) {
 
   if (details.exception.toString().contains('GlobalKey')) {
     _log.info(
-        '=== GlobalKey STACK === — ${details.stack.toString() ?? "inconnu"} — ${details.exceptionAsString()}');
+        '=== GlobalKey STACK === — ${details.stack.toString()} — ${details.exceptionAsString()}');
   }
 }
 

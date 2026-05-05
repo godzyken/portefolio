@@ -98,6 +98,7 @@ class AppLogger {
       // Extrait "fichier.dart:ligne:col"
       final match = RegExp(r'([\w/]+\.dart):(\d+)').firstMatch(line);
       if (match != null) {
+        // ignore: avoid-non-null-assertion
         final file = match.group(1)!.split('/').last; // Juste le nom du fichier
         final lineNum = match.group(2);
         return '$file:$lineNum';

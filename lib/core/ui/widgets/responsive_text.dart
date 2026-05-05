@@ -330,15 +330,20 @@ class ResponsiveButton extends ConsumerWidget {
     final defaultStyle = _baseButtonStyle(constants);
     final mergedStyle = defaultStyle.merge(style);
 
-    final content = child ?? Text(label!);
-    final hasIcon = icon != null;
+    final content = switch ((child, label)) {
+      (final c?, _) => c,
+      (_, final l?) => Text(l),
+      _ => throw StateError('child or label must be provided'),
+    };
+
+    final iconWidget = icon;
 
     return switch (type) {
-      ButtonType.primary => hasIcon
+      ButtonType.primary => iconWidget != null
           ? ElevatedButton.icon(
               onPressed: onPressed,
               style: mergedStyle,
-              icon: icon!,
+              icon: iconWidget,
               label: content,
             )
           : ElevatedButton(
@@ -346,11 +351,11 @@ class ResponsiveButton extends ConsumerWidget {
               style: mergedStyle,
               child: content,
             ),
-      ButtonType.secondary => hasIcon
+      ButtonType.secondary => iconWidget != null
           ? OutlinedButton.icon(
               onPressed: onPressed,
               style: mergedStyle,
-              icon: icon!,
+              icon: iconWidget,
               label: content,
             )
           : OutlinedButton(
@@ -358,11 +363,11 @@ class ResponsiveButton extends ConsumerWidget {
               style: mergedStyle,
               child: content,
             ),
-      ButtonType.text => hasIcon
+      ButtonType.text => iconWidget != null
           ? TextButton.icon(
               onPressed: onPressed,
               style: mergedStyle,
-              icon: icon!,
+              icon: iconWidget,
               label: content,
             )
           : TextButton(

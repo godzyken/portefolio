@@ -56,14 +56,25 @@ class AppointmentNotifier extends Notifier<AppointmentState> {
     state = state.copyWith(status: AppointmentStatus.loading);
 
     try {
-      // Créer la date complète
+      final date = state.selectedDate;
+      final time = state.selectedTime;
+
+      if (date == null || time == null) {
+        state = state.copyWith(
+          status: AppointmentStatus.error,
+          errorMessage: 'Date ou heure invalide',
+        );
+        return false;
+      }
+
       final start = DateTime(
-        state.selectedDate!.year,
-        state.selectedDate!.month,
-        state.selectedDate!.day,
-        state.selectedTime!.hour,
-        state.selectedTime!.minute,
+        date.year,
+        date.month,
+        date.day,
+        time.hour,
+        time.minute,
       );
+
       final end = start.add(const Duration(hours: 1));
 
       // Construire le résumé et la description selon le type
@@ -75,10 +86,12 @@ class AppointmentNotifier extends Notifier<AppointmentState> {
 
       // FIX 1: Gérer la location
       String? eventLocation;
+      final location = state.physicalLocation;
+
       if (state.type == AppointmentType.physical &&
-          state.physicalLocation != null &&
-          state.physicalLocation!.isNotEmpty) {
-        eventLocation = state.physicalLocation;
+          location != null &&
+          location.isNotEmpty) {
+        eventLocation = location;
       }
 
       developer.log('📅 Création RDV: ${start.toIso8601String()}');

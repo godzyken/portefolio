@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:googleapis/calendar/v3.dart' as calendar;
+import 'package:portefolio/core/config/async_config.dart';
 
 import '../model/state/appointment_state.dart';
 import '../model/state/time_slot_state.dart';
@@ -13,7 +14,7 @@ final googleCalendarNotifierProvider =
 );
 
 final googleCalendarServiceProvider = Provider<GoogleCalendarService?>((ref) {
-  return ref.watch(googleCalendarNotifierProvider).value;
+  return ref.watch(googleCalendarNotifierProvider).safe;
 });
 
 final calendarAvailabilityServiceProvider =

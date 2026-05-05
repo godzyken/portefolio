@@ -42,20 +42,26 @@ Future<bool> precacheSingleImageWithConfig(
     listener = ImageStreamListener(
       (ImageInfo? image, bool sync) {
         if (!completer.isCompleted) completer.complete();
-        stream.removeListener(listener!);
+        if (listener != null) {
+          stream.removeListener(listener);
+        }
       },
       onError: (Object exception, StackTrace? stackTrace) {
         if (!completer.isCompleted) {
           completer.completeError(exception, stackTrace);
         }
-        stream.removeListener(listener!);
+        if (listener != null) {
+          stream.removeListener(listener);
+        }
       },
     );
 
     stream.addListener(listener);
 
     await completer.future.timeout(timeout, onTimeout: () {
-      stream.removeListener(listener!);
+      if (listener != null) {
+        stream.removeListener(listener);
+      }
       throw TimeoutException('Precache timed out for $path');
     });
 

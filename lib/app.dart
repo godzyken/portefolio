@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:portefolio/core/config/async_config.dart';
 
 import 'core/exceptions/error/error_screen.dart';
 import 'core/exceptions/error_notifier.dart';
@@ -42,7 +43,7 @@ class MyFullApp extends ConsumerWidget {
       return MaterialApp(
         debugShowCheckedModeBanner: false,
         home: ErrorScreen(
-          error: themeAsync.error!,
+          error: themeAsync.safe,
           stackTrace: themeAsync.stackTrace,
         ),
       );
@@ -79,6 +80,7 @@ class MyFullApp extends ConsumerWidget {
           contextLabel: 'MyFullApp',
           child: PrecacheWrapper(
             maxWaitDuration: const Duration(seconds: 20),
+            // ignore: avoid-non-null-assertion
             child: child!,
           ),
         );
