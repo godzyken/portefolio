@@ -568,7 +568,8 @@
       "assets/images/Emap/7.png",
       "assets/images/Emap/8.png",
       "assets/images/Emap/9.png",
-      "assets/images/Emap/10.png"
+      "assets/images/Emap/10.png",
+      "assets/images/realisations/audit_plan_emap.png"
     ],
     "platform": ["Smartphone", "Tablet", "Desktop", "Web"],
     "tags": [
@@ -724,7 +725,9 @@
       "assets/images/realisations/emap_partenariat_dashboard.png",
       "assets/images/realisations/emap_collaboration_map.png",
       "assets/images/realisations/emap_crm_integration.png",
-      "assets/images/realisations/emap_team_strategy.png"
+      "assets/images/realisations/emap_team_strategy.png",
+      "assets/images/realisations/boot_sequence_8_stpes.svg",
+      "assets/images/realisations/pre_commit_testing_flow.svg"
     ],
     "platform": ["Web", "Tablet", "Desktop"],
     "tags": [
