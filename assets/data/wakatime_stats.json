@@ -26,9 +26,79 @@
         "ai_prompt_length_median_per_session": 0,
         "ai_sessions": 0,
         "holidays": 0,
-        "status": "ok",
+        "status": "pending_update",
         "created_at": "2026-05-29T06:07:10Z",
         "modified_at": "2026-05-31T03:59:30Z",
+        "human_readable_daily_average": "5 hrs 53 mins",
+        "total_seconds": 148271.164,
+        "operating_systems": [
+            {
+                "total_seconds": 148292.915,
+                "name": "Windows",
+                "percent": 100.0,
+                "digital": "41:11",
+                "decimal": "41.18",
+                "text": "41 hrs 11 mins",
+                "hours": 41,
+                "minutes": 11
+            }
+        ],
+        "editors": [
+            {
+                "total_seconds": 148292.915,
+                "name": "Android Studio",
+                "ai_additions": 0,
+                "ai_deletions": 0,
+                "human_additions": 4975,
+                "human_deletions": 39436,
+                "ai_agent_line_changes": {},
+                "ai_agent_costs": {},
+                "ai_input_tokens": 0,
+                "ai_output_tokens": 0,
+                "ai_prompt_length_avg": 0,
+                "ai_prompt_length_avg_per_session": 0,
+                "ai_prompt_length_median_per_session": 0,
+                "ai_prompt_length_sum": 0,
+                "ai_prompt_events_total": 0,
+                "ai_prompt_events_avg_per_session": 0,
+                "ai_prompt_events_median_per_session": 0,
+                "ai_sessions": 0,
+                "ai_agent_breakdown": [],
+                "ai_agent_total_cost": 0,
+                "percent": 100.0,
+                "digital": "41:11",
+                "decimal": "41.18",
+                "text": "41 hrs 11 mins",
+                "hours": 41,
+                "minutes": 11
+            }
+        ],
+        "human_readable_daily_average_including_other_language": "5 hrs 53 mins",
+        "daily_average_including_other_language": 21185.0,
+        "percent_calculated": 100,
+        "is_up_to_date_pending_future": false,
+        "best_day": {
+            "date": "2026-05-27",
+            "total_seconds": 28883.268,
+            "text": "8 hrs 1 min"
+        },
+        "is_already_updating": false,
+        "machines": [
+            {
+                "total_seconds": 148292.915,
+                "name": "LAPTOP-CUKQT8S6",
+                "machine_name_id": "ccfe4022-9651-4a7c-a1e6-d1fba97eed73",
+                "percent": 100.0,
+                "digital": "41:11",
+                "decimal": "41.18",
+                "text": "41 hrs 11 mins",
+                "hours": 41,
+                "minutes": 11
+            }
+        ],
+        "total_seconds_including_other_language": 148292.915,
+        "human_readable_total_including_other_language": "41 hrs 11 mins",
+        "days_minus_holidays": 7,
         "ai_agent_breakdown": [],
         "projects": [
             {
@@ -88,61 +158,9 @@
                 "minutes": 0
             }
         ],
-        "human_readable_daily_average_including_other_language": "5 hrs 53 mins",
-        "machines": [
-            {
-                "total_seconds": 148292.915,
-                "name": "LAPTOP-CUKQT8S6",
-                "machine_name_id": "ccfe4022-9651-4a7c-a1e6-d1fba97eed73",
-                "percent": 100.0,
-                "digital": "41:11",
-                "decimal": "41.18",
-                "text": "41 hrs 11 mins",
-                "hours": 41,
-                "minutes": 11
-            }
-        ],
-        "human_readable_total_including_other_language": "41 hrs 11 mins",
-        "is_stuck": false,
+        "ai_agent_total_cost": 0,
         "human_readable_total": "41 hrs 11 mins",
-        "operating_systems": [
-            {
-                "total_seconds": 148292.915,
-                "name": "Windows",
-                "percent": 100.0,
-                "digital": "41:11",
-                "decimal": "41.18",
-                "text": "41 hrs 11 mins",
-                "hours": 41,
-                "minutes": 11
-            }
-        ],
-        "is_up_to_date_pending_future": false,
         "daily_average": 21182.0,
-        "days_including_holidays": 7,
-        "categories": [
-            {
-                "name": "Coding",
-                "total_seconds": 80317.795,
-                "percent": 54.16,
-                "digital": "22:18",
-                "decimal": "22.30",
-                "text": "22 hrs 18 mins",
-                "hours": 22,
-                "minutes": 18
-            },
-            {
-                "name": "Writing Tests",
-                "total_seconds": 67975.12,
-                "percent": 45.84,
-                "digital": "18:52",
-                "decimal": "18.87",
-                "text": "18 hrs 52 mins",
-                "hours": 18,
-                "minutes": 52
-            }
-        ],
-        "human_readable_daily_average": "5 hrs 53 mins",
         "languages": [
             {
                 "name": "Dart",
@@ -263,38 +281,6 @@
                 "text": "0 secs",
                 "hours": 0,
                 "minutes": 0
-            }
-        ],
-        "ai_agent_total_cost": 0,
-        "percent_calculated": 100,
-        "editors": [
-            {
-                "total_seconds": 148292.915,
-                "name": "Android Studio",
-                "ai_additions": 0,
-                "ai_deletions": 0,
-                "human_additions": 4975,
-                "human_deletions": 39436,
-                "ai_agent_line_changes": {},
-                "ai_agent_costs": {},
-                "ai_input_tokens": 0,
-                "ai_output_tokens": 0,
-                "ai_prompt_length_avg": 0,
-                "ai_prompt_length_avg_per_session": 0,
-                "ai_prompt_length_median_per_session": 0,
-                "ai_prompt_length_sum": 0,
-                "ai_prompt_events_total": 0,
-                "ai_prompt_events_avg_per_session": 0,
-                "ai_prompt_events_median_per_session": 0,
-                "ai_sessions": 0,
-                "ai_agent_breakdown": [],
-                "ai_agent_total_cost": 0,
-                "percent": 100.0,
-                "digital": "41:11",
-                "decimal": "41.18",
-                "text": "41 hrs 11 mins",
-                "hours": 41,
-                "minutes": 11
             }
         ],
         "dependencies": [
@@ -429,17 +415,31 @@
                 "minutes": 0
             }
         ],
-        "days_minus_holidays": 7,
-        "total_seconds_including_other_language": 148292.915,
+        "is_stuck": false,
         "is_up_to_date": true,
-        "best_day": {
-            "date": "2026-05-27",
-            "total_seconds": 28883.268,
-            "text": "8 hrs 1 min"
-        },
-        "is_already_updating": false,
-        "total_seconds": 148271.164,
-        "daily_average_including_other_language": 21185.0,
+        "categories": [
+            {
+                "name": "Coding",
+                "total_seconds": 80317.795,
+                "percent": 54.16,
+                "digital": "22:18",
+                "decimal": "22.30",
+                "text": "22 hrs 18 mins",
+                "hours": 22,
+                "minutes": 18
+            },
+            {
+                "name": "Writing Tests",
+                "total_seconds": 67975.12,
+                "percent": 45.84,
+                "digital": "18:52",
+                "decimal": "18.87",
+                "text": "18 hrs 52 mins",
+                "hours": 18,
+                "minutes": 52
+            }
+        ],
+        "days_including_holidays": 7,
         "is_cached": true,
         "username": "addi_kichi",
         "is_including_today": false,
