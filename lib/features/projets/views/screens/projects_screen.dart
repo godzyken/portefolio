@@ -196,7 +196,13 @@ class _ProjectCardState extends State<_ProjectCard> {
         onLongPress: widget.onLongPress,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
-          transform: Matrix4.identity()..translate(0.0, _hovered ? -4.0 : 0.0),
+          transform: Matrix4.identity()
+            ..translateByDouble(
+              0.0,
+              _hovered ? -4.0 : 0.0,
+              0.0,
+              1.0,
+            ),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
             border: Border.all(

@@ -189,12 +189,12 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
     // Espace entre les cartes dans la pile (chevauchement)
     final double overlapShift = cardHeight * 0.15;
 
-    return Container(
+    return SizedBox(
       width: info.size.width * 0.22,
       child: SingleChildScrollView(
         padding: EdgeInsets.only(top: info.size.height * 0.05, bottom: 20),
         // On donne assez de place pour scroller si la pile est grande
-        child: Container(
+        child: SizedBox(
           height: (pile.length * overlapShift) + cardHeight + 50,
           child: Stack(
             clipBehavior: Clip.none,

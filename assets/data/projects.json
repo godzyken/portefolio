@@ -572,6 +572,7 @@
       "assets/images/realisations/audit_plan_emap.png"
     ],
     "platform": ["Smartphone", "Tablet", "Desktop", "Web"],
+    "lienProjet": "https://emap-82.fr",
     "tags": [
       "Flutter",
       "Riverpod3",

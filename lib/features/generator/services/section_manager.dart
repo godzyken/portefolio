@@ -23,6 +23,11 @@ class SectionManager {
       _buildHeroSection(),
     ];
 
+    // SectionAperçu
+    if (hasLivePreview()) {
+      sections.add(_buildLivePreviewSection());
+    }
+
     // Section développement (WakaTime)
     if (hasProgrammingTag()) {
       sections.add(_buildWakaTimeSection());
@@ -65,6 +70,19 @@ class SectionManager {
         project: project,
         info: info,
         hasProgrammingTag: hasProgrammingTag(),
+      ),
+    );
+  }
+
+  ProjectSection _buildLivePreviewSection() {
+    return ProjectSection(
+      id: 'live_preview',
+      title: 'Aperçu',
+      icon: Icons.preview,
+      builder: (context, info) => LivePreviewSection(
+        url: project.lienProjet!,
+        projectTitle: project.title,
+        info: info,
       ),
     );
   }
@@ -156,6 +174,11 @@ class SectionManager {
     });
 
     return titleMatches || pointsMatch;
+  }
+
+  /// Détecte si le projet a des liens vers un site déployé (preview live)
+  bool hasLivePreview() {
+    return project.lienProjet != null && project.lienProjet!.trim().isNotEmpty;
   }
 
   /// Détecte si le projet a des features IoT

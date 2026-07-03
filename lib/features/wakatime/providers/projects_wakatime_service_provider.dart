@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/provider/provider_extentions.dart';
 import '../../generator/data/extention_models.dart';
+import '../data/wakatime_static_source.dart';
 import '../services/wakatime_service.dart';
 
 /// Provider pour la clé API WakaTime (stockée localement)
@@ -48,32 +49,26 @@ final wakaTimeServiceProvider = Provider<WakaTimeService?>((ref) {
 /// Provider pour les statistiques WakaTime
 final wakaTimeStatsProvider = FutureProvider.family<WakaTimeStats?, String>(
   (ref, range) async {
-    developer.log('📊 [WakaTime] Récupération des stats pour: $range',
+    developer.log('📊 [WakaTime] Lecture des stats statiques (demandé: $range)',
         name: 'WakaTime');
 
-    final service = ref.watch(wakaTimeServiceProvider);
-    if (service == null) {
-      developer.log('❌ [WakaTime] Service non disponible', name: 'WakaTime');
-      return null;
-    }
-
     try {
-      final stats = await service.getStats(range: range);
+      final stats = await WakaTimeStaticSource.loadStats();
 
       if (stats == null) {
-        developer.log('⚠️ [WakaTime] API retourne null pour $range',
+        developer.log('⚠️ [WakaTime] Aucune stat statique disponible',
             name: 'WakaTime');
         return null;
       }
 
       developer.log(
-          '✅ [WakaTime] Stats reçues: ${stats.projects.length} projets, '
+          '✅ [WakaTime] Stats statiques: ${stats.projects.length} projets, '
           '${stats.languages.length} langages',
           name: 'WakaTime');
 
       return stats;
     } catch (e, st) {
-      developer.log('❌ [WakaTime] Erreur lors de la récupération des stats: $e',
+      developer.log('❌ [WakaTime] Erreur lors de la lecture des stats: $e',
           error: e, stackTrace: st, name: 'WakaTime');
       return null;
     }
@@ -83,21 +78,13 @@ final wakaTimeStatsProvider = FutureProvider.family<WakaTimeStats?, String>(
 /// Provider pour les projets WakaTime
 final wakaTimeProjectsProvider = FutureProvider<List<WakaTimeProject>>(
   (ref) async {
-    developer.log('📂 [WakaTime] Récupération de la liste des projets...',
+    developer.log('📂 [WakaTime]Lecture de la liste des projets (statique)...',
         name: 'WakaTime');
 
-    final service = ref.watch(wakaTimeServiceProvider);
-
-    if (service == null || service.apiKey.isEmpty) {
-      developer.log('❌ [WakaTime] Service non disponible pour les projets',
-          name: 'WakaTime');
-      return [];
-    }
-
     try {
-      final projects = await service.getProjects();
+      final projects = await WakaTimeStaticSource.loadProjects();
 
-      developer.log('✅ [WakaTime] ${projects.length} projets récupérés',
+      developer.log('✅ [WakaTime] ${projects.length} projets chargés',
           name: 'WakaTime');
 
       if (projects.isNotEmpty) {
@@ -108,11 +95,8 @@ final wakaTimeProjectsProvider = FutureProvider<List<WakaTimeProject>>(
 
       return projects;
     } catch (e, st) {
-      developer.log(
-          '❌ [WakaTime] Erreur lors de la récupération des projets: $e',
-          error: e,
-          stackTrace: st,
-          name: 'WakaTime');
+      developer.log('❌ [WakaTime] Erreur lors du chargement des projets: $e',
+          error: e, stackTrace: st, name: 'WakaTime');
       return [];
     }
   },
@@ -120,36 +104,25 @@ final wakaTimeProjectsProvider = FutureProvider<List<WakaTimeProject>>(
 
 final wakaTimeDurationsProvider =
     FutureProvider<List<WakaTimeProjectDuration>>((ref) async {
-  final apiKey = await ref.watch(wakaTimeApiKeyProvider.future);
-  if (apiKey == null || apiKey.isEmpty) return [];
-  final service = WakaTimeService(apiKey: apiKey);
-  return service.getProjectDurations(range: 'last_7_days');
+  return WakaTimeStaticSource.loadProjectDurations();
 });
 
 /// Provider pour les durées par projet
 final wakaTimeProjectDurationsProvider =
     FutureProvider.family<List<WakaTimeProjectDuration>, String>(
         (ref, range) async {
-  developer.log('⏱️ [WakaTime] Récupération des durées pour: $range',
+  developer.log('⏱️ [WakaTime] Lecture des durées statiques (demandé: $range)',
       name: 'WakaTime');
 
-  final service = ref.watch(wakaTimeServiceProvider);
-
-  if (service == null) {
-    developer.log('❌ [WakaTime] Service non disponible pour les durées',
-        name: 'WakaTime');
-    return [];
-  }
-
   try {
-    final durations = await service.getProjectDurations(range: range);
+    final durations = await WakaTimeStaticSource.loadProjectDurations();
 
-    developer.log('✅ [WakaTime] ${durations.length} durées récupérées',
+    developer.log('✅ [WakaTime] ${durations.length} durées chargées',
         name: 'WakaTime');
 
     return durations;
   } catch (e, st) {
-    developer.log('❌ [WakaTime] Erreur lors de la récupération des durées: $e',
+    developer.log('❌ [WakaTime] Erreur lors de la lecture des durées: $e',
         error: e, stackTrace: st, name: 'WakaTime');
     return [];
   }

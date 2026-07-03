@@ -29,6 +29,7 @@ export 'widgets/sections/experience_stack_section.dart';
 export 'widgets/sections/hero_section.dart';
 export 'widgets/sections/infrastructure_section.dart';
 export 'widgets/sections/iot_section.dart';
+export 'widgets/sections/live_preview_section.dart';
 export 'widgets/sections/result_section.dart';
 export 'widgets/sections/tech_details_section.dart';
 export 'widgets/sig_discovery_map.dart';
