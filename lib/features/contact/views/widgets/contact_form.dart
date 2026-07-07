@@ -34,7 +34,7 @@ class ContactForm extends ConsumerWidget {
         vertical: 32,
       ),
       child: ResponsiveBox(
-        paddingSize: ResponsiveSpacing.m,
+        paddingSize: ResponsiveSpacing.s,
         padding: EdgeInsets.all(info.isMobile ? 24 : 40),
         decoration: BoxDecoration(
           color: theme.colorScheme.surface,
