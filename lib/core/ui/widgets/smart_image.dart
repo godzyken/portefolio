@@ -326,6 +326,10 @@ class _SmartImageState extends ConsumerState<SmartImage> {
     final palette = ColorHelpers.createHarmoniousPalette(
       widget.fallbackColor ?? Theme.of(context).colorScheme.primary,
     );
+
+    final safeW = (w != null && w.isFinite) ? w : 100.0;
+    final safeH = (h != null && h.isFinite) ? h : safeW;
+
     return Container(
       width: w,
       height: h,
@@ -339,7 +343,7 @@ class _SmartImageState extends ConsumerState<SmartImage> {
       child: Icon(
         widget.fallbackIcon ?? Icons.broken_image_outlined,
         color: Colors.white.withValues(alpha: 0.7),
-        size: (w ?? 100) * 0.4,
+        size: (safeW * 0.4).clamp(16.0, 200.0),
       ),
     );
   }

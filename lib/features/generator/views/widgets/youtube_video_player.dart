@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
@@ -39,17 +38,18 @@ class _YoutubeVideoPlayerIframeState
 
       _controller = YoutubePlayerController.fromVideoId(
         videoId: widget.youtubeVideoId,
-        autoPlay: false,
+        autoPlay: true,
         params: const YoutubePlayerParams(
           showControls: true,
           showFullscreenButton: true,
           strictRelatedVideos: true,
           pointerEvents: PointerEvents.auto,
+          mute: false,
         ),
       );
 
       // ✅ Attendre que le controller soit prêt
-      await Future.delayed(const Duration(milliseconds: 300));
+      // await Future.delayed(const Duration(milliseconds: 300));
 
       if (!mounted) return;
 
@@ -58,14 +58,11 @@ class _YoutubeVideoPlayerIframeState
       });
 
       // ✅ Lancer la vidéo seulement si le widget est monté et visible
-      if (!kIsWeb && mounted) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) {
-            ref.read(playingVideoProvider.notifier).play(widget.cardId);
-            _controller?.playVideo();
-          }
-        });
-      }
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          ref.read(playingVideoProvider.notifier).play(widget.cardId);
+        }
+      });
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -85,17 +82,15 @@ class _YoutubeVideoPlayerIframeState
   @override
   Widget build(BuildContext context) {
     ref.listen<String?>(playingVideoProvider, (previous, next) {
+      if (_controller == null) return;
       if (next == widget.cardId) {
-        _controller?.playVideo();
+        _controller!.playVideo();
       } else {
-        _controller?.pauseVideo();
+        _controller!.pauseVideo();
       }
     });
 
     final isVideoVisible = ref.watch(globalVideoVisibilityProvider);
-    final isPlaying =
-        ref.watch(playingVideoProvider.select((id) => id == widget.cardId));
-
     if (!isVideoVisible) {
       return const SizedBox.shrink();
     }
@@ -159,36 +154,6 @@ class _YoutubeVideoPlayerIframeState
       );
     }
 
-    if (kIsWeb) {
-      return Stack(
-        alignment: Alignment.center,
-        children: [
-          YoutubePlayer(
-            controller: _controller!,
-            aspectRatio: 16 / 9,
-            key: ValueKey(widget.youtubeVideoId),
-          ),
-          // Overlay cliquable seulement si la vidéo n'est pas en lecture
-          if (!isPlaying)
-            Positioned.fill(
-              child: GestureDetector(
-                onTap: () {
-                  ref.read(playingVideoProvider.notifier).play(widget.cardId);
-                  _controller?.playVideo();
-                },
-                child: Container(
-                  color: Colors.black45,
-                  child: const Icon(
-                    Icons.play_circle_fill,
-                    color: Colors.white,
-                    size: 64,
-                  ),
-                ),
-              ),
-            ),
-        ],
-      );
-    }
     return AnimatedOpacity(
         opacity: isVideoVisible ? 1.0 : 0.0,
         duration: const Duration(milliseconds: 300),

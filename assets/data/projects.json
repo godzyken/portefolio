@@ -731,6 +731,8 @@
       "assets/images/realisations/pre_commit_testing_flow.svg"
     ],
     "platform": ["Web", "Tablet", "Desktop"],
+    "lienProjet": "https://youtube.com/shorts/F0VNKiRUmCY?si=NPJpsYAr3NxmKc89",
+    "youtubeVideoId": "F0VNKiRUmCY",
     "tags": [
       "BusinessStrategy",
       "Partenariat",
