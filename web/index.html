@@ -23,6 +23,18 @@
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://godzyken.github.io/portefolio/">
 
+  <!-- ✅ PWA - Lien vers le manifest (C'ÉTAIT MANQUANT) -->
+  <link rel="manifest" href="./manifest.json">
+  
+  <!-- PWA - Couleur de la barre de statut -->
+  <meta name="theme-color" content="#0175C2">
+  
+  <!-- PWA - Support iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="portefolio">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
   <!-- Configuration Flutter obligatoire -->
   <script>
     window._flutter = {
@@ -36,6 +48,19 @@
   <!-- Le bootloader Flutter -->
   <script src="./flutter.js" defer></script>
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+
+  <!-- ✅ Service Worker pour PWA (optionnel mais recommandé) -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('./flutter_service_worker.js').then(function(registration) {
+          console.log('✅ Service Worker enregistré avec succès');
+        }).catch(function(error) {
+          console.log('⚠️ Erreur lors de l\'enregistrement du Service Worker:', error);
+        });
+      });
+    }
+  </script>
 
 </head>
 
