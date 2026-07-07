@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+mimport 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/ui/widgets/responsive_text.dart';
 
@@ -22,39 +22,8 @@ class ContactForm extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
 
-    final horizontalPadding = info.isDesktop
-        ? info.size.width * 0.25
-        : info.isMobile
-            ? 24.0
-            : 64.0;
 
-    return ResponsiveBox(
-      padding: EdgeInsets.symmetric(
-        horizontal: horizontalPadding,
-        vertical: 32,
-      ),
-      child: ResponsiveBox(
-        paddingSize: ResponsiveSpacing.s,
-        padding: EdgeInsets.all(info.isMobile ? 24 : 40),
-        decoration: BoxDecoration(
-          color: theme.colorScheme.surface,
-          borderRadius: BorderRadius.circular(32),
-          border: Border.all(
-            color: theme.colorScheme.primary.withValues(alpha: 0.1),
-            width: 2,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: theme.colorScheme.primary.withValues(alpha: 0.1),
-              blurRadius: 30,
-              spreadRadius: 10,
-              offset: const Offset(0, 10),
-            ),
-          ],
-        ),
-        child: _buildContactForm(formState, info, theme, ref),
-      ),
-    );
+    return _buildContactForm(formState, info, theme, ref);
   }
 
   /// 📝 Formulaire de contact ultra-moderne
