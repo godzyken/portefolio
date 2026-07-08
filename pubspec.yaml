@@ -1,5 +1,5 @@
 name: portefolio
-description: "Ce portfolio a été conçu pour illustrer mes compétences en Flutter et offrir un aperçu clair et esthétique de mon parcours à toite personne intéressée."
+description: "Ce portfolio a été conçu pour illustrer mes compétences en Flutter et offrir un aperçu clair et esthétique de mon parcours à toute personne intéressée."
 publish_to: 'none'
 version: 1.0.1
 
@@ -50,7 +50,7 @@ dependencies:
   flutter_animate: ^4.5.2
   hive: ^2.2.3
   flutter_colorpicker: ^1.1.0
-  vector_math: ^2.2.0
+  vector_math: ^2.1.4
   url_launcher: ^6.3.2
   cached_network_image: ^3.4.1
   shimmer: ^3.0.0
