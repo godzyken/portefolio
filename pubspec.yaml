@@ -4,7 +4,7 @@ publish_to: 'none'
 version: 1.0.1
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: '>=3.10.0 <4.0.0'
   flutter: ">=3.10.0"
 
 dependencies:
@@ -54,7 +54,7 @@ dependencies:
   url_launcher: ^6.3.2
   cached_network_image: ^3.4.1
   shimmer: ^3.0.0
-  package_info_plus: ^10.2.0
+  package_info_plus: ^9.0.0
   fl_chart: ^1.1.1
   lottie: ^3.3.2
   flutter_native_splash: ^2.4.7
