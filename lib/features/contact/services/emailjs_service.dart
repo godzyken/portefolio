@@ -1,8 +1,6 @@
-import 'dart:convert';
 import 'dart:developer' as developer;
 
 import 'package:emailjs/emailjs.dart' as EmailJS;
-import 'package:http/http.dart' as http;
 
 class EmailJsService {
   final String serviceId;
@@ -20,7 +18,7 @@ class EmailJsService {
     required String email,
     required String message,
   }) async {
-    final url = Uri.parse("https://api.emailjs.com/api/v1.0/email/send");
+/*    final url = Uri.parse("https://api.emailjs.com/api/v1.0/email/send");
 
     final response = await http.post(
       url,
@@ -42,7 +40,7 @@ class EmailJsService {
 
     if (response.statusCode != 200) {
       throw Exception("EmailJS error: ${response.body}");
-    }
+    }*/
 
     final templateParams = {
       "from_name": name,
