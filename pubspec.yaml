@@ -1,5 +1,5 @@
 name: portefolio
-description: "Ce portfolio a été conçu pour illustrer mes compétences en Flutter et offrir un aperçu clair et esthétique de mon parcours à toute personne intéressée."
+description: "Ce portfolio a été conçu pour illustrer mes compétences en Flutter et offrir un aperçu clair et esthétique de mon parcours à toite personne intéressée."
 publish_to: 'none'
 version: 1.0.1
 
@@ -67,8 +67,8 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^6.0.0
-  riverpod_lint: ^3.0.3
+  flutter_lints: ^3.0.0
+  riverpod_lint: ^2.0.0
   flutter_launcher_icons: ^0.14.4
   mocktail: ^1.0.4
 
