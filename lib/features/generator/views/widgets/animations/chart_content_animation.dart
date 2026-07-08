@@ -87,7 +87,7 @@ class BuildAnimatedChartContent extends StatelessWidget {
                             dotData: const FlDotData(show: false),
                           ),
                         ],
-                        titlesData: FlTitlesData(show: false),
+                        titlesData: const FlTitlesData(show: false),
                         gridData: FlGridData(
                           show: true,
                           drawVerticalLine: false,
@@ -221,11 +221,11 @@ class BuildAnimatedChartContent extends StatelessWidget {
 
   _TrendLabel _getTrendLabel(double slope) {
     if (slope > 0.1) {
-      return _TrendLabel('Tendance haussière', Icons.trending_up);
+      return const _TrendLabel('Tendance haussière', Icons.trending_up);
     } else if (slope < -0.1) {
-      return _TrendLabel('Tendance baissière', Icons.trending_down);
+      return const _TrendLabel('Tendance baissière', Icons.trending_down);
     } else {
-      return _TrendLabel('Tendance stable', Icons.trending_flat);
+      return const _TrendLabel('Tendance stable', Icons.trending_flat);
     }
   }
 

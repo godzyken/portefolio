@@ -391,7 +391,7 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
                 ),
                 child: ResponsiveButton.icon(
                   type: ButtonType.primary,
-                  icon: Icon(Icons.play_arrow),
+                  icon: const Icon(Icons.play_arrow),
                   label: 'Jouer',
                   onPressed: () {
                     ref.read(globalVideoVisibilityProvider.notifier).setTrue();
@@ -461,7 +461,7 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
+                const Icon(
                   Icons.work_outline,
                   size: 18,
                   color: Colors.white,
@@ -564,7 +564,7 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
                           width: 1,
                         ),
                       ),
-                      child: Row(
+                      child: const Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
@@ -572,10 +572,10 @@ class _PokerExperienceCardState extends ConsumerState<PokerExperienceCard>
                             size: 18,
                             color: Colors.white,
                           ),
-                          const ResponsiveBox(paddingSize: ResponsiveSpacing.s),
+                          ResponsiveBox(paddingSize: ResponsiveSpacing.s),
                           ResponsiveText.bodySmall(
                             'Tap pour les détails',
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w600,
                             ),

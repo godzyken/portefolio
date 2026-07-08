@@ -44,9 +44,9 @@ class HomeScreen extends ConsumerWidget {
             alignment: Alignment.bottomCenter,
             child: SizedBox(
               height: info.size.height * 2,
-              child: Opacity(
+              child: const Opacity(
                 opacity: 0.5,
-                child: const CharacterViewer(),
+                child: CharacterViewer(),
               ),
             ),
           ),
@@ -102,12 +102,12 @@ class HomeScreen extends ConsumerWidget {
             child: CharacterViewer(),
           ),
           const SizedBox(width: 32),
-          Expanded(
+          const Expanded(
             flex: 5,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
-              children: const [
+              children: [
                 ServicesSection(),
               ],
             ),
@@ -161,9 +161,9 @@ class HomeScreen extends ConsumerWidget {
           style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 2),
         ),
         const SizedBox(height: 12),
-        ResponsiveText.headlineSmall(
+        const ResponsiveText.headlineSmall(
           'Développeur Flutter & Architecte Logiciel',
-          style: const TextStyle(fontWeight: FontWeight.w600),
+          style: TextStyle(fontWeight: FontWeight.w600),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 16),

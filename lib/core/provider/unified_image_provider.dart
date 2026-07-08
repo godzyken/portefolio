@@ -37,22 +37,22 @@ class PreloadNotifier extends AsyncNotifier<PreloadResult?> {
 
     // Définir les images critiques avec priorités
     final criticalImages = [
-      ImagePriority(
+      const ImagePriority(
         'assets/images/logo_godzyken.png',
         strategy: PreloadStrategy.critical,
         priority: 0,
       ),
-      ImagePriority(
+      const ImagePriority(
         'assets/images/pers_do_am.png',
         strategy: PreloadStrategy.critical,
         priority: 1,
       ),
-      ImagePriority(
+      const ImagePriority(
         'assets/images/logos/flutter.svg',
         strategy: PreloadStrategy.critical,
         priority: 2,
       ),
-      ImagePriority(
+      const ImagePriority(
         'assets/images/logos/dart.svg',
         strategy: PreloadStrategy.critical,
         priority: 3,

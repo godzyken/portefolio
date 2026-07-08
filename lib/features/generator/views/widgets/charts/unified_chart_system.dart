@@ -70,7 +70,8 @@ class _BarChartBuilder extends StatelessWidget {
       BarChartData(
         barGroups: data.barGroups ?? [],
         titlesData: _buildTitles(),
-        gridData: config.showGrid ? _defaultGrid : FlGridData(show: false),
+        gridData:
+            config.showGrid ? _defaultGrid : const FlGridData(show: false),
         borderData: FlBorderData(show: false),
         barTouchData: BarTouchData(enabled: config.animate),
       ),
@@ -102,9 +103,9 @@ class _BarChartBuilder extends StatelessWidget {
           ),
         ),
       ),
-      bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-      rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-      topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+      bottomTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+      rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+      topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
     );
   }
 
@@ -147,7 +148,7 @@ class _LineChartBuilder extends StatelessWidget {
             ),
           ),
         ],
-        titlesData: FlTitlesData(show: false),
+        titlesData: const FlTitlesData(show: false),
         gridData: FlGridData(show: config.showGrid),
         borderData: FlBorderData(show: false),
       ),

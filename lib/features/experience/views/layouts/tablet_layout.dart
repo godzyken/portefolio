@@ -69,7 +69,7 @@ class _TabletLayoutState extends ConsumerState<TabletLayout> {
             exp: pO,
           ),
           const SizedBox(height: 16),
-          ExpFooterCta(),
+          const ExpFooterCta(),
         ],
       ),
     );

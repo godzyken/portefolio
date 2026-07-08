@@ -166,7 +166,7 @@ class _ServicesSliderState extends ConsumerState<ServicesSlider> {
                       trailing: IconButton(
                         key: btnKey,
                         tooltip: service.category.displayName,
-                        icon: Icon(Icons.psychology_outlined),
+                        icon: const Icon(Icons.psychology_outlined),
                         onPressed: () {
                           // 1. Lire la data via le provider spécialisé
                           final expertise =
@@ -371,7 +371,7 @@ class _ExpertiseBubblesOverlayState extends State<_ExpertiseBubblesOverlay>
                     const SizedBox(height: 10),
                     // Génération dynamique des bulles
                     ConstrainedBox(
-                      constraints: BoxConstraints(maxHeight: 300),
+                      constraints: const BoxConstraints(maxHeight: 300),
                       child: SingleChildScrollView(
                         child: Wrap(
                           spacing: 8,

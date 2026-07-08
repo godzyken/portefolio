@@ -82,13 +82,13 @@ class BenchmarkGlobalWidget extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             'Score: ${benchmark.scoreGlobal}/100',
-            style: TextStyle(
+            style: const TextStyle(
               color: ColorHelpers.green,
               fontWeight: FontWeight.bold,
               fontSize: 13,
             ),
           ),
-          Text(
+          const Text(
             'Score global',
             style: TextStyle(
               color: ColorHelpers.textGray,
@@ -168,7 +168,7 @@ class BenchmarkComparisonWidget extends StatelessWidget {
                     e.value.projectTitle.length > 12
                         ? '${e.value.projectTitle.substring(0, 12)}…'
                         : e.value.projectTitle,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: ColorHelpers.textGray,
                       fontSize: 11,
                     ),
@@ -227,7 +227,8 @@ class _CriterionRow extends StatelessWidget {
               ),
               Text(
                 '/${criterion.max}',
-                style: TextStyle(color: ColorHelpers.textGray, fontSize: 10),
+                style:
+                    const TextStyle(color: ColorHelpers.textGray, fontSize: 10),
               ),
             ],
           ),
@@ -319,11 +320,11 @@ class BenchmarkRadarWidget extends StatelessWidget {
             child: RadarChart(
               RadarChartData(
                 radarShape: RadarShape.polygon,
-                radarBorderData: BorderSide(
+                radarBorderData: const BorderSide(
                   color: ColorHelpers.gridColor,
                   width: 1.5,
                 ),
-                gridBorderData: BorderSide(
+                gridBorderData: const BorderSide(
                   color: ColorHelpers.gridColor,
                   width: 1,
                 ),
@@ -331,7 +332,7 @@ class BenchmarkRadarWidget extends StatelessWidget {
                   color: ColorHelpers.gridColor.withValues(alpha: 0.5),
                 ),
                 tickCount: 3,
-                ticksTextStyle: TextStyle(
+                ticksTextStyle: const TextStyle(
                   color: ColorHelpers.textGray,
                   fontSize: 9,
                 ),

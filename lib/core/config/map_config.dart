@@ -7,7 +7,7 @@ class MapConfig {
   final LatLng initialCenter;
   static const double defaultZoom = 16.0;
   static final parisBounds =
-      LatLngBounds(LatLng(48.85, 2.34), LatLng(48.87, 2.36));
+      LatLngBounds(const LatLng(48.85, 2.34), const LatLng(48.87, 2.36));
 
   const MapConfig(this.initialCenter);
 

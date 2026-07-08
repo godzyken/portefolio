@@ -17,7 +17,7 @@ class AssetService {
 
     // Optimisation : Pas de compute si on est en test (évite les crashs d'isolates)
     if (kDebugMode &&
-        bool.fromEnvironment('FLUTTER_TEST', defaultValue: false)) {
+        const bool.fromEnvironment('FLUTTER_TEST', defaultValue: false)) {
       final List<dynamic> jsonList = jsonDecode(jsonStr);
       return jsonList.map((e) => fromJson(e as Map<String, dynamic>)).toList();
     }

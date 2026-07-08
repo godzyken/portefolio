@@ -110,7 +110,7 @@ class MainScaffold extends ConsumerWidget {
             Positioned(
               top: info.isMobile ? 16 : 24,
               right: info.isMobile ? 16 : 24,
-              child: ComparisonStatsView(),
+              child: const ComparisonStatsView(),
             ),
         ],
       ),

@@ -42,8 +42,8 @@ class ChartRenderer {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                ResponsiveText.titleMedium('📊 Analyse des Benchmarks',
-                    style: const TextStyle(
+                const ResponsiveText.titleMedium('📊 Analyse des Benchmarks',
+                    style: TextStyle(
                         color: Colors.white, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 16),
                 ...benchmarkCharts.map((chart) => Padding(
@@ -225,17 +225,17 @@ class ChartRenderer {
                 getTitlesWidget: (v, m) => yLabelBuilder(v),
               ),
             ),
-            bottomTitles: AxisTitles(
+            bottomTitles: const AxisTitles(
               sideTitles: SideTitles(showTitles: false),
             ),
-            rightTitles: AxisTitles(
+            rightTitles: const AxisTitles(
               sideTitles: SideTitles(showTitles: false),
             ),
-            topTitles: AxisTitles(
+            topTitles: const AxisTitles(
               sideTitles: SideTitles(showTitles: false),
             ),
           ),
-          gridData: FlGridData(
+          gridData: const FlGridData(
             show: true,
             drawVerticalLine: false,
           ),
@@ -308,10 +308,10 @@ class ChartRenderer {
                 getTitlesWidget: (v, m) => yLabelBuilder(v),
               ),
             ),
-            rightTitles: AxisTitles(
+            rightTitles: const AxisTitles(
               sideTitles: SideTitles(showTitles: false),
             ),
-            topTitles: AxisTitles(
+            topTitles: const AxisTitles(
               sideTitles: SideTitles(showTitles: false),
             ),
           ),
@@ -319,7 +319,7 @@ class ChartRenderer {
             show: true,
             drawVerticalLine: false,
             horizontalInterval: _computeYInterval(spots),
-            getDrawingHorizontalLine: (value) => FlLine(
+            getDrawingHorizontalLine: (value) => const FlLine(
               color: Colors.white12,
               strokeWidth: 1,
             ),

@@ -63,8 +63,8 @@ class ServiceSkillBubble extends ConsumerWidget {
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                     fontSize: info.isMobile ? 10 : 12,
-                    shadows: [
-                      const Shadow(blurRadius: 4, color: Colors.black)
+                    shadows: const [
+                      Shadow(blurRadius: 4, color: Colors.black)
                     ]),
               )),
         ],

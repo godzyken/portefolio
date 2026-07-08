@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider pour le store de cache des tuiles
 final mapCacheStoreProvider = Provider<FMTCStore>((ref) {
-  return FMTCStore('mapStore');
+  return const FMTCStore('mapStore');
 }, name: 'MapCacheStore');
 
 /// Provider pour initialiser FMTC

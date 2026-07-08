@@ -31,9 +31,9 @@ class ProjectsScreen extends ConsumerWidget {
         if (info.size.width >= 1024 && info.isLandscape) {
           return Stack(
             children: [
-              Positioned.fill(
+              const Positioned.fill(
                 child: SmartImage(
-                  key: const ValueKey('bg-line'),
+                  key: ValueKey('bg-line'),
                   path: 'assets/images/backgrounds/line.svg',
                   fit: BoxFit.fitWidth,
                   width: double.infinity,

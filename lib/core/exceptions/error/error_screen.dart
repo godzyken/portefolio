@@ -34,10 +34,10 @@ class ErrorScreen extends StatelessWidget {
               children: [
                 _buildAnimation(),
                 const SizedBox(height: 24),
-                ResponsiveText.titleLarge(
+                const ResponsiveText.titleLarge(
                   'Oups ! Quelque chose s\'est mal passé…',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 12),
                 ResponsiveText.bodyMedium(

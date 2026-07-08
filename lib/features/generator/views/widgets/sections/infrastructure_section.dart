@@ -28,9 +28,9 @@ class InfrastructureSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ResponsiveText.titleMedium(
+          const ResponsiveText.titleMedium(
             '🏗️ Infrastructure & Architecture',
-            style: const TextStyle(
+            style: TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,
             ),

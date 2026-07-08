@@ -58,9 +58,9 @@ class _ResultsSectionState extends State<ResultsSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ResponsiveText.titleMedium(
+        const ResponsiveText.titleMedium(
           '🏁 Résultats & Impact',
-          style: const TextStyle(
+          style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
           ),

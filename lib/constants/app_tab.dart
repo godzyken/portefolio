@@ -54,7 +54,7 @@ enum AppTab {
             tooltip: 'Personnaliser le thème',
             onPressed: () => context.pushNamed('theme_settings'),
           ),
-          SizedBox.shrink(),
+          const SizedBox.shrink(),
         ]);
 
       case AppTab.experiences:
@@ -178,7 +178,7 @@ enum AppTab {
         );
 
       case AppTab.contact:
-        return AppBarConfig(title: "Contact");
+        return const AppBarConfig(title: "Contact");
     }
   }
 

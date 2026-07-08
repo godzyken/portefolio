@@ -253,7 +253,7 @@ class ComparatifCard extends StatelessWidget {
         BarChartData(
           barGroups: barGroups,
           titlesData: FlTitlesData(
-            topTitles: AxisTitles(
+            topTitles: const AxisTitles(
               sideTitles: SideTitles(showTitles: false),
             ),
             bottomTitles: AxisTitles(
@@ -274,19 +274,19 @@ class ComparatifCard extends StatelessWidget {
                 },
               ),
             ),
-            leftTitles: AxisTitles(
+            leftTitles: const AxisTitles(
               sideTitles: SideTitles(showTitles: false),
             ),
-            rightTitles: AxisTitles(
+            rightTitles: const AxisTitles(
                 sideTitles: SideTitles(showTitles: true),
-                axisNameWidget: const Padding(
+                axisNameWidget: Padding(
                   padding: EdgeInsets.only(top: 8.0),
                   child: ResponsiveText.bodySmall('Score'),
                 ),
                 drawBelowEverything: true,
                 axisNameSize: double.minPositive),
           ),
-          gridData: FlGridData(show: true),
+          gridData: const FlGridData(show: true),
           borderData: FlBorderData(show: false),
         ),
       ),
@@ -369,7 +369,7 @@ class ComparatifCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ResponsiveText.headlineSmall('Recommendation'),
+          const ResponsiveText.headlineSmall('Recommendation'),
           const SizedBox(height: 8),
           ResponsiveText.bodyMedium(comparatif.recommendation.summary),
           const SizedBox(height: 8),

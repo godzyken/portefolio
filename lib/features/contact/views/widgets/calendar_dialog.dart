@@ -614,9 +614,9 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ResponsiveText.bodyMedium(
+        const ResponsiveText.bodyMedium(
           '3. Choisissez un créneau',
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         const ResponsiveBox(paddingSize: ResponsiveSpacing.s),
         Expanded(

@@ -121,7 +121,7 @@ class AnimationHelpers {
     double maxAlpha = 1.0,
   }) {
     return AnimatedBuilder(
-      animation: AlwaysStoppedAnimation<double>(0),
+      animation: const AlwaysStoppedAnimation<double>(0),
       builder: (context, child) {
         return Container(
           decoration: BoxDecoration(

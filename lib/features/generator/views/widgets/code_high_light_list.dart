@@ -34,7 +34,7 @@ class CodeHighlightList extends StatelessWidget {
               _EditorDot(color: Colors.green),
             ],
           ),
-          ResponsiveBox(paddingSize: ResponsiveSpacing.m),
+          const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
           // Lignes de "code"
           ...items.asMap().entries.map((entry) {
             final index = entry.key + 1;
@@ -55,7 +55,7 @@ class CodeHighlightList extends StatelessWidget {
                       fontSize: 12,
                     ),
                   ),
-                  ResponsiveBox(
+                  const ResponsiveBox(
                       paddingSize:
                           ResponsiveSpacing.m), // Texte avec coloration
                   Expanded(

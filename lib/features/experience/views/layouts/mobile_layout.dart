@@ -45,7 +45,7 @@ class _MobileLayoutState extends ConsumerState<MobileLayout> {
             exp: widget.experience,
           ),
           const SizedBox(height: 12),
-          ExpFooterCta(),
+          const ExpFooterCta(),
         ],
       ),
     );

@@ -28,9 +28,9 @@ class EconomicSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ResponsiveText.titleMedium(
+        const ResponsiveText.titleMedium(
           '💼 Analyse Économique & ROI',
-          style: const TextStyle(
+          style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
           ),

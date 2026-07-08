@@ -141,7 +141,7 @@ class GlobalExpertiseSection extends ConsumerWidget {
                         Expanded(
                           child: ResponsiveText.bodyMedium(
                             skill.name,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontWeight: FontWeight.w600,
                             ),
                           ),

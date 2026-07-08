@@ -33,6 +33,8 @@ linter:
 # https://dart.dev/guides/language/analysis-options
 
 analyzer:
+  plugins:
+    riverpod_lint: true
   errors:
     unused_import: error
     dead_code: warning

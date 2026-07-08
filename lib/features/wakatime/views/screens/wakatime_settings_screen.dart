@@ -185,9 +185,9 @@ class _WakaTimeSettingsScreenState
 
             // Tests de matching
             if (kDebugMode) ...[
-              WakaTimeProjectMatcher(projectTitle: 'portefolio'),
-              WakaTimeProjectMatcher(projectTitle: 'Egote Services'),
-              WakaTimeProjectMatcher(projectTitle: 'Portfolio'),
+              const WakaTimeProjectMatcher(projectTitle: 'portefolio'),
+              const WakaTimeProjectMatcher(projectTitle: 'Egote Services'),
+              const WakaTimeProjectMatcher(projectTitle: 'Portfolio'),
             ],
           ],
         ),
@@ -363,8 +363,8 @@ class _WakaTimeSettingsScreenState
               BarChartData(
                 alignment: BarChartAlignment.spaceAround,
                 titlesData: FlTitlesData(
-                  leftTitles:
-                      AxisTitles(sideTitles: SideTitles(showTitles: true)),
+                  leftTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: true)),
                   bottomTitles: AxisTitles(
                     sideTitles: SideTitles(
                       showTitles: true,
@@ -423,8 +423,8 @@ class _WakaTimeSettingsScreenState
               BarChartData(
                 alignment: BarChartAlignment.spaceAround,
                 titlesData: FlTitlesData(
-                  leftTitles:
-                      AxisTitles(sideTitles: SideTitles(showTitles: true)),
+                  leftTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: true)),
                   bottomTitles: AxisTitles(
                     sideTitles: SideTitles(
                       showTitles: true,

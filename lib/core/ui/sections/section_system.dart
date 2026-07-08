@@ -458,7 +458,7 @@ class StatCardFactory {
           const SizedBox(width: 6),
           ResponsiveText.bodySmall(
             config.value,
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,
               fontSize: 13,

@@ -39,7 +39,7 @@ class _DesktopLayoutState extends ConsumerState<DesktopLayout> {
           const SizedBox(height: 24),
           Center(
             child: ConstrainedBox(
-              constraints: BoxConstraints(maxHeight: 1400),
+              constraints: const BoxConstraints(maxHeight: 1400),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -73,7 +73,7 @@ class _DesktopLayoutState extends ConsumerState<DesktopLayout> {
             ),
           ),
           const SizedBox(height: 24),
-          ExpFooterCta(),
+          const ExpFooterCta(),
         ],
       ),
     );

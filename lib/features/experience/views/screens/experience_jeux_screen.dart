@@ -345,7 +345,7 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
     return Stack(
       children: [
         // Fond
-        Positioned.fill(
+        const Positioned.fill(
           child: SmartImage(
             path: 'assets/images/backgrounds/tapis_poker.png',
             responsiveSize: ResponsiveImageSize.xlarge,
@@ -406,8 +406,8 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Expanded(
-                          flex: 60, child: const CompetencesPilesByNiveau()),
+                      const Expanded(
+                          flex: 60, child: CompetencesPilesByNiveau()),
                       Expanded(
                         flex: 40,
                         child: Padding(
@@ -443,14 +443,14 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
     final bool isLandscape = info.isLandscape;
 
     if (isSmartphone && !isLandscape) {
-      return Scaffold(
+      return const Scaffold(
         backgroundColor: Colors.black,
         body: Center(
           child: Padding(
-            padding: const EdgeInsets.all(32),
+            padding: EdgeInsets.all(32),
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              children: const [
+              children: [
                 Icon(Icons.screen_rotation, size: 80, color: Colors.yellow),
                 SizedBox(height: 24),
                 ResponsiveText.headlineMedium(

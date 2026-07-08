@@ -306,7 +306,7 @@ String _generateSvg(_ArchDiagram d, bool isDark) {
   // ── Services Externes ──
   if (d.hasServices) {
     final n = d.externalServices.length;
-    final gap = 12.0;
+    const gap = 12.0;
     final boxW = (innerW - gap * (n - 1)) / n;
     final serviceColor = isDark ? '#5DCAA5' : '#1D9E75';
 
@@ -470,10 +470,10 @@ class ArchitectureDiagramSection extends ConsumerWidget {
   }
 
   Widget _buildLegend() {
-    return Wrap(
+    return const Wrap(
       spacing: 12,
       runSpacing: 8,
-      children: const [
+      children: [
         _LegendBadge(label: 'UI / Frontend', color: Color(0xFF7F77DD)),
         _LegendBadge(label: 'Services externes', color: Color(0xFF1D9E75)),
         _LegendBadge(label: 'Infra / Stockage', color: Color(0xFF888780)),

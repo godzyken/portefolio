@@ -291,7 +291,7 @@ class WakaTimeBadgeWidget extends ConsumerWidget {
               width: 12,
               child: CircularProgressIndicator(strokeWidth: 2),
             ),
-            error: (err, _) => ResponsiveText.bodySmall(
+            error: (err, _) => const ResponsiveText.bodySmall(
               'Erreur',
               style: TextStyle(fontSize: 12, color: Colors.red),
             ),

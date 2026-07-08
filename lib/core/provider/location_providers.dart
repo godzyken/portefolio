@@ -53,8 +53,8 @@ final mapConfigProvider = Provider.family<MapOptions, LatLng>((ref, centerPos) {
   const double defaultZoom = 16.0;
   const double webZoom = 13.0;
   final parisBounds = LatLngBounds(
-    LatLng(48.85, 2.34),
-    LatLng(48.87, 2.36),
+    const LatLng(48.85, 2.34),
+    const LatLng(48.87, 2.36),
   );
 
   // 2. Logique spécifique au Web (Mode Statique / Démo)

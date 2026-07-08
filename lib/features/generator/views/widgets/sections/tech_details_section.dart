@@ -23,9 +23,9 @@ class TechDetailsSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ResponsiveText.titleMedium(
+          const ResponsiveText.titleMedium(
             '⚙️ Détails techniques',
-            style: const TextStyle(
+            style: TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,
             ),

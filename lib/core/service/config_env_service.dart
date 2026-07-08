@@ -33,10 +33,9 @@ class EnvConfigService {
   /// Factory qui charge depuis String.fromEnvironment
   /// ✅ Compatible avec --dart-define et GitHub Actions
   factory EnvConfigService.fromEnvironment() {
-    final emailJsServiceId = const String.fromEnvironment('EMAILJS_SERVICE_ID');
+    const emailJsServiceId = String.fromEnvironment('EMAILJS_SERVICE_ID');
 
-    final emailJsTemplateId =
-        const String.fromEnvironment('EMAILJS_TEMPLATE_ID');
+    const emailJsTemplateId = String.fromEnvironment('EMAILJS_TEMPLATE_ID');
 
     final emailJsPublicKey = const String.fromEnvironment('EMAILJS_PUBLIC_KEY');
 

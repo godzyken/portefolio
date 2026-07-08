@@ -173,9 +173,9 @@ class _EnhancedWakaTimeSectionState
               },
             ),
             const SizedBox(width: 12),
-            ResponsiveText.titleMedium(
+            const ResponsiveText.titleMedium(
               '⏱️ Statistiques de développement',
-              style: const TextStyle(
+              style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
               ),
@@ -230,7 +230,7 @@ class _EnhancedWakaTimeSectionState
   }
 
   Widget _buildLanguagesCard(WakaTimeStats stats) {
-    final colors = ColorHelpers.chartColors;
+    const colors = ColorHelpers.chartColors;
     final languages = stats.languages.take(6).toList();
 
     return ResponsiveBox(
@@ -616,7 +616,7 @@ class _EnhancedWakaTimeSectionState
                     sideTitles: SideTitles(showTitles: false),
                   ),
                 ),
-                gridData: FlGridData(
+                gridData: const FlGridData(
                   show: true,
                   drawVerticalLine: false,
                 ),

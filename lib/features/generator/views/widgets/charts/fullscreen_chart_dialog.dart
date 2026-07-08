@@ -203,7 +203,7 @@ Widget _buildFullscreenChartContent(ChartData chart, ResponsiveInfo info) {
     case ChartType.scatterChart:
       return CompactScatterTrendChart(
         spots: chart.scatterSpots!.map((s) => ScatterSpot(s.x, s.y)).toList(),
-        labels: [
+        labels: const [
           'ROI 3 ans',
           'Gains',
           'Coûts',

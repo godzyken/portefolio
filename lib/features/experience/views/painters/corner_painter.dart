@@ -4,7 +4,7 @@ import '../../../../core/affichage/colors_spec.dart';
 
 class CornerAccent extends StatelessWidget {
   final bool isActive;
-  const CornerAccent({required this.isActive});
+  const CornerAccent({super.key, required this.isActive});
 
   @override
   Widget build(BuildContext context) {

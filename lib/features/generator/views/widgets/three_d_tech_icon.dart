@@ -58,6 +58,7 @@ class ThreeDTechIcon extends ConsumerWidget {
               blurRadius: 12,
               spreadRadius: 2,
             ),
+            // ignore: prefer_const_constructors
             BoxShadow(
               color: Colors.black26,
               offset: const Offset(2, 4),

@@ -73,14 +73,46 @@ class ColorHelpers {
   /// Retourne un gradient pour les cartes de recommandations
   static List<Color> getProjectGradient(int index) {
     final gradients = [
-      [Color(0xFF581C87), Color(0xFF6B21A8), Color(0xFF7C3AED)], // Violet
-      [Color(0xFF9F1239), Color(0xFFBE123C), Color(0xFFEC4899)], // Rose
-      [Color(0xFF065F46), Color(0xFF059669), Color(0xFF10B981)], // Vert
-      [Color(0xFF92400E), Color(0xFFB45309), Color(0xFFF59E0B)], // Orange
-      [Color(0xFF1E40AF), Color(0xFF2563EB), Color(0xFF3B82F6)], // Bleu
-      [Color(0xFF991B1B), Color(0xFFDC2626), Color(0xFFEF4444)], // Rouge
-      [Color(0xFF155E75), Color(0xFF0891B2), Color(0xFF06B6D4)], // Cyan
-      [Color(0xFF6D28D9), Color(0xFF7C3AED), Color(0xFFA78BFA)], // Violet clair
+      [
+        const Color(0xFF581C87),
+        const Color(0xFF6B21A8),
+        const Color(0xFF7C3AED)
+      ], // Violet
+      [
+        const Color(0xFF9F1239),
+        const Color(0xFFBE123C),
+        const Color(0xFFEC4899)
+      ], // Rose
+      [
+        const Color(0xFF065F46),
+        const Color(0xFF059669),
+        const Color(0xFF10B981)
+      ], // Vert
+      [
+        const Color(0xFF92400E),
+        const Color(0xFFB45309),
+        const Color(0xFFF59E0B)
+      ], // Orange
+      [
+        const Color(0xFF1E40AF),
+        const Color(0xFF2563EB),
+        const Color(0xFF3B82F6)
+      ], // Bleu
+      [
+        const Color(0xFF991B1B),
+        const Color(0xFFDC2626),
+        const Color(0xFFEF4444)
+      ], // Rouge
+      [
+        const Color(0xFF155E75),
+        const Color(0xFF0891B2),
+        const Color(0xFF06B6D4)
+      ], // Cyan
+      [
+        const Color(0xFF6D28D9),
+        const Color(0xFF7C3AED),
+        const Color(0xFFA78BFA)
+      ], // Violet clair
     ];
     return gradients[index % gradients.length];
   }

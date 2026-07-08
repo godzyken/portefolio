@@ -378,11 +378,11 @@ class ThemeComparison extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Row(
+                const Row(
                   children: [
-                    const Icon(Icons.lightbulb_outline, size: 16),
-                    const SizedBox(width: 8),
-                    const Text(
+                    Icon(Icons.lightbulb_outline, size: 16),
+                    SizedBox(width: 8),
+                    Text(
                       'Astuce',
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
