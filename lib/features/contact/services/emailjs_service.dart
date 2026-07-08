@@ -18,34 +18,12 @@ class EmailJsService {
     required String email,
     required String message,
   }) async {
-/*    final url = Uri.parse("https://api.emailjs.com/api/v1.0/email/send");
-
-    final response = await http.post(
-      url,
-      headers: {
-        "origin": "http://localhost", // ou ton domaine Flutter web
-        "Content-Type": "application/json",
-      },
-      body: jsonEncode({
-        "service_id": serviceId,
-        "template_id": templateId,
-        "user_id": publicKey,
-        "template_params": {
-          "from_name": name,
-          "reply_to": email,
-          "message": message,
-        },
-      }),
-    );
-
-    if (response.statusCode != 200) {
-      throw Exception("EmailJS error: ${response.body}");
-    }*/
-
     final templateParams = {
-      "from_name": name,
-      "reply_to": email,
+      "name": name,
+      "email": email,
+      "title": "Contact depuis le portfolio",
       "message": message,
+      "time": DateTime.now().toString(),
     };
 
     try {
