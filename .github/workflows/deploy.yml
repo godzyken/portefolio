@@ -55,6 +55,8 @@ jobs:
           test -n "${{ secrets.CV_ONEDRIVE_URL }}" || echo "⚠️ CV_ONEDRIVE_URL missing"
           test -n "${{ secrets.MAPS_API_KEY }}" && echo "✅ MAPS_API_KEY configured" || echo "ℹ️ MAPS_API_KEY optional"
           test -n "${{ secrets.WAKATIME_API_KEY }}" && echo "✅ WAKATIME_API_KEY configured" || echo "ℹ️ WAKATIME_API_KEY optional"
+          test -n "${{ secrets.SUPABASE_URL }}" || echo "⚠️ SUPABASE_URL missing (tarifs figés sur le JSON local)"
+          test -n "${{ secrets.SUPABASE_ANON_KEY }}" || echo "⚠️ SUPABASE_ANON_KEY missing (tarifs figés sur le JSON local)"
 
       # ✅ Build avec TOUTES les variables d'environnement
       - name: Build Flutter web
@@ -69,7 +71,9 @@ jobs:
             --dart-define=WHATSAPP_PHONE="${{ secrets.WHATSAPP_PHONE }}" \
             --dart-define=CV_ONEDRIVE_URL="${{ secrets.CV_ONEDRIVE_URL }}" \
             --dart-define=MAPS_API_KEY="${{ secrets.MAPS_API_KEY }}" \
-            --dart-define=WAKATIME_API_KEY="${{ secrets.WAKATIME_API_KEY }}"
+            --dart-define=WAKATIME_API_KEY="${{ secrets.WAKATIME_API_KEY }}" \
+            --dart-define=SUPABASE_URL="${{ secrets.SUPABASE_URL }}" \
+            --dart-define=SUPABASE_ANON_KEY="${{ secrets.SUPABASE_ANON_KEY }}"
 
       # Cache busting
       - name: Append build version (cache busting)

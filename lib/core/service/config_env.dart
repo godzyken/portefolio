@@ -17,4 +17,6 @@ class Env {
   static String get oneDriveUrl => _instance.oneDriveUrl;
   static String? get wakaTimeApiKey => _instance.wakaTimeApiKey;
   static String? get googleCalendarClientId => _instance.googleCalendarClientId;
+  static String get supabaseUrl => _instance.supabaseUrl;
+  static String get supabaseAnonKey => _instance.supabaseAnonKey;
 }

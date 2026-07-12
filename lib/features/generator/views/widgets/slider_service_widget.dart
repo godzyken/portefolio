@@ -6,7 +6,7 @@ import 'package:portefolio/features/generator/data/extention_models.dart';
 import '../../../../core/affichage/colors_spec.dart';
 import '../../../../core/affichage/screen_size_detector.dart';
 import '../../../../core/provider/expertise_provider.dart';
-import '../../../../core/provider/json_data_provider.dart';
+import '../../../../core/provider/pricing_provider.dart';
 import '../../../../core/ui/ui_widgets_extentions.dart';
 
 class ServicesSlider extends ConsumerStatefulWidget {
@@ -85,7 +85,7 @@ class _ServicesSliderState extends ConsumerState<ServicesSlider> {
 
     // 1. Calcul de la position du bouton cible
     final RenderBox? renderBox =
-        btnKey.currentContext?.findRenderObject() as RenderBox?;
+    btnKey.currentContext?.findRenderObject() as RenderBox?;
     if (renderBox == null) {
       _isTogglingOverlay = false;
       return;
@@ -117,7 +117,7 @@ class _ServicesSliderState extends ConsumerState<ServicesSlider> {
 
   @override
   Widget build(BuildContext context) {
-    final asyncServices = ref.watch(servicesJsonProvider);
+    final asyncServices = ref.watch(portfolioServicesProvider);
     final info = ref.watch(responsiveInfoProvider);
 
     return asyncServices.when(
@@ -163,6 +163,26 @@ class _ServicesSliderState extends ConsumerState<ServicesSlider> {
                       title: service.title,
                       subtitle: service.description,
                       leading: Icon(service.icon),
+                      statusBadge: Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 4),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .primaryContainer,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: ResponsiveText.bodySmall(
+                          service.priceLabel,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onPrimaryContainer,
+                          ),
+                        ),
+                      ),
                       trailing: IconButton(
                         key: btnKey,
                         tooltip: service.category.displayName,
@@ -170,7 +190,7 @@ class _ServicesSliderState extends ConsumerState<ServicesSlider> {
                         onPressed: () {
                           // 1. Lire la data via le provider spécialisé
                           final expertise =
-                              ref.read(serviceExpertiseProvider(service.id));
+                          ref.read(serviceExpertiseProvider(service.id));
 
                           if (expertise != null) {
                             _toggleSkillBubbles(
@@ -206,7 +226,7 @@ class _ServicesSliderState extends ConsumerState<ServicesSlider> {
                                               bottom: 6.0),
                                           child: Row(
                                             crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                            CrossAxisAlignment.start,
                                             children: [
                                               Icon(
                                                 Icons.check_circle_outline,
@@ -221,7 +241,7 @@ class _ServicesSliderState extends ConsumerState<ServicesSlider> {
                                                   feature,
                                                   maxLines: 2,
                                                   overflow:
-                                                      TextOverflow.ellipsis,
+                                                  TextOverflow.ellipsis,
                                                 ),
                                               ),
                                             ],
@@ -339,7 +359,7 @@ class _ExpertiseBubblesOverlayState extends State<_ExpertiseBubblesOverlay>
             child: ScaleTransition(
               scale: _scaleAnimation,
               alignment:
-                  Alignment.bottomCenter, // Point d'origine de l'animation
+              Alignment.bottomCenter, // Point d'origine de l'animation
               child: Container(
                 width: overlayWidth,
                 padding: const EdgeInsets.all(12),
@@ -348,7 +368,7 @@ class _ExpertiseBubblesOverlayState extends State<_ExpertiseBubblesOverlay>
                       .withValues(alpha: 0.95), // Fond sombre translucide
                   borderRadius: BorderRadius.circular(16),
                   border:
-                      Border.all(color: Colors.white.withValues(alpha: 0.1)),
+                  Border.all(color: Colors.white.withValues(alpha: 0.1)),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withValues(alpha: 0.3),
@@ -396,7 +416,7 @@ class _ExpertiseBubblesOverlayState extends State<_ExpertiseBubblesOverlay>
                                 skill.name,
                                 style: TextStyle(
                                     color:
-                                        Theme.of(context).colorScheme.primary,
+                                    Theme.of(context).colorScheme.primary,
                                     fontSize: 11,
                                     fontWeight: FontWeight.w600),
                               ),

@@ -75,6 +75,17 @@ final googleCalendarClientIdProvider = Provider<String?>((ref) {
   return config.googleCalendarClientId;
 }, name: 'GoogleCalendarClientId');
 
+// Supabase (tarifs & formulaire admin)
+final supabaseUrlProvider = Provider<String>((ref) {
+  final config = ref.watch(envConfigProvider);
+  return config.supabaseUrl;
+}, name: 'SupabaseUrl');
+
+final supabaseAnonKeyProvider = Provider<String>((ref) {
+  final config = ref.watch(envConfigProvider);
+  return config.supabaseAnonKey;
+}, name: 'SupabaseAnonKey');
+
 /// Provider de validation globale
 final envConfigValidationProvider = Provider<EnvConfigValidation>((ref) {
   final config = ref.watch(envConfigProvider);

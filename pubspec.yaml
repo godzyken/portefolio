@@ -41,6 +41,9 @@ dependencies:
   # HTTP & Network
   http: ^1.5.0
 
+  # Backend (tarifs & formulaire admin)
+  supabase_flutter: ^2.10.4
+
   # Data & Storage
   shared_preferences: ^2.5.3
   flutter_dotenv: ^6.0.0

@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/ui/widgets/responsive_text.dart';
 import 'package:portefolio/features/generator/views/generator_widgets_extentions.dart';
 
-import '../../../../core/provider/json_data_provider.dart';
+import '../../../../core/provider/pricing_provider.dart';
 
 class ServicesSection extends ConsumerStatefulWidget {
   const ServicesSection({super.key});
@@ -55,7 +55,7 @@ class _ServicesSectionState extends ConsumerState<ServicesSection>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final servicesAsync = ref.watch(servicesJsonProvider);
+    final servicesAsync = ref.watch(portfolioServicesProvider);
 
     return FadeTransition(
       opacity: _fade,
