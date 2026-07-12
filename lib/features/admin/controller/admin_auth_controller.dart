@@ -32,24 +32,21 @@ class AdminAuthController extends Notifier<AdminAuthState> {
   @override
   AdminAuthState build() => const AdminAuthIdle();
 
-  Future<void> signIn(String email, String password) async {
+  Future<void> signIn(String email, String password,
+      {String? captchaToken}) async {
     if (!SupabaseService.isReady) {
       state = const AdminAuthError(
           'Supabase non configuré (SUPABASE_URL / SUPABASE_ANON_KEY manquants).');
       return;
     }
 
-    state = const AdminAuthLoading();
-
-    String? captchaToken;
-    if (TurnstileService.isConfigured) {
-      captchaToken = await TurnstileService.getToken();
-      if (captchaToken == null) {
-        state =
-            const AdminAuthError('Vérification anti-robot échouée. Réessaie.');
-        return;
-      }
+    if (TurnstileService.isConfigured && captchaToken == null) {
+      state = const AdminAuthError(
+          'Vérification anti-robot requise. Complète le captcha ci-dessus.');
+      return;
     }
+
+    state = const AdminAuthLoading();
 
     try {
       await SupabaseService.client.auth.signInWithPassword(

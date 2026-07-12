@@ -1,7 +1,9 @@
+import 'package:cloudflare_turnstile/cloudflare_turnstile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/service/turnstile_service.dart';
 import '../../controller/admin_auth_controller.dart';
 
 class AdminLoginScreen extends ConsumerStatefulWidget {
@@ -17,10 +19,25 @@ class _AdminLoginScreenState extends ConsumerState<AdminLoginScreen> {
   final _passwordCtrl = TextEditingController();
   bool _obscure = true;
 
+  // Le widget managed reste monté tant que l'écran existe : pas de
+  // création/destruction à chaque tentative (source du "Cannot find Widget").
+  TurnstileController? _turnstileController;
+  String? _captchaToken;
+  String? _captchaError;
+
+  @override
+  void initState() {
+    super.initState();
+    if (TurnstileService.isConfigured) {
+      _turnstileController = TurnstileController();
+    }
+  }
+
   @override
   void dispose() {
     _emailCtrl.dispose();
     _passwordCtrl.dispose();
+    _turnstileController?.dispose();
     super.dispose();
   }
 
@@ -33,9 +50,17 @@ class _AdminLoginScreenState extends ConsumerState<AdminLoginScreen> {
       if (next is AdminAuthSuccess) {
         context.go('/admin');
       }
+      if (next is AdminAuthError) {
+        // Un login raté a pu consommer le token : on force une nouvelle
+        // vérification avant la prochaine tentative.
+        _turnstileController?.refreshToken();
+        setState(() => _captchaToken = null);
+      }
     });
 
     final isLoading = authState is AdminAuthLoading;
+    final captchaRequired = TurnstileService.isConfigured;
+    final canSubmit = !isLoading && (!captchaRequired || _captchaToken != null);
 
     return Scaffold(
       body: Center(
@@ -103,6 +128,46 @@ class _AdminLoginScreenState extends ConsumerState<AdminLoginScreen> {
                             : null,
                         onFieldSubmitted: (_) => _submit(),
                       ),
+                      if (captchaRequired) ...[
+                        const SizedBox(height: 16),
+                        Center(
+                          child: CloudflareTurnstile(
+                            siteKey: TurnstileService.siteKey!,
+                            baseUrl: Uri.base.origin,
+                            controller: _turnstileController,
+                            options: TurnstileOptions(
+                              theme: TurnstileTheme.auto,
+                              size: TurnstileSize.normal,
+                              retryAutomatically: true,
+                            ),
+                            onTokenReceived: (token) {
+                              setState(() {
+                                _captchaToken = token;
+                                _captchaError = null;
+                              });
+                            },
+                            onTokenExpired: () {
+                              setState(() => _captchaToken = null);
+                            },
+                            onError: (error) {
+                              setState(() {
+                                _captchaToken = null;
+                                _captchaError =
+                                    'Vérification anti-robot indisponible ($error)';
+                              });
+                            },
+                          ),
+                        ),
+                        if (_captchaError != null) ...[
+                          const SizedBox(height: 8),
+                          Text(
+                            _captchaError!,
+                            style: TextStyle(
+                                color: theme.colorScheme.error, fontSize: 12),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ],
                       if (authState is AdminAuthError) ...[
                         const SizedBox(height: 12),
                         Text(
@@ -113,13 +178,13 @@ class _AdminLoginScreenState extends ConsumerState<AdminLoginScreen> {
                       ],
                       const SizedBox(height: 24),
                       FilledButton(
-                        onPressed: isLoading ? null : _submit,
+                        onPressed: canSubmit ? _submit : null,
                         child: isLoading
                             ? const SizedBox(
                                 height: 20,
                                 width: 20,
-                                child: CircularProgressIndicator(
-                                    strokeWidth: 2),
+                                child:
+                                    CircularProgressIndicator(strokeWidth: 2),
                               )
                             : const Text('Se connecter'),
                       ),
@@ -139,6 +204,7 @@ class _AdminLoginScreenState extends ConsumerState<AdminLoginScreen> {
     ref.read(adminAuthControllerProvider.notifier).signIn(
           _emailCtrl.text.trim(),
           _passwordCtrl.text,
+          captchaToken: _captchaToken,
         );
   }
 }

@@ -1,43 +1,16 @@
-import 'dart:developer' as developer;
-
-import 'package:cloudflare_turnstile/cloudflare_turnstile.dart';
-
 import 'config_env.dart';
 
-/// Récupère un token Cloudflare Turnstile en mode invisible, à passer à
-/// `Supabase.auth.signInWithPassword(captchaToken: ...)`.
+/// Petit wrapper autour de la clé Turnstile (captcha du login admin).
 ///
-/// Nécessite que le domaine courant (localhost en dev, ton domaine en prod)
-/// soit ajouté à la liste des domaines autorisés du widget Turnstile,
-/// dans le dashboard Cloudflare.
+/// Le token n'est plus généré ici : le widget `CloudflareTurnstile` (mode
+/// managed) reste monté dans `AdminLoginScreen` et fournit le token via son
+/// callback `onTokenReceived`. Créer/détruire une instance invisible à
+/// chaque tentative de connexion causait des courses ("Cannot find Widget")
+/// et des échecs "300*" (comportement jugé suspect par Cloudflare).
 class TurnstileService {
   TurnstileService._();
 
   static bool get isConfigured => Env.turnstileSiteKey.isNotEmpty;
 
-  static Future<String?> getToken() async {
-    if (!isConfigured) {
-      developer.log(
-        '⚠️ TURNSTILE_SITE_KEY manquant : impossible de générer un token captcha.',
-        name: 'TurnstileService',
-      );
-      return null;
-    }
-
-    final turnstile = CloudflareTurnstile.invisible(
-      siteKey: Env.turnstileSiteKey,
-      baseUrl: Uri.base.origin,
-    );
-
-    try {
-      final token = await turnstile.getToken();
-      return token;
-    } on TurnstileException catch (e) {
-      developer.log('❌ Échec captcha Turnstile: ${e.message}',
-          name: 'TurnstileService');
-      return null;
-    } finally {
-      turnstile.dispose();
-    }
-  }
+  static String? get siteKey => Env.turnstileSiteKey;
 }
