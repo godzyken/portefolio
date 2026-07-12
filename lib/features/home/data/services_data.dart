@@ -14,6 +14,15 @@ class Service {
   final ServiceCategory category;
   final int priority;
 
+  /// Prix de base (ex: à partir de 500€). Null = pas de prix fixe (sur devis).
+  final double? basePrice;
+
+  /// Unité affichée à côté du prix (ex: "€", "à partir de €", "€/mois").
+  final String priceUnit;
+
+  /// Précision libre affichée sous le prix (ex: fourchette de tarifs).
+  final String? priceNote;
+
   Service({
     required this.id,
     required this.title,
@@ -23,11 +32,16 @@ class Service {
     this.imageUrl,
     this.category = ServiceCategory.development,
     this.priority = 0,
+    this.basePrice,
+    this.priceUnit = 'sur devis',
+    this.priceNote,
   });
 
   factory Service.fromJson(Map<String, dynamic> json) {
-    // Support des deux formats: "imageUrl" et "image"
-    final imageUrl = json['imageUrl'] as String? ?? json['image'] as String?;
+    // Support des formats: "imageUrl" (JSON local) et "image"/"image_url" (Supabase)
+    final imageUrl = json['imageUrl'] as String? ??
+        json['image'] as String? ??
+        json['image_url'] as String?;
 
     developer.log('📦 Parsing service: ${json['title']}');
     developer.log('🖼️ Image URL: $imageUrl');
@@ -42,6 +56,12 @@ class Service {
       imageUrl: imageUrl,
       category: _getCategoryFromString(json['category'] as String?),
       priority: json['priority'] as int? ?? 0,
+      basePrice: (json['basePrice'] ?? json['base_price']) == null
+          ? null
+          : ((json['basePrice'] ?? json['base_price']) as num).toDouble(),
+      priceUnit: (json['priceUnit'] ?? json['price_unit']) as String? ??
+          'sur devis',
+      priceNote: (json['priceNote'] ?? json['price_note']) as String?,
     );
   }
 
@@ -55,7 +75,22 @@ class Service {
       'imageUrl': imageUrl,
       'category': category.name,
       'priority': priority,
+      'basePrice': basePrice,
+      'priceUnit': priceUnit,
+      'priceNote': priceNote,
     };
+  }
+
+  /// Libellé de prix prêt à afficher (ex: "à partir de 500 €").
+  String get priceLabel {
+    if (basePrice == null) return priceUnit; // ex: "sur devis"
+    final formatted = basePrice! % 1 == 0
+        ? basePrice!.toStringAsFixed(0)
+        : basePrice!.toStringAsFixed(2);
+    if (priceUnit.contains('€')) {
+      return priceUnit.replaceFirst('€', '$formatted €');
+    }
+    return '$formatted $priceUnit';
   }
 
   /// URL d'image nettoyée
@@ -102,6 +137,9 @@ class Service {
     String? imageUrl,
     ServiceCategory? category,
     int? priority,
+    double? basePrice,
+    String? priceUnit,
+    String? priceNote,
   }) {
     return Service(
       id: id ?? this.id,
@@ -112,6 +150,9 @@ class Service {
       imageUrl: imageUrl ?? this.imageUrl,
       category: category ?? this.category,
       priority: priority ?? this.priority,
+      basePrice: basePrice ?? this.basePrice,
+      priceUnit: priceUnit ?? this.priceUnit,
+      priceNote: priceNote ?? this.priceNote,
     );
   }
 
@@ -328,5 +369,96 @@ class ServiceExpertise {
     final sorted = List<TechSkill>.from(skills)
       ..sort((a, b) => b.level.compareTo(a.level));
     return sorted.take(5).toList();
+  }
+}
+
+/// Pack tarifaire (ex: Découverte / Croissance / Premium, ou une offre
+/// sur-mesure comme "Offre Essentielle"). Rattaché à un [Service] via
+/// [serviceId], mais peut aussi rester autonome (serviceId == null).
+class PricingPack {
+  final int? id;
+  final String? serviceId;
+  final String name;
+  final double price;
+  final String priceUnit;
+  final String? description;
+  final List<String> features;
+  final int priority;
+  final bool isFeatured;
+  final bool active;
+
+  const PricingPack({
+    this.id,
+    this.serviceId,
+    required this.name,
+    required this.price,
+    this.priceUnit = '€',
+    this.description,
+    this.features = const [],
+    this.priority = 0,
+    this.isFeatured = false,
+    this.active = true,
+  });
+
+  factory PricingPack.fromJson(Map<String, dynamic> json) {
+    return PricingPack(
+      id: json['id'] as int?,
+      serviceId: json['service_id'] as String?,
+      name: json['name'] as String,
+      price: (json['price'] as num).toDouble(),
+      priceUnit: json['price_unit'] as String? ?? '€',
+      description: json['description'] as String?,
+      features: (json['features'] as List?)?.cast<String>() ?? [],
+      priority: json['priority'] as int? ?? 0,
+      isFeatured: json['is_featured'] as bool? ?? false,
+      active: json['active'] as bool? ?? true,
+    );
+  }
+
+  /// Payload d'écriture pour Supabase (sans id/serviceId gérés à part).
+  Map<String, dynamic> toInsertPayload() {
+    return {
+      if (serviceId != null) 'service_id': serviceId,
+      'name': name,
+      'price': price,
+      'price_unit': priceUnit,
+      'description': description,
+      'features': features,
+      'priority': priority,
+      'is_featured': isFeatured,
+      'active': active,
+    };
+  }
+
+  String get priceLabel {
+    final formatted =
+        price % 1 == 0 ? price.toStringAsFixed(0) : price.toStringAsFixed(2);
+    return priceUnit == '€' ? '$formatted €' : '$formatted $priceUnit';
+  }
+
+  PricingPack copyWith({
+    int? id,
+    String? serviceId,
+    String? name,
+    double? price,
+    String? priceUnit,
+    String? description,
+    List<String>? features,
+    int? priority,
+    bool? isFeatured,
+    bool? active,
+  }) {
+    return PricingPack(
+      id: id ?? this.id,
+      serviceId: serviceId ?? this.serviceId,
+      name: name ?? this.name,
+      price: price ?? this.price,
+      priceUnit: priceUnit ?? this.priceUnit,
+      description: description ?? this.description,
+      features: features ?? this.features,
+      priority: priority ?? this.priority,
+      isFeatured: isFeatured ?? this.isFeatured,
+      active: active ?? this.active,
+    );
   }
 }

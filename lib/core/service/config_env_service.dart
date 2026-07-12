@@ -20,6 +20,10 @@ class EnvConfigService {
   // Google Calendar
   final String? googleCalendarClientId;
 
+  // Supabase (tarifs & formulaire admin)
+  final String supabaseUrl;
+  final String supabaseAnonKey;
+
   const EnvConfigService._({
     required this.emailJsServiceId,
     required this.emailJsTemplateId,
@@ -28,6 +32,8 @@ class EnvConfigService {
     required this.oneDriveUrl,
     required this.wakaTimeApiKey,
     required this.googleCalendarClientId,
+    required this.supabaseUrl,
+    required this.supabaseAnonKey,
   });
 
   /// Factory qui charge depuis String.fromEnvironment
@@ -47,6 +53,9 @@ class EnvConfigService {
 
     final gcc = const String.fromEnvironment('GCC_CLIENT_ID');
 
+    const supabaseUrl = String.fromEnvironment('SUPABASE_URL');
+    const supabaseAnonKey = String.fromEnvironment('SUPABASE_ANON_KEY');
+
     return EnvConfigService._(
       emailJsServiceId: emailJsServiceId,
       emailJsTemplateId: emailJsTemplateId,
@@ -55,6 +64,8 @@ class EnvConfigService {
       oneDriveUrl: oneDriveUrl,
       wakaTimeApiKey: waka.isEmpty ? null : waka,
       googleCalendarClientId: gcc.isEmpty ? null : gcc,
+      supabaseUrl: supabaseUrl,
+      supabaseAnonKey: supabaseAnonKey,
     );
   }
 
@@ -83,6 +94,13 @@ class EnvConfigService {
 
     if ((googleCalendarClientId ?? '').isEmpty) {
       errors.add('GCC_CLIENT_ID manquant');
+    }
+
+    if (supabaseUrl.isEmpty) {
+      errors.add('SUPABASE_URL manquant');
+    }
+    if (supabaseAnonKey.isEmpty) {
+      errors.add('SUPABASE_ANON_KEY manquant');
     }
 
     return errors;

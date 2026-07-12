@@ -15,6 +15,7 @@ import 'core/provider/config_env_provider.dart';
 import 'core/provider/unified_image_provider.dart';
 import 'core/service/bootstrap_service.dart';
 import 'core/service/config_env.dart';
+import 'core/service/supabase_service.dart';
 import 'features/generator/views/generator_widgets_extentions.dart';
 import 'features/parametres/themes/controller/theme_controller.dart';
 import 'features/parametres/themes/provider/theme_repository_provider.dart';
@@ -152,6 +153,12 @@ Future<void> _boot() async {
 
   // ── Singleton Env ──────────────────────────────────────────────────────────
   Env.init(container);
+
+  // ── Supabase (tarifs & formulaire admin) ─────────────────────────────────
+  await SupabaseService.init(
+    url: Env.supabaseUrl,
+    anonKey: Env.supabaseAnonKey,
+  );
 
   // ── Lancement ─────────────────────────────────────────────────────────────
   runApp(

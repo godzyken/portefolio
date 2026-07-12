@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/about/views/screens/legal_mentions_screen.dart';
+import '../../features/admin/views/screens/admin_dashboard_screen.dart';
+import '../../features/admin/views/screens/admin_login_screen.dart';
 import '../../features/contact/views/screens/contact_screen.dart';
 import '../../features/experience/views/screens/experiences_screen.dart';
 import '../../features/generator/views/screens/generator_extentions_screens.dart';
@@ -31,6 +33,18 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           path: '/splash',
           name: 'splash',
           builder: (_, __) => const SplashScreen(targetRoute: '/'),
+        ),
+
+        // ── Admin (formulaire de gestion des tarifs, hors navbar publique) ─
+        GoRoute(
+          path: '/admin/login',
+          name: 'admin_login',
+          builder: (_, __) => const AdminLoginScreen(),
+        ),
+        GoRoute(
+          path: '/admin',
+          name: 'admin',
+          builder: (_, __) => const AdminDashboardScreen(),
         ),
 
         // ── Shell principal (navbar, scaffold partagé) ──────────────────
