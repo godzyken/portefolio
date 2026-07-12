@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/service/supabase_service.dart';
+import '../../../core/service/turnstile_service.dart';
 
 sealed class AdminAuthState {
   const AdminAuthState();
@@ -24,6 +25,9 @@ class AdminAuthSuccess extends AdminAuthState {
   const AdminAuthSuccess();
 }
 
+/// Gère la connexion/déconnexion au formulaire d'admin.
+/// Un seul compte (le tien) doit exister côté Supabase Auth, et doit être
+/// référencé dans la table `portfolio_admins` pour avoir le droit d'écrire.
 class AdminAuthController extends Notifier<AdminAuthState> {
   @override
   AdminAuthState build() => const AdminAuthIdle();
@@ -36,10 +40,22 @@ class AdminAuthController extends Notifier<AdminAuthState> {
     }
 
     state = const AdminAuthLoading();
+
+    String? captchaToken;
+    if (TurnstileService.isConfigured) {
+      captchaToken = await TurnstileService.getToken();
+      if (captchaToken == null) {
+        state =
+            const AdminAuthError('Vérification anti-robot échouée. Réessaie.');
+        return;
+      }
+    }
+
     try {
       await SupabaseService.client.auth.signInWithPassword(
         email: email,
         password: password,
+        captchaToken: captchaToken,
       );
       state = const AdminAuthSuccess();
     } on AuthException catch (e) {

@@ -24,6 +24,9 @@ class EnvConfigService {
   final String supabaseUrl;
   final String supabaseAnonKey;
 
+  // Captcha Turnstile
+  final String turnstileSiteKey;
+
   const EnvConfigService._({
     required this.emailJsServiceId,
     required this.emailJsTemplateId,
@@ -34,6 +37,7 @@ class EnvConfigService {
     required this.googleCalendarClientId,
     required this.supabaseUrl,
     required this.supabaseAnonKey,
+    required this.turnstileSiteKey,
   });
 
   /// Factory qui charge depuis String.fromEnvironment
@@ -56,6 +60,8 @@ class EnvConfigService {
     const supabaseUrl = String.fromEnvironment('SUPABASE_URL');
     const supabaseAnonKey = String.fromEnvironment('SUPABASE_ANON_KEY');
 
+    const turnstileSiteKey = String.fromEnvironment('TURNSTILE_SITE_KEY');
+
     return EnvConfigService._(
       emailJsServiceId: emailJsServiceId,
       emailJsTemplateId: emailJsTemplateId,
@@ -66,6 +72,7 @@ class EnvConfigService {
       googleCalendarClientId: gcc.isEmpty ? null : gcc,
       supabaseUrl: supabaseUrl,
       supabaseAnonKey: supabaseAnonKey,
+      turnstileSiteKey: turnstileSiteKey,
     );
   }
 
@@ -102,6 +109,9 @@ class EnvConfigService {
     if (supabaseAnonKey.isEmpty) {
       errors.add('SUPABASE_ANON_KEY manquant');
     }
+    if (turnstileSiteKey.isEmpty) {
+      errors.add('TURNSTILE_SITE_KEY manquant');
+    }
 
     return errors;
   }
@@ -118,6 +128,9 @@ EnvConfigService(
   oneDriveUrl: ${oneDriveUrl.isNotEmpty ? '${oneDriveUrl.substring(0, 30)}...' : 'MISSING'},
   wakaTimeApiKey: ${wakaTimeApiKey != null ? '***' : 'MISSING'},
   googleCalendarClientId: ${googleCalendarClientId != null ? '***' : 'MISSING'},
+  supabaseUrl: ${supabaseUrl.isNotEmpty ? '***' : 'MISSING'},
+  supabaseAnonKey: ${supabaseAnonKey.isNotEmpty ? '***' : 'MISSING'},
+  turnstileSiteKey: ${turnstileSiteKey.isNotEmpty ? '***' : 'MISSING'},
 )''';
 }
 

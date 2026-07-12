@@ -19,4 +19,5 @@ class Env {
   static String? get googleCalendarClientId => _instance.googleCalendarClientId;
   static String get supabaseUrl => _instance.supabaseUrl;
   static String get supabaseAnonKey => _instance.supabaseAnonKey;
+  static String get turnstileSiteKey => _instance.turnstileSiteKey;
 }
