@@ -462,3 +462,77 @@ class PricingPack {
     );
   }
 }
+
+/// Une ligne du tableau de comparaison marché (freelance vs agence).
+class MarketComparisonRow {
+  final String label;
+  final String freelanceRange;
+  final String agencyRange;
+
+  const MarketComparisonRow({
+    required this.label,
+    required this.freelanceRange,
+    required this.agencyRange,
+  });
+
+  factory MarketComparisonRow.fromJson(Map<String, dynamic> json) {
+    return MarketComparisonRow(
+      label: json['label'] as String? ?? '',
+      freelanceRange: json['freelance_range'] as String? ?? '',
+      agencyRange: json['agency_range'] as String? ?? '',
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'label': label,
+        'freelance_range': freelanceRange,
+        'agency_range': agencyRange,
+      };
+}
+
+/// Contenu de la page publique "pourquoi ce tarif", par service.
+/// Alimente `PricingRationaleScreen`, accessible en cliquant sur le prix.
+class PricingRationale {
+  final String serviceId;
+  final String introText;
+  final List<MarketComparisonRow> marketComparison;
+
+  /// {frais_gestion_pct, coefficient_transformation, note}
+  final Map<String, dynamic> portageBreakdown;
+
+  /// {title, invoice_ht, base_calcul, remuneration_brute, note} — vide si
+  /// aucun exemple n'a été renseigné pour ce service.
+  final Map<String, dynamic> anonymizedExample;
+
+  const PricingRationale({
+    required this.serviceId,
+    required this.introText,
+    this.marketComparison = const [],
+    this.portageBreakdown = const {},
+    this.anonymizedExample = const {},
+  });
+
+  bool get hasExample => anonymizedExample.isNotEmpty;
+
+  factory PricingRationale.fromJson(Map<String, dynamic> json) {
+    return PricingRationale(
+      serviceId: json['service_id'] as String,
+      introText: json['intro_text'] as String? ?? '',
+      marketComparison: (json['market_comparison'] as List? ?? [])
+          .map((e) => MarketComparisonRow.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      portageBreakdown:
+          (json['portage_breakdown'] as Map?)?.cast<String, dynamic>() ?? {},
+      anonymizedExample:
+          (json['anonymized_example'] as Map?)?.cast<String, dynamic>() ?? {},
+    );
+  }
+
+  Map<String, dynamic> toUpsertPayload() => {
+        'service_id': serviceId,
+        'intro_text': introText,
+        'market_comparison': marketComparison.map((e) => e.toJson()).toList(),
+        'portage_breakdown': portageBreakdown,
+        'anonymized_example': anonymizedExample,
+      };
+}
