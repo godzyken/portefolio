@@ -28,9 +28,10 @@ class PricingRationaleScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('Erreur: $e')),
         data: (rationale) {
-          final service = servicesAsync.valueOrNull
-              ?.where((s) => s.id == serviceId)
-              .firstOrNull;
+          final service = servicesAsync.maybeWhen(
+            data: (list) => list.where((s) => s.id == serviceId).firstOrNull,
+            orElse: () => null,
+          );
 
           if (rationale == null) {
             return _EmptyState(serviceTitle: service?.title);
