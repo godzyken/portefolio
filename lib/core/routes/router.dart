@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/about/views/screens/legal_mentions_screen.dart';
 import '../../features/admin/views/screens/admin_dashboard_screen.dart';
 import '../../features/admin/views/screens/admin_login_screen.dart';
+import '../../features/home/views/screens/pricing_rationale_screen.dart';
 import '../../features/contact/views/screens/contact_screen.dart';
 import '../../features/experience/views/screens/experiences_screen.dart';
 import '../../features/generator/views/screens/generator_extentions_screens.dart';
@@ -45,6 +46,24 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           path: '/admin',
           name: 'admin',
           builder: (_, __) => const AdminDashboardScreen(),
+        ),
+
+        // ── Page publique "pourquoi ce tarif" (clic sur le prix) ─────────
+        GoRoute(
+          path: '/tarifs/:serviceId',
+          name: 'pricing_rationale',
+          builder: (_, state) => PricingRationaleScreen(
+            serviceId: state.pathParameters['serviceId']!,
+          ),
+        ),
+
+        // ── Page publique "pourquoi ce tarif" (hors shell, Scaffold dédié) ─
+        GoRoute(
+          path: '/tarifs/:serviceId',
+          name: 'pricing_rationale',
+          builder: (_, state) => PricingRationaleScreen(
+            serviceId: state.pathParameters['serviceId']!,
+          ),
         ),
 
         // ── Shell principal (navbar, scaffold partagé) ──────────────────
