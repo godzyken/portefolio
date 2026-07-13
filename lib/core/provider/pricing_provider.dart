@@ -89,3 +89,26 @@ final isPortfolioAdminProvider = FutureProvider<bool>((ref) async {
 final authStateChangesProvider = StreamProvider<AuthState>((ref) {
   return SupabaseService.client.auth.onAuthStateChange;
 }, name: 'AuthStateChanges');
+
+/// Contenu de la page publique "pourquoi ce tarif" pour un service donné.
+/// Retourne null si aucun contenu n'a été renseigné pour ce service.
+final pricingRationaleProvider =
+    FutureProvider.family<PricingRationale?, String>((ref, serviceId) async {
+  if (!SupabaseService.isReady) return null;
+
+  try {
+    final rows = await SupabaseService.client
+        .from('portfolio_pricing_rationale')
+        .select()
+        .eq('service_id', serviceId)
+        .limit(1);
+
+    final list = rows as List;
+    if (list.isEmpty) return null;
+    return PricingRationale.fromJson(list.first as Map<String, dynamic>);
+  } catch (e, st) {
+    developer.log('❌ Erreur chargement pricing_rationale: $e',
+        name: 'pricingRationaleProvider', error: e, stackTrace: st);
+    return null;
+  }
+}, name: 'PricingRationale');
