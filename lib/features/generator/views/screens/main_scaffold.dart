@@ -42,6 +42,7 @@ class MainScaffold extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
+        leading: _NavMenuButton(items: bubbleItems),
         title: ResponsiveText.titleLarge(config.title,
             overflow: TextOverflow.ellipsis),
         actions: config.actions,
@@ -85,26 +86,6 @@ class MainScaffold extends ConsumerWidget {
             ),
           ),
 
-          // LE MENU FLOTTANT AU-DESSUS DU CONTENU
-          // Position: Top-left sous l'AppBar
-          Positioned(
-            top: -60, // Juste sous l'AppBar
-            left: -60,
-            child: GestureDetector(
-              // Empêcher la propagation des clics au contenu dessous
-              onTap: () {
-                // Rien à faire, le menu gère lui-même son état
-              },
-              child: BubbleNavigationMenu(
-                key: ValueKey('menu_${currentTab.path}'),
-                activeIcon: currentTab.icon,
-                menuPosition: Alignment.topLeft,
-                items: bubbleItems,
-                isMobile: info.isMobile,
-              ),
-            ),
-          ),
-
           // BULLE COMPARATIF EN HAUT À DROITE
           if (shouldShowBubble)
             Positioned(
@@ -115,6 +96,37 @@ class MainScaffold extends ConsumerWidget {
         ],
       ),
       bottomNavigationBar: const PortfolioFooter(),
+    );
+  }
+}
+
+/// Bouton de navigation classique dans l'AppBar (remplace l'ancien menu
+/// flottant en bulles, dont la zone de tap invisible 200x200 décalée en
+/// `Positioned(top: -60, left: -60)` provoquait des taps ratés/erratiques,
+/// surtout sur mobile).
+class _NavMenuButton extends StatelessWidget {
+  const _NavMenuButton({required this.items});
+  final List<BubbleMenuItem> items;
+
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton<BubbleMenuItem>(
+      icon: const Icon(Icons.menu),
+      tooltip: 'Navigation',
+      onSelected: (item) => item.onPressed(),
+      itemBuilder: (context) => [
+        for (final item in items)
+          PopupMenuItem(
+            value: item,
+            child: Row(
+              children: [
+                Icon(item.icon, size: 20),
+                const SizedBox(width: 12),
+                Text(item.label),
+              ],
+            ),
+          ),
+      ],
     );
   }
 }
