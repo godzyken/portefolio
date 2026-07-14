@@ -50,13 +50,8 @@ class PortfolioFooter extends ConsumerWidget {
             height: isMobile ? 16 : 24, // Hauteur réduite sur mobile
           ),
 
-          // --- Section Copyright ---
-          ResponsiveText.bodySmall(
-            '© ${DateTime.now().year} Godzyken — Tous droits réservés.',
-            style: TextStyle(
-              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-            ),
-          ),
+          // --- Section Copyright (5 taps rapides = accès admin, discret) ---
+          _SecretAdminTrigger(year: DateTime.now().year),
         ],
       ),
     );
@@ -106,6 +101,55 @@ class PortfolioFooter extends ConsumerWidget {
           paddingSize: ResponsiveSpacing.xs,
           padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
           child: content,
+        ),
+      ),
+    );
+  }
+}
+
+/// Le texte de copyright ordinaire, mais 5 taps rapides (moins de 2s entre
+/// chaque) ouvrent l'écran de connexion admin. Aucune indication visuelle :
+/// c'est le seul moyen d'accéder à `/admin/login` depuis le site public.
+class _SecretAdminTrigger extends StatefulWidget {
+  const _SecretAdminTrigger({required this.year});
+  final int year;
+
+  @override
+  State<_SecretAdminTrigger> createState() => _SecretAdminTriggerState();
+}
+
+class _SecretAdminTriggerState extends State<_SecretAdminTrigger> {
+  static const _requiredTaps = 5;
+  static const _resetDelay = Duration(seconds: 2);
+
+  int _tapCount = 0;
+  DateTime? _lastTap;
+
+  void _onTap() {
+    final now = DateTime.now();
+    if (_lastTap == null || now.difference(_lastTap!) > _resetDelay) {
+      _tapCount = 1;
+    } else {
+      _tapCount++;
+    }
+    _lastTap = now;
+
+    if (_tapCount >= _requiredTaps) {
+      _tapCount = 0;
+      context.push('/admin/login');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: _onTap,
+      child: ResponsiveText.bodySmall(
+        '© ${widget.year} Godzyken — Tous droits réservés.',
+        style: TextStyle(
+          color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
         ),
       ),
     );
