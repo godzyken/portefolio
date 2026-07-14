@@ -113,7 +113,14 @@ class _NavMenuButton extends StatelessWidget {
     return PopupMenuButton<BubbleMenuItem>(
       icon: const Icon(Icons.menu),
       tooltip: 'Navigation',
-      onSelected: (item) => item.onPressed(),
+      onSelected: (item) {
+        // Important : ne pas naviguer de manière synchrone ici. Le popup
+        // est encore en train de se fermer (animation de sortie) et un
+        // context.go() immédiat laisse la nouvelle page "peinte mais pas
+        // affichée" tant qu'aucun autre geste ne force un repaint — d'où
+        // l'écran noir jusqu'au clic suivant.
+        Future.delayed(const Duration(milliseconds: 50), item.onPressed);
+      },
       itemBuilder: (context) => [
         for (final item in items)
           PopupMenuItem(
