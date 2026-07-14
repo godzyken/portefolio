@@ -180,13 +180,17 @@ class _ServicesSliderState extends ConsumerState<ServicesSlider> {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              ResponsiveText.bodySmall(
-                                service.priceLabel,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onPrimaryContainer,
+                              Flexible(
+                                child: ResponsiveText.bodySmall(
+                                  service.priceLabel,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onPrimaryContainer,
+                                  ),
                                 ),
                               ),
                               const SizedBox(width: 4),
