@@ -210,6 +210,7 @@ class UnifiedContentCard extends StatelessWidget {
                 children: [
                   // Header
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       if (leading case final widget?) ...[
                         widget,
@@ -220,6 +221,8 @@ class UnifiedContentCard extends StatelessWidget {
                           children: [
                             ResponsiveText.titleMedium(
                               title,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                               style: theme.textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
                               ),
@@ -227,14 +230,24 @@ class UnifiedContentCard extends StatelessWidget {
                             if (subtitle case final text?)
                               ResponsiveText.bodySmall(
                                 text,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
                                 style: theme.textTheme.bodySmall,
                               ),
+                            // Le badge passe sous le titre plutôt qu'à côté :
+                            // évite l'overflow horizontal sur mobile quand le
+                            // titre + le badge + l'icône trailing ne tiennent
+                            // pas sur une seule ligne.
+                            if (statusBadge case final badge?) ...[
+                              const SizedBox(height: 6),
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: badge,
+                              ),
+                            ],
                           ],
                         ),
                       ),
-                      if (statusBadge case final badge?) ...[
-                        badge,
-                      ],
                       if (trailing case final t?) t,
                     ],
                   ),
