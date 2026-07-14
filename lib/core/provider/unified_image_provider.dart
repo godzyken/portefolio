@@ -142,13 +142,18 @@ class CachedImage extends ConsumerWidget {
     final isSvg = path.toLowerCase().endsWith('.svg');
 
     if (isSvg) {
-      return _buildSvgImage(manager);
+      return _buildSvgImage(context, ref, manager);
     } else {
-      return _buildRasterImage(manager);
+      return _buildRasterImage(context, ref, manager);
     }
   }
 
-  Widget _buildRasterImage(UnifiedImageManager manager) {
+  Widget _buildRasterImage(BuildContext context, WidgetRef ref,
+      UnifiedImageManager manager) {
+    if (manager.hasFailed(path)) {
+      return _buildError(context, ref, manager);
+    }
+
     final cached = manager.getCachedImage(path);
 
     if (cached != null) {
@@ -159,14 +164,19 @@ class CachedImage extends ConsumerWidget {
         fit: fit,
         color: color,
         colorBlendMode: colorBlendMode,
-        errorBuilder: (_, __, ___) => _buildError(),
+        errorBuilder: (_, __, ___) => _buildError(context, ref, manager),
       );
     }
 
     return _buildPlaceholder();
   }
 
-  Widget _buildSvgImage(UnifiedImageManager manager) {
+  Widget _buildSvgImage(BuildContext context, WidgetRef ref,
+      UnifiedImageManager manager) {
+    if (manager.hasFailed(path)) {
+      return _buildError(context, ref, manager);
+    }
+
     final cached = manager.getCachedSvg(path);
 
     if (cached != null) {
@@ -181,22 +191,104 @@ class CachedImage extends ConsumerWidget {
 
   Widget _buildPlaceholder() {
     return placeholder ??
-        SizedBox(
-          width: width,
-          height: height,
-          child: const Center(
-            child: CircularProgressIndicator(strokeWidth: 2),
-          ),
-        );
+        ShimmerBox(width: width, height: height);
   }
 
-  Widget _buildError() {
-    return errorWidget ??
-        SizedBox(
-          width: width,
-          height: height,
-          child: const Icon(Icons.broken_image, color: Colors.grey),
-        );
+  Widget _buildError(
+      BuildContext context, WidgetRef ref, UnifiedImageManager manager) {
+    if (errorWidget != null) return errorWidget!;
+
+    return SizedBox(
+      width: width,
+      height: height,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(8),
+          onTap: () {
+            manager.evict(path);
+            manager.preloadImage(path, context: context);
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context)
+                  .colorScheme
+                  .surfaceContainerHighest
+                  .withValues(alpha: 0.5),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            alignment: Alignment.center,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.refresh,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant),
+                const SizedBox(height: 4),
+                Text(
+                  'Réessayer',
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Placeholder "shimmer" (effet de balayage lumineux) affiché pendant le
+/// chargement d'une image, à la place d'un simple spinner.
+class ShimmerBox extends StatefulWidget {
+  const ShimmerBox({super.key, this.width, this.height});
+  final double? width;
+  final double? height;
+
+  @override
+  State<ShimmerBox> createState() => _ShimmerBoxState();
+}
+
+class _ShimmerBoxState extends State<ShimmerBox>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1200),
+  )..repeat();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final base = Theme.of(context).colorScheme.surfaceContainerHighest;
+    final highlight = Theme.of(context).colorScheme.surface;
+
+    return SizedBox(
+      width: widget.width,
+      height: widget.height,
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, _) {
+          // Balayage de -1 à 2 pour que le highlight traverse tout le widget
+          final t = _controller.value * 3 - 1;
+          return DecoratedBox(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              gradient: LinearGradient(
+                begin: Alignment(t - 0.3, 0),
+                end: Alignment(t + 0.3, 0),
+                colors: [base, highlight, base],
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 }
 
