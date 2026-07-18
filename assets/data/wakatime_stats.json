@@ -1,17 +1,17 @@
 {
     "data": {
-        "id": "95b8f9e9-14e4-41dd-861a-a41b5620a2b9",
+        "id": "04f8f18d-75fc-4420-96a8-2fcaf4ca5457",
         "user_id": "d44d9645-f329-4729-a92d-c1c4ce039e23",
         "range": "last_7_days",
-        "start": "2026-07-08T22:00:00Z",
-        "end": "2026-07-14T21:59:59Z",
+        "start": "2026-07-09T22:00:00Z",
+        "end": "2026-07-16T21:59:59Z",
         "timeout": 15,
         "writes_only": false,
         "timezone": "Europe/Paris",
         "ai_additions": 0,
         "ai_deletions": 0,
-        "human_additions": 288,
-        "human_deletions": 123,
+        "human_additions": 277,
+        "human_deletions": 111,
         "ai_agent_line_changes": {},
         "ai_line_changes_total": 0,
         "ai_agent_costs": {},
@@ -25,337 +25,35 @@
         "ai_prompt_length_avg_per_session": 0,
         "ai_prompt_length_median_per_session": 0,
         "ai_sessions": 0,
-        "holidays": 3,
-        "status": "error",
-        "created_at": "2026-07-07T02:45:25Z",
-        "modified_at": "2026-07-16T13:51:54Z",
-        "total_seconds": 11698.266,
-        "daily_average_including_other_language": 3941,
-        "ai_agent_total_cost": 0,
-        "dependencies": [
-            {
-                "total_seconds": 53.691,
-                "name": "node_modules/@supabase/storage-js",
-                "percent": 8.33,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
-                "hours": 0,
-                "minutes": 0
-            },
-            {
-                "total_seconds": 53.691,
-                "name": "node_modules/tslib",
-                "percent": 8.33,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
-                "hours": 0,
-                "minutes": 0
-            },
-            {
-                "total_seconds": 53.691,
-                "name": "node_modules/@supabase/supabase-js",
-                "percent": 8.33,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
-                "hours": 0,
-                "minutes": 0
-            },
-            {
-                "total_seconds": 53.691,
-                "name": "node_modules/@types/ws",
-                "percent": 8.33,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
-                "hours": 0,
-                "minutes": 0
-            },
-            {
-                "total_seconds": 53.691,
-                "name": "node_modules/@supabase/postgrest-js",
-                "percent": 8.33,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
-                "hours": 0,
-                "minutes": 0
-            },
-            {
-                "total_seconds": 53.691,
-                "name": "node_modules/@supabase/phoenix",
-                "percent": 8.33,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
-                "hours": 0,
-                "minutes": 0
-            },
-            {
-                "total_seconds": 53.691,
-                "name": "node_modules/@types/node",
-                "percent": 8.33,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
-                "hours": 0,
-                "minutes": 0
-            },
-            {
-                "total_seconds": 53.691,
-                "name": "node_modules/iceberg-js",
-                "percent": 8.33,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
-                "hours": 0,
-                "minutes": 0
-            },
-            {
-                "total_seconds": 53.691,
-                "name": "node_modules/ws",
-                "percent": 8.33,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
-                "hours": 0,
-                "minutes": 0
-            },
-            {
-                "total_seconds": 53.691,
-                "name": "node_modules/@supabase/realtime-js",
-                "percent": 8.33,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
-                "hours": 0,
-                "minutes": 0
-            },
-            {
-                "total_seconds": 53.691,
-                "name": "node_modules/undici-types",
-                "percent": 8.33,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
-                "hours": 0,
-                "minutes": 0
-            },
-            {
-                "total_seconds": 53.691,
-                "name": "node_modules/@supabase/functions-js",
-                "percent": 8.33,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
-                "hours": 0,
-                "minutes": 0
-            }
-        ],
-        "is_already_updating": false,
-        "days_minus_holidays": 3,
-        "percent_calculated": 0,
-        "ai_agent_breakdown": [],
-        "days_including_holidays": 6,
+        "holidays": 5,
+        "status": "pending_update",
+        "created_at": "2026-07-17T04:57:58Z",
+        "modified_at": "2026-07-17T04:57:59Z",
+        "total_seconds": 7761.245,
+        "percent_calculated": 100,
         "categories": [
             {
                 "name": "Coding",
-                "total_seconds": 16548.139,
-                "percent": 99.43,
-                "digital": "4:35",
-                "decimal": "4.58",
-                "text": "4 hrs 35 mins",
-                "hours": 4,
-                "minutes": 35
-            },
-            {
-                "name": "Writing Docs",
-                "total_seconds": 54.989,
-                "percent": 0.33,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
-                "hours": 0,
-                "minutes": 0
-            },
-            {
-                "name": "Writing Tests",
-                "total_seconds": 40.579,
-                "percent": 0.24,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
-                "hours": 0,
-                "minutes": 0
-            }
-        ],
-        "total_seconds_including_other_language": 11822.584,
-        "languages": [
-            {
-                "name": "Dart",
-                "total_seconds": 5287.206,
-                "percent": 44.71,
-                "digital": "1:28",
-                "decimal": "1.47",
-                "text": "1 hr 28 mins",
-                "hours": 1,
-                "minutes": 28
-            },
-            {
-                "name": "YAML",
-                "total_seconds": 3166.715,
-                "percent": 26.78,
-                "digital": "0:52",
-                "decimal": "0.87",
-                "text": "52 mins",
-                "hours": 0,
-                "minutes": 52
-            },
-            {
-                "name": "Bash",
-                "total_seconds": 1126.132,
-                "percent": 9.52,
-                "digital": "0:18",
-                "decimal": "0.30",
-                "text": "18 mins",
-                "hours": 0,
-                "minutes": 18
-            },
-            {
-                "name": "TOML",
-                "total_seconds": 893.303,
-                "percent": 7.55,
-                "digital": "0:14",
-                "decimal": "0.23",
-                "text": "14 mins",
-                "hours": 0,
-                "minutes": 14
-            },
-            {
-                "name": "Text",
-                "total_seconds": 350.804,
-                "percent": 2.97,
-                "digital": "0:05",
-                "decimal": "0.08",
-                "text": "5 mins",
-                "hours": 0,
-                "minutes": 5
-            },
-            {
-                "name": ".env file",
-                "total_seconds": 334.044,
-                "percent": 2.82,
-                "digital": "0:05",
-                "decimal": "0.08",
-                "text": "5 mins",
-                "hours": 0,
-                "minutes": 5
-            },
-            {
-                "name": "JavaScript",
-                "total_seconds": 258.437,
-                "percent": 2.19,
-                "digital": "0:04",
-                "decimal": "0.07",
-                "text": "4 mins",
-                "hours": 0,
-                "minutes": 4
-            },
-            {
-                "name": "Other",
-                "total_seconds": 124.318,
-                "percent": 1.05,
-                "digital": "0:02",
-                "decimal": "0.03",
-                "text": "2 mins",
-                "hours": 0,
-                "minutes": 2
-            },
-            {
-                "name": "JSON",
-                "total_seconds": 115.085,
-                "percent": 0.97,
-                "digital": "0:01",
-                "decimal": "0.02",
-                "text": "1 min",
-                "hours": 0,
-                "minutes": 1
-            },
-            {
-                "name": "Diff",
-                "total_seconds": 71.925,
-                "percent": 0.61,
-                "digital": "0:01",
-                "decimal": "0.02",
-                "text": "1 min",
-                "hours": 0,
-                "minutes": 1
-            },
-            {
-                "name": "Markdown",
-                "total_seconds": 54.989,
-                "percent": 0.46,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
-                "hours": 0,
-                "minutes": 0
-            },
-            {
-                "name": "IDEA_MODULE",
-                "total_seconds": 38.279,
-                "percent": 0.32,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
-                "hours": 0,
-                "minutes": 0
-            },
-            {
-                "name": "PATCH",
-                "total_seconds": 4.427,
-                "percent": 0.04,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
-                "hours": 0,
-                "minutes": 0
-            },
-            {
-                "name": "GitIgnore file",
-                "total_seconds": 0.806,
-                "percent": 0.01,
-                "digital": "0:00",
-                "decimal": "0.00",
-                "text": "0 secs",
-                "hours": 0,
-                "minutes": 0
-            }
-        ],
-        "machines": [
-            {
-                "total_seconds": 16643.707,
-                "name": "LAPTOP-CUKQT8S6",
-                "machine_name_id": "940ad5df-7c1a-4cd1-8a44-88b7e36788d3",
+                "total_seconds": 7761.245,
                 "percent": 100.0,
-                "digital": "4:37",
-                "decimal": "4.62",
-                "text": "4 hrs 37 mins",
-                "hours": 4,
-                "minutes": 37
+                "digital": "2:09",
+                "decimal": "2.15",
+                "text": "2 hrs 9 mins",
+                "hours": 2,
+                "minutes": 9
             }
         ],
-        "human_readable_daily_average_including_other_language": "1 hr 5 mins",
+        "is_up_to_date": true,
+        "days_including_holidays": 7,
+        "human_readable_daily_average": "1 hr 4 mins",
         "editors": [
             {
-                "total_seconds": 16643.707,
+                "total_seconds": 7761.245,
                 "name": "Android Studio",
                 "ai_additions": 0,
                 "ai_deletions": 0,
-                "human_additions": 328,
-                "human_deletions": 164,
+                "human_additions": 277,
+                "human_deletions": 111,
                 "ai_agent_line_changes": {},
                 "ai_agent_costs": {},
                 "ai_input_tokens": 0,
@@ -371,39 +69,30 @@
                 "ai_agent_breakdown": [],
                 "ai_agent_total_cost": 0,
                 "percent": 100.0,
-                "digital": "4:37",
-                "decimal": "4.62",
-                "text": "4 hrs 37 mins",
-                "hours": 4,
-                "minutes": 37
+                "digital": "2:09",
+                "decimal": "2.15",
+                "text": "2 hrs 9 mins",
+                "hours": 2,
+                "minutes": 9
             }
         ],
-        "human_readable_daily_average": "1 hr 4 mins",
-        "is_up_to_date_pending_future": false,
+        "is_already_updating": false,
         "operating_systems": [
             {
-                "total_seconds": 16643.707,
+                "total_seconds": 7761.245,
                 "name": "Windows",
                 "percent": 100.0,
-                "digital": "4:37",
-                "decimal": "4.62",
-                "text": "4 hrs 37 mins",
-                "hours": 4,
-                "minutes": 37
+                "digital": "2:09",
+                "decimal": "2.15",
+                "text": "2 hrs 9 mins",
+                "hours": 2,
+                "minutes": 9
             }
         ],
-        "is_stuck": false,
-        "human_readable_total": "3 hrs 14 mins",
-        "daily_average": 3899,
-        "human_readable_total_including_other_language": "3 hrs 17 mins",
-        "best_day": {
-            "date": "2026-07-12",
-            "total_seconds": 7226.024,
-            "text": "2 hrs"
-        },
+        "human_readable_total": "2 hrs 9 mins",
         "projects": [
             {
-                "total_seconds": 6532.705,
+                "total_seconds": 5994.25,
                 "name": "portefolio",
                 "ai_additions": 0,
                 "ai_deletions": 0,
@@ -423,20 +112,20 @@
                 "ai_sessions": 0,
                 "ai_agent_breakdown": [],
                 "ai_agent_total_cost": 0,
-                "percent": 55.26,
-                "digital": "1:48",
-                "decimal": "1.80",
-                "text": "1 hr 48 mins",
+                "percent": 77.23,
+                "digital": "1:39",
+                "decimal": "1.65",
+                "text": "1 hr 39 mins",
                 "hours": 1,
-                "minutes": 48
+                "minutes": 39
             },
             {
-                "total_seconds": 5289.879,
+                "total_seconds": 1766.995,
                 "name": "emap_services",
                 "ai_additions": 0,
                 "ai_deletions": 0,
-                "human_additions": 47,
-                "human_deletions": 66,
+                "human_additions": 36,
+                "human_deletions": 54,
                 "ai_agent_line_changes": {},
                 "ai_agent_costs": {},
                 "ai_input_tokens": 0,
@@ -451,15 +140,126 @@
                 "ai_sessions": 0,
                 "ai_agent_breakdown": [],
                 "ai_agent_total_cost": 0,
-                "percent": 44.74,
-                "digital": "1:28",
-                "decimal": "1.47",
-                "text": "1 hr 28 mins",
-                "hours": 1,
-                "minutes": 28
+                "percent": 22.77,
+                "digital": "0:29",
+                "decimal": "0.48",
+                "text": "29 mins",
+                "hours": 0,
+                "minutes": 29
             }
         ],
-        "is_up_to_date": false,
+        "is_stuck": false,
+        "daily_average_including_other_language": 3881.0,
+        "is_up_to_date_pending_future": false,
+        "dependencies": [],
+        "ai_agent_total_cost": 0,
+        "human_readable_daily_average_including_other_language": "1 hr 4 mins",
+        "machines": [
+            {
+                "total_seconds": 7761.245,
+                "name": "LAPTOP-CUKQT8S6",
+                "machine_name_id": "cc38695f-0a19-4130-a6e1-954bb25d3aca",
+                "percent": 100.0,
+                "digital": "2:09",
+                "decimal": "2.15",
+                "text": "2 hrs 9 mins",
+                "hours": 2,
+                "minutes": 9
+            }
+        ],
+        "daily_average": 3881.0,
+        "human_readable_total_including_other_language": "2 hrs 9 mins",
+        "best_day": {
+            "date": "2026-07-12",
+            "total_seconds": 7226.024,
+            "text": "2 hrs"
+        },
+        "ai_agent_breakdown": [],
+        "languages": [
+            {
+                "name": "Dart",
+                "total_seconds": 4655.124,
+                "percent": 59.98,
+                "digital": "1:17",
+                "decimal": "1.28",
+                "text": "1 hr 17 mins",
+                "hours": 1,
+                "minutes": 17
+            },
+            {
+                "name": "YAML",
+                "total_seconds": 1450.362,
+                "percent": 18.69,
+                "digital": "0:24",
+                "decimal": "0.40",
+                "text": "24 mins",
+                "hours": 0,
+                "minutes": 24
+            },
+            {
+                "name": "Bash",
+                "total_seconds": 1103.808,
+                "percent": 14.22,
+                "digital": "0:18",
+                "decimal": "0.30",
+                "text": "18 mins",
+                "hours": 0,
+                "minutes": 18
+            },
+            {
+                "name": "TOML",
+                "total_seconds": 292.38,
+                "percent": 3.77,
+                "digital": "0:04",
+                "decimal": "0.07",
+                "text": "4 mins",
+                "hours": 0,
+                "minutes": 4
+            },
+            {
+                "name": ".env file",
+                "total_seconds": 165.981,
+                "percent": 2.14,
+                "digital": "0:02",
+                "decimal": "0.03",
+                "text": "2 mins",
+                "hours": 0,
+                "minutes": 2
+            },
+            {
+                "name": "Diff",
+                "total_seconds": 71.925,
+                "percent": 0.93,
+                "digital": "0:01",
+                "decimal": "0.02",
+                "text": "1 min",
+                "hours": 0,
+                "minutes": 1
+            },
+            {
+                "name": "JSON",
+                "total_seconds": 17.238,
+                "percent": 0.22,
+                "digital": "0:00",
+                "decimal": "0.00",
+                "text": "0 secs",
+                "hours": 0,
+                "minutes": 0
+            },
+            {
+                "name": "PATCH",
+                "total_seconds": 4.427,
+                "percent": 0.06,
+                "digital": "0:00",
+                "decimal": "0.00",
+                "text": "0 secs",
+                "hours": 0,
+                "minutes": 0
+            }
+        ],
+        "total_seconds_including_other_language": 7761.245,
+        "days_minus_holidays": 2,
+        "is_cached": true,
         "username": "addi_kichi",
         "is_including_today": false,
         "human_readable_range": "last week",
@@ -468,6 +268,5 @@
         "is_editor_usage_visible": false,
         "is_category_usage_visible": false,
         "is_os_usage_visible": false
-    },
-    "message": "Calculating stats for this user. Check back later."
+    }
 }
