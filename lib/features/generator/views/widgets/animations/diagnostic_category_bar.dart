@@ -1,0 +1,54 @@
+import 'package:flutter/material.dart';
+
+import '../../../../../core/ui/widgets/responsive_text.dart';
+
+
+class DiagnosticCategoryBar extends StatelessWidget {
+  const DiagnosticCategoryBar({
+    super.key,
+    required this.label,
+    required this.percent,
+    required this.color,
+  });
+
+  final String label;
+  final int percent;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            ResponsiveText.bodyMedium(
+              label,
+              style: const TextStyle(color: Colors.white),
+            ),
+            ResponsiveText.bodyMedium(
+              '$percent%',
+              style: TextStyle(color: color, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        const SizedBox(height: 6),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(6),
+          child: TweenAnimationBuilder<double>(
+            tween: Tween(begin: 0, end: percent / 100),
+            duration: const Duration(milliseconds: 700),
+            curve: Curves.easeOutCubic,
+            builder: (context, value, _) => LinearProgressIndicator(
+              value: value,
+              minHeight: 10,
+              backgroundColor: Colors.white.withValues(alpha: 0.1),
+              valueColor: AlwaysStoppedAnimation(color),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}

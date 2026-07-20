@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../data/diagnostic_models.dart';
-import '../model/state/diagnostic_state.dart';
+import '../data/models/diagnostic_models.dart';
+import '../data/state/diagnostic_state.dart';
 import '../notifiers/diagnostic_notifier.dart';
 
 /// Charge et parse `assets/data/diagnostic.json` (objet unique, donc pas de

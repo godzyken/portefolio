@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/ui/cards/base_card.dart';
-import '../../../../core/ui/widgets/responsive_text.dart';
+import '../../../../../core/ui/cards/base_card.dart';
+import '../../../../../core/ui/widgets/responsive_text.dart';
+
 
 class DiagnosticOptionCard extends StatelessWidget {
   const DiagnosticOptionCard({

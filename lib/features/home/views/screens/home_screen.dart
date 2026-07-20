@@ -5,8 +5,8 @@ import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
 import 'package:portefolio/features/parametres/themes/views/widgets/space_background.dart';
 
+import '../../../diagnostic/views/widgets/diagnostic_teaser_banner.dart';
 import '../../../generator/views/generator_widgets_extentions.dart';
-import '../diagnostic/views/widgets/diagnostic_teaser_banner.dart';
 import '../widgets/extentions_widgets.dart';
 
 class HomeScreen extends ConsumerWidget {

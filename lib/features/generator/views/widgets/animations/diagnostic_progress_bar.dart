@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/ui/widgets/responsive_text.dart';
+import '../../../../../core/ui/widgets/responsive_text.dart';
+
 
 class DiagnosticProgressBar extends StatelessWidget {
   const DiagnosticProgressBar({

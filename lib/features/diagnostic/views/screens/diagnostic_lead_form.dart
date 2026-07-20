@@ -3,8 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/ui/widgets/common_form_fields.dart';
 import '../../../../core/ui/widgets/responsive_text.dart';
-import '../../data/diagnostic_models.dart';
-import '../../model/state/diagnostic_state.dart';
+
+import '../../data/models/diagnostic_models.dart';
+import '../../data/state/diagnostic_state.dart';
 import '../../providers/diagnostic_provider.dart';
 
 class DiagnosticLeadForm extends ConsumerStatefulWidget {
