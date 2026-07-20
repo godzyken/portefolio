@@ -7,6 +7,7 @@ import '../../features/admin/views/screens/admin_dashboard_screen.dart';
 import '../../features/admin/views/screens/admin_login_screen.dart';
 import '../../features/home/views/screens/pricing_rationale_screen.dart';
 import '../../features/contact/views/screens/contact_screen.dart';
+import '../../features/diagnostic/views/screens/diagnostic_screen.dart;
 import '../../features/experience/views/screens/experiences_screen.dart';
 import '../../features/generator/views/screens/generator_extentions_screens.dart';
 import '../../features/home/views/screens/home_screen.dart';
@@ -97,6 +98,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               path: '/contact',
               name: 'contact',
               builder: (_, __) => const ContactScreen(),
+            ),
+            GoRoute(
+              path: '/diagnostic',
+              name: 'diagnostic',
+              builder: (_, __) => const DiagnosticScreen(),
             ),
             GoRoute(
               path: '/legal',
