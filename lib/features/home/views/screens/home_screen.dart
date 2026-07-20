@@ -6,6 +6,7 @@ import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
 import 'package:portefolio/features/parametres/themes/views/widgets/space_background.dart';
 
 import '../../../generator/views/generator_widgets_extentions.dart';
+import '../diagnostic/views/widgets/diagnostic_teaser_banner.dart';
 import '../widgets/extentions_widgets.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -110,6 +111,8 @@ class HomeScreen extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                DiagnosticTeaserBanner(),
+                SizedBox(height: 24),
                 ServicesSection(),
               ],
             ),
