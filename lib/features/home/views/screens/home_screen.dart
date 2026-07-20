@@ -63,6 +63,8 @@ class HomeScreen extends ConsumerWidget {
               _buildPresentationText(context, theme, info.isMobile),
               const SizedBox(height: 32),
               _buildActionButtons(context, theme, info.isMobile),
+              SizedBox(height: info.isMobile ? 24 : 32),
+              const DiagnosticTeaserBanner(),
               SizedBox(height: info.isMobile ? 16 : 32),
               const ServicesSection(),
             ],
