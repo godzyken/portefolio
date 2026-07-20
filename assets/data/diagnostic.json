@@ -1,0 +1,158 @@
+{
+  "categories": [
+    {
+      "id": "strategie",
+      "title": "Stratégie & Pilotage"
+    },
+    {
+      "id": "outils",
+      "title": "Outils & Processus"
+    },
+    {
+      "id": "data",
+      "title": "Données & Pilotage"
+    },
+    {
+      "id": "culture",
+      "title": "Culture & Équipes"
+    }
+  ],
+
+  "questions": [
+    {
+      "id": "q1",
+      "categoryId": "strategie",
+      "text": "Votre organisation dispose-t-elle d'une feuille de route numérique formalisée et partagée ?",
+      "options": [
+        { "label": "Non, aucune réflexion structurée", "score": 0 },
+        { "label": "Une réflexion informelle, non écrite", "score": 1 },
+        { "label": "Une feuille de route existe mais est peu suivie", "score": 2 },
+        { "label": "Une feuille de route claire, suivie et actualisée", "score": 3 }
+      ]
+    },
+    {
+      "id": "q2",
+      "categoryId": "strategie",
+      "text": "Qui pilote les projets numériques dans votre structure ?",
+      "options": [
+        { "label": "Personne en particulier", "score": 0 },
+        { "label": "Un collaborateur, en plus de son poste habituel", "score": 1 },
+        { "label": "Un chef de projet dédié ponctuellement", "score": 2 },
+        { "label": "Une gouvernance projet claire, avec indicateurs de suivi", "score": 3 }
+      ]
+    },
+    {
+      "id": "q3",
+      "categoryId": "outils",
+      "text": "Comment vos équipes échangent-elles l'information au quotidien ?",
+      "options": [
+        { "label": "Emails, appels et post-it", "score": 0 },
+        { "label": "Quelques outils, mais non connectés entre eux", "score": 1 },
+        { "label": "Une suite d'outils partiellement intégrée", "score": 2 },
+        { "label": "Des outils centralisés et automatisés", "score": 3 }
+      ]
+    },
+    {
+      "id": "q4",
+      "categoryId": "outils",
+      "text": "Vos processus métiers clés sont-ils digitalisés ?",
+      "options": [
+        { "label": "Non, tout est manuel ou sur papier", "score": 0 },
+        { "label": "Quelques processus digitalisés isolément", "score": 1 },
+        { "label": "La majorité des processus est digitalisée", "score": 2 },
+        { "label": "Tous les processus critiques sont digitalisés et automatisés", "score": 3 }
+      ]
+    },
+    {
+      "id": "q5",
+      "categoryId": "data",
+      "text": "Avez-vous une vision claire et à jour de vos indicateurs de performance ?",
+      "options": [
+        { "label": "Non, aucun suivi structuré", "score": 0 },
+        { "label": "Des tableaux Excel mis à jour manuellement", "score": 1 },
+        { "label": "Un reporting régulier mais partiel", "score": 2 },
+        { "label": "Un pilotage en temps réel via des tableaux de bord", "score": 3 }
+      ]
+    },
+    {
+      "id": "q6",
+      "categoryId": "data",
+      "text": "Vos données sont-elles centralisées et fiables ?",
+      "options": [
+        { "label": "Non, dispersées dans plusieurs outils", "score": 0 },
+        { "label": "Partiellement centralisées", "score": 1 },
+        { "label": "Centralisées mais peu exploitées", "score": 2 },
+        { "label": "Centralisées, fiables et exploitées pour décider", "score": 3 }
+      ]
+    },
+    {
+      "id": "q7",
+      "categoryId": "culture",
+      "text": "Comment vos équipes réagissent-elles face aux nouveaux outils numériques ?",
+      "options": [
+        { "label": "Résistance forte au changement", "score": 0 },
+        { "label": "Adoption lente et inégale", "score": 1 },
+        { "label": "Bonne adoption, avec accompagnement", "score": 2 },
+        { "label": "Culture d'amélioration continue et autonomie", "score": 3 }
+      ]
+    },
+    {
+      "id": "q8",
+      "categoryId": "culture",
+      "text": "L'intelligence artificielle et l'automatisation font-elles partie de votre réflexion stratégique ?",
+      "options": [
+        { "label": "Pas du tout", "score": 0 },
+        { "label": "Une curiosité, sans projet concret", "score": 1 },
+        { "label": "Des expérimentations sont en cours", "score": 2 },
+        { "label": "Intégrées dans la feuille de route stratégique", "score": 3 }
+      ]
+    }
+  ],
+
+  "levels": [
+    {
+      "min": 0,
+      "max": 25,
+      "title": "Point de départ",
+      "description": "Votre organisation est au tout début de sa transformation numérique. C'est aussi une formidable opportunité : chaque action structurante aura un impact fort et rapide.",
+      "recommendedActions": [
+        "Réaliser un audit digital complet pour identifier les priorités",
+        "Structurer une première feuille de route à 6 mois",
+        "Digitaliser un premier processus pilote à fort impact"
+      ]
+    },
+    {
+      "min": 26,
+      "max": 50,
+      "title": "En construction",
+      "description": "Des bases existent mais restent fragmentées. Une structuration méthodique permettra d'accélérer nettement la transformation.",
+      "recommendedActions": [
+        "Cadrer les besoins avec une mission d'assistance à maîtrise d'ouvrage (AMOA)",
+        "Prioriser et connecter les outils existants entre eux",
+        "Mettre en place un premier tableau de bord de pilotage"
+      ]
+    },
+    {
+      "min": 51,
+      "max": 75,
+      "title": "Structuré",
+      "description": "Votre organisation a posé des bases solides. L'enjeu est désormais d'harmoniser, d'automatiser et de faire monter les équipes en autonomie.",
+      "recommendedActions": [
+        "Automatiser les processus encore manuels à plus fort volume",
+        "Renforcer le pilotage par la donnée et les tableaux de bord",
+        "Former les équipes pour ancrer une culture digitale durable"
+      ]
+    },
+    {
+      "min": 76,
+      "max": 100,
+      "title": "Avancé",
+      "description": "Votre organisation dispose d'une maturité numérique solide. Il s'agit maintenant d'accélérer avec l'intelligence artificielle et l'automatisation pour prendre de l'avance.",
+      "recommendedActions": [
+        "Intégrer l'IA générative dans vos processus clés",
+        "Explorer de nouveaux relais de croissance numérique",
+        "Structurer une gouvernance d'amélioration continue à l'échelle de l'organisation"
+      ]
+    }
+  ]
+}
