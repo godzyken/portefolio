@@ -1,0 +1,295 @@
+{
+  "businessPlan": {
+    "title": "Cabinet de Conseil en Transformation Digitale",
+    "subtitle": "Consultant AMOA • Responsable Transformation Digitale • Architecte Fonctionnel • Développeur Flutter",
+    "version": "1.0.0",
+
+    "executiveSummary": {
+      "title": "Résumé Exécutif",
+      "content": "J'accompagne les entreprises, collectivités, associations et organisations dans leur transformation digitale. Mon rôle consiste à analyser les besoins métiers, définir une stratégie numérique, piloter les projets et concevoir des solutions digitales performantes. Le développement Flutter représente une compétence parmi d'autres au sein d'une offre globale de conseil."
+    },
+
+    "vision": {
+      "title": "Vision",
+      "content": "Permettre aux organisations de réussir leur transition numérique en transformant leurs idées en solutions digitales innovantes, évolutives et créatrices de valeur."
+    },
+
+    "mission": {
+      "title": "Mission",
+      "content": "Accompagner les dirigeants dans la conception, le pilotage et la réussite de leurs projets numériques en assurant le lien entre les métiers, les utilisateurs et les équipes techniques."
+    },
+
+    "values": [
+      {
+        "title": "Innovation",
+        "description": "Rechercher les meilleures solutions technologiques."
+      },
+      {
+        "title": "Performance",
+        "description": "Optimiser les processus métiers."
+      },
+      {
+        "title": "Qualité",
+        "description": "Concevoir des solutions fiables et durables."
+      },
+      {
+        "title": "Accompagnement",
+        "description": "Être un partenaire de confiance."
+      }
+    ],
+
+    "positioning": {
+      "title": "Positionnement",
+      "roles": [
+        "Consultant AMOA",
+        "Responsable Transformation Digitale",
+        "Chef de Projet Digital",
+        "Architecte Fonctionnel",
+        "Consultant SI",
+        "Développeur Flutter Expert",
+        "Consultant IA",
+        "Coach Digital"
+      ]
+    },
+
+    "market": {
+      "problem": "Les PME disposent rarement d'une stratégie numérique structurée. Elles utilisent des outils hétérogènes, perdent du temps sur des tâches répétitives et peinent à faire évoluer leurs systèmes d'information.",
+      "solution": "Une approche globale combinant audit, conseil stratégique, pilotage de projet, développement d'applications et accompagnement au changement."
+    },
+
+    "services": [
+      {
+        "id": "audit",
+        "title": "Audit Digital",
+        "description": "Évaluation complète de la maturité numérique.",
+        "deliverables": [
+          "Audit organisationnel",
+          "Analyse des processus",
+          "Diagnostic numérique",
+          "Plan d'amélioration"
+        ]
+      },
+      {
+        "id": "amoa",
+        "title": "Assistance à Maîtrise d'Ouvrage",
+        "description": "Analyse des besoins métiers et rédaction des cahiers des charges.",
+        "deliverables": [
+          "Recueil des besoins",
+          "Études fonctionnelles",
+          "User Stories",
+          "Backlog",
+          "Spécifications"
+        ]
+      },
+      {
+        "id": "project",
+        "title": "Gestion de Projet",
+        "description": "Pilotage des projets numériques.",
+        "deliverables": [
+          "Planning",
+          "Suivi budgétaire",
+          "Gestion des risques",
+          "Recette",
+          "Déploiement"
+        ]
+      },
+      {
+        "id": "flutter",
+        "title": "Développement Flutter",
+        "description": "Applications Android, iOS, Web, Windows, Linux et macOS."
+      },
+      {
+        "id": "transformation",
+        "title": "Transformation Digitale",
+        "description": "Accompagnement stratégique sur plusieurs mois."
+      },
+      {
+        "id": "ai",
+        "title": "Intelligence Artificielle",
+        "description": "Intégration d'IA générative et automatisation."
+      },
+      {
+        "id": "training",
+        "title": "Formation",
+        "description": "Formation des équipes aux outils numériques."
+      }
+    ],
+
+    "clients": [
+      "PME",
+      "Collectivités",
+      "Associations",
+      "Clubs Sportifs",
+      "Artisans",
+      "Commerçants",
+      "Professions Libérales",
+      "Industries",
+      "Startups"
+    ],
+
+    "expertise": [
+      {
+        "name": "Transformation Digitale",
+        "level": 100
+      },
+      {
+        "name": "AMOA",
+        "level": 95
+      },
+      {
+        "name": "Flutter",
+        "level": 95
+      },
+      {
+        "name": "Architecture Logicielle",
+        "level": 90
+      },
+      {
+        "name": "Gestion de Projet",
+        "level": 90
+      },
+      {
+        "name": "Firebase",
+        "level": 90
+      },
+      {
+        "name": "API REST",
+        "level": 95
+      },
+      {
+        "name": "UX/UI",
+        "level": 80
+      },
+      {
+        "name": "Intelligence Artificielle",
+        "level": 85
+      }
+    ],
+
+    "technologies": {
+      "frontend": [
+        "Flutter",
+        "Dart",
+        "HTML",
+        "CSS",
+        "JavaScript"
+      ],
+      "backend": [
+        "Firebase",
+        "Supabase",
+        "Node.js",
+        "PHP",
+        "REST API"
+      ],
+      "cms": [
+        "WordPress"
+      ],
+      "database": [
+        "PostgreSQL",
+        "MySQL",
+        "Firestore"
+      ],
+      "projectManagement": [
+        "Jira",
+        "Notion",
+        "Azure DevOps",
+        "GitHub"
+      ],
+      "cloud": [
+        "Firebase",
+        "Google Cloud",
+        "Cloudflare",
+        "Netlify"
+      ]
+    },
+
+    "pricing": {
+      "audit": {
+        "min": 500,
+        "max": 2500,
+        "currency": "EUR"
+      },
+      "consulting": {
+        "dailyRate": {
+          "min": 600,
+          "max": 1000
+        }
+      },
+      "amoa": {
+        "dailyRate": {
+          "min": 700,
+          "max": 1200
+        }
+      },
+      "projectManagement": {
+        "dailyRate": {
+          "min": 700,
+          "max": 1100
+        }
+      },
+      "flutterApplication": {
+        "simple": 5000,
+        "business": 15000,
+        "saas": 50000
+      },
+      "maintenance": {
+        "basic": 150,
+        "standard": 300,
+        "premium": 500,
+        "enterprise": 1000
+      }
+    },
+
+    "businessModel": {
+      "consulting": 40,
+      "development": 25,
+      "maintenance": 15,
+      "training": 10,
+      "audit": 10
+    },
+
+    "roadmap": [
+      {
+        "year": 1,
+        "goal": "Lancement du cabinet",
+        "revenue": 80000
+      },
+      {
+        "year": 2,
+        "goal": "Développement régional",
+        "revenue": 150000
+      },
+      {
+        "year": 3,
+        "goal": "Recrutement",
+        "revenue": 250000
+      },
+      {
+        "year": 4,
+        "goal": "Cabinet reconnu",
+        "revenue": 400000
+      },
+      {
+        "year": 5,
+        "goal": "Expansion nationale",
+        "revenue": 700000
+      }
+    ],
+
+    "competitiveAdvantages": [
+      "Double compétence technique et métier",
+      "Expert Flutter multiplateforme",
+      "Vision stratégique",
+      "Pilotage de projet",
+      "Transformation numérique",
+      "Accompagnement humain",
+      "Conseil IA",
+      "Architecture logicielle"
+    ],
+
+    "longTermVision": {
+      "title": "Vision à 10 ans",
+      "content": "Créer un cabinet de référence en transformation digitale capable d'accompagner les entreprises de toutes tailles avec une équipe de consultants, chefs de projet, développeurs, UX designers et experts IA."
+    }
+  }
+}
