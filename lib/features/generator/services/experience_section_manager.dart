@@ -5,7 +5,6 @@ import '../../experience/data/experiences_data.dart';
 import '../../projets/data/project_data.dart';
 import '../../projets/data/project_section.dart';
 import '../views/generator_widgets_extentions.dart';
-import '../views/widgets/sections/architecture_diagrame_section.dart';
 
 /// Tags qui indiquent une expérience IT / développement logiciel
 const _kItTags = {

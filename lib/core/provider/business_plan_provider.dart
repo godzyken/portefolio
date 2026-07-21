@@ -36,6 +36,7 @@ final businessPlanStatsProvider = Provider<BusinessPlanStats>((ref) {
   return BusinessPlanStats(
     servicesCount: plan.services.length,
     clientTypesCount: plan.clients.length,
+    expertiseCount: plan.expertise.length,
     averageExpertiseLevel: averageExpertiseLevel,
     targetYear: plan.roadmap.isEmpty ? 0 : plan.roadmap.last.year,
     targetRevenue: plan.roadmap.isEmpty ? 0 : plan.roadmap.last.revenue,
@@ -45,6 +46,7 @@ final businessPlanStatsProvider = Provider<BusinessPlanStats>((ref) {
 class BusinessPlanStats {
   final int servicesCount;
   final int clientTypesCount;
+  final int expertiseCount;
   final int averageExpertiseLevel;
   final int targetYear;
   final num targetRevenue;
@@ -52,6 +54,7 @@ class BusinessPlanStats {
   const BusinessPlanStats({
     required this.servicesCount,
     required this.clientTypesCount,
+    required this.expertiseCount,
     required this.averageExpertiseLevel,
     required this.targetYear,
     required this.targetRevenue,
@@ -60,6 +63,7 @@ class BusinessPlanStats {
   const BusinessPlanStats.empty()
       : servicesCount = 0,
         clientTypesCount = 0,
+        expertiseCount = 0,
         averageExpertiseLevel = 0,
         targetYear = 0,
         targetRevenue = 0;
