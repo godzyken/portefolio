@@ -5,8 +5,10 @@ import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
 import 'package:portefolio/features/parametres/themes/views/widgets/space_background.dart';
 
+import '../../../../core/provider/business_plan_provider.dart';
 import '../../../diagnostic/views/widgets/diagnostic_teaser_banner.dart';
 import '../../../generator/views/generator_widgets_extentions.dart';
+import '../../../generator/views/widgets/sections/business_story_section.dart';
 import '../widgets/extentions_widgets.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -64,7 +66,9 @@ class HomeScreen extends ConsumerWidget {
               _buildPresentationText(context, theme, info.isMobile),
               const SizedBox(height: 32),
               _buildActionButtons(context, theme, info.isMobile),
-              SizedBox(height: info.isMobile ? 24 : 32),
+              SizedBox(height: info.isMobile ? 32 : 48),
+              const BusinessStorySection(),
+              SizedBox(height: info.isMobile ? 32 : 48),
               const DiagnosticTeaserBanner(),
               SizedBox(height: info.isMobile ? 16 : 32),
               const ServicesSection(),
@@ -78,47 +82,59 @@ class HomeScreen extends ConsumerWidget {
   // ---------- Landscape Layout ----------
   Widget _buildLandscapeLayout(
       BuildContext context, ResponsiveInfo info, ThemeData theme) {
-    return IntrinsicHeight(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Expanded(
-            flex: 4,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ConstrainedBox(
-                  constraints: const BoxConstraints(maxHeight: 250),
-                  child: _buildProfileImage(context, info, theme),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                flex: 4,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxHeight: 250),
+                      child: _buildProfileImage(context, info, theme),
+                    ),
+                    const SizedBox(height: 16),
+                    _buildPresentationText(context, theme, info.isMobile),
+                    const SizedBox(height: 32),
+                    _buildActionButtons(context, theme, info.isMobile),
+                  ],
                 ),
-                const SizedBox(height: 16),
-                _buildPresentationText(context, theme, info.isMobile),
-                const SizedBox(height: 32),
-                _buildActionButtons(context, theme, info.isMobile),
-              ],
-            ),
+              ),
+              const SizedBox(width: 32),
+              const Expanded(
+                flex: 3,
+                child: CharacterViewer(),
+              ),
+              const SizedBox(width: 32),
+              const Expanded(
+                flex: 5,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    DiagnosticTeaserBanner(),
+                    SizedBox(height: 24),
+                    ServicesSection(),
+                  ],
+                ),
+              ),
+            ],
           ),
-          const SizedBox(width: 32),
-          const Expanded(
-            flex: 3,
-            child: CharacterViewer(),
+        ),
+        const SizedBox(height: 48),
+        Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 820),
+            child: const BusinessStorySection(),
           ),
-          const SizedBox(width: 32),
-          const Expanded(
-            flex: 5,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                DiagnosticTeaserBanner(),
-                SizedBox(height: 24),
-                ServicesSection(),
-              ],
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -158,31 +174,21 @@ class HomeScreen extends ConsumerWidget {
   // ---------- Presentation Text ----------
   Widget _buildPresentationText(
       BuildContext context, ThemeData theme, bool isMobile) {
-    return Column(
+    return const Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        const ResponsiveText.titleLarge(
+        ResponsiveText.titleLarge(
           'Emryck Doré',
           style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 2),
         ),
-        const SizedBox(height: 12),
-        const ResponsiveText.headlineSmall(
+        SizedBox(height: 12),
+        ResponsiveText.headlineSmall(
           'Développeur Flutter & Architecte Logiciel',
           style: TextStyle(fontWeight: FontWeight.w600),
           textAlign: TextAlign.center,
         ),
-        const SizedBox(height: 16),
-        ResponsiveText.bodyMedium(
-          'Expert en développement mobile cross-platform et solutions digitales. '
-          'Spécialisé dans la création d\'applications Flutter performantes, '
-          'l\'architecture logicielle et la transformation digitale des entreprises.',
-          maxLines: 5,
-          overflow: TextOverflow.ellipsis,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-              height: 1.5,
-              color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.8)),
-        ),
+        SizedBox(height: 16),
+        _HeroDescription(),
       ],
     );
   }
@@ -239,6 +245,33 @@ class HomeScreen extends ConsumerWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
+    );
+  }
+}
+
+/// Description du hero, pilotée par `business_plan.json` (executiveSummary),
+/// avec un texte de repli identique tant que le JSON n'est pas chargé.
+class _HeroDescription extends ConsumerWidget {
+  const _HeroDescription();
+
+  static const _fallback =
+      'Expert en développement mobile cross-platform et solutions digitales. '
+      'Spécialisé dans la création d\'applications Flutter performantes, '
+      'l\'architecture logicielle et la transformation digitale des entreprises.';
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final plan = ref.watch(businessPlanProvider).asData?.value;
+
+    return ResponsiveText.bodyMedium(
+      plan?.executiveSummary.content ?? _fallback,
+      maxLines: 5,
+      overflow: TextOverflow.ellipsis,
+      textAlign: TextAlign.center,
+      style: TextStyle(
+          height: 1.5,
+          color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.8)),
     );
   }
 }
