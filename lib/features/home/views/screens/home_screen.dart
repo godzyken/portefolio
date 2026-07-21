@@ -8,7 +8,7 @@ import 'package:portefolio/features/parametres/themes/views/widgets/space_backgr
 import '../../../../core/provider/business_plan_provider.dart';
 import '../../../diagnostic/views/widgets/diagnostic_teaser_banner.dart';
 import '../../../generator/views/generator_widgets_extentions.dart';
-import '../../../generator/views/widgets/sections/business_story_section.dart';
+import '../widgets/client_journey_timeline.dart';
 import '../widgets/extentions_widgets.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -68,6 +68,10 @@ class HomeScreen extends ConsumerWidget {
               _buildActionButtons(context, theme, info.isMobile),
               SizedBox(height: info.isMobile ? 32 : 48),
               const BusinessStorySection(),
+              SizedBox(height: info.isMobile ? 32 : 48),
+              const AnimatedStatsSection(),
+              SizedBox(height: info.isMobile ? 32 : 48),
+              const ClientJourneyTimeline(),
               SizedBox(height: info.isMobile ? 32 : 48),
               const DiagnosticTeaserBanner(),
               SizedBox(height: info.isMobile ? 16 : 32),
@@ -132,6 +136,15 @@ class HomeScreen extends ConsumerWidget {
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 820),
             child: const BusinessStorySection(),
+          ),
+        ),
+        const SizedBox(height: 48),
+        const AnimatedStatsSection(),
+        const SizedBox(height: 48),
+        Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 820),
+            child: const ClientJourneyTimeline(),
           ),
         ),
       ],
