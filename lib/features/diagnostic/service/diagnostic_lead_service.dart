@@ -2,8 +2,8 @@ import 'dart:developer' as developer;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/service/supabase_service.dart';
-import '../../features/contact/providers/emailjs_provider.dart';
+import '../../../../core/service/supabase_service.dart';
+import '../../contact/providers/emailjs_provider.dart';
 
 /// Enregistre un lead issu du diagnostic de maturité numérique.
 ///

@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/service/diagnostic_service.dart';
+import '../service/diagnostic_lead_service.dart';
 import '../data/models/diagnostic_models.dart';
 import '../data/state/diagnostic_state.dart';
 
