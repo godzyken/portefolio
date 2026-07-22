@@ -20,6 +20,9 @@ class EnvConfigService {
   // Google Calendar
   final String? googleCalendarClientId;
 
+  // OpenAI
+  final String? openaiApiKey;
+
   // Supabase (tarifs & formulaire admin)
   final String supabaseUrl;
   final String supabaseAnonKey;
@@ -35,6 +38,7 @@ class EnvConfigService {
     required this.oneDriveUrl,
     required this.wakaTimeApiKey,
     required this.googleCalendarClientId,
+    required this.openaiApiKey,
     required this.supabaseUrl,
     required this.supabaseAnonKey,
     required this.turnstileSiteKey,
@@ -57,6 +61,8 @@ class EnvConfigService {
 
     final gcc = const String.fromEnvironment('GCC_CLIENT_ID');
 
+    final openai = const String.fromEnvironment('OPENAI_API_KEY');
+
     const supabaseUrl = String.fromEnvironment('SUPABASE_URL');
     const supabaseAnonKey = String.fromEnvironment('SUPABASE_ANON_KEY');
 
@@ -70,6 +76,7 @@ class EnvConfigService {
       oneDriveUrl: oneDriveUrl,
       wakaTimeApiKey: waka.isEmpty ? null : waka,
       googleCalendarClientId: gcc.isEmpty ? null : gcc,
+      openaiApiKey: openai.isEmpty ? null : openai,
       supabaseUrl: supabaseUrl,
       supabaseAnonKey: supabaseAnonKey,
       turnstileSiteKey: turnstileSiteKey,
@@ -101,6 +108,10 @@ class EnvConfigService {
 
     if ((googleCalendarClientId ?? '').isEmpty) {
       errors.add('GCC_CLIENT_ID manquant');
+    }
+
+    if ((openaiApiKey ?? '').isEmpty) {
+      errors.add('OPENAI_API_KEY manquant');
     }
 
     if (supabaseUrl.isEmpty) {

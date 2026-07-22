@@ -75,6 +75,11 @@ final googleCalendarClientIdProvider = Provider<String?>((ref) {
   return config.googleCalendarClientId;
 }, name: 'GoogleCalendarClientId');
 
+final openAiApiKeyProvider = Provider<String?>((ref) {
+  final config = ref.watch(envConfigProvider);
+  return config.openaiApiKey;
+}, name: 'OpenAiApiKey');
+
 // Supabase (tarifs & formulaire admin)
 final supabaseUrlProvider = Provider<String>((ref) {
   final config = ref.watch(envConfigProvider);

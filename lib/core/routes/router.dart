@@ -6,6 +6,7 @@ import '../../features/about/views/screens/legal_mentions_screen.dart';
 import '../../features/admin/views/screens/admin_dashboard_screen.dart';
 import '../../features/admin/views/screens/admin_login_screen.dart';
 import '../../features/diagnostic/views/screens/diagnostic_screen.dart';
+import '../../features/project_wizard/views/screens/project_wizard_screen.dart';
 import '../../features/home/views/screens/pricing_rationale_screen.dart';
 import '../../features/contact/views/screens/contact_screen.dart';
 import '../../features/experience/views/screens/experiences_screen.dart';
@@ -49,16 +50,14 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           builder: (_, __) => const AdminDashboardScreen(),
         ),
 
-        // ── Page publique "pourquoi ce tarif" (clic sur le prix) ─────────
+        // ── Assistant de Projet IA ────────────────────────────────────
         GoRoute(
-          path: '/tarifs/:serviceId',
-          name: 'pricing_rationale',
-          builder: (_, state) => PricingRationaleScreen(
-            serviceId: state.pathParameters['serviceId']!,
-          ),
+          path: '/project-wizard',
+          name: 'project_wizard',
+          builder: (_, __) => const ProjectWizardScreen(),
         ),
 
-        // ── Page publique "pourquoi ce tarif" (hors shell, Scaffold dédié) ─
+        // ── Page publique "pourquoi ce tarif" (clic sur le prix) ─────────
         GoRoute(
           path: '/tarifs/:serviceId',
           name: 'pricing_rationale',

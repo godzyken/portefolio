@@ -128,9 +128,9 @@ class PricingRationaleScreen extends ConsumerWidget {
 
                       const SizedBox(height: 24),
                       FilledButton.icon(
-                        onPressed: () => context.go('/contact'),
-                        icon: const Icon(Icons.mail_outline),
-                        label: const Text('Discutons de ton projet'),
+                        onPressed: () => context.push('/project-wizard'),
+                        icon: const Icon(Icons.rocket_launch_outlined),
+                        label: const Text('Lancer l\'assistant projet IA'),
                       ),
                       const SizedBox(height: 24),
                     ],
