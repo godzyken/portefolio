@@ -118,7 +118,7 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
                       VerticalDivider(
                         width: 1,
                         color:
-                            theme.colorScheme.onSurface.withValues(alpha: 0.1),
+                        theme.colorScheme.onSurface.withValues(alpha: 0.1),
                       ),
                       Expanded(
                         flex: 2,
@@ -182,7 +182,7 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
     final appointmentState = ref.watch(appointmentProvider);
     final daysInMonth = _getDaysInMonth(_focusedMonth);
     final firstDayOfMonth =
-        DateTime(_focusedMonth.year, _focusedMonth.month, 1);
+    DateTime(_focusedMonth.year, _focusedMonth.month, 1);
     final startingWeekday = firstDayOfMonth.weekday;
 
     return ResponsiveBox(
@@ -295,13 +295,13 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
                   onTap: isDisabled
                       ? null
                       : () async {
-                          ref
-                              .read(appointmentProvider.notifier)
-                              .setSelectedDate(day);
-                          await Future.delayed(
-                              const Duration(milliseconds: 300));
-                          ref.read(appointmentProvider).status;
-                        },
+                    ref
+                        .read(appointmentProvider.notifier)
+                        .setSelectedDate(day);
+                    await Future.delayed(
+                        const Duration(milliseconds: 300));
+                    ref.read(appointmentProvider).status;
+                  },
                   borderRadius: BorderRadius.circular(8),
                   child: Container(
                     margin: const EdgeInsets.all(2),
@@ -309,13 +309,13 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
                       color: isSelected
                           ? theme.colorScheme.primary
                           : isToday
-                              ? theme.colorScheme.secondary
-                                  .withValues(alpha: 0.3)
-                              : null,
+                          ? theme.colorScheme.secondary
+                          .withValues(alpha: 0.3)
+                          : null,
                       borderRadius: BorderRadius.circular(8),
                       border: isToday && !isSelected
                           ? Border.all(
-                              color: theme.colorScheme.primary, width: 2)
+                          color: theme.colorScheme.primary, width: 2)
                           : null,
                     ),
                     child: Center(
@@ -325,11 +325,11 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
                           color: isSelected
                               ? Colors.white
                               : isDisabled
-                                  ? theme.colorScheme.onSurface
-                                      .withValues(alpha: 0.3)
-                                  : isWeekend
-                                      ? theme.colorScheme.error
-                                      : theme.colorScheme.onSurface,
+                              ? theme.colorScheme.onSurface
+                              .withValues(alpha: 0.3)
+                              : isWeekend
+                              ? theme.colorScheme.error
+                              : theme.colorScheme.onSurface,
                           fontWeight: isSelected || isToday
                               ? FontWeight.bold
                               : FontWeight.normal,
@@ -360,7 +360,7 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
                     const ResponsiveText.bodyMedium(
                       '📋 Vos informations',
                       style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                     const ResponsiveBox(paddingSize: ResponsiveSpacing.xs),
 
@@ -381,7 +381,7 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
                       onChanged: (value) => ref
                           .read(appointmentProvider.notifier)
                           .setContactInfo(value, _emailController.text,
-                              _messageController.text),
+                          _messageController.text),
                       validator: (value) => value == null || value.isEmpty
                           ? 'Le nom est requis'
                           : null,
@@ -395,7 +395,7 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
                         labelText: 'Email *',
                         hintText: 'contact@exemple.com',
                         prefixIcon:
-                            Icon(Icons.email, color: theme.colorScheme.primary),
+                        Icon(Icons.email, color: theme.colorScheme.primary),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -406,7 +406,7 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
                       onChanged: (value) => ref
                           .read(appointmentProvider.notifier)
                           .setContactInfo(_nameController.text, value,
-                              _messageController.text),
+                          _messageController.text),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'L\'email est requis';
@@ -441,7 +441,7 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
                       onChanged: (value) => ref
                           .read(appointmentProvider.notifier)
                           .setContactInfo(_nameController.text,
-                              _emailController.text, value), // MAJ du Provider
+                          _emailController.text, value), // MAJ du Provider
                       validator: (value) => value == null || value.isEmpty
                           ? 'Une description est requise'
                           : null,
@@ -567,12 +567,12 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
             decoration: InputDecoration(
               hintText: 'Ville ou adresse...',
               prefixIcon:
-                  Icon(Icons.location_on, color: theme.colorScheme.primary),
+              Icon(Icons.location_on, color: theme.colorScheme.primary),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
               contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             ),
             onChanged: (value) => ref
                 .read(appointmentProvider.notifier)
@@ -609,7 +609,7 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
     }
 
     final availableSlotsAsync =
-        ref.watch(availableTimeSlotsProvider(appointmentState.selectedDate!));
+    ref.watch(availableTimeSlotsProvider(appointmentState.selectedDate!));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -637,7 +637,7 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
                       Icon(Icons.event_busy,
                           size: 64,
                           color:
-                              theme.colorScheme.error.withValues(alpha: 0.5)),
+                          theme.colorScheme.error.withValues(alpha: 0.5)),
                       const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
                       const ResponsiveText.bodySmall(
                         'Aucun créneau disponible',
@@ -672,7 +672,7 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
                             color: isSelected
                                 ? theme.colorScheme.primary
                                 : theme.colorScheme.onSurface
-                                    .withValues(alpha: 0.2),
+                                .withValues(alpha: 0.2),
                             width: isSelected ? 2 : 1,
                           ),
                         ),
@@ -683,7 +683,7 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
                               color: isSelected
                                   ? theme.colorScheme.primary
                                   : theme.colorScheme.onSurface
-                                      .withValues(alpha: 0.6),
+                                  .withValues(alpha: 0.6),
                             ),
                             const ResponsiveBox(
                                 paddingSize: ResponsiveSpacing.s),
@@ -724,20 +724,20 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
       child: ResponsiveButton.icon(
         onPressed: state.canConfirm
             ? () {
-                if (_formKey.currentState?.validate() ?? false) {
-                  _confirmAppointment();
-                }
-              }
+          if (_formKey.currentState?.validate() ?? false) {
+            _confirmAppointment();
+          }
+        }
             : null,
         icon: state.status == AppointmentStatus.loading
             ? const SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(
-                  color: Colors.white,
-                  strokeWidth: 2,
-                ),
-              )
+          width: 20,
+          height: 20,
+          child: CircularProgressIndicator(
+            color: Colors.white,
+            strokeWidth: 2,
+          ),
+        )
             : const Icon(Icons.check),
         label: state.status == AppointmentStatus.loading
             ? 'Confirmation...'
@@ -746,7 +746,7 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
           backgroundColor: theme.colorScheme.primary,
           foregroundColor: Colors.white,
           disabledBackgroundColor:
-              theme.colorScheme.onSurface.withValues(alpha: 0.2),
+          theme.colorScheme.onSurface.withValues(alpha: 0.2),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -835,7 +835,7 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
               const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
               Expanded(
                 child:
-                    ResponsiveText.bodySmall('Erreur: ${error ?? "Inconnue"}'),
+                ResponsiveText.bodySmall('Erreur: ${error ?? "Inconnue"}'),
               ),
             ],
           ),
