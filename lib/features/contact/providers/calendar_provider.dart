@@ -13,7 +13,7 @@ final googleCalendarNotifierProvider =
 );
 
 final googleCalendarServiceProvider = Provider<GoogleCalendarService?>((ref) {
-  return ref.watch(googleCalendarNotifierProvider).asData?.value;
+  return ref.watch(googleCalendarNotifierProvider).value;
 });
 
 final calendarAvailabilityServiceProvider =
@@ -56,7 +56,7 @@ const List<TimeSlot> _defaultTimeSlots = [
 
 final calendarEventsProvider =
     FutureProvider.autoDispose<calendar.Events>((ref) async {
-  final calendarService = ref.watch(googleCalendarNotifierProvider).asData?.value;
+  final calendarService = ref.watch(googleCalendarNotifierProvider).value;
 
   if (calendarService == null) {
     return calendar.Events();

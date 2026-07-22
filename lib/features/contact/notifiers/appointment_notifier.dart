@@ -42,7 +42,7 @@ class AppointmentNotifier extends Notifier<AppointmentState> {
   }
 
   Future<bool> confirmAppointment(
-    CalendarAvailabilityService calendarService,
+    CalendarAvailabilityService? calendarService,
     EmailJsService emailService,
   ) async {
     if (!state.canConfirm) {
@@ -84,7 +84,7 @@ class AppointmentNotifier extends Notifier<AppointmentState> {
 
       final description = _buildDescription();
 
-      // FIX 1: Gérer la location
+      // Gérer la location
       String? eventLocation;
       final location = state.physicalLocation;
 
@@ -96,20 +96,27 @@ class AppointmentNotifier extends Notifier<AppointmentState> {
 
       developer.log('📅 Création RDV: ${start.toIso8601String()}');
       developer.log('Type: ${state.type}');
-      developer.log('Location: $eventLocation');
 
-      // Créer l'événement dans Google Calendar
-      await calendarService.createEventIfAvailable(
-        summary: summary,
-        description: description,
-        start: start,
-        end: end,
-        location: eventLocation, // FIX 2: Passage de la location
-      );
+      // Créer l'événement dans Google Calendar SI le service est disponible
+      if (calendarService != null) {
+        try {
+          await calendarService.createEventIfAvailable(
+            summary: summary,
+            description: description,
+            start: start,
+            end: end,
+            location: eventLocation,
+          );
+          developer.log('✅ Événement Google Calendar créé');
+        } catch (e) {
+          developer.log('⚠️ Échec création événement Calendar (non bloquant): $e');
+          // On continue pour envoyer au moins l'email
+        }
+      } else {
+        developer.log('ℹ️ Service Calendar non disponible, saut de la création d\'événement');
+      }
 
-      developer.log('✅ Événement créé avec succès');
-
-      // Envoyer l'email de confirmation
+      // Envoyer l'email de confirmation (toujours fait)
       await _sendConfirmationEmail(emailService, start);
 
       state = state.copyWith(status: AppointmentStatus.success);

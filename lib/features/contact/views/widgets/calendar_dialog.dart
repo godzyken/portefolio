@@ -101,33 +101,36 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
             ),
           ],
         ),
-        child: Column(
-          children: [
-            _buildHeader(theme),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-              child: _buildProgressBar(theme),
-            ),
-            Expanded(
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 400),
-                transitionBuilder: (Widget child, Animation<double> animation) {
-                  return FadeTransition(
-                    opacity: animation,
-                    child: SlideTransition(
-                      position: Tween<Offset>(
-                        begin: const Offset(0.1, 0),
-                        end: Offset.zero,
-                      ).animate(animation),
-                      child: child,
-                    ),
-                  );
-                },
-                child: _buildCurrentStep(theme, appointmentState),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              _buildHeader(theme),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                child: _buildProgressBar(theme),
               ),
-            ),
-            _buildFooter(theme, appointmentState),
-          ],
+              Expanded(
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 400),
+                  transitionBuilder: (Widget child, Animation<double> animation) {
+                    return FadeTransition(
+                      opacity: animation,
+                      child: SlideTransition(
+                        position: Tween<Offset>(
+                          begin: const Offset(0.1, 0),
+                          end: Offset.zero,
+                        ).animate(animation),
+                        child: child,
+                      ),
+                    );
+                  },
+                  child: _buildCurrentStep(theme, appointmentState),
+                ),
+              ),
+              _buildFooter(theme, appointmentState),
+            ],
+          ),
         ),
       ),
     );
@@ -242,32 +245,29 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
       key: const ValueKey('step3'),
       title: 'Vos informations',
       child: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              NameFormField(
-                controller: _nameController,
-                onChanged: (val) => ref
-                    .read(appointmentProvider.notifier)
-                    .setContactInfo(val, _emailController.text, _messageController.text),
-              ),
-              const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
-              EmailFormField(
-                controller: _emailController,
-                onChanged: (val) => ref
-                    .read(appointmentProvider.notifier)
-                    .setContactInfo(_nameController.text, val, _messageController.text),
-              ),
-              const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
-              MessageFormField(
-                controller: _messageController,
-                onChanged: (val) => ref
-                    .read(appointmentProvider.notifier)
-                    .setContactInfo(_nameController.text, _emailController.text, val),
-              ),
-            ],
-          ),
+        child: Column(
+          children: [
+            NameFormField(
+              controller: _nameController,
+              onChanged: (val) => ref
+                  .read(appointmentProvider.notifier)
+                  .setContactInfo(val, _emailController.text, _messageController.text),
+            ),
+            const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
+            EmailFormField(
+              controller: _emailController,
+              onChanged: (val) => ref
+                  .read(appointmentProvider.notifier)
+                  .setContactInfo(_nameController.text, val, _messageController.text),
+            ),
+            const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
+            MessageFormField(
+              controller: _messageController,
+              onChanged: (val) => ref
+                  .read(appointmentProvider.notifier)
+                  .setContactInfo(_nameController.text, _emailController.text, val),
+            ),
+          ],
         ),
       ),
     );
@@ -690,7 +690,7 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
   Future<void> _confirmAppointment() async {
     final appointmentNotifier = ref.read(appointmentProvider.notifier);
 
-    // Final check and sync from controllers if needed (though they are synced via onChanged)
+    // Sync from controllers
     appointmentNotifier.setContactInfo(
       _nameController.text,
       _emailController.text,
@@ -698,13 +698,8 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
     );
     appointmentNotifier.setPhysicalLocation(_locationController.text);
 
-    final calendarService = ref.watch(calendarAvailabilityServiceProvider);
-    final emailService = ref.watch(emailJsProvider);
-
-    if (calendarService == null) {
-      _showSnackBar('Erreur de chargement du service calendrier', Colors.red);
-      return;
-    }
+    final calendarService = ref.read(calendarAvailabilityServiceProvider);
+    final emailService = ref.read(emailJsProvider);
 
     final success = await appointmentNotifier.confirmAppointment(calendarService, emailService);
 
