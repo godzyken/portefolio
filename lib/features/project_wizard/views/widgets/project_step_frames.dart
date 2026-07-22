@@ -213,7 +213,32 @@ class ProjectAdviceFrame extends StatelessWidget {
   Widget build(BuildContext context) {
     if (errorMessage != null) {
       return Center(
-        child: Text(errorMessage!, style: const TextStyle(color: Colors.redAccent)),
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: Colors.red.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.warning_amber_rounded, color: Colors.redAccent, size: 48),
+              const SizedBox(height: 16),
+              ResponsiveText.bodyMedium(
+                errorMessage!,
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 16),
+              const ResponsiveText.bodySmall(
+                'Votre description a bien été enregistrée. Vous pouvez continuer pour me l\'envoyer directement.',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.white70),
+              ),
+            ],
+          ),
+        ),
       );
     }
 

@@ -158,6 +158,10 @@ class ProjectWizardScreen extends ConsumerWidget {
                         }
                       } else if (isLastStep) {
                         _submit(context, state);
+                      } else if (state.currentStep == 5 && state.errorMessage != null) {
+                        // Skip selection step if AI failed
+                        notifier.nextStep(); // to 6
+                        notifier.nextStep(); // to 7
                       } else {
                         notifier.nextStep();
                       }
@@ -167,7 +171,13 @@ class ProjectWizardScreen extends ConsumerWidget {
                 backgroundColor: theme.colorScheme.primary,
                 padding: const EdgeInsets.symmetric(vertical: 16),
               ),
-              child: Text(isAnalysisStep ? 'Analyser avec l\'IA' : (isLastStep ? 'Envoyer' : 'Suivant')),
+              child: Text(isAnalysisStep
+                  ? 'Analyser avec l\'IA'
+                  : (isLastStep
+                      ? 'Envoyer'
+                      : (state.currentStep == 5 && state.errorMessage != null
+                          ? 'Continuer sans analyse'
+                          : 'Suivant'))),
             ),
           ),
         ],
@@ -186,7 +196,7 @@ class ProjectWizardScreen extends ConsumerWidget {
       case 3:
         return true; // Optional fields
       case 5:
-        return state.advice != null;
+        return state.advice != null || state.errorMessage != null;
       case 6:
         return state.selectedOptionId != null;
       case 7:

@@ -35,7 +35,14 @@ class ProjectWizardAiService {
 
     if (response.statusCode != 200) {
       developer.log("OpenAI error: ${response.body}");
-      throw Exception("Erreur lors de l'analyse IA");
+      final errorData = jsonDecode(response.body);
+      final errorCode = errorData['error']?['code'];
+      
+      if (errorCode == 'insufficient_quota') {
+        throw Exception("Le quota de l'IA est épuisé. Vous pouvez quand même continuer sans l'analyse.");
+      }
+      
+      throw Exception("Erreur lors de l'analyse IA. Veuillez réessayer plus tard.");
     }
 
     final data = jsonDecode(response.body);
