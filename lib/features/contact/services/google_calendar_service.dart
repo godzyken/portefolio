@@ -181,25 +181,33 @@ class CalendarAvailabilityService {
     DateTime day,
     List<TimeSlot> proposedSlots,
   ) async {
+    developer.log('🔍 Recherche de créneaux pour le ${day.toIso8601String()}');
     final availableSlots = <TimeSlot>[];
 
-    for (final slot in proposedSlots) {
-      final slotStart = DateTime(
-        day.year,
-        day.month,
-        day.day,
-        slot.hour,
-        slot.minute,
-      );
-      final slotEnd = slotStart.add(const Duration(hours: 1));
+    try {
+      for (final slot in proposedSlots) {
+        final slotStart = DateTime(
+          day.year,
+          day.month,
+          day.day,
+          slot.hour,
+          slot.minute,
+        );
+        final slotEnd = slotStart.add(const Duration(hours: 1));
 
-      final isAvailable = await isTimeSlotAvailable(slotStart, slotEnd);
+        final isAvailable = await isTimeSlotAvailable(slotStart, slotEnd);
 
-      if (isAvailable) {
-        availableSlots.add(slot);
-      } else {
-        developer.log('❌ Créneau ${slot.hour}:${slot.minute} non disponible');
+        if (isAvailable) {
+          availableSlots.add(slot);
+        } else {
+          developer.log('❌ Créneau ${slot.hour}:${slot.minute} non disponible (occupé)');
+        }
       }
+    } catch (e) {
+      developer.log('❌ Erreur lors du calcul des créneaux: $e');
+      // En cas d'erreur de l'API, on peut décider de retourner les slots par défaut 
+      // ou de laisser remonter l'erreur. Ici on laisse remonter pour que availableTimeSlotsProvider le gère.
+      rethrow;
     }
 
     developer.log(

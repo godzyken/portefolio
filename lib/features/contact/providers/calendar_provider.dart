@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:googleapis/calendar/v3.dart' as calendar;
-import 'package:portefolio/core/config/async_config.dart';
 
 import '../model/state/appointment_state.dart';
 import '../model/state/time_slot_state.dart';
@@ -14,7 +13,7 @@ final googleCalendarNotifierProvider =
 );
 
 final googleCalendarServiceProvider = Provider<GoogleCalendarService?>((ref) {
-  return ref.watch(googleCalendarNotifierProvider).safe;
+  return ref.watch(googleCalendarNotifierProvider).asData?.value;
 });
 
 final calendarAvailabilityServiceProvider =
@@ -57,7 +56,7 @@ const List<TimeSlot> _defaultTimeSlots = [
 
 final calendarEventsProvider =
     FutureProvider.autoDispose<calendar.Events>((ref) async {
-  final calendarService = ref.watch(googleCalendarNotifierProvider).value;
+  final calendarService = ref.watch(googleCalendarNotifierProvider).asData?.value;
 
   if (calendarService == null) {
     return calendar.Events();

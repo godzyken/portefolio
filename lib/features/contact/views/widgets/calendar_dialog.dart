@@ -541,7 +541,23 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
 
     return availableSlotsAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (err, stack) => const Center(child: Text('Erreur de chargement', style: TextStyle(color: Colors.redAccent))),
+      error: (err, stack) => Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.error_outline, color: Colors.redAccent, size: 40),
+              const SizedBox(height: 12),
+              const Text('Erreur de chargement des créneaux',
+                  textAlign: TextAlign.center, style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              Text(err.toString(),
+                  textAlign: TextAlign.center, style: const TextStyle(color: Colors.white54, fontSize: 12)),
+            ],
+          ),
+        ),
+      ),
       data: (availableSlots) {
         if (availableSlots.isEmpty) {
           return const Center(
