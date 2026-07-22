@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
 
 import '../../../../core/affichage/screen_size_detector.dart';
 import '../../../generator/views/widgets/animations/diagnostic_progress_bar.dart';
-import '../../data/models/project_wizard_models.dart';
+import '../../notifiers/project_wizard_notifier.dart';
 import '../../providers/project_wizard_providers.dart';
+import '../../services/project_wizard_ai_service.dart';
 import '../widgets/project_step_frames.dart';
 
 class ProjectWizardScreen extends ConsumerWidget {
