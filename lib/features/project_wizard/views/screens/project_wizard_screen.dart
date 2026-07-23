@@ -113,7 +113,7 @@ class ProjectWizardScreen extends ConsumerWidget {
           onSelected: notifier.selectOption,
         );
       case 7:
-        return const ProjectFinalFrame();
+        return ProjectFinalFrame(state: state, notifier: notifier);
       default:
         return const SizedBox.shrink();
     }
@@ -129,12 +129,26 @@ class ProjectWizardScreen extends ConsumerWidget {
     final isFirstStep = state.currentStep == 0;
     final isAnalysisStep = state.currentStep == 3;
     final isLastStep = state.currentStep == 7;
+    final isSubmitting = state.submitStatus == ProjectSubmitStatus.loading;
+
+    // Handle Success Redirection
+    if (state.submitStatus == ProjectSubmitStatus.success) {
+      Future.microtask(() {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Projet envoyé avec succès !')),
+          );
+          notifier.reset();
+          context.pop();
+        }
+      });
+    }
 
     return Padding(
       padding: const EdgeInsets.only(top: 24),
       child: Row(
         children: [
-          if (!isFirstStep && state.currentStep != 5) // Don't go back from advice for now to avoid re-analyzing
+          if (!isFirstStep && state.currentStep != 5 && !isSubmitting)
             Expanded(
               child: OutlinedButton(
                 onPressed: notifier.prevStep,
@@ -146,20 +160,19 @@ class ProjectWizardScreen extends ConsumerWidget {
                 child: const Text('Précédent'),
               ),
             ),
-          if (!isFirstStep && state.currentStep != 5) const SizedBox(width: 16),
+          if (!isFirstStep && state.currentStep != 5 && !isSubmitting) const SizedBox(width: 16),
           Expanded(
             flex: 2,
             child: FilledButton(
-              onPressed: _isNextEnabled(state)
+              onPressed: _isNextEnabled(state) && !isSubmitting
                   ? () {
                       if (isAnalysisStep) {
                         if (aiService != null) {
                           notifier.analyzeProject(aiService);
                         }
                       } else if (isLastStep) {
-                        _submit(context, state);
+                        notifier.submitLead();
                       } else if (state.currentStep == 5 && state.errorMessage != null) {
-                        // Skip selection step if AI failed
                         notifier.nextStep(); // to 6
                         notifier.nextStep(); // to 7
                       } else {
@@ -171,13 +184,19 @@ class ProjectWizardScreen extends ConsumerWidget {
                 backgroundColor: theme.colorScheme.primary,
                 padding: const EdgeInsets.symmetric(vertical: 16),
               ),
-              child: Text(isAnalysisStep
-                  ? 'Analyser avec l\'IA'
-                  : (isLastStep
-                      ? 'Envoyer'
-                      : (state.currentStep == 5 && state.errorMessage != null
-                          ? 'Continuer sans analyse'
-                          : 'Suivant'))),
+              child: isSubmitting
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                    )
+                  : Text(isAnalysisStep
+                      ? 'Analyser avec l\'IA'
+                      : (isLastStep
+                          ? 'Envoyer'
+                          : (state.currentStep == 5 && state.errorMessage != null
+                              ? 'Continuer sans analyse'
+                              : 'Suivant'))),
             ),
           ),
         ],
@@ -200,17 +219,11 @@ class ProjectWizardScreen extends ConsumerWidget {
       case 6:
         return state.selectedOptionId != null;
       case 7:
-        return true; // Form validation handled inside
+        return state.leadName.isNotEmpty &&
+            state.leadEmail.isNotEmpty &&
+            RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(state.leadEmail);
       default:
         return true;
     }
-  }
-
-  void _submit(BuildContext context, ProjectWizardState state) {
-    // Implement submission logic (EmailJS, etc.)
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Projet envoyé ! Je reviens vers vous bientôt.')),
-    );
-    context.pop();
   }
 }

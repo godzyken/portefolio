@@ -1,14 +1,24 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/models/project_wizard_models.dart';
 import '../services/project_wizard_ai_service.dart';
+import '../services/project_wizard_lead_service.dart';
+
+
+enum ProjectSubmitStatus { idle, loading, success, error }
 
 class ProjectWizardState {
   final int currentStep;
   final ProjectDescription description;
-  final ProjectWizardStatus status;
+  final ProjectWizardStatus status; // Status for AI analysis
   final AIStrategicAdvice? advice;
   final String? selectedOptionId;
   final String? errorMessage;
+
+  // Lead Info
+  final String leadName;
+  final String leadEmail;
+  final ProjectSubmitStatus submitStatus;
+  final String? submitError;
 
   const ProjectWizardState({
     this.currentStep = 0,
@@ -17,6 +27,10 @@ class ProjectWizardState {
     this.advice,
     this.selectedOptionId,
     this.errorMessage,
+    this.leadName = '',
+    this.leadEmail = '',
+    this.submitStatus = ProjectSubmitStatus.idle,
+    this.submitError,
   });
 
   ProjectWizardState copyWith({
@@ -26,6 +40,10 @@ class ProjectWizardState {
     AIStrategicAdvice? advice,
     String? selectedOptionId,
     String? errorMessage,
+    String? leadName,
+    String? leadEmail,
+    ProjectSubmitStatus? submitStatus,
+    String? submitError,
   }) {
     return ProjectWizardState(
       currentStep: currentStep ?? this.currentStep,
@@ -34,6 +52,10 @@ class ProjectWizardState {
       advice: advice ?? this.advice,
       selectedOptionId: selectedOptionId ?? this.selectedOptionId,
       errorMessage: errorMessage ?? this.errorMessage,
+      leadName: leadName ?? this.leadName,
+      leadEmail: leadEmail ?? this.leadEmail,
+      submitStatus: submitStatus ?? this.submitStatus,
+      submitError: submitError ?? this.submitError,
     );
   }
 }
@@ -64,6 +86,9 @@ class ProjectWizardNotifier extends Notifier<ProjectWizardState> {
     state = state.copyWith(description: state.description.copyWith(budgetRange: value));
   }
 
+  void updateLeadName(String value) => state = state.copyWith(leadName: value);
+  void updateLeadEmail(String value) => state = state.copyWith(leadEmail: value);
+
   void nextStep() {
     state = state.copyWith(currentStep: state.currentStep + 1);
   }
@@ -88,6 +113,34 @@ class ProjectWizardNotifier extends Notifier<ProjectWizardState> {
         status: ProjectWizardStatus.error,
         errorMessage: e.toString(),
         currentStep: 5,
+      );
+    }
+  }
+
+  Future<void> submitLead() async {
+    state = state.copyWith(submitStatus: ProjectSubmitStatus.loading, submitError: null);
+    
+    try {
+      final service = ref.read(projectWizardLeadServiceProvider);
+      
+      final selectedStrategy = state.advice?.options.firstWhere(
+        (o) => o.id == state.selectedOptionId,
+        orElse: () => state.advice!.options.first,
+      );
+
+      await service.submit(
+        name: state.leadName,
+        email: state.leadEmail,
+        description: state.description,
+        selectedStrategy: state.selectedOptionId != null ? selectedStrategy : null,
+        aiSummary: state.advice?.summary,
+      );
+
+      state = state.copyWith(submitStatus: ProjectSubmitStatus.success);
+    } catch (e) {
+      state = state.copyWith(
+        submitStatus: ProjectSubmitStatus.error,
+        submitError: e.toString(),
       );
     }
   }

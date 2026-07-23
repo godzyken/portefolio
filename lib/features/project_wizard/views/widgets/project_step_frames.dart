@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
 import '../../data/models/project_wizard_models.dart';
 
+import '../../../../core/ui/widgets/common_form_fields.dart';
+import '../../notifiers/project_wizard_notifier.dart';
+
 class _StepLayout extends StatelessWidget {
   final String title;
   final String description;
@@ -351,25 +354,40 @@ class ProjectSelectionFrame extends StatelessWidget {
 }
 
 class ProjectFinalFrame extends StatelessWidget {
-  const ProjectFinalFrame({super.key});
+  final ProjectWizardState state;
+  final ProjectWizardNotifier notifier;
+
+  const ProjectFinalFrame({super.key, required this.state, required this.notifier});
 
   @override
   Widget build(BuildContext context) {
     return _StepLayout(
       title: 'Prêt à décoller ?',
-      description: 'Envoyez votre projet pour une consultation approfondie.',
-      child: const Center(
+      description: 'Laissez vos coordonnées pour recevoir le récapitulatif.',
+      child: SingleChildScrollView(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.rocket_launch, size: 80, color: Colors.blue),
-            SizedBox(height: 24),
-            ResponsiveText.bodyLarge(
-              'Tout est prêt !',
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            NameFormField(
+              initialValue: state.leadName,
+              onChanged: notifier.updateLeadName,
             ),
-            SizedBox(height: 8),
-            ResponsiveText.bodySmall(
+            const SizedBox(height: 16),
+            EmailFormField(
+              initialValue: state.leadEmail,
+              onChanged: notifier.updateLeadEmail,
+            ),
+            const SizedBox(height: 24),
+            if (state.submitStatus == ProjectSubmitStatus.error)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: Text(
+                  'Erreur: ${state.submitError}',
+                  style: const TextStyle(color: Colors.redAccent),
+                ),
+              ),
+            const Icon(Icons.rocket_launch, size: 64, color: Colors.blue),
+            const SizedBox(height: 16),
+            const ResponsiveText.bodySmall(
               'En cliquant sur envoyer, vous recevrez un récapitulatif par email et je vous recontacterai sous 48h.',
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.white70),

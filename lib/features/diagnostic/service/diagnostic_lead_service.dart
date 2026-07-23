@@ -1,8 +1,8 @@
 import 'dart:developer' as developer;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:portefolio/core/service/supabase_service.dart';
 
-import '../../../../core/service/supabase_service.dart';
 import '../../contact/providers/emailjs_provider.dart';
 
 /// Enregistre un lead issu du diagnostic de maturité numérique.
@@ -55,44 +55,44 @@ class DiagnosticLeadService {
         });
         developer.log('✅ Lead diagnostic enregistré dans Supabase',
             name: 'DiagnosticLeadService');
-        return;
       } catch (e, st) {
         developer.log(
-          '❌ Erreur insertion Supabase, fallback sur EmailJS: $e',
+          '❌ Erreur insertion Supabase: $e',
           name: 'DiagnosticLeadService',
           error: e,
           stackTrace: st,
         );
-        // On continue vers le fallback plutôt que de perdre le lead.
+        // On continue pour envoyer au moins l'email
       }
-    } else {
-      developer.log(
-        'Supabase indisponible, envoi du lead diagnostic via EmailJS',
-        name: 'DiagnosticLeadService',
-      );
     }
 
+    // ENVOI SYSTEMATIQUE DE L'EMAIL
     try {
       final emailJs = ref.read(emailJsProvider);
       await emailJs.sendEmail(
         name: name.isEmpty ? 'Anonyme' : name,
         email: email,
-        message: 'Nouveau diagnostic de maturité numérique complété.\n'
+        message: 'NOUVEAU DIAGNOSTIC COMPLÉTÉ\n'
+            '----------------------------------------\n'
+            'Client : ${name.isEmpty ? "Anonyme" : name} ($email)\n'
             'Entreprise : ${company.isEmpty ? "-" : company}\n'
             'Résumé du projet : ${projectSummary.isEmpty ? "-" : projectSummary}\n'
             'Score : $score/$maxScore ($percent%)\n'
-            'Niveau : $levelTitle',
+            'Niveau : $levelTitle\n'
+            '----------------------------------------\n'
+            'Note : Ce lead a également été tenté d\'être enregistré en BDD.',
       );
-      developer.log('✅ Lead diagnostic envoyé par email (fallback)',
+      developer.log('✅ Email de notification diagnostic envoyé',
           name: 'DiagnosticLeadService');
     } catch (e, st) {
       developer.log(
-        '❌ Le fallback EmailJS a aussi échoué: $e',
+        '❌ Erreur envoi EmailJS: $e',
         name: 'DiagnosticLeadService',
         error: e,
         stackTrace: st,
       );
-      rethrow;
+      // Si on n'a pas pu envoyer le mail ET qu'on n'a pas pu écrire en BDD (ou que Supabase est off), là c'est critique
+      if (!SupabaseService.isReady) rethrow;
     }
   }
 }
