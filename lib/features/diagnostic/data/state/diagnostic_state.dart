@@ -12,6 +12,7 @@ class DiagnosticState {
   final String leadName;
   final String leadEmail;
   final String companyName;
+  final String projectSummary;
 
   final LeadSubmitStatus submitStatus;
   final String? submitError;
@@ -23,6 +24,7 @@ class DiagnosticState {
     this.leadName = '',
     this.leadEmail = '',
     this.companyName = '',
+    this.projectSummary = '',
     this.submitStatus = LeadSubmitStatus.idle,
     this.submitError,
   });
@@ -34,6 +36,7 @@ class DiagnosticState {
     String? leadName,
     String? leadEmail,
     String? companyName,
+    String? projectSummary,
     LeadSubmitStatus? submitStatus,
     String? submitError,
     bool clearSubmitError = false,
@@ -45,6 +48,7 @@ class DiagnosticState {
       leadName: leadName ?? this.leadName,
       leadEmail: leadEmail ?? this.leadEmail,
       companyName: companyName ?? this.companyName,
+      projectSummary: projectSummary ?? this.projectSummary,
       submitStatus: submitStatus ?? this.submitStatus,
       submitError: clearSubmitError ? null : (submitError ?? this.submitError),
     );

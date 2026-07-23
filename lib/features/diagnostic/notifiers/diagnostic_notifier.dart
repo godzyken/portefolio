@@ -50,6 +50,9 @@ class DiagnosticNotifier extends Notifier<DiagnosticState> {
   void updateCompanyName(String value) =>
       state = state.copyWith(companyName: value);
 
+  void updateProjectSummary(String value) =>
+      state = state.copyWith(projectSummary: value);
+
   Future<void> submitLead(DiagnosticResult result) async {
     if (state.leadEmail.isEmpty) return;
 
@@ -64,6 +67,7 @@ class DiagnosticNotifier extends Notifier<DiagnosticState> {
         name: state.leadName,
         email: state.leadEmail,
         company: state.companyName,
+        projectSummary: state.projectSummary,
         score: result.score,
         maxScore: result.maxScore,
         percent: result.percent,

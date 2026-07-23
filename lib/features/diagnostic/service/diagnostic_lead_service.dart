@@ -35,6 +35,7 @@ class DiagnosticLeadService {
     required String name,
     required String email,
     required String company,
+    required String projectSummary,
     required int score,
     required int maxScore,
     required int percent,
@@ -46,6 +47,7 @@ class DiagnosticLeadService {
           'name': name.isEmpty ? null : name,
           'email': email,
           'company': company.isEmpty ? null : company,
+          'project_summary': projectSummary.isEmpty ? null : projectSummary,
           'score': score,
           'max_score': maxScore,
           'percent': percent,
@@ -77,6 +79,7 @@ class DiagnosticLeadService {
         email: email,
         message: 'Nouveau diagnostic de maturité numérique complété.\n'
             'Entreprise : ${company.isEmpty ? "-" : company}\n'
+            'Résumé du projet : ${projectSummary.isEmpty ? "-" : projectSummary}\n'
             'Score : $score/$maxScore ($percent%)\n'
             'Niveau : $levelTitle',
       );

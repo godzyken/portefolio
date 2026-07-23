@@ -73,6 +73,12 @@ class _DiagnosticLeadFormState extends ConsumerState<DiagnosticLeadForm> {
               onChanged: notifier.updateLeadEmail,
             ),
             const SizedBox(height: 12),
+            MessageFormField(
+              labelText: 'Résumé du projet',
+              hintText: 'Décrivez brièvement votre projet pour contextualiser le score...',
+              onChanged: notifier.updateProjectSummary,
+            ),
+            const SizedBox(height: 12),
             TextFormField(
               controller: _companyController,
               onChanged: notifier.updateCompanyName,
