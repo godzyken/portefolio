@@ -25,6 +25,10 @@ class AdminAuthSuccess extends AdminAuthState {
   const AdminAuthSuccess();
 }
 
+class AdminAuthRecoverySent extends AdminAuthState {
+  const AdminAuthRecoverySent();
+}
+
 /// Gère la connexion/déconnexion au formulaire d'admin.
 /// Un seul compte (le tien) doit exister côté Supabase Auth, et doit être
 /// référencé dans la table `portfolio_admins` pour avoir le droit d'écrire.
@@ -66,6 +70,25 @@ class AdminAuthController extends Notifier<AdminAuthState> {
     if (!SupabaseService.isReady) return;
     await SupabaseService.client.auth.signOut();
     state = const AdminAuthIdle();
+  }
+
+  Future<void> sendRecoveryEmail(String email) async {
+    if (!SupabaseService.isReady) return;
+
+    state = const AdminAuthLoading();
+
+    try {
+      // Appel de la Edge Function 'send-recovery'
+      await SupabaseService.client.functions.invoke(
+        'send-recovery',
+        body: {'email': email},
+      );
+      state = const AdminAuthRecoverySent();
+    } on AuthException catch (e) {
+      state = AdminAuthError(e.message);
+    } catch (e) {
+      state = AdminAuthError('Erreur lors de l\'envoi de l\'email: $e');
+    }
   }
 }
 

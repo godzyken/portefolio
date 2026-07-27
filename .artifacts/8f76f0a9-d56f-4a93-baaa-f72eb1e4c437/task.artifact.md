@@ -1,0 +1,10 @@
+- [x] Implement Secure Password Recovery
+    - [x] Update Supabase Edge Function `send-recovery`
+    - [x] Update Flutter `AdminAuthController` to call the Edge Function
+    - [x] Add "Mot de passe oublié" button to `AdminLoginScreen`
+    - [x] Create `AdminResetPasswordScreen`
+    - [x] Add `/admin/reset-password` route to `Router`
+- [ ] Verify functionality
+- [ ] Create Walkthrough
+- [ ] Verify functionality
+- [ ] Create Walkthrough

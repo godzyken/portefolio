@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/about/views/screens/legal_mentions_screen.dart';
 import '../../features/admin/views/screens/admin_dashboard_screen.dart';
 import '../../features/admin/views/screens/admin_login_screen.dart';
+import '../../features/admin/views/screens/admin_reset_password_screen.dart';
 import '../../features/diagnostic/views/screens/diagnostic_screen.dart';
 import '../../features/project_wizard/views/screens/project_wizard_screen.dart';
 import '../../features/home/views/screens/pricing_rationale_screen.dart';
@@ -43,6 +44,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           path: '/admin/login',
           name: 'admin_login',
           builder: (_, __) => const AdminLoginScreen(),
+        ),
+        GoRoute(
+          path: '/admin/reset-password',
+          name: 'admin_reset_password',
+          builder: (_, __) => const AdminResetPasswordScreen(),
         ),
         GoRoute(
           path: '/admin',

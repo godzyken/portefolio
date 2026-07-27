@@ -50,6 +50,15 @@ class _AdminLoginScreenState extends ConsumerState<AdminLoginScreen> {
       if (next is AdminAuthSuccess) {
         context.go('/admin');
       }
+      if (next is AdminAuthRecoverySent) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+                'Email de récupération envoyé ! Vérifie ta boîte de réception.'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
       if (next is AdminAuthError) {
         // Un login raté a pu consommer le token : on force une nouvelle
         // vérification avant la prochaine tentative.
@@ -188,6 +197,11 @@ class _AdminLoginScreenState extends ConsumerState<AdminLoginScreen> {
                               )
                             : const Text('Se connecter'),
                       ),
+                      const SizedBox(height: 16),
+                      TextButton(
+                        onPressed: isLoading ? null : _sendRecovery,
+                        child: const Text('Mot de passe oublié ?'),
+                      ),
                     ],
                   ),
                 ),
@@ -206,5 +220,17 @@ class _AdminLoginScreenState extends ConsumerState<AdminLoginScreen> {
           _passwordCtrl.text,
           captchaToken: _captchaToken,
         );
+  }
+
+  void _sendRecovery() {
+    final email = _emailCtrl.text.trim();
+    if (email.isEmpty || !email.contains('@')) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Saisis d\'abord ton email pour la récupération.')),
+      );
+      return;
+    }
+    ref.read(adminAuthControllerProvider.notifier).sendRecoveryEmail(email);
   }
 }
