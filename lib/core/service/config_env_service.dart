@@ -7,6 +7,7 @@ class EnvConfigService {
   final String emailJsServiceId;
   final String emailJsTemplateId;
   final String emailJsPublicKey;
+  final String? emailJsProjectTemplateId;
 
   // WhatsApp
   final String whatsappPhone;
@@ -34,6 +35,7 @@ class EnvConfigService {
     required this.emailJsServiceId,
     required this.emailJsTemplateId,
     required this.emailJsPublicKey,
+    this.emailJsProjectTemplateId,
     required this.whatsappPhone,
     required this.oneDriveUrl,
     required this.wakaTimeApiKey,
@@ -52,6 +54,8 @@ class EnvConfigService {
     const emailJsTemplateId = String.fromEnvironment('EMAILJS_TEMPLATE_ID');
 
     final emailJsPublicKey = const String.fromEnvironment('EMAILJS_PUBLIC_KEY');
+
+    final emailJsProjectTemplateId = const String.fromEnvironment('EMAILJS_PROJECT_TEMPLATE_ID');
 
     final whatsappPhone = const String.fromEnvironment('WHATSAPP_PHONE');
 
@@ -72,6 +76,7 @@ class EnvConfigService {
       emailJsServiceId: emailJsServiceId,
       emailJsTemplateId: emailJsTemplateId,
       emailJsPublicKey: emailJsPublicKey,
+      emailJsProjectTemplateId: emailJsProjectTemplateId.isEmpty ? null : emailJsProjectTemplateId,
       whatsappPhone: whatsappPhone,
       oneDriveUrl: oneDriveUrl,
       wakaTimeApiKey: waka.isEmpty ? null : waka,
@@ -135,6 +140,7 @@ EnvConfigService(
   emailJsServiceId: ${emailJsServiceId.isNotEmpty ? '***' : 'MISSING'},
   emailJsTemplateId: ${emailJsTemplateId.isNotEmpty ? '***' : 'MISSING'},
   emailJsPublicKey: ${emailJsPublicKey.isNotEmpty ? '***' : 'MISSING'},
+  emailJsProjectTemplateId: ${emailJsProjectTemplateId != null ? '***' : 'MISSING'},
   whatsappPhone: ${whatsappPhone.isNotEmpty ? '***' : 'MISSING'},
   oneDriveUrl: ${oneDriveUrl.isNotEmpty ? '${oneDriveUrl.substring(0, 30)}...' : 'MISSING'},
   wakaTimeApiKey: ${wakaTimeApiKey != null ? '***' : 'MISSING'},

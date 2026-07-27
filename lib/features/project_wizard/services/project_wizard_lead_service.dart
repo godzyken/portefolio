@@ -1,5 +1,6 @@
 import 'dart:developer' as developer;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/provider/config_env_provider.dart';
 import '../../../../core/service/supabase_service.dart';
 import '../../contact/providers/emailjs_provider.dart';
 import '../data/models/project_wizard_models.dart';
@@ -41,6 +42,7 @@ class ProjectWizardLeadService {
     // 2. Envoi systématique de l'email
     try {
       final emailJs = ref.read(emailJsProvider);
+      final projectTemplateId = ref.read(emailJsProjectTemplateIdProvider);
       
       final buffer = StringBuffer();
       buffer.writeln('NOUVELLE DEMANDE DE PROJET IA');
@@ -58,22 +60,46 @@ class ProjectWizardLeadService {
       buffer.writeln('Budget : ${description.budgetRange.isEmpty ? "-" : description.budgetRange}');
       buffer.writeln();
       
+      String aiAnalysisText = "";
       if (selectedStrategy != null) {
         buffer.writeln('🎯 STRATÉGIE SÉLECTIONNÉE');
         buffer.writeln('Titre : ${selectedStrategy.title}');
         buffer.writeln('Description : ${selectedStrategy.description}');
         buffer.writeln();
+        aiAnalysisText = "Stratégie choisie : ${selectedStrategy.title}\n${selectedStrategy.description}";
       } else if (aiSummary != null) {
         buffer.writeln('⚠️ NOTE : Le client n\'a pas sélectionné de stratégie mais l\'IA a analysé le projet.');
+        aiAnalysisText = aiSummary;
       } else {
         buffer.writeln('ℹ️ NOTE : Analyse IA non disponible (possible quota épuisé).');
+        aiAnalysisText = "Analyse IA non disponible.";
       }
 
-      await emailJs.sendEmail(
-        name: name.isEmpty ? 'Client Projet' : name,
-        email: email,
-        message: buffer.toString(),
-      );
+      if (projectTemplateId != null) {
+        // Option B: Template pro envoyé au client avec BCC (si configuré côté EmailJS)
+        await emailJs.sendProjectReport(
+          recipientEmail: email,
+          templateId: projectTemplateId,
+          projectData: {
+            "to_email": email,
+            "name": name.isEmpty ? 'Client Projet' : name,
+            "message": buffer.toString(), // On garde le message complet pour le BCC
+            "ai_analysis": aiAnalysisText,
+            // Ajout des champs séparés au cas où le template les utilise
+            "project_context": description.context,
+            "project_target": description.targetAudience,
+            "project_goals": description.goals,
+          },
+        );
+      } else {
+        // Fallback: Template classique envoyé à toi
+        await emailJs.sendEmail(
+          name: name.isEmpty ? 'Client Projet' : name,
+          email: email,
+          message: buffer.toString(),
+        );
+      }
+      
       developer.log('✅ Email de notification projet envoyé', name: 'ProjectWizardLeadService');
     } catch (e, st) {
       developer.log('❌ Erreur envoi EmailJS: $e', name: 'ProjectWizardLeadService', error: e, stackTrace: st);

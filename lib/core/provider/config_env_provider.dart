@@ -46,6 +46,11 @@ final emailJsPublicKeyProvider = Provider<String>((ref) {
   return config.emailJsPublicKey;
 });
 
+final emailJsProjectTemplateIdProvider = Provider<String?>((ref) {
+  final config = ref.watch(envConfigProvider);
+  return config.emailJsProjectTemplateId;
+});
+
 // WhatsApp
 final whatsappPhoneProvider = Provider<String>((ref) {
   final config = ref.watch(envConfigProvider);

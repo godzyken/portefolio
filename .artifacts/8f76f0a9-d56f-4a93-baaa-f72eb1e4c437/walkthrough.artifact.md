@@ -1,42 +1,34 @@
-# Walkthrough: Secure Password Recovery Implementation
+# Walkthrough: Professional AI Project Report Implementation (Option B)
 
-I have implemented a complete and secure password recovery flow using a Supabase Edge Function combined with EmailJS.
+I have implemented the professional flow for the AI Project Wizard. Now, the client receives a beautifully formatted report of their project description and AI advice directly in their inbox.
 
-## Changes Made
+## Key Changes
 
-### 1. Supabase Edge Function (`send-recovery`)
-- **Security**: The function uses the `service_role` key (server-side only) to generate a secure recovery link.
-- **Branding**: Instead of using Supabase's default (and limited) SMTP, it calls the **EmailJS REST API** to send a branded email.
-- **CORS Support**: Added CORS headers to allow calls from your Flutter Web application.
+### 1. Flexible Email Service
+- **New Method**: `EmailJsService.sendProjectReport` allows sending emails using a specific template ID and dynamic data.
+- **Dynamic Routing**: The system now supports multiple EmailJS templates within the same application.
 
-### 2. Flutter Admin Authentication
-- **Notifier Update**: Added `sendRecoveryEmail` to `AdminAuthController`. This method invokes the Supabase Edge Function.
-- **New State**: Added `AdminAuthRecoverySent` to handle the UI feedback after the email is sent.
+### 2. Client-Centric Workflow
+- **Direct Reporting**: In the Project Wizard, the client is now the primary recipient of the email (`To Email`).
+- **Data Enrichment**: The email includes the full project context, goals, and the specific strategic option selected by the user.
 
-### 3. Login UI Improvements
-- **"Mot de passe oublié"**: Added a new button to the `AdminLoginScreen`.
-- **Validation**: Ensures the email field is filled and valid before attempting recovery.
-- **Feedback**: Shows a success SnackBar when the recovery process is initiated.
+### 3. CI/CD & Configuration
+- **New Variable**: Added `EMAILJS_PROJECT_TEMPLATE_ID` to the environment configuration.
+- **Automated Pipeline**: Updated `deploy.yml` to inject this new template ID during the GitHub Actions build process.
 
-### 4. Password Reset Page
-- **New Screen**: Created `AdminResetPasswordScreen` where users can enter and confirm their new password.
-- **Route**: Added the `/admin/reset-password` route to the application's router.
-- **Integration**: The recovery link sent by email redirects directly to this page.
-
-## Required Setup (Supabase Dashboard)
+## Required Setup (Action for User)
 
 > [!IMPORTANT]
-> You must set the following secrets in your Supabase project for the Edge Function to work:
-> ```bash
-> supabase secrets set EMAILJS_SERVICE_ID=your_service_id
-> supabase secrets set EMAILJS_RECOVERY_TEMPLATE_ID=your_recovery_template_id
-> supabase secrets set EMAILJS_PUBLIC_KEY=your_public_key
-> ```
+> **EmailJS Dashboard**:
+> 1. Create a new template named "Project Report".
+> 2. Set **To Email** to `{{to_email}}`.
+> 3. Set **Bcc** to `isgodzy@gmail.com`.
+> 4. Use these variables in your template: `{{name}}`, `{{ai_analysis}}`, `{{project_context}}`, `{{project_target}}`, `{{project_goals}}`.
 >
-> Also, ensure your EmailJS template uses the variable `{{recovery_link}}` for the reset button.
+> **GitHub Secrets**:
+> Add a new secret named `EMAILJS_PROJECT_TEMPLATE_ID` with the ID of your new template.
 
 ## Verification Results
-- [x] Edge Function successfully generates a link.
-- [x] Flutter client can invoke the Edge Function.
-- [x] UI handles the "Recovery Sent" state with appropriate feedback.
-- [x] Redirection to the new Reset Password screen is configured.
+- [x] `EmailJsService` correctly handles template overrides.
+- [x] `ProjectWizardLeadService` routes data to the client's email when the template is configured.
+- [x] Environment variables are correctly mapped for the production build.

@@ -1,10 +1,7 @@
-- [x] Implement Secure Password Recovery
-    - [x] Update Supabase Edge Function `send-recovery`
-    - [x] Update Flutter `AdminAuthController` to call the Edge Function
-    - [x] Add "Mot de passe oublié" button to `AdminLoginScreen`
-    - [x] Create `AdminResetPasswordScreen`
-    - [x] Add `/admin/reset-password` route to `Router`
-- [ ] Verify functionality
-- [ ] Create Walkthrough
-- [ ] Verify functionality
-- [ ] Create Walkthrough
+- [x] Implement Option B: Project Report Emailing
+    - [x] Update `EmailJsService` with `sendProjectReport`
+    - [x] Add `EMAILJS_PROJECT_TEMPLATE_ID` to `EnvConfigService` and `EnvConfigProvider`
+    - [x] Update `ProjectWizardLeadService` to use the new email method
+    - [x] Update `deploy.yml` with the new template ID
+- [x] Verify functionality
+- [x] Create Walkthrough

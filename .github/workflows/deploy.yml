@@ -60,6 +60,7 @@ jobs:
           test -n "${{ secrets.TURNSTILE_SITE_KEY }}" || echo "⚠️ TURNSTILE_SITE_KEY missing"
           test -n "${{ secrets.OPENAI_API_KEY }}" && echo "✅ OPENAI_API_KEY configured" || echo "⚠️ OPENAI_API_KEY missing"
           test -n "${{ secrets.GCC_CLIENT_ID }}" && echo "✅ GCC_CLIENT_ID configured" || echo "⚠️ GCC_CLIENT_ID missing"
+          test -n "${{ secrets.EMAILJS_PROJECT_TEMPLATE_ID }}" && echo "✅ EMAILJS_PROJECT_TEMPLATE_ID configured" || echo "ℹ️ EMAILJS_PROJECT_TEMPLATE_ID optional"
 
       # ✅ Build avec TOUTES les variables d'environnement
       - name: Build Flutter web
@@ -79,7 +80,8 @@ jobs:
             --dart-define=SUPABASE_ANON_KEY="${{ secrets.SUPABASE_ANON_KEY }}" \
             --dart-define=TURNSTILE_SITE_KEY="${{ secrets.TURNSTILE_SITE_KEY }}" \
             --dart-define=OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \
-            --dart-define=GCC_CLIENT_ID="${{ secrets.GCC_CLIENT_ID }}"
+            --dart-define=GCC_CLIENT_ID="${{ secrets.GCC_CLIENT_ID }}" \
+            --dart-define=EMAILJS_PROJECT_TEMPLATE_ID="${{ secrets.EMAILJS_PROJECT_TEMPLATE_ID }}"
 
       # Cache busting
       - name: Append build version (cache busting)

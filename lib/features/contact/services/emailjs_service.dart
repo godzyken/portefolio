@@ -26,10 +26,10 @@ class EmailJsService {
     required this.publicKey,
   });
 
-  Future<void> _post(Map<String, dynamic> templateParams) async {
+  Future<void> _post(Map<String, dynamic> templateParams, {String? overrideTemplateId}) async {
     final body = <String, dynamic>{
       'service_id': serviceId,
-      'template_id': templateId,
+      'template_id': overrideTemplateId ?? templateId,
       'user_id': publicKey,
       'template_params': templateParams,
     };
@@ -97,6 +97,20 @@ class EmailJsService {
     } catch (e) {
       developer.log("❌ EmailJS error: $e");
       throw Exception("Erreur EmailJS lors de l'envoi : $e");
+    }
+  }
+
+  Future<void> sendProjectReport({
+    required String recipientEmail,
+    required String templateId,
+    required Map<String, dynamic> projectData,
+  }) async {
+    try {
+      await _post(projectData, overrideTemplateId: templateId);
+      developer.log("✅ Project report sent to $recipientEmail");
+    } catch (e) {
+      developer.log("❌ Error sending project report: $e");
+      rethrow;
     }
   }
 }
