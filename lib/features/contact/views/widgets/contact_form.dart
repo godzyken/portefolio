@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/ui/widgets/responsive_text.dart';
 
 import '../../../../core/affichage/screen_size_detector.dart';
+import '../../../../core/provider/tracking_provider.dart';
+import '../../../../core/service/tracking_service.dart';
 import '../../model/state/contact_form_state.dart';
 import '../../providers/contact_form_provider.dart';
 
@@ -100,11 +102,21 @@ class ContactForm extends ConsumerWidget {
                     isSubmitting: formState.status == SubmitStatus.loading,
                     onEmail: () async {
                       if (formKey.currentState!.validate()) {
+                        ref.read(trackingServiceProvider).trackInteraction(
+                              projectId: 'portfolio',
+                              projectName: 'Portfolio',
+                              action: TrackingAction.email,
+                            );
                         await notifier.submit(Channel.email);
                       }
                     },
                     onWhatsApp: () async {
                       if (formKey.currentState!.validate()) {
+                        ref.read(trackingServiceProvider).trackInteraction(
+                              projectId: 'portfolio',
+                              projectName: 'Portfolio',
+                              action: TrackingAction.whatsapp,
+                            );
                         await notifier.submit(Channel.whatsapp);
                       }
                     },

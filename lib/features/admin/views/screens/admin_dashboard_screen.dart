@@ -6,6 +6,7 @@ import '../../../../core/provider/pricing_provider.dart';
 import '../../../home/data/services_data.dart';
 import '../../controller/admin_auth_controller.dart';
 import '../../controller/pricing_admin_controller.dart';
+import '../widgets/analytics_dashboard_view.dart';
 import '../widgets/pack_form_dialog.dart';
 
 class AdminDashboardScreen extends ConsumerWidget {
@@ -16,42 +17,56 @@ class AdminDashboardScreen extends ConsumerWidget {
     final authChanges = ref.watch(authStateChangesProvider);
     final isAdminAsync = ref.watch(isPortfolioAdminProvider);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Tarifs & Services — Admin'),
-        actions: [
-          IconButton(
-            tooltip: 'Retour au site',
-            icon: const Icon(Icons.public),
-            onPressed: () => context.go('/'),
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Admin Dashboard'),
+          bottom: const TabBar(
+            tabs: [
+              Tab(icon: Icon(Icons.analytics_outlined), text: 'Analytics & Conversions'),
+              Tab(icon: Icon(Icons.settings_outlined), text: 'Tarifs & Services'),
+            ],
           ),
-          IconButton(
-            tooltip: 'Déconnexion',
-            icon: const Icon(Icons.logout),
-            onPressed: () async {
-              await ref.read(adminAuthControllerProvider.notifier).signOut();
-              if (context.mounted) context.go('/admin/login');
-            },
-          ),
-        ],
-      ),
-      body: authChanges.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Erreur session: $e')),
-        data: (_) {
-          return isAdminAsync.when(
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (e, _) => Center(child: Text('Erreur: $e')),
-            data: (isAdmin) {
-              if (!isAdmin) {
-                return _NotAuthorized(
-                  onLoginRedirect: () => context.go('/admin/login'),
+          actions: [
+            IconButton(
+              tooltip: 'Retour au site',
+              icon: const Icon(Icons.public),
+              onPressed: () => context.go('/'),
+            ),
+            IconButton(
+              tooltip: 'Déconnexion',
+              icon: const Icon(Icons.logout),
+              onPressed: () async {
+                await ref.read(adminAuthControllerProvider.notifier).signOut();
+                if (context.mounted) context.go('/admin/login');
+              },
+            ),
+          ],
+        ),
+        body: authChanges.when(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (e, _) => Center(child: Text('Erreur session: $e')),
+          data: (_) {
+            return isAdminAsync.when(
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (e, _) => Center(child: Text('Erreur: $e')),
+              data: (isAdmin) {
+                if (!isAdmin) {
+                  return _NotAuthorized(
+                    onLoginRedirect: () => context.go('/admin/login'),
+                  );
+                }
+                return const TabBarView(
+                  children: [
+                    AnalyticsDashboardView(),
+                    _ServicesAdminList(),
+                  ],
                 );
-              }
-              return const _ServicesAdminList();
-            },
-          );
-        },
+              },
+            );
+          },
+        ),
       ),
     );
   }

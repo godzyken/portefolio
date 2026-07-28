@@ -1,7 +1,13 @@
-- [x] Implement Option B: Project Report Emailing
-    - [x] Update `EmailJsService` with `sendProjectReport`
-    - [x] Add `EMAILJS_PROJECT_TEMPLATE_ID` to `EnvConfigService` and `EnvConfigProvider`
-    - [x] Update `ProjectWizardLeadService` to use the new email method
-    - [x] Update `deploy.yml` with the new template ID
+- [x] Implement Scalable Tracking Core
+    - [x] Create `TrackingService` for Supabase interactions
+    - [x] Create `trackingProvider`
+- [x] Integrate Tracking into Portfolio
+    - [x] Track WhatsApp/Call/Email clicks in `ContactForm`
+    - [x] Track `FORM_SUBMIT` in `DiagnosticNotifier`
+    - [x] Track `FORM_SUBMIT` in `ProjectWizardNotifier`
+- [x] Build Analytics Dashboard
+    - [x] Create `AnalyticsProvider` to fetch grouped stats
+    - [x] Build `AnalyticsDashboardView` widget
+    - [x] Update `AdminDashboardScreen` with TabBar/Section
 - [x] Verify functionality
 - [x] Create Walkthrough

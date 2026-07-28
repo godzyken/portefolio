@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/affichage/screen_size_detector.dart';
 import '../../../../core/ui/ui_widgets_extentions.dart';
+import '../../../../core/provider/tracking_provider.dart';
+import '../../../../core/service/tracking_service.dart';
 import '../../providers/calendar_provider.dart';
 import '../../providers/contact_form_provider.dart';
 import '../../providers/cv_download_provider.dart';
@@ -92,6 +94,13 @@ class ContactConversionOption extends ConsumerWidget {
             () async {
               developer.log('🔐 Tentative de connexion...');
 
+              ref.read(trackingServiceProvider).trackInteraction(
+                projectId: 'portfolio',
+                projectName: 'Portfolio',
+                action: TrackingAction.linkClick,
+                details: {'type': 'calendar_auth_start'},
+              );
+
               SnackBarHelper.showLoading(context, 'Connexion en cours...');
 
               try {
@@ -122,7 +131,15 @@ class ContactConversionOption extends ConsumerWidget {
           theme,
           Icons.event_available,
           'Réserver un créneau',
-          () => _showCalendarDialogWithContactInfo(context, ref, contactForm),
+          () {
+            ref.read(trackingServiceProvider).trackInteraction(
+              projectId: 'portfolio',
+              projectName: 'Portfolio',
+              action: TrackingAction.linkClick,
+              details: {'type': 'calendar_dialog_open'},
+            );
+            _showCalendarDialogWithContactInfo(context, ref, contactForm);
+          },
         );
       },
       loading: () => _buildActionChip(
@@ -132,6 +149,12 @@ class ContactConversionOption extends ConsumerWidget {
         Icons.error,
         'Réessayer la connexion',
         () async {
+          ref.read(trackingServiceProvider).trackInteraction(
+            projectId: 'portfolio',
+            projectName: 'Portfolio',
+            action: TrackingAction.linkClick,
+            details: {'type': 'calendar_auth_retry'},
+          );
           await ref
               .read(googleCalendarNotifierProvider.notifier)
               .signInAndInit();
@@ -189,7 +212,15 @@ class ContactConversionOption extends ConsumerWidget {
       theme,
       Icons.download,
       'Télécharger mon CV',
-      () => cvService.downloadCv(context, cvUrl),
+      () {
+        ref.read(trackingServiceProvider).trackInteraction(
+          projectId: 'portfolio',
+          projectName: 'Portfolio',
+          action: TrackingAction.linkClick,
+          details: {'type': 'cv_download'},
+        );
+        cvService.downloadCv(context, cvUrl);
+      },
     );
   }
 

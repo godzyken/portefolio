@@ -1,25 +1,17 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/colors_spec.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
+import 'package:portefolio/core/provider/tracking_provider.dart';
+import 'package:portefolio/core/service/tracking_service.dart';
 import 'package:portefolio/core/ui/sections/section_system.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'live_preview_frame_web.dart'
     if (dart.library.io) 'live_preview_frame_web.dart' as frame_impl;
 
-/// Section "Aperçu en direct" : affiche le site déployé du projet
-/// (ex: emap-82.fr sur Netlify) directement dans la fiche projet.
-///
-/// - Sur le Web : le site est embarqué dans une iframe.
-/// - Sur mobile/desktop natif : pas d'iframe HTML disponible, on affiche
-///   une carte avec un bouton "Ouvrir le site" (navigateur externe).
-///
-/// Dans tous les cas, un bouton "Ouvrir dans un nouvel onglet" reste
-/// disponible : certains sites refusent d'être affichés en iframe
-/// (header X-Frame-Options / CSP frame-ancestors), auquel cas la preview
-/// intégrée peut rester blanche — le lien externe est le filet de sécurité.
-class LivePreviewSection extends StatelessWidget {
+class LivePreviewSection extends ConsumerWidget {
   final String url;
   final String projectTitle;
   final ResponsiveInfo info;
@@ -31,15 +23,26 @@ class LivePreviewSection extends StatelessWidget {
     required this.info,
   });
 
-  Future<void> _openExternally() async {
+  Future<void> _openExternally(WidgetRef ref) async {
     final uri = Uri.parse(url);
+
+    // Dynamic tracking based on project title
+    final pid = projectTitle.toLowerCase().contains('emap') ? 'emap_services' : projectTitle.toLowerCase().replaceAll(' ', '_');
+    
+    ref.read(trackingServiceProvider).trackInteraction(
+      projectId: pid,
+      projectName: projectTitle,
+      action: TrackingAction.linkClick,
+      details: {'url': url, 'source': 'portfolio_live_preview'},
+    );
+
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     }
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     // Hauteur explicite (et non un Expanded) : cette section est insérée
     // dans un Container dont le parent (SectionBuilder) se dimensionne à
     // son contenu, donc une hauteur non bornée y arriverait potentiellement
@@ -67,7 +70,7 @@ class LivePreviewSection extends StatelessWidget {
                   ),
                   const SizedBox(width: 12),
                   OutlinedButton.icon(
-                    onPressed: _openExternally,
+                    onPressed: () => _openExternally(ref),
                     icon: const Icon(Icons.open_in_new, size: 16),
                     label: const Text('Nouvel onglet'),
                   )
@@ -76,7 +79,7 @@ class LivePreviewSection extends StatelessWidget {
               height: previewHeight,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-                child: kIsWeb ? _buildIframe() : _buildNativeFallback(context),
+                child: kIsWeb ? _buildIframe() : _buildNativeFallback(context, ref),
               ),
             ),
           ]),
@@ -90,7 +93,7 @@ class LivePreviewSection extends StatelessWidget {
     );
   }
 
-  Widget _buildNativeFallback(BuildContext context) {
+  Widget _buildNativeFallback(BuildContext context, WidgetRef ref) {
     return Container(
         alignment: Alignment.center,
         decoration: BoxDecoration(
@@ -116,7 +119,7 @@ class LivePreviewSection extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           FilledButton.icon(
-            onPressed: _openExternally,
+            onPressed: () => _openExternally(ref),
             icon: const Icon(Icons.open_in_new),
             label: Text('Ouvrir $projectTitle'),
           ),

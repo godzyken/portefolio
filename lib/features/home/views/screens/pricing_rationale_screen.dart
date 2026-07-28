@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/provider/pricing_provider.dart';
+import '../../../../core/provider/tracking_provider.dart';
+import '../../../../core/service/tracking_service.dart';
 import '../../data/services_data.dart';
 
 class PricingRationaleScreen extends ConsumerWidget {
@@ -128,7 +130,18 @@ class PricingRationaleScreen extends ConsumerWidget {
 
                       const SizedBox(height: 24),
                       FilledButton.icon(
-                        onPressed: () => context.push('/project-wizard'),
+                        onPressed: () {
+                          ref.read(trackingServiceProvider).trackInteraction(
+                                projectId: 'portfolio',
+                                projectName: 'Portfolio',
+                                action: TrackingAction.linkClick,
+                                details: {
+                                  'type': 'project_wizard_start',
+                                  'source_service': serviceId,
+                                },
+                              );
+                          context.push('/project-wizard');
+                        },
                         icon: const Icon(Icons.rocket_launch_outlined),
                         label: const Text('Lancer l\'assistant projet IA'),
                       ),

@@ -10,6 +10,8 @@ import '../../../generator/views/widgets/animations/diagnostic_progress_bar.dart
 import '../../../generator/views/widgets/animations/diagnostic_score_gauge.dart';
 import '../../../generator/views/widgets/cards/diagnostic_option_card.dart';
 import '../../../parametres/themes/views/widgets/space_background.dart';
+import '../../../../core/provider/tracking_provider.dart';
+import '../../../../core/service/tracking_service.dart';
 import '../../data/models/diagnostic_models.dart';
 import '../../data/state/diagnostic_state.dart';
 import '../../providers/diagnostic_provider.dart';
@@ -127,8 +129,15 @@ class _IntroView extends ConsumerWidget {
         SizedBox(
           width: double.infinity,
           child: FilledButton.icon(
-            onPressed: () =>
-                ref.read(diagnosticNotifierProvider.notifier).start(),
+            onPressed: () {
+              ref.read(trackingServiceProvider).trackInteraction(
+                    projectId: 'portfolio',
+                    projectName: 'Portfolio',
+                    action: TrackingAction.linkClick,
+                    details: {'type': 'diagnostic_start'},
+                  );
+              ref.read(diagnosticNotifierProvider.notifier).start();
+            },
             icon: const Icon(Icons.play_arrow),
             label: const Text('Démarrer le diagnostic'),
             style: FilledButton.styleFrom(
@@ -317,12 +326,12 @@ class _ResultView extends ConsumerWidget {
   }
 }
 
-class _ThankYouCard extends StatelessWidget {
+class _ThankYouCard extends ConsumerWidget {
   const _ThankYouCard({required this.theme});
   final ThemeData theme;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
@@ -344,7 +353,15 @@ class _ThankYouCard extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: FilledButton.icon(
-              onPressed: () => context.go('/contact'),
+              onPressed: () {
+                ref.read(trackingServiceProvider).trackInteraction(
+                      projectId: 'portfolio',
+                      projectName: 'Portfolio',
+                      action: TrackingAction.linkClick,
+                      details: {'type': 'diagnostic_to_contact'},
+                    );
+                context.go('/contact');
+              },
               icon: const Icon(Icons.calendar_month),
               label: const Text('Prendre rendez-vous'),
               style: FilledButton.styleFrom(

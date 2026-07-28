@@ -1,4 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/provider/tracking_provider.dart';
+import '../../../../core/service/tracking_service.dart';
 import '../data/models/project_wizard_models.dart';
 import '../services/project_wizard_ai_service.dart';
 import '../services/project_wizard_lead_service.dart';
@@ -135,6 +137,17 @@ class ProjectWizardNotifier extends Notifier<ProjectWizardState> {
         selectedStrategy: state.selectedOptionId != null ? selectedStrategy : null,
         aiSummary: state.advice?.summary,
       );
+      
+      ref.read(trackingServiceProvider).trackInteraction(
+            projectId: 'portfolio',
+            projectName: 'Portfolio',
+            action: TrackingAction.formSubmit,
+            details: {
+              'type': 'project_wizard',
+              'strategy': selectedStrategy?.title,
+              'has_ai': state.advice != null,
+            },
+          );
 
       state = state.copyWith(submitStatus: ProjectSubmitStatus.success);
     } catch (e) {

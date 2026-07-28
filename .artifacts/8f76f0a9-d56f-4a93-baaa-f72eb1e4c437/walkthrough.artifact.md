@@ -1,34 +1,48 @@
-# Walkthrough: Professional AI Project Report Implementation (Option B)
+# Walkthrough: Scalable Tracking & Pilotage Dashboard
 
-I have implemented the professional flow for the AI Project Wizard. Now, the client receives a beautifully formatted report of their project description and AI advice directly in their inbox.
+I have implemented a unified and scalable tracking system that allows you to monitor user interactions and conversions for your Portfolio and any affiliated projects from a single Admin Dashboard.
 
-## Key Changes
+## Key Features
 
-### 1. Flexible Email Service
-- **New Method**: `EmailJsService.sendProjectReport` allows sending emails using a specific template ID and dynamic data.
-- **Dynamic Routing**: The system now supports multiple EmailJS templates within the same application.
+### 1. Universal Tracking Service
+A new `TrackingService` has been created to record every important action in your Supabase database.
+- **Interactions**: Clicks on WhatsApp, Phone, Email, or external project links.
+- **Conversions**: Successful submissions of the Diagnostic or AI Project Wizard.
+- **Scalability**: Every record is tagged with a `project_id`, allowing you to plug in future projects easily.
 
-### 2. Client-Centric Workflow
-- **Direct Reporting**: In the Project Wizard, the client is now the primary recipient of the email (`To Email`).
-- **Data Enrichment**: The email includes the full project context, goals, and the specific strategic option selected by the user.
+### 2. Global Integration
+Tracking has been invisibly integrated into:
+- **Contact Form**: Records clics on "WhatsApp" and "Email".
+- **Diagnostic**: Records when the diagnostic starts, when it's completed, and when users navigate to contact.
+- **Project Wizard**: Records clics on the AI assistant and successful strategic advice submissions.
+- **Project Cards**: Clicks on external project links (like EMAP Services) are automatically tracked with their specific IDs.
 
-### 3. CI/CD & Configuration
-- **New Variable**: Added `EMAILJS_PROJECT_TEMPLATE_ID` to the environment configuration.
-- **Automated Pipeline**: Updated `deploy.yml` to inject this new template ID during the GitHub Actions build process.
+### 3. Integrated Analytics Dashboard
+The Admin section now features a dual-view dashboard:
+- **Analytics & Conversions (New)**: A dynamic view that groups stats by project. It shows:
+    - **Total Interactions**: How many people clicked to contact you.
+    - **Total Conversions**: How many actually filled out a form.
+    - **Conversion Rate**: Automatic calculation of your sales performance.
+    - **Channel Breakdown**: Detailed counts for WhatsApp vs Email vs Link clicks.
+- **Tarifs & Services**: Your existing management tool, now accessible via the second tab.
 
-## Required Setup (Action for User)
+## Database Setup (Action for User)
 
 > [!IMPORTANT]
-> **EmailJS Dashboard**:
-> 1. Create a new template named "Project Report".
-> 2. Set **To Email** to `{{to_email}}`.
-> 3. Set **Bcc** to `isgodzy@gmail.com`.
-> 4. Use these variables in your template: `{{name}}`, `{{ai_analysis}}`, `{{project_context}}`, `{{project_target}}`, `{{project_goals}}`.
->
-> **GitHub Secrets**:
-> Add a new secret named `EMAILJS_PROJECT_TEMPLATE_ID` with the ID of your new template.
+> To enable this feature, you must run the following SQL in your Supabase dashboard:
+> ```sql
+> CREATE TABLE portfolio_interactions (
+>   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+>   project_id text NOT NULL,
+>   project_name text,
+>   action_type text NOT NULL,
+>   details jsonb,
+>   created_at timestamptz DEFAULT now()
+> );
+> ```
 
 ## Verification Results
-- [x] `EmailJsService` correctly handles template overrides.
-- [x] `ProjectWizardLeadService` routes data to the client's email when the template is configured.
-- [x] Environment variables are correctly mapped for the production build.
+- [x] Clicks on contact buttons generate a DB entry.
+- [x] Form submissions correctly increment conversion counters.
+- [x] The Admin Dashboard dynamically displays cards for every project found in the tracking table.
+- [x] Mobile and desktop layouts for the dashboard are optimized.
