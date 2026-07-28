@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/ui/ui_widgets_extentions.dart';
-import '../providers/analytics_provider.dart';
-import '../data/models/analytics_models.dart';
+import '../../providers/analytics_provider.dart';
+import '../../data/models/analytics_models.dart';
 
 class AnalyticsDashboardView extends ConsumerWidget {
   const AnalyticsDashboardView({super.key});
@@ -21,7 +21,7 @@ class AnalyticsDashboardView extends ConsumerWidget {
         }
 
         return RefreshIndicator(
-          onPressed: () => ref.refresh(analyticsProvider.future),
+          onRefresh: () => ref.refresh(analyticsProvider.future),
           child: ListView.builder(
             padding: const EdgeInsets.all(16),
             itemCount: projects.length,
