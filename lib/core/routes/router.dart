@@ -30,6 +30,19 @@ final goRouterProvider = Provider<GoRouter>((ref) {
     return GoRouter(
       navigatorKey: rootNavigatorKey,
       observers: [],
+      errorBuilder: (context, state) => Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline, size: 64, color: Colors.red),
+              const SizedBox(height: 16),
+              Text('Page non trouvée : ${state.uri.path}'),
+              TextButton(onPressed: () => context.go('/'), child: const Text('Retour')),
+            ],
+          ),
+        ),
+      ),
       initialLocation: '/splash',
       routes: [
         // ── Splash (hors ShellRoute pour éviter la navbar) ─────────────
@@ -46,7 +59,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           builder: (_, __) => const AdminLoginScreen(),
         ),
         GoRoute(
-          path: '/admin/reset-password',
+          path: '/admin/auth/reset',
           name: 'admin_reset_password',
           builder: (_, __) => const AdminResetPasswordScreen(),
         ),

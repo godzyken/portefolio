@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/ui/ui_widgets_extentions.dart';
 import '../../providers/analytics_provider.dart';
 import '../../data/models/analytics_models.dart';
 
@@ -10,13 +9,12 @@ class AnalyticsDashboardView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final analyticsAsync = ref.watch(analyticsProvider);
-    final theme = Theme.of(context);
 
     return analyticsAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (e, _) => Center(child: Text('Erreur analytics: $e')),
       data: (projects) {
-        if (services_isEmpty(projects)) {
+        if (servicesIsEmpty(projects)) {
           return const Center(child: Text('Aucune donnée de tracking pour le moment.'));
         }
 
@@ -32,7 +30,7 @@ class AnalyticsDashboardView extends ConsumerWidget {
     );
   }
 
-  bool services_isEmpty(List<ProjectAnalytics> projects) => projects.isEmpty;
+  bool servicesIsEmpty(List<ProjectAnalytics> projects) => projects.isEmpty;
 }
 
 class _ProjectAnalyticsCard extends StatelessWidget {
@@ -111,7 +109,7 @@ class _ProjectAnalyticsCard extends StatelessWidget {
               children: analytics.actionsByType.entries.map((e) {
                 return Chip(
                   label: Text('${e.key}: ${e.value}'),
-                  backgroundColor: theme.colorScheme.surfaceVariant.withValues(alpha: 0.3),
+                  backgroundColor: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                   side: BorderSide.none,
                 );
               }).toList(),
