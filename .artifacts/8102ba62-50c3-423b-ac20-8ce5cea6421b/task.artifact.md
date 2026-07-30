@@ -1,3 +1,3 @@
-- [x] Mettre à jour `supabase/functions/send-recovery/index.ts`
-- [x] Mettre à jour `supabase/functions/insert-portfolio-lead/index.ts` (CORS + Service Role)
-- [x] Informer l'utilisateur sur les commandes de déploiement
+- [x] Mettre à jour `supabase/functions/send-recovery/index.ts` (Ajout Private Key EmailJS)
+- [x] Mettre à jour `supabase/functions/insert-portfolio-lead/index.ts` (Turnstile Secret)
+- [x] Informer l'utilisateur sur la configuration des secrets

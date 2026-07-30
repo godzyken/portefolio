@@ -41,9 +41,9 @@ Deno.serve(async (req) => {
       level_title,
     } = body;
 
-    const turnstileSecret = Deno.env.get("TURNSTILE_SITE_KEY");
+    const turnstileSecret = Deno.env.get("TURNSTILE_SECRET_KEY");
     if (!turnstileSecret) {
-      throw new Error("Missing TURNSTILE_SITE_KEY");
+      throw new Error("Missing TURNSTILE_SECRET_KEY");
     }
 
     // 1) Verify Turnstile

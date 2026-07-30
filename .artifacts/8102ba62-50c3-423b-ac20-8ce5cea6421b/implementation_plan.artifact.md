@@ -1,28 +1,33 @@
-# Correction des Edge Functions Supabase
+# Correction des Edge Functions (CORS + EmailJS Security)
 
-Ce plan vise à résoudre les erreurs CORS et d'autorisation sur les fonctions `send-recovery` et `insert-portfolio-lead`.
+Ce plan vise à résoudre les erreurs CORS, d'autorisation et les restrictions de sécurité "Strict Mode" d'EmailJS.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> Après l'application de ces changements, vous **devez** redéployer les deux fonctions avec le flag `--no-verify-jwt` pour autoriser les appels depuis le site Web.
+> Vous **devez** récupérer votre **Private Key** EmailJS (Account > API Keys > Private Key) et l'ajouter aux secrets Supabase.
 
 ## Proposed Changes
 
 ### [Supabase Edge Functions]
 
 #### [MODIFY] [send-recovery/index.ts](file:///C:/Users/soufi/StudioProjects/portefolio/supabase/functions/send-recovery/index.ts)
-- Vérification et mise à jour des en-têtes CORS complets.
-- Validation de l'URL de redirection vers GitHub Pages.
+- Ajout de `accessToken` (Private Key) dans la requête POST vers EmailJS.
+- Récupération de `EMAILJS_PRIVATE_KEY` depuis l'environnement Deno.
 
 #### [MODIFY] [insert-portfolio-lead/index.ts](file:///C:/Users/soufi/StudioProjects/portefolio/supabase/functions/insert-portfolio-lead/index.ts)
-- Ajout de la gestion des requêtes `OPTIONS` (CORS).
-- Ajout des en-têtes CORS dans toutes les réponses.
-- Correction de l'utilisation de `SUPABASE_SERVICE_ROLE_KEY` pour bypasser la sécurité RLS.
+- Utilisation de `TURNSTILE_SECRET_KEY` pour la validation serveur.
+
+## Configuration des Secrets Supabase
+
+Exécutez ces commandes pour configurer vos clés privées sur le serveur :
+
+```bash
+supabase secrets set EMAILJS_PRIVATE_KEY=votre_cle_privee_emailjs
+supabase secrets set TURNSTILE_SECRET_KEY=votre_cle_secrete_cloudflare
+```
 
 ## Déploiement
-
-Exécutez ces deux commandes dans votre terminal :
 
 ```bash
 supabase functions deploy send-recovery --no-verify-jwt

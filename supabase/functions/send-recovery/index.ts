@@ -48,6 +48,7 @@ Deno.serve(async (req) => {
         service_id: Deno.env.get('EMAILJS_SERVICE_ID'),
         template_id: Deno.env.get('EMAILJS_RECOVERY_TEMPLATE_ID'),
         user_id: Deno.env.get('EMAILJS_PUBLIC_KEY'),
+        accessToken: Deno.env.get('EMAILJS_PRIVATE_KEY'),
         template_params: {
           to_email: email,
           recovery_link: recoveryLink,
