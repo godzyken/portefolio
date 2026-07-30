@@ -1,0 +1,2 @@
+- [x] Mettre à jour `supabase/functions/send-recovery/index.ts` avec les en-têtes CORS complets
+- [x] Informer l'utilisateur sur la commande de déploiement
