@@ -29,7 +29,7 @@ Deno.serve(async (req) => {
     const { data, error } = await supabaseAdmin.auth.admin.generateLink({
       type: 'recovery',
       email,
-      options: { redirectTo: 'https://emap-82.fr/admin/reset-password' },
+      options: { redirectTo: 'https://godzyken.github.io/portefolio/admin/reset-password' },
     })
 
     if (error) {
