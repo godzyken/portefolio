@@ -3,52 +3,200 @@
         "id": "1d90ad32-f1e6-41ee-aeac-4bff9a39f3be",
         "user_id": "d44d9645-f329-4729-a92d-c1c4ce039e23",
         "range": "last_7_days",
-        "start": "2026-08-01T22:00:00Z",
-        "end": "2026-08-08T21:59:59Z",
+        "start": "2026-08-02T22:00:00Z",
+        "end": "2026-08-09T21:59:59Z",
         "timeout": 15,
         "writes_only": false,
         "timezone": "Europe/Paris",
-        "ai_additions": 3004,
-        "ai_deletions": 0,
-        "human_additions": 2390,
-        "human_deletions": 1414,
+        "ai_additions": 3820,
+        "ai_deletions": 44,
+        "human_additions": 3774,
+        "human_deletions": 3113,
         "ai_model_line_changes": {
-            "Haiku": 3004
+            "Haiku": 3864
         },
-        "ai_line_changes_total": 3004,
+        "ai_line_changes_total": 3864,
         "ai_model_costs": {
             "Github-Copilot-Cli": 0.00453,
-            "Haiku": 0.304665
+            "Haiku": 0.50078
         },
-        "ai_model_total_cost": 0.309195,
+        "ai_model_total_cost": 0.50531,
         "ai_input_tokens": 0,
         "ai_cached_input_tokens": 0,
-        "ai_output_tokens": 61235,
-        "ai_prompt_length_sum": 846,
-        "ai_prompt_length_avg": 141,
-        "ai_prompt_events_total": 6,
-        "ai_prompt_events_avg_per_session": 6,
-        "ai_prompt_events_median_per_session": 6,
-        "ai_prompt_length_avg_per_session": 141,
-        "ai_prompt_length_median_per_session": 141,
-        "ai_sessions": 1,
-        "holidays": 2,
+        "ai_output_tokens": 100458,
+        "ai_prompt_length_sum": 1012,
+        "ai_prompt_length_avg": 126,
+        "ai_prompt_events_total": 8,
+        "ai_prompt_events_avg_per_session": 4,
+        "ai_prompt_events_median_per_session": 4,
+        "ai_prompt_length_avg_per_session": 112,
+        "ai_prompt_length_median_per_session": 112,
+        "ai_sessions": 2,
+        "holidays": 1,
         "status": "ok",
         "created_at": "2026-08-05T02:53:50Z",
-        "modified_at": "2026-08-09T02:55:29Z",
-        "human_readable_total": "12 hrs 26 mins",
-        "best_day": {
-            "date": "2026-08-08",
-            "total_seconds": 18073.176,
-            "text": "5 hrs 1 min"
-        },
-        "human_readable_daily_average": "2 hrs 29 mins",
-        "days_minus_holidays": 5,
-        "percent_calculated": 100,
-        "total_seconds": 44760.362,
-        "daily_average": 8952.0,
-        "human_readable_daily_average_including_other_language": "2 hrs 29 mins",
+        "modified_at": "2026-08-10T03:08:59Z",
+        "human_readable_total": "19 hrs 3 mins",
+        "is_stuck": false,
+        "is_up_to_date_pending_future": false,
+        "operating_systems": [
+            {
+                "total_seconds": 68639.293,
+                "name": "Windows",
+                "ai_coding_seconds": "5492.089000",
+                "manual_coding_seconds": "63105.650000",
+                "percent": 100.0,
+                "digital": "19:03",
+                "decimal": "19.05",
+                "text": "19 hrs 3 mins",
+                "hours": 19,
+                "minutes": 3
+            }
+        ],
+        "ai_model_breakdown": [
+            {
+                "name": "Haiku",
+                "lines": 3864,
+                "cost": 0.50078
+            },
+            {
+                "name": "Github-Copilot-Cli",
+                "lines": 0,
+                "cost": 0.00453
+            }
+        ],
+        "days_including_holidays": 7,
+        "human_readable_daily_average": "3 hrs 10 mins",
+        "is_up_to_date": true,
+        "human_readable_daily_average_including_other_language": "3 hrs 10 mins",
+        "daily_average_including_other_language": 11440.0,
+        "editors": [
+            {
+                "total_seconds": 66108.479,
+                "name": "Android Studio",
+                "ai_coding_seconds": "2961.275000",
+                "manual_coding_seconds": "63105.650000",
+                "ai_additions": 0,
+                "ai_deletions": 0,
+                "human_additions": 3774,
+                "human_deletions": 3113,
+                "ai_model_line_changes": {},
+                "ai_model_costs": {},
+                "ai_input_tokens": 0,
+                "ai_output_tokens": 0,
+                "ai_prompt_length_avg": 0,
+                "ai_prompt_length_avg_per_session": 0,
+                "ai_prompt_length_median_per_session": 0,
+                "ai_prompt_length_sum": 0,
+                "ai_prompt_events_total": 0,
+                "ai_prompt_events_avg_per_session": 0,
+                "ai_prompt_events_median_per_session": 0,
+                "ai_sessions": 0,
+                "ai_cached_input_tokens": 0,
+                "ai_model_breakdown": [],
+                "ai_model_total_cost": 0,
+                "percent": 96.31,
+                "digital": "18:21",
+                "decimal": "18.35",
+                "text": "18 hrs 21 mins",
+                "hours": 18,
+                "minutes": 21
+            },
+            {
+                "total_seconds": 2530.814,
+                "name": "Copilot CLI",
+                "ai_coding_seconds": "2530.814000",
+                "manual_coding_seconds": 0,
+                "ai_additions": 3820,
+                "ai_deletions": 44,
+                "human_additions": 0,
+                "human_deletions": 0,
+                "ai_model_line_changes": {
+                    "Haiku": 3864
+                },
+                "ai_model_costs": {
+                    "Github-Copilot-Cli": 0.00453,
+                    "Haiku": 0.50078
+                },
+                "ai_input_tokens": 0,
+                "ai_cached_input_tokens": 0,
+                "ai_output_tokens": 100458,
+                "ai_prompt_length_avg": 126,
+                "ai_prompt_length_avg_per_session": 112,
+                "ai_prompt_length_median_per_session": 112,
+                "ai_prompt_length_sum": 1012,
+                "ai_prompt_events_total": 8,
+                "ai_prompt_events_avg_per_session": 4,
+                "ai_prompt_events_median_per_session": 4,
+                "ai_sessions": 2,
+                "ai_model_breakdown": [
+                    {
+                        "name": "Haiku",
+                        "lines": 3864,
+                        "cost": 0.50078
+                    },
+                    {
+                        "name": "Github-Copilot-Cli",
+                        "lines": 0,
+                        "cost": 0.00453
+                    }
+                ],
+                "ai_model_total_cost": 0.50531,
+                "percent": 3.69,
+                "digital": "0:42",
+                "decimal": "0.70",
+                "text": "42 mins",
+                "hours": 0,
+                "minutes": 42
+            }
+        ],
+        "total_seconds": 68597.739,
         "projects": [
+            {
+                "total_seconds": 30155.615,
+                "name": "egote_services_v2",
+                "ai_additions": 3820,
+                "ai_deletions": 44,
+                "human_additions": 1386,
+                "human_deletions": 1699,
+                "ai_model_line_changes": {
+                    "Haiku": 3864
+                },
+                "ai_model_costs": {
+                    "Github-Copilot-Cli": 0.00453,
+                    "Haiku": 0.50078
+                },
+                "ai_input_tokens": 0,
+                "ai_cached_input_tokens": 0,
+                "ai_output_tokens": 100458,
+                "ai_prompt_length_avg": 126,
+                "ai_prompt_length_avg_per_session": 112,
+                "ai_prompt_length_median_per_session": 112,
+                "ai_prompt_length_sum": 1012,
+                "ai_prompt_events_total": 8,
+                "ai_prompt_events_avg_per_session": 4,
+                "ai_prompt_events_median_per_session": 4,
+                "ai_sessions": 2,
+                "ai_model_breakdown": [
+                    {
+                        "name": "Haiku",
+                        "lines": 3864,
+                        "cost": 0.50078
+                    },
+                    {
+                        "name": "Github-Copilot-Cli",
+                        "lines": 0,
+                        "cost": 0.00453
+                    }
+                ],
+                "ai_model_total_cost": 0.50531,
+                "percent": 43.93,
+                "digital": "8:22",
+                "decimal": "8.37",
+                "text": "8 hrs 22 mins",
+                "hours": 8,
+                "minutes": 22
+            },
             {
                 "total_seconds": 23453.636,
                 "name": "e_foot_amateur",
@@ -71,7 +219,7 @@
                 "ai_cached_input_tokens": 0,
                 "ai_model_breakdown": [],
                 "ai_model_total_cost": 0,
-                "percent": 52.35,
+                "percent": 34.17,
                 "digital": "6:30",
                 "decimal": "6.50",
                 "text": "6 hrs 30 mins",
@@ -100,57 +248,12 @@
                 "ai_sessions": 0,
                 "ai_model_breakdown": [],
                 "ai_model_total_cost": 0,
-                "percent": 23.11,
+                "percent": 15.08,
                 "digital": "2:52",
                 "decimal": "2.87",
                 "text": "2 hrs 52 mins",
                 "hours": 2,
                 "minutes": 52
-            },
-            {
-                "total_seconds": 6318.238,
-                "name": "egote_services_v2",
-                "ai_additions": 3004,
-                "ai_deletions": 0,
-                "human_additions": 2,
-                "human_deletions": 0,
-                "ai_model_line_changes": {
-                    "Haiku": 3004
-                },
-                "ai_model_costs": {
-                    "Github-Copilot-Cli": 0.00453,
-                    "Haiku": 0.304665
-                },
-                "ai_input_tokens": 0,
-                "ai_cached_input_tokens": 0,
-                "ai_output_tokens": 61235,
-                "ai_prompt_length_avg": 141,
-                "ai_prompt_length_avg_per_session": 141,
-                "ai_prompt_length_median_per_session": 141,
-                "ai_prompt_length_sum": 846,
-                "ai_prompt_events_total": 6,
-                "ai_prompt_events_avg_per_session": 6,
-                "ai_prompt_events_median_per_session": 6,
-                "ai_sessions": 1,
-                "ai_model_breakdown": [
-                    {
-                        "name": "Haiku",
-                        "lines": 3004,
-                        "cost": 0.304665
-                    },
-                    {
-                        "name": "Github-Copilot-Cli",
-                        "lines": 0,
-                        "cost": 0.00453
-                    }
-                ],
-                "ai_model_total_cost": 0.309195,
-                "percent": 14.1,
-                "digital": "1:45",
-                "decimal": "1.75",
-                "text": "1 hr 45 mins",
-                "hours": 1,
-                "minutes": 45
             },
             {
                 "total_seconds": 2560.807,
@@ -174,7 +277,7 @@
                 "ai_cached_input_tokens": 0,
                 "ai_model_breakdown": [],
                 "ai_model_total_cost": 0,
-                "percent": 5.72,
+                "percent": 3.73,
                 "digital": "0:42",
                 "decimal": "0.70",
                 "text": "42 mins",
@@ -203,7 +306,7 @@
                 "ai_cached_input_tokens": 0,
                 "ai_model_breakdown": [],
                 "ai_model_total_cost": 0,
-                "percent": 3.56,
+                "percent": 2.32,
                 "digital": "0:26",
                 "decimal": "0.43",
                 "text": "26 mins",
@@ -232,7 +335,7 @@
                 "ai_sessions": 0,
                 "ai_model_breakdown": [],
                 "ai_model_total_cost": 0,
-                "percent": 0.7,
+                "percent": 0.46,
                 "digital": "0:05",
                 "decimal": "0.08",
                 "text": "5 mins",
@@ -261,7 +364,7 @@
                 "ai_sessions": 0,
                 "ai_model_breakdown": [],
                 "ai_model_total_cost": 0,
-                "percent": 0.3,
+                "percent": 0.19,
                 "digital": "0:02",
                 "decimal": "0.03",
                 "text": "2 mins",
@@ -289,7 +392,7 @@
                 "ai_sessions": 0,
                 "ai_model_breakdown": [],
                 "ai_model_total_cost": 0,
-                "percent": 0.17,
+                "percent": 0.11,
                 "digital": "0:01",
                 "decimal": "0.02",
                 "text": "1 min",
@@ -297,191 +400,51 @@
                 "minutes": 1
             }
         ],
-        "daily_average_including_other_language": 8960.0,
+        "total_seconds_including_other_language": 68639.293,
         "dependencies": [],
-        "days_including_holidays": 7,
-        "machines": [
-            {
-                "total_seconds": 44801.916,
-                "name": "Sou",
-                "machine_name_id": "f37427e6-f949-422f-83ed-d473d97ec448",
-                "percent": 100.0,
-                "digital": "12:26",
-                "decimal": "12.43",
-                "text": "12 hrs 26 mins",
-                "hours": 12,
-                "minutes": 26
-            }
-        ],
-        "categories": [
-            {
-                "name": "Coding",
-                "total_seconds": 26452.264,
-                "percent": 59.04,
-                "digital": "7:20",
-                "decimal": "7.33",
-                "text": "7 hrs 20 mins",
-                "hours": 7,
-                "minutes": 20
-            },
-            {
-                "name": "Writing Docs",
-                "total_seconds": 11666.01,
-                "percent": 26.04,
-                "digital": "3:14",
-                "decimal": "3.23",
-                "text": "3 hrs 14 mins",
-                "hours": 3,
-                "minutes": 14
-            },
-            {
-                "name": "AI Coding",
-                "total_seconds": 4004.22,
-                "percent": 8.94,
-                "digital": "1:06",
-                "decimal": "1.10",
-                "text": "1 hr 6 mins",
-                "hours": 1,
-                "minutes": 6
-            },
-            {
-                "name": "Writing Tests",
-                "total_seconds": 2679.422,
-                "percent": 5.98,
-                "digital": "0:44",
-                "decimal": "0.73",
-                "text": "44 mins",
-                "hours": 0,
-                "minutes": 44
-            }
-        ],
-        "is_already_updating": false,
-        "editors": [
-            {
-                "total_seconds": 43560.711,
-                "name": "Android Studio",
-                "ai_coding_seconds": "2763.015000",
-                "manual_coding_seconds": "40756.142000",
-                "ai_additions": 0,
-                "ai_deletions": 0,
-                "human_additions": 2390,
-                "human_deletions": 1414,
-                "ai_model_line_changes": {},
-                "ai_model_costs": {},
-                "ai_input_tokens": 0,
-                "ai_output_tokens": 0,
-                "ai_prompt_length_avg": 0,
-                "ai_prompt_length_avg_per_session": 0,
-                "ai_prompt_length_median_per_session": 0,
-                "ai_prompt_length_sum": 0,
-                "ai_prompt_events_total": 0,
-                "ai_prompt_events_avg_per_session": 0,
-                "ai_prompt_events_median_per_session": 0,
-                "ai_sessions": 0,
-                "ai_cached_input_tokens": 0,
-                "ai_model_breakdown": [],
-                "ai_model_total_cost": 0,
-                "percent": 97.23,
-                "digital": "12:06",
-                "decimal": "12.10",
-                "text": "12 hrs 6 mins",
-                "hours": 12,
-                "minutes": 6
-            },
-            {
-                "total_seconds": 1241.205,
-                "name": "Copilot CLI",
-                "ai_coding_seconds": "1241.205000",
-                "manual_coding_seconds": 0,
-                "ai_additions": 3004,
-                "ai_deletions": 0,
-                "human_additions": 0,
-                "human_deletions": 0,
-                "ai_model_line_changes": {
-                    "Haiku": 3004
-                },
-                "ai_model_costs": {
-                    "Github-Copilot-Cli": 0.00453,
-                    "Haiku": 0.304665
-                },
-                "ai_input_tokens": 0,
-                "ai_cached_input_tokens": 0,
-                "ai_output_tokens": 61235,
-                "ai_prompt_length_avg": 141,
-                "ai_prompt_length_avg_per_session": 141,
-                "ai_prompt_length_median_per_session": 141,
-                "ai_prompt_length_sum": 846,
-                "ai_prompt_events_total": 6,
-                "ai_prompt_events_avg_per_session": 6,
-                "ai_prompt_events_median_per_session": 6,
-                "ai_sessions": 1,
-                "ai_model_breakdown": [
-                    {
-                        "name": "Haiku",
-                        "lines": 3004,
-                        "cost": 0.304665
-                    },
-                    {
-                        "name": "Github-Copilot-Cli",
-                        "lines": 0,
-                        "cost": 0.00453
-                    }
-                ],
-                "ai_model_total_cost": 0.309195,
-                "percent": 2.77,
-                "digital": "0:20",
-                "decimal": "0.33",
-                "text": "20 mins",
-                "hours": 0,
-                "minutes": 20
-            }
-        ],
-        "is_stuck": false,
-        "is_up_to_date_pending_future": false,
-        "is_up_to_date": true,
         "languages": [
             {
                 "name": "Dart",
-                "total_seconds": 22867.949,
-                "ai_coding_seconds": "891.068000",
-                "manual_coding_seconds": "21976.881000",
-                "percent": 51.04,
-                "digital": "6:21",
-                "decimal": "6.35",
-                "text": "6 hrs 21 mins",
-                "hours": 6,
-                "minutes": 21
+                "total_seconds": 41658.424,
+                "ai_coding_seconds": "1770.676000",
+                "manual_coding_seconds": "39887.748000",
+                "percent": 60.69,
+                "digital": "11:34",
+                "decimal": "11.57",
+                "text": "11 hrs 34 mins",
+                "hours": 11,
+                "minutes": 34
             },
             {
                 "name": "Markdown",
-                "total_seconds": 14185.568,
-                "ai_coding_seconds": "2039.674000",
-                "manual_coding_seconds": "12145.894000",
-                "percent": 31.66,
-                "digital": "3:56",
-                "decimal": "3.93",
-                "text": "3 hrs 56 mins",
-                "hours": 3,
-                "minutes": 56
+                "total_seconds": 16086.205,
+                "ai_coding_seconds": "2548.880000",
+                "manual_coding_seconds": "13537.325000",
+                "percent": 23.44,
+                "digital": "4:28",
+                "decimal": "4.47",
+                "text": "4 hrs 28 mins",
+                "hours": 4,
+                "minutes": 28
             },
             {
                 "name": "YAML",
-                "total_seconds": 4679.132,
-                "ai_coding_seconds": "1073.478000",
-                "manual_coding_seconds": "3605.654000",
-                "percent": 10.44,
-                "digital": "1:17",
-                "decimal": "1.28",
-                "text": "1 hr 17 mins",
-                "hours": 1,
-                "minutes": 17
+                "total_seconds": 7299.098,
+                "ai_coding_seconds": "1172.533000",
+                "manual_coding_seconds": "6126.565000",
+                "percent": 10.63,
+                "digital": "2:01",
+                "decimal": "2.02",
+                "text": "2 hrs 1 min",
+                "hours": 2,
+                "minutes": 1
             },
             {
                 "name": "JSON",
                 "total_seconds": 1737.72,
                 "ai_coding_seconds": "0.000000",
                 "manual_coding_seconds": "1737.720000",
-                "percent": 3.88,
+                "percent": 2.53,
                 "digital": "0:28",
                 "decimal": "0.47",
                 "text": "28 mins",
@@ -493,7 +456,7 @@
                 "total_seconds": 768.443,
                 "ai_coding_seconds": "0.000000",
                 "manual_coding_seconds": "768.443000",
-                "percent": 1.72,
+                "percent": 1.12,
                 "digital": "0:12",
                 "decimal": "0.20",
                 "text": "12 mins",
@@ -501,11 +464,23 @@
                 "minutes": 12
             },
             {
+                "name": "Diff",
+                "total_seconds": 399.742,
+                "ai_coding_seconds": "0.000000",
+                "manual_coding_seconds": "399.742000",
+                "percent": 0.58,
+                "digital": "0:06",
+                "decimal": "0.10",
+                "text": "6 mins",
+                "hours": 0,
+                "minutes": 6
+            },
+            {
                 "name": "Kotlin",
                 "total_seconds": 389.711,
                 "ai_coding_seconds": "0.000000",
                 "manual_coding_seconds": "389.711000",
-                "percent": 0.87,
+                "percent": 0.57,
                 "digital": "0:06",
                 "decimal": "0.10",
                 "text": "6 mins",
@@ -517,7 +492,7 @@
                 "total_seconds": 131.839,
                 "ai_coding_seconds": "0.000000",
                 "manual_coding_seconds": "131.839000",
-                "percent": 0.29,
+                "percent": 0.19,
                 "digital": "0:02",
                 "decimal": "0.03",
                 "text": "2 mins",
@@ -525,11 +500,35 @@
                 "minutes": 2
             },
             {
+                "name": "PATCH",
+                "total_seconds": 114.75,
+                "ai_coding_seconds": "0.000000",
+                "manual_coding_seconds": "114.750000",
+                "percent": 0.17,
+                "digital": "0:01",
+                "decimal": "0.02",
+                "text": "1 min",
+                "hours": 0,
+                "minutes": 1
+            },
+            {
                 "name": "Other",
                 "total_seconds": 41.554,
                 "ai_coding_seconds": "0.000000",
                 "manual_coding_seconds": "0.000000",
-                "percent": 0.09,
+                "percent": 0.06,
+                "digital": "0:00",
+                "decimal": "0.00",
+                "text": "0 secs",
+                "hours": 0,
+                "minutes": 0
+            },
+            {
+                "name": "Text",
+                "total_seconds": 11.807,
+                "ai_coding_seconds": "0.000000",
+                "manual_coding_seconds": "11.807000",
+                "percent": 0.02,
                 "digital": "0:00",
                 "decimal": "0.00",
                 "text": "0 secs",
@@ -537,34 +536,71 @@
                 "minutes": 0
             }
         ],
-        "total_seconds_including_other_language": 44801.916,
-        "operating_systems": [
+        "best_day": {
+            "date": "2026-08-09",
+            "total_seconds": 23837.377,
+            "text": "6 hrs 37 mins"
+        },
+        "human_readable_total_including_other_language": "19 hrs 3 mins",
+        "machines": [
             {
-                "total_seconds": 44801.916,
-                "name": "Windows",
-                "ai_coding_seconds": "4004.220000",
-                "manual_coding_seconds": "40756.142000",
+                "total_seconds": 68639.293,
+                "name": "Sou",
+                "machine_name_id": "f37427e6-f949-422f-83ed-d473d97ec448",
                 "percent": 100.0,
-                "digital": "12:26",
-                "decimal": "12.43",
-                "text": "12 hrs 26 mins",
-                "hours": 12,
-                "minutes": 26
+                "digital": "19:03",
+                "decimal": "19.05",
+                "text": "19 hrs 3 mins",
+                "hours": 19,
+                "minutes": 3
             }
         ],
-        "ai_model_breakdown": [
+        "is_already_updating": false,
+        "days_minus_holidays": 6,
+        "percent_calculated": 100,
+        "daily_average": 11433.0,
+        "categories": [
             {
-                "name": "Haiku",
-                "lines": 3004,
-                "cost": 0.304665
+                "name": "Coding",
+                "total_seconds": 47351.359,
+                "percent": 68.99,
+                "digital": "13:09",
+                "decimal": "13.15",
+                "text": "13 hrs 9 mins",
+                "hours": 13,
+                "minutes": 9
             },
             {
-                "name": "Github-Copilot-Cli",
-                "lines": 0,
-                "cost": 0.00453
+                "name": "Writing Docs",
+                "total_seconds": 13057.441,
+                "percent": 19.02,
+                "digital": "3:37",
+                "decimal": "3.62",
+                "text": "3 hrs 37 mins",
+                "hours": 3,
+                "minutes": 37
+            },
+            {
+                "name": "AI Coding",
+                "total_seconds": 5492.089,
+                "percent": 8.0,
+                "digital": "1:31",
+                "decimal": "1.52",
+                "text": "1 hr 31 mins",
+                "hours": 1,
+                "minutes": 31
+            },
+            {
+                "name": "Writing Tests",
+                "total_seconds": 2738.404,
+                "percent": 3.99,
+                "digital": "0:45",
+                "decimal": "0.75",
+                "text": "45 mins",
+                "hours": 0,
+                "minutes": 45
             }
         ],
-        "human_readable_total_including_other_language": "12 hrs 26 mins",
         "is_cached": true,
         "username": "addi_kichi",
         "is_including_today": false,
