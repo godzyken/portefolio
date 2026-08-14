@@ -69,7 +69,6 @@ jobs:
           flutter build web \
             --release \
             --base-href="/portefolio/" \
-            --pwa-strategy=none \
             --dart-define=EMAILJS_SERVICE_ID="${{ secrets.EMAILJS_SERVICE_ID }}" \
             --dart-define=EMAILJS_TEMPLATE_ID="${{ secrets.EMAILJS_TEMPLATE_ID }}" \
             --dart-define=EMAILJS_PUBLIC_KEY="${{ secrets.EMAILJS_PUBLIC_KEY }}" \
