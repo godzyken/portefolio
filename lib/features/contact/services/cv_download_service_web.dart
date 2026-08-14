@@ -10,7 +10,7 @@ Future<void> downloadCvWebImpl(String url, {String filename = 'CV.pdf'}) async {
     throw Exception('Erreur HTTP: ${response.statusCode}');
   }
 
-  final blob = web.Blob([response.bodyBytes] as JSArray<web.BlobPart>);
+  final blob = web.Blob([response.bodyBytes.toJS].toJS);
   final blobUrl = web.URL.createObjectURL(blob);
 
   final anchor = web.HTMLAnchorElement()

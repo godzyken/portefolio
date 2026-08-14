@@ -1,37 +1,30 @@
-# Correction des Edge Functions (CORS + EmailJS Security)
+# Correction du Build CI (GitHub Actions)
 
-Ce plan vise à résoudre les erreurs CORS, d'autorisation et les restrictions de sécurité "Strict Mode" d'EmailJS.
-
-## User Review Required
-
-> [!IMPORTANT]
-> Vous **devez** récupérer votre **Private Key** EmailJS (Account > API Keys > Private Key) et l'ajouter aux secrets Supabase.
+Ce plan vise à résoudre les erreurs de compilation sur GitHub Actions en alignant les versions de Flutter et en corrigeant les problèmes de JS Interop.
 
 ## Proposed Changes
 
-### [Supabase Edge Functions]
+### [GitHub Workflow]
 
-#### [MODIFY] [send-recovery/index.ts](file:///C:/Users/soufi/StudioProjects/portefolio/supabase/functions/send-recovery/index.ts)
-- Ajout de `accessToken` (Private Key) dans la requête POST vers EmailJS.
-- Récupération de `EMAILJS_PRIVATE_KEY` depuis l'environnement Deno.
+#### [MODIFY] [deploy.yml](file:///C:/Users/soufi/StudioProjects/portefolio/.github/workflows/deploy.yml)
+- Mise à jour de `flutter-version` de `3.41.5` à `3.41.9`.
 
-#### [MODIFY] [insert-portfolio-lead/index.ts](file:///C:/Users/soufi/StudioProjects/portefolio/supabase/functions/insert-portfolio-lead/index.ts)
-- Utilisation de `TURNSTILE_SECRET_KEY` pour la validation serveur.
+### [Services Web]
 
-## Configuration des Secrets Supabase
+#### [MODIFY] [cv_download_service_web.dart](file:///C:/Users/soufi/StudioProjects/portefolio/lib/features/contact/services/cv_download_service_web.dart)
+- Utilisation de `.toJS` pour la création du Blob au lieu d'un cast `JSArray`.
 
-Exécutez ces commandes pour configurer vos clés privées sur le serveur :
+## Actions manuelles requises (CRITIQUE)
 
-```bash
-supabase secrets set EMAILJS_PRIVATE_KEY=votre_cle_privee_emailjs
-supabase secrets set TURNSTILE_SECRET_KEY=votre_cle_secrete_cloudflare
-```
-
-## Déploiement
+> [!CAUTION]
+> Vous **devez** vous assurer que les nouveaux fichiers sont inclus dans votre prochain commit, car ils manquent actuellement sur GitHub :
+> - `lib/features/generator/views/widgets/sections/artifacts_section.dart`
+> - `lib/features/projets/data/github_artifacts_service.dart`
 
 ```bash
-supabase functions deploy send-recovery --no-verify-jwt
-supabase functions deploy insert-portfolio-lead --no-verify-jwt
+git add .
+git commit -m "Fix CI build: update flutter version and JS interop"
+git push
 ```
 
 ## Verification Plan

@@ -1,3 +1,3 @@
-- [x] Mettre à jour `supabase/functions/send-recovery/index.ts` (Ajout Private Key EmailJS)
-- [x] Mettre à jour `supabase/functions/insert-portfolio-lead/index.ts` (Turnstile Secret)
-- [x] Informer l'utilisateur sur la configuration des secrets
+- [x] Mettre à jour `deploy.yml` (Flutter 3.41.9)
+- [x] Corriger `cv_download_service_web.dart` (JS Interop)
+- [x] Informer l'utilisateur sur le commit des fichiers manquants
