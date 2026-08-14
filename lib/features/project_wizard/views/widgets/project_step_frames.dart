@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
 import '../../data/models/project_wizard_models.dart';
 
-import '../../../../core/ui/widgets/common_form_fields.dart';
 import '../../notifiers/project_wizard_notifier.dart';
 
 class _StepLayout extends StatelessWidget {

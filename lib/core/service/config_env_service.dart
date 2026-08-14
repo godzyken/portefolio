@@ -18,6 +18,9 @@ class EnvConfigService {
   // WakaTime (optionnel)
   final String? wakaTimeApiKey;
 
+  // GitHub (optionnel — évite le rate-limit de 60 req/h non-authentifié)
+  final String? githubToken;
+
   // Google Calendar
   final String? googleCalendarClientId;
 
@@ -39,6 +42,7 @@ class EnvConfigService {
     required this.whatsappPhone,
     required this.oneDriveUrl,
     required this.wakaTimeApiKey,
+    this.githubToken,
     required this.googleCalendarClientId,
     required this.openaiApiKey,
     required this.supabaseUrl,
@@ -63,6 +67,8 @@ class EnvConfigService {
 
     final waka = const String.fromEnvironment('WAKATIME_API_KEY');
 
+    final githubToken = const String.fromEnvironment('GITHUB_TOKEN');
+
     final gcc = const String.fromEnvironment('GCC_CLIENT_ID');
 
     final openai = const String.fromEnvironment('OPENAI_API_KEY');
@@ -80,6 +86,7 @@ class EnvConfigService {
       whatsappPhone: whatsappPhone,
       oneDriveUrl: oneDriveUrl,
       wakaTimeApiKey: waka.isEmpty ? null : waka,
+      githubToken: githubToken.isEmpty ? null : githubToken,
       googleCalendarClientId: gcc.isEmpty ? null : gcc,
       openaiApiKey: openai.isEmpty ? null : openai,
       supabaseUrl: supabaseUrl,
@@ -109,6 +116,10 @@ class EnvConfigService {
     }
     if ((wakaTimeApiKey ?? '').isEmpty) {
       errors.add('WAKATIME_API_KEY manquant');
+    }
+
+    if ((githubToken ?? '').isEmpty) {
+      errors.add('GITHUB_TOKEN manquant (optionnel, mais évite le rate-limit GitHub API)');
     }
 
     if ((googleCalendarClientId ?? '').isEmpty) {
@@ -144,6 +155,7 @@ EnvConfigService(
   whatsappPhone: ${whatsappPhone.isNotEmpty ? '***' : 'MISSING'},
   oneDriveUrl: ${oneDriveUrl.isNotEmpty ? '${oneDriveUrl.substring(0, 30)}...' : 'MISSING'},
   wakaTimeApiKey: ${wakaTimeApiKey != null ? '***' : 'MISSING'},
+  githubToken: ${githubToken != null ? '***' : 'MISSING'},
   googleCalendarClientId: ${googleCalendarClientId != null ? '***' : 'MISSING'},
   supabaseUrl: ${supabaseUrl.isNotEmpty ? '***' : 'MISSING'},
   supabaseAnonKey: ${supabaseAnonKey.isNotEmpty ? '***' : 'MISSING'},

@@ -55,6 +55,7 @@ jobs:
           test -n "${{ secrets.CV_ONEDRIVE_URL }}" || echo "⚠️ CV_ONEDRIVE_URL missing"
           test -n "${{ secrets.MAPS_API_KEY }}" && echo "✅ MAPS_API_KEY configured" || echo "ℹ️ MAPS_API_KEY optional"
           test -n "${{ secrets.WAKATIME_API_KEY }}" && echo "✅ WAKATIME_API_KEY configured" || echo "ℹ️ WAKATIME_API_KEY optional"
+          test -n "${{ secrets.PORTFOLIO_GITHUB_TOKEN }}" && echo "✅ PORTFOLIO_GITHUB_TOKEN configured" || echo "ℹ️ PORTFOLIO_GITHUB_TOKEN optional (60 req/h sans lui au lieu de 5000)"
           test -n "${{ secrets.SUPABASE_URL }}" || echo "⚠️ SUPABASE_URL missing (tarifs figés sur le JSON local)"
           test -n "${{ secrets.SUPABASE_ANON_KEY }}" || echo "⚠️ SUPABASE_ANON_KEY missing (tarifs figés sur le JSON local)"
           test -n "${{ secrets.TURNSTILE_SITE_KEY }}" || echo "⚠️ TURNSTILE_SITE_KEY missing"
@@ -76,6 +77,7 @@ jobs:
             --dart-define=CV_ONEDRIVE_URL="${{ secrets.CV_ONEDRIVE_URL }}" \
             --dart-define=MAPS_API_KEY="${{ secrets.MAPS_API_KEY }}" \
             --dart-define=WAKATIME_API_KEY="${{ secrets.WAKATIME_API_KEY }}" \
+            --dart-define=GITHUB_TOKEN="${{ secrets.PORTFOLIO_GITHUB_TOKEN }}" \
             --dart-define=SUPABASE_URL="${{ secrets.SUPABASE_URL }}" \
             --dart-define=SUPABASE_ANON_KEY="${{ secrets.SUPABASE_ANON_KEY }}" \
             --dart-define=TURNSTILE_SITE_KEY="${{ secrets.TURNSTILE_SITE_KEY }}" \

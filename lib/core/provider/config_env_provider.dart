@@ -75,6 +75,12 @@ final wakaTimeApiKeyConfigProvider = Provider<String?>((ref) {
   return config.wakaTimeApiKey;
 }, name: 'WakaTimeApiKey');
 
+// GitHub (optionnel — évite le rate-limit 60 req/h non-authentifié)
+final githubTokenProvider = Provider<String?>((ref) {
+  final config = ref.watch(envConfigProvider);
+  return config.githubToken;
+}, name: 'GithubToken');
+
 final googleCalendarClientIdProvider = Provider<String?>((ref) {
   final config = ref.watch(envConfigProvider);
   return config.googleCalendarClientId;

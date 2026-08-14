@@ -28,6 +28,9 @@ dependencies:
   youtube_player_iframe: ^6.0.2
   flutter_svg: ^2.2.1
 
+  # Markdown (artefacts projets : présentation, workthrough, valuation...)
+  flutter_markdown_plus: ^1.0.12
+
   # Location & Maps
   flutter_map: ^8.2.2
   latlong2: ^0.9.1

@@ -4,6 +4,7 @@ import '../../../core/ui/ui_widgets_extentions.dart';
 import '../../projets/data/project_data.dart';
 import '../../projets/data/project_section.dart';
 import '../views/generator_widgets_extentions.dart';
+import '../views/widgets/sections/artifacts_section.dart';
 
 /// Gestionnaire centralisé pour la configuration des sections d'un projet
 ///
@@ -56,6 +57,12 @@ class SectionManager {
     // Section Résultats
     if (hasResults()) {
       sections.add(_buildResultsSection());
+    }
+
+    // Section Artefacts (.md issus du repo GitHub : présentation, vision...)
+    // S'auto-masque si aucun artefact n'est trouvé côté GitHub.
+    if (hasGithubRepo()) {
+      sections.add(_buildArtifactsSection());
     }
 
     return sections;
@@ -156,6 +163,19 @@ class SectionManager {
     );
   }
 
+  ProjectSection _buildArtifactsSection() {
+    return ProjectSection(
+      id: 'artifacts',
+      title: 'En savoir plus',
+      icon: Icons.menu_book_outlined,
+      builder: (context, info) => ArtifactsSection(
+        projectId: project.id,
+        repoUrl: project.githubRepoUrl!,
+        info: info,
+      ),
+    );
+  }
+
   /// Détecte si le projet a des tags de programmation
   ///
   /// Vérifie:
@@ -233,6 +253,13 @@ class SectionManager {
   /// Vérifie si le projet a des détails techniques
   bool hasTechDetails() {
     return project.techDetails?.isNotEmpty ?? false;
+  }
+
+  /// Vérifie si le projet a un repo GitHub renseigné (nécessaire pour
+  /// tenter de récupérer les artefacts .md)
+  bool hasGithubRepo() {
+    return project.githubRepoUrl != null &&
+        project.githubRepoUrl!.trim().isNotEmpty;
   }
 
   /// Vérifie si le projet a des résultats

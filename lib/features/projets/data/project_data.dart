@@ -7,6 +7,11 @@ class ProjectInfo {
   final List<String>? image;
   final String? youtubeVideoId;
   final String? lienProjet;
+
+  /// URL du repo GitHub source (ex: https://github.com/godzyken/mon-projet).
+  /// Sert à récupérer dynamiquement les artefacts .md (.artefacts/{id}/*.md)
+  /// ainsi qu'aux analyseurs GitHub existants (langages, README).
+  final String? githubRepoUrl;
   final List<String>? platform;
   final List<String>? tags;
   final Duration? timeSpent;
@@ -28,6 +33,7 @@ class ProjectInfo {
     this.image,
     this.youtubeVideoId,
     this.lienProjet,
+    this.githubRepoUrl,
     this.platform,
     this.tags,
     this.timeSpent,
@@ -67,6 +73,7 @@ class ProjectInfo {
     List<String>? image,
     String? youtubeVideoId,
     String? lienProjet,
+    String? githubRepoUrl,
     List<String>? platform,
     List<String>? tags,
     Duration? timeSpent,
@@ -82,6 +89,7 @@ class ProjectInfo {
       image: image ?? this.image,
       youtubeVideoId: youtubeVideoId ?? this.youtubeVideoId,
       lienProjet: lienProjet ?? this.lienProjet,
+      githubRepoUrl: githubRepoUrl ?? this.githubRepoUrl,
       platform: platform ?? this.platform,
       tags: tags ?? this.tags,
       timeSpent: timeSpent ?? this.timeSpent,
@@ -100,6 +108,7 @@ class ProjectInfo {
       image: json['image'] != null ? List<String>.from(json['image']) : null,
       youtubeVideoId: json['youtubeVideoId'],
       lienProjet: json['lienProjet'],
+      githubRepoUrl: json['githubRepoUrl'],
       platform:
           json['platform'] != null ? List<String>.from(json['platform']) : null,
       tags: json['tags'] != null ? List<String>.from(json['tags']) : null,
