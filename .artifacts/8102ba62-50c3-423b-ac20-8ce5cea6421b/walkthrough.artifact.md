@@ -1,35 +1,29 @@
-# Correction Globale des Edge Functions (CORS + EmailJS + Turnstile)
+# Refonte Immersive : Framework de Maturité Technique
 
-Toutes les fonctions Edge utilisées par le portfolio ont été corrigées pour supporter les appels depuis le Web, contourner les restrictions de sécurité "Strict Mode" d'EmailJS, et valider correctement le captcha Cloudflare.
+L'expérience de consultation des projets et expériences a été transformée pour s'aligner sur les standards d'expertise "Flutter Production Readiness" identifiés dans vos ressources `FlutterSkills`.
 
-## Changements effectués
+## Changements Majeurs
 
-### 1. [send-recovery/index.ts](file:///C:/Users/soufi/StudioProjects/portefolio/supabase/functions/send-recovery/index.ts)
-- **CORS** : Correction des en-têtes (ajout de `OPTIONS` et `POST`).
-- **Sécurité EmailJS** : Ajout du paramètre `accessToken` (Private Key). Cela permet de fonctionner même si le "Strict Mode" est activé dans EmailJS.
-- **Redirection** : Lien mis à jour vers GitHub Pages.
+### 1. Framework de Maturité Technique (IA Solution)
+- Création d'un système d'analyse basé sur 8 piliers : **Architecture, State Management, Testing, Sécurité, Performance, CI/CD, Monitoring, et AI Smart Features**.
+- Chaque projet et expérience affiche désormais un "Radar de Compétences" (badges colorés) calculé dynamiquement par l'IA à partir de la stack technique et des descriptions.
 
-### 2. [insert-portfolio-lead/index.ts](file:///C:/Users/soufi/StudioProjects/portefolio/supabase/functions/insert-portfolio-lead/index.ts)
-- **CORS** : Ajout de la gestion des requêtes `OPTIONS`.
-- **Sécurité** : Passage à la clé `SUPABASE_SERVICE_ROLE_KEY` pour bypasser le RLS.
-- **Turnstile** : Passage à `TURNSTILE_SECRET_KEY` pour la validation serveur du captcha.
+### 2. Refonte de la Section "En savoir plus"
+- **Adieu le bloc noir** : La section utilise désormais un style **Glassmorphism** élégant avec flou d'arrière-plan, rendant la lecture des artefacts GitHub (.md) beaucoup plus immersive.
+- **Carte d'Analyse IA** : Un résumé technique intelligent est généré en tête de section pour mettre en avant les points forts du projet pour un recruteur.
+- **Interface à onglets modernisée** : Navigation fluide entre la Présentation, la Vision, et la Valorisation du projet.
 
----
+### 3. Visualisation Express pour Chasseurs de Têtes
+- **Hero Section** : Les badges d'expertise apparaissent immédiatement sous le titre du projet, permettant de valider les compétences clés en un coup d'œil.
+- **Expériences** : Intégration du radar de maturité sur chaque carte d'expérience pour prouver la montée en compétence au fil du parcours.
 
-## Actions Requises (Crucial)
+## Fichiers Modifiés
 
-### 1. Configuration des secrets sur Supabase
-Exécutez ces commandes pour que les fonctions puissent accéder à vos clés privées :
+- [tech_maturity_framework.dart](file:///C:/Users/soufi/StudioProjects/portefolio/lib/core/affichage/tech_maturity_framework.dart) : Cœur de l'analyse visuelle.
+- [artifacts_section.dart](file:///C:/Users/soufi/StudioProjects/portefolio/lib/features/generator/views/widgets/sections/artifacts_section.dart) : Refonte du design immersif.
+- [section_manager.dart](file:///C:/Users/soufi/StudioProjects/portefolio/lib/features/generator/services/section_manager.dart) : Logique d'analyse de maturité des projets.
+- [experiences_data.dart](file:///C:/Users/soufi/StudioProjects/portefolio/lib/features/experience/data/experiences_data.dart) : Support de l'analyse pour les expériences.
+- [projects.json](file:///C:/Users/soufi/StudioProjects/portefolio/assets/data/projects.json) & [experiences.json](file:///C:/Users/soufi/StudioProjects/portefolio/assets/data/experiences.json) : Enrichissement des données techniques.
 
-```bash
-supabase secrets set EMAILJS_PRIVATE_KEY=votre_cle_privee_emailjs
-supabase secrets set TURNSTILE_SECRET_KEY=votre_cle_secrete_cloudflare
-```
-
-### 2. Déploiement des fonctions
-Redéployez pour appliquer les changements :
-
-```bash
-supabase functions deploy send-recovery --no-verify-jwt
-supabase functions deploy insert-portfolio-lead --no-verify-jwt
-```
+> [!TIP]
+> Cette solution exploite l'IA pour transformer des données brutes en indicateurs de performance visuels, augmentant ainsi la valeur perçue de vos réalisations Flutter.

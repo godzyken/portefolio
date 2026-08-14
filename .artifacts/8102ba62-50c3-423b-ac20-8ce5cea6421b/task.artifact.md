@@ -1,3 +1,5 @@
-- [x] Mettre à jour `deploy.yml` (Flutter 3.41.9)
-- [x] Corriger `cv_download_service_web.dart` (JS Interop)
-- [x] Informer l'utilisateur sur le commit des fichiers manquants
+- [x] Créer le framework de maturité technique (`tech_maturity_framework.dart`)
+- [x] Mettre à jour `SectionManager` pour inclure l'analyse de maturité
+- [x] Refondre `ArtifactsSection` (Style immersif + Cartes de maturité)
+- [x] Améliorer `HeroSection` avec les badges d'expertise
+- [x] Enrichir `projects.json` avec des données de maturité

@@ -1,9 +1,3 @@
-/// Modèles du business plan (`assets/data/business_plan.json`).
-///
-/// Ce fichier est la source de vérité "métier" du portfolio : positionnement,
-/// services, expertise, pricing, roadmap... Il alimente (ou alimentera) le
-/// storytelling de la home, la timeline du parcours client, les compteurs
-/// animés et les recommandations du diagnostic de maturité numérique.
 
 class TitledContent {
   final String title;

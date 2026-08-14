@@ -24,6 +24,8 @@
     "tags": ["Flutter", "UI/UX", "url_launcher", "Responsive Design", "Communication", "Supabase"],
     "stack": {
       "frontend": ["Flutter", "Dart"],
+      "architecture": ["Clean Architecture", "Modular"],
+      "state": ["Riverpod"],
       "packages": ["url_launcher", "Supabase"],
       "design": ["Material 3", "Animations", "Cards ombrées", "Hover effects"],
       "intégration": ["tel:", "mailto:", "https", "WhatsApp API"]

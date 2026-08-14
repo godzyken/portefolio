@@ -1,28 +1,29 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/colors_spec.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
+import 'package:portefolio/core/affichage/tech_maturity_framework.dart';
 import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
 
 import '../../../../projets/data/github_artifacts_service.dart';
+import '../../../../projets/data/project_data.dart';
 import '../../../../projets/providers/projet_providers.dart';
+import '../../../services/section_manager.dart';
 
 /// Section Artefacts - Affiche les fichiers .md (présentation, vision,
 /// workthrough, valuation, implementation...) trouvés dans le repo GitHub
 /// du projet, sous `.artefacts/{id}/`.
 ///
-/// S'auto-masque si aucun artefact n'est trouvé (repo pas encore équipé,
-/// ou pas de githubRepoUrl renseigné).
+/// Refondue pour être immersive (Glassmorphism) et inclure l'analyse de maturité.
 class ArtifactsSection extends ConsumerStatefulWidget {
-  final String projectId;
-  final String repoUrl;
+  final ProjectInfo project;
   final ResponsiveInfo info;
 
   const ArtifactsSection({
     super.key,
-    required this.projectId,
-    required this.repoUrl,
+    required this.project,
     required this.info,
   });
 
@@ -60,20 +61,26 @@ class _ArtifactsSectionState extends ConsumerState<ArtifactsSection>
   Widget build(BuildContext context) {
     final asyncArtifacts = ref.watch(
       projectArtifactsProvider(
-        (repoUrl: widget.repoUrl, projectId: widget.projectId),
+        (repoUrl: widget.project.githubRepoUrl!, projectId: widget.project.id),
       ),
     );
 
     return asyncArtifacts.when(
-      // Pas de flash de loader intrusif : la section n'apparaît que
-      // lorsqu'on sait qu'il y a du contenu à montrer.
-      loading: () => const SizedBox.shrink(),
+      loading: () => const Center(
+        child: Padding(
+          padding: EdgeInsets.all(40),
+          child: CircularProgressIndicator(color: ColorHelpers.cyan),
+        ),
+      ),
       error: (err, _) => const SizedBox.shrink(),
       data: (artifacts) {
         if (artifacts.isEmpty) return const SizedBox.shrink();
 
         final keys = GithubArtifactsService.sortedKeys(artifacts);
         _syncTabController(keys);
+
+        final manager = SectionManager(widget.project);
+        final maturityScores = manager.analyzeMaturity();
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -83,58 +90,111 @@ class _ArtifactsSectionState extends ConsumerState<ArtifactsSection>
               style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
+                letterSpacing: 0.5,
               ),
             ),
-            const SizedBox(height: 16),
-            TabBar(
-              controller: _tabController,
-              isScrollable: true,
-              labelColor: ColorHelpers.cyan,
-              unselectedLabelColor: ColorHelpers.textSecondary,
-              indicatorColor: ColorHelpers.cyan,
-              tabs: keys
-                  .map((k) => Tab(text: GithubArtifactsService.labelFor(k)))
-                  .toList(),
+            const SizedBox(height: 20),
+            
+            // ANALYSE DE MATURITÉ (IA)
+            IAMaturityAnalysisCard(scores: maturityScores),
+            
+            const SizedBox(height: 24),
+            
+            // TABS NAVIGATION IMMERSIVE
+            Container(
+              decoration: BoxDecoration(
+                border: Border(bottom: BorderSide(color: ColorHelpers.border.withValues(alpha: 0.5))),
+              ),
+              child: TabBar(
+                controller: _tabController,
+                isScrollable: true,
+                dividerColor: Colors.transparent,
+                labelColor: ColorHelpers.cyan,
+                unselectedLabelColor: ColorHelpers.textSecondary,
+                indicatorColor: ColorHelpers.cyan,
+                indicatorWeight: 3,
+                tabs: keys
+                    .map((k) => Tab(
+                          child: Text(
+                            GithubArtifactsService.labelFor(k).toUpperCase(),
+                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 1.1),
+                          ),
+                        ))
+                    .toList(),
+              ),
             ),
+            
             const SizedBox(height: 16),
+            
+            // CONTENU MD AVEC EFFET GLASS
             SizedBox(
-              height: widget.info.isMobile ? 320 : 420,
+              height: widget.info.isMobile ? 400 : 500,
               child: TabBarView(
                 controller: _tabController,
                 children: keys.map((k) {
-                  return Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: ColorHelpers.surface,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: ColorHelpers.border),
-                    ),
-                    child: Markdown(
-                      data: artifacts[k]!,
-                      selectable: true,
-                      styleSheet: MarkdownStyleSheet.fromTheme(
-                        Theme.of(context),
-                      ).copyWith(
-                        p: const TextStyle(
-                          color: ColorHelpers.textSecondary,
-                          height: 1.5,
+                  return ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                      child: Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: ColorHelpers.surface.withValues(alpha: 0.6),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: ColorHelpers.border.withValues(alpha: 0.3)),
                         ),
-                        h1: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        h2: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        code: const TextStyle(
-                          backgroundColor: Colors.black26,
-                          color: ColorHelpers.cyan,
+                        child: Markdown(
+                          data: artifacts[k]!,
+                          selectable: true,
+                          styleSheet: MarkdownStyleSheet.fromTheme(
+                            Theme.of(context),
+                          ).copyWith(
+                            p: const TextStyle(
+                              color: ColorHelpers.textSecondary,
+                              height: 1.6,
+                              fontSize: 14,
+                            ),
+                            h1: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 22,
+                            ),
+                            h2: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                            code: const TextStyle(
+                              backgroundColor: Colors.black45,
+                              color: ColorHelpers.cyan,
+                              fontFamily: 'monospace',
+                            ),
+                            blockquoteDecoration: BoxDecoration(
+                              color: Colors.white10,
+                              borderRadius: BorderRadius.circular(8),
+                              border: const Border(left: BorderSide(color: ColorHelpers.cyan, width: 4)),
+                            ),
+                          ),
+                          onTapLink: (text, href, title) {
+                            // Implémenter l'ouverture de lien si nécessaire
+                          },
                         ),
                       ),
                     ),
                   );
                 }).toList(),
+              ),
+            ),
+            
+            const SizedBox(height: 12),
+            Center(
+              child: Text(
+                "Framework d'expertise basé sur Flutter Production Readiness",
+                style: TextStyle(
+                  color: ColorHelpers.textMuted.withValues(alpha: 0.5),
+                  fontSize: 10,
+                  fontStyle: FontStyle.italic,
+                ),
               ),
             ),
           ],

@@ -1,9 +1,3 @@
-/// Modèles du diagnostic interactif de maturité numérique.
-///
-/// Tout le contenu (questions, options, niveaux de résultat) est piloté par
-/// `assets/data/diagnostic.json`, dans l'esprit "content piloté par JSON"
-/// déjà utilisé par le reste du portfolio (services, expériences, projets).
-
 class DiagnosticCategory {
   final String id;
   final String title;

@@ -1,35 +1,46 @@
-# Correction du Build CI (GitHub Actions)
+# Amélioration Immersive du Portfolio (Projets & Expériences)
 
-Ce plan vise à résoudre les erreurs de compilation sur GitHub Actions en alignant les versions de Flutter et en corrigeant les problèmes de JS Interop.
+Ce plan vise à transformer la présentation des projets et des expériences en utilisant le framework visuel et technique défini par les infographies `FlutterSkills`. L'objectif est de rendre le portfolio plus percutant pour les chasseurs de têtes en privilégiant le visuel et la preuve de compétence technique.
+
+## User Review Required
+
+> [!IMPORTANT]
+> - L'analyse des infographies `FlutterSkills` a permis d'identifier 7 piliers de maturité technique (Architecture, State, Testing, Security, Performance, CI/CD, Monitoring).
+> - Je propose d'ajouter une section "Analyse de Maturité (IA)" qui synthétise ces points pour chaque projet.
+> - La section "En savoir plus" sera transformée pour ne plus être un simple bloc de texte mais une interface immersive.
 
 ## Proposed Changes
 
-### [GitHub Workflow]
+### [Core/Affichage]
 
-#### [MODIFY] [deploy.yml](file:///C:/Users/soufi/StudioProjects/portefolio/.github/workflows/deploy.yml)
-- Mise à jour de `flutter-version` de `3.41.5` à `3.41.9`.
+#### [NEW] [tech_maturity_framework.dart](file:///C:/Users/soufi/StudioProjects/portefolio/lib/core/affichage/tech_maturity_framework.dart)
+- Définition des 7 piliers techniques basés sur les infographies.
+- Map d'icones et de couleurs associées.
 
-### [Services Web]
+### [Features/Projets]
 
-#### [MODIFY] [cv_download_service_web.dart](file:///C:/Users/soufi/StudioProjects/portefolio/lib/features/contact/services/cv_download_service_web.dart)
-- Utilisation de `.toJS` pour la création du Blob au lieu d'un cast `JSArray`.
+#### [MODIFY] [section_manager.dart](file:///C:/Users/soufi/StudioProjects/portefolio/lib/features/generator/services/section_manager.dart)
+- Ajout d'une détection automatique de la maturité technique basée sur les données du projet (`techDetails`, `tags`, `points`).
 
-## Actions manuelles requises (CRITIQUE)
+#### [MODIFY] [artifacts_section.dart](file:///C:/Users/soufi/StudioProjects/portefolio/lib/features/generator/views/widgets/sections/artifacts_section.dart)
+- Refonte visuelle : Style "Glassmorphism" avec flou d'arrière-plan.
+- Ajout de cartes de résumé technique au-dessus du contenu Markdown.
+- Intégration d'images/icones thématiques issues du framework `FlutterSkills`.
+- Priorisation des visuels : si des images sont présentes dans les artefacts, elles seront mises en avant.
 
-> [!CAUTION]
-> Vous **devez** vous assurer que les nouveaux fichiers sont inclus dans votre prochain commit, car ils manquent actuellement sur GitHub :
-> - `lib/features/generator/views/widgets/sections/artifacts_section.dart`
-> - `lib/features/projets/data/github_artifacts_service.dart`
+### [Features/Generator]
 
-```bash
-git add .
-git commit -m "Fix CI build: update flutter version and JS interop"
-git push
-```
+#### [MODIFY] [hero_section.dart](file:///C:/Users/soufi/StudioProjects/portefolio/lib/features/generator/views/widgets/sections/hero_section.dart)
+- Intégration de badges de compétences "Expert" basés sur les infographies pour une lecture rapide par les recruteurs.
+
+### [Data]
+
+#### [MODIFY] [projects.json](file:///C:/Users/soufi/StudioProjects/portefolio/assets/data/projects.json)
+- Enrichissement des métadonnées pour permettre une analyse de maturité plus fine (ex: mention des types de tests, architecture utilisée).
 
 ## Verification Plan
 
 ### Manual Verification
-- Ouvrir le portfolio sur le Web.
-- Tenter une récupération de mot de passe.
-- Vérifier dans l'inspecteur réseau que la requête `OPTIONS` renvoie un code `200` et que la requête `POST` est autorisée.
+- Vérifier que la section "En savoir plus" n'est plus un bloc noir mais une interface riche et aérée.
+- Vérifier que les piliers techniques (Performance, Architecture, etc.) sont bien mis en évidence.
+- S'assurer que le contenu reste fluide sur mobile.

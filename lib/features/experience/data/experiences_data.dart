@@ -1,5 +1,6 @@
 import 'package:latlong2/latlong.dart';
 
+import '../../../core/affichage/tech_maturity_framework.dart';
 import '../../generator/data/models/location_data.dart';
 
 class Experience {
@@ -38,6 +39,50 @@ class Experience {
     this.youtubeVideoId,
     this.location,
   });
+
+  /// Analyse la maturité technique de l'expérience selon les 8 piliers
+  Map<TechPillar, double> analyzeMaturity() {
+    final scores = <TechPillar, double>{};
+    final allText = '${contexte.toLowerCase()} ${missions.join(' ').toLowerCase()} ${tags.join(' ').toLowerCase()} ${stack.values.expand((e) => e).join(' ').toLowerCase()}';
+
+    for (final pillar in TechPillar.values) {
+      double score = 0.0;
+      switch (pillar) {
+        case TechPillar.architecture:
+          if (allText.contains('clean')) score += 0.4;
+          if (allText.contains('modul')) score += 0.3;
+          if (allText.contains('ddd') || allText.contains('mvvm')) score += 0.3;
+          break;
+        case TechPillar.stateManagement:
+          if (allText.contains('riverpod') || allText.contains('bloc')) score += 0.5;
+          if (allText.contains('provider') || allText.contains('getit')) score += 0.3;
+          break;
+        case TechPillar.testing:
+          if (allText.contains('test')) score += 0.4;
+          if (allText.contains('qualité')) score += 0.3;
+          break;
+        case TechPillar.security:
+          if (allText.contains('auth')) score += 0.3;
+          if (allText.contains('chiffr')) score += 0.4;
+          break;
+        case TechPillar.performance:
+          if (allText.contains('perf') || allText.contains('optim')) score += 0.4;
+          if (allText.contains('async')) score += 0.3;
+          break;
+        case TechPillar.cicd:
+          if (allText.contains('ci') || allText.contains('deploy')) score += 0.5;
+          break;
+        case TechPillar.monitoring:
+          if (allText.contains('analytic') || allText.contains('suivi')) score += 0.4;
+          break;
+        case TechPillar.aiSmart:
+          if (allText.contains('ia ') || allText.contains('ai ') || allText.contains('intel')) score += 0.5;
+          break;
+      }
+      if (score > 0) scores[pillar] = score.clamp(0.0, 1.0);
+    }
+    return scores;
+  }
 
   factory Experience.fromJson(Map<String, dynamic> json) {
     return Experience(

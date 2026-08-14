@@ -5,6 +5,7 @@ import '../../projets/data/project_data.dart';
 import '../../projets/data/project_section.dart';
 import '../views/generator_widgets_extentions.dart';
 import '../views/widgets/sections/artifacts_section.dart';
+import '../../../core/affichage/tech_maturity_framework.dart';
 
 /// Gestionnaire centralisé pour la configuration des sections d'un projet
 ///
@@ -169,8 +170,7 @@ class SectionManager {
       title: 'En savoir plus',
       icon: Icons.menu_book_outlined,
       builder: (context, info) => ArtifactsSection(
-        projectId: project.id,
-        repoUrl: project.githubRepoUrl!,
+        project: project,
         info: info,
       ),
     );
@@ -291,6 +291,60 @@ class SectionManager {
     } catch (e) {
       return null;
     }
+  }
+
+  /// Analyse la maturité technique du projet selon les 8 piliers
+  Map<TechPillar, double> analyzeMaturity() {
+    final scores = <TechPillar, double>{};
+    final pointsText = project.points.join(' ').toLowerCase();
+    final techDetailsText = project.techDetails?.toString().toLowerCase() ?? '';
+    final allText = '$pointsText $techDetailsText ${project.title.toLowerCase()}';
+
+    for (final pillar in TechPillar.values) {
+      double score = 0.0;
+      switch (pillar) {
+        case TechPillar.architecture:
+          if (allText.contains('clean')) score += 0.4;
+          if (allText.contains('modul')) score += 0.3;
+          if (allText.contains('ddd') || allText.contains('mvvm')) score += 0.3;
+          break;
+        case TechPillar.stateManagement:
+          if (allText.contains('riverpod') || allText.contains('bloc')) score += 0.5;
+          if (allText.contains('provider') || allText.contains('getit')) score += 0.3;
+          if (allText.contains('flux')) score += 0.2;
+          break;
+        case TechPillar.testing:
+          if (allText.contains('test unit')) score += 0.3;
+          if (allText.contains('widget test')) score += 0.3;
+          if (allText.contains('integration')) score += 0.4;
+          break;
+        case TechPillar.security:
+          if (allText.contains('auth')) score += 0.3;
+          if (allText.contains('chiffr') || allText.contains('crypt')) score += 0.4;
+          if (allText.contains('jwt') || allText.contains('oauth')) score += 0.3;
+          break;
+        case TechPillar.performance:
+          if (allText.contains('fps') || allText.contains('fluide')) score += 0.3;
+          if (allText.contains('optim')) score += 0.3;
+          if (allText.contains('isolat') || allText.contains('async')) score += 0.4;
+          break;
+        case TechPillar.cicd:
+          if (allText.contains('github action') || allText.contains('gitlab')) score += 0.5;
+          if (allText.contains('fastlane') || allText.contains('deploy')) score += 0.5;
+          break;
+        case TechPillar.monitoring:
+          if (allText.contains('sentry') || allText.contains('firebase')) score += 0.4;
+          if (allText.contains('analytic')) score += 0.3;
+          if (allText.contains('log')) score += 0.3;
+          break;
+        case TechPillar.aiSmart:
+          if (allText.contains('ia ') || allText.contains('ai ') || allText.contains('gpt')) score += 0.5;
+          if (allText.contains('intellig') || allText.contains('smart')) score += 0.5;
+          break;
+      }
+      if (score > 0) scores[pillar] = score.clamp(0.0, 1.0);
+    }
+    return scores;
   }
 
   /// Formate une clé technique en texte lisible

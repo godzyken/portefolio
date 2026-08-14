@@ -40,7 +40,10 @@ class ColorHelpers {
   /// Couleurs spécifiques pour benchmarks
   static const purple = Color(0xFF8B5CF6);
   static const pink = Color(0xFFEC4899);
-  static const green = Color(0xFF00C49F);
+  static const green = Color(0xFF10B981);
+  static const orange = Color(0xFFF59E0B);
+  static const blue = Color(0xFF3B82F6);
+  static const yellow = Color(0xFFFBBF24);
   static const gray = Color(0xFFE0E0E0);
   static const darkBg = Color(0xFF1F2937);
   static const gridColor = Color(0xFF374151);

@@ -2,6 +2,11 @@
   {
     "id": "projet_1",
     "title": "2RouesVertes",
+    "techDetails": {
+      "architecture": "LAMP (Linux, Apache, MySQL, PHP)",
+      "security": ".htaccess, chmod",
+      "performance": "Optimisation manuelle SQL"
+    },
     "points": [
       "🚲 Création d’une boutique en ligne spécialisée dans la vente de vélos à assistance électrique",
       "📦 Déploiement de PrestaShop 1.2.5 et Magento 1.3.2.4",
@@ -548,6 +553,14 @@
     "id": "projet_11",
     "title": "emap_services",
     "githubRepoUrl": "https://github.com/godzyken/emap_services",
+    "techDetails": {
+      "architecture": "Clean Architecture / Domain Driven",
+      "stateManagement": "Riverpod 3 (Typed Providers)",
+      "security": "Supabase Auth / SSL",
+      "performance": "Async Caching / FutureProviders",
+      "cicd": "GitHub Actions",
+      "monitoring": "Supabase Analytics"
+    },
     "points": [
       "💧 Application Flutter professionnelle pour EMAP Services (plomberie, chauffage, climatisation)",
       "📍 Géolocalisation et navigation client via intégration complète de Google Maps",

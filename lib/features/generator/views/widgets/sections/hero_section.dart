@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
 
+import '../../../../../core/affichage/tech_maturity_framework.dart';
 import '../../../../wakatime/views/widgets/wakatime_badge.dart';
 import '../../../data/extention_models.dart';
+import '../../../services/section_manager.dart';
 
 /// Section Hero (présentation principale du projet)
 ///
@@ -42,6 +44,7 @@ class HeroSection extends StatelessWidget {
             showWakaTime: hasProgrammingTag,
             projectName: project.title,
             info: info,
+            project: project,
           ),
 
           const SizedBox(height: 24),
@@ -75,35 +78,49 @@ class _CompactHeader extends StatelessWidget {
   final bool showWakaTime;
   final String projectName;
   final ResponsiveInfo info;
+  final ProjectInfo project;
 
   const _CompactHeader({
     required this.title,
     required this.showWakaTime,
     required this.projectName,
     required this.info,
+    required this.project,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    final manager = SectionManager(project);
+    final maturity = manager.analyzeMaturity();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
-          child: ResponsiveText.titleLarge(
-            title,
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: info.isMobile ? 20 : 28,
+        Row(
+          children: [
+            Expanded(
+              child: ResponsiveText.titleLarge(
+                title,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: info.isMobile ? 20 : 28,
+                ),
+              ),
             ),
-          ),
+            if (showWakaTime) ...[
+              const SizedBox(width: 16),
+              WakaTimeBadgeWidget(
+                projectName: projectName,
+                variant: WakaTimeBadgeVariant.compact,
+                showTrackingIndicator: true,
+              ),
+            ],
+          ],
         ),
-        if (showWakaTime) ...[
-          const SizedBox(width: 16),
-          WakaTimeBadgeWidget(
-            projectName: projectName,
-            variant: WakaTimeBadgeVariant.compact,
-            showTrackingIndicator: true,
-          ),
+        if (maturity.isNotEmpty) ...[
+          const SizedBox(height: 12),
+          TechMaturityRadar(scores: maturity, compact: true),
         ],
       ],
     );
