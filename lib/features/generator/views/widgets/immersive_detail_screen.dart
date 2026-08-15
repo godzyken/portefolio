@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:portefolio/core/affichage/colors_spec.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/provider/unified_image_provider.dart';
 import 'package:portefolio/features/generator/services/section_manager.dart';
