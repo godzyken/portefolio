@@ -214,11 +214,11 @@ class IAMaturityAnalysisCard extends StatelessWidget {
   }
 
   String _generateAISummary() {
-    if (scores.isEmpty) return "Analyse en cours...";
+    if (scores.isEmpty) return "Analyse de structure en cours... Alignement optimal avec le framework FlutterSkills détecté.";
     
     final topPillar = scores.entries.reduce((a, b) => a.value > b.value ? a : b).key;
     
-    return "Ce projet démontre une forte expertise en ${topPillar.label.toLowerCase()}. "
-           "L'alignement avec les standards 'Flutter Production Readiness' garantit une solution scalable et maintenable.";
+    return "🚀 EXPERTISE IA : Ce projet valide les standards de production en ${topPillar.label.toLowerCase()}. "
+           "L'architecture immersive et la gestion des performances garantissent une valeur ajoutée maximale pour les environnements critiques.";
   }
 }

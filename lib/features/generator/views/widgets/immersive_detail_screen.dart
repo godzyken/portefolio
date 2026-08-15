@@ -218,7 +218,7 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
         if (images.isNotEmpty)
           Positioned.fill(
             child: Opacity(
-              opacity: 0.15,
+              opacity: 0.2, // Un peu plus d'opacité pour voir l'image
               child: CachedImage(
                   path: images[0],
                   fit: BoxFit.cover,
@@ -228,16 +228,16 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
           ),
         Positioned.fill(
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+            filter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
             child: Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                   colors: [
+                    ColorHelpers.surface.withValues(alpha: 0.8),
                     Colors.black,
-                    Colors.black.withValues(alpha: 0.85),
-                    Colors.black,
+                    ColorHelpers.cyan.withValues(alpha: 0.1),
                   ],
                 ),
               ),

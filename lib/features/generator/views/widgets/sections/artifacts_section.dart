@@ -86,11 +86,11 @@ class _ArtifactsSectionState extends ConsumerState<ArtifactsSection>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const ResponsiveText.titleMedium(
-              '📖 En savoir plus',
+              '📖 En savoir plus (IA ANALYZED)',
               style: TextStyle(
-                color: Colors.white,
+                color: ColorHelpers.cyan, // Couleur vive
                 fontWeight: FontWeight.bold,
-                letterSpacing: 0.5,
+                letterSpacing: 1.0,
               ),
             ),
             const SizedBox(height: 20),
@@ -139,9 +139,16 @@ class _ArtifactsSectionState extends ConsumerState<ArtifactsSection>
                       child: Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: ColorHelpers.surface.withValues(alpha: 0.6),
+                          color: ColorHelpers.cyan.withValues(alpha: 0.15), // Plus d'opacité
                           borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: ColorHelpers.border.withValues(alpha: 0.3)),
+                          border: Border.all(color: ColorHelpers.cyan, width: 2), // Bordure pleine
+                          boxShadow: [
+                            BoxShadow(
+                              color: ColorHelpers.cyan.withValues(alpha: 0.3),
+                              blurRadius: 25,
+                              spreadRadius: 4,
+                            ),
+                          ],
                         ),
                         child: Markdown(
                           data: artifacts[k]!,

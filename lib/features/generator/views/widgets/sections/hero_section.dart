@@ -1,4 +1,6 @@
+import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
 
@@ -17,7 +19,7 @@ import '../../../services/section_manager.dart';
 /// Layout adaptatif:
 /// - Desktop: Row (description + carousel)
 /// - Mobile: Column (carousel + description)
-class HeroSection extends StatelessWidget {
+class HeroSection extends ConsumerWidget {
   final ProjectInfo project;
   final ResponsiveInfo info;
   final bool hasProgrammingTag;
@@ -30,7 +32,11 @@ class HeroSection extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final manager = SectionManager(project);
+    final maturity = manager.analyzeMaturity();
+    developer.log('DEBUG: HeroSection maturity for ${project.title}: ${maturity.length} pillars found', name: 'UI_DEBUG');
+
     final images = _getImages();
     final useRowLayout = info.size.width > 900;
 
