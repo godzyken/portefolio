@@ -9,56 +9,65 @@ enum TechPillar {
     'Structure clean, modulaire et scalable.',
     Icons.architecture_rounded,
     ColorHelpers.purple,
+    'assets/images/FlutterSkills/Screenshot_2026-07-18-09-30-28-187_com.linkedin.android.jpg',
   ),
   stateManagement(
     'State Management',
     'Gestion du flux de données prévisible et performante.',
     Icons.account_tree_rounded,
     ColorHelpers.blue,
+    'assets/images/FlutterSkills/Screenshot_2026-07-18-09-26-52-191_com.linkedin.android.jpg',
   ),
   testing(
     'Testing',
     'Tests unitaires, widgets et intégration pour la fiabilité.',
     Icons.biotech_rounded,
     ColorHelpers.green,
+    'assets/images/FlutterSkills/Screenshot_2026-08-13-15-30-07-864_com.linkedin.android.jpg',
   ),
   security(
     'Sécurité',
     'Protection des données et configurations sécurisées.',
     Icons.security_rounded,
     ColorHelpers.magenta,
+    'assets/images/FlutterSkills/Screenshot_2026-08-13-15-30-07-864_com.linkedin.android.jpg',
   ),
   performance(
     'Performance',
     'Optimisation du rendu (60 FPS) et temps de chargement.',
     Icons.speed_rounded,
     ColorHelpers.cyan,
+    'assets/images/FlutterSkills/Screenshot_2026-07-18-09-39-41-969_com.linkedin.android.jpg',
   ),
   cicd(
     'CI/CD',
     'Automatisation de l\'analyse, des tests et du déploiement.',
     Icons.loop_rounded,
     ColorHelpers.pink,
+    'assets/images/FlutterSkills/Screenshot_2026-08-13-15-30-07-864_com.linkedin.android.jpg',
   ),
   monitoring(
     'Monitoring',
     'Suivi des erreurs, analytics et observabilité en prod.',
     Icons.insights_rounded,
     ColorHelpers.orange,
+    'assets/images/FlutterSkills/Screenshot_2026-08-13-15-30-07-864_com.linkedin.android.jpg',
   ),
   aiSmart(
     'AI & Smart Features',
     'Intégration d\'IA et fonctionnalités intelligentes.',
     Icons.psychology_rounded,
     ColorHelpers.yellow,
+    'assets/images/FlutterSkills/Screenshot_2026-07-18-10-21-39-951_com.linkedin.android.jpg',
   );
 
   final String label;
   final String description;
   final IconData icon;
   final Color color;
+  final String skillImage;
 
-  const TechPillar(this.label, this.description, this.icon, this.color);
+  const TechPillar(this.label, this.description, this.icon, this.color, this.skillImage);
 
   static TechPillar? fromString(String value) {
     final lower = value.toLowerCase();
@@ -186,12 +195,12 @@ class IAMaturityAnalysisCard extends StatelessWidget {
               const Icon(Icons.auto_awesome, color: ColorHelpers.cyan, size: 20),
               const SizedBox(width: 12),
               Text(
-                'ANALYSE DE MATURITÉ (IA SOLUTION)',
+                'AUDIT TECHNIQUE (IA ANALYZED)',
                 style: TextStyle(
                   color: ColorHelpers.cyan.withValues(alpha: 0.9),
                   fontWeight: FontWeight.bold,
-                  letterSpacing: 1.2,
-                  fontSize: 13,
+                  letterSpacing: 1.5,
+                  fontSize: 12,
                 ),
               ),
             ],
@@ -218,7 +227,7 @@ class IAMaturityAnalysisCard extends StatelessWidget {
     
     final topPillar = scores.entries.reduce((a, b) => a.value > b.value ? a : b).key;
     
-    return "🚀 EXPERTISE IA : Ce projet valide les standards de production en ${topPillar.label.toLowerCase()}. "
-           "L'architecture immersive et la gestion des performances garantissent une valeur ajoutée maximale pour les environnements critiques.";
+    return "🚀 EXPERTISE IA : Ce projet valide les standards 'Production Readiness' en ${topPillar.label.toLowerCase()}. "
+           "L'architecture immersive et la gestion des performances garantissent une valeur ajoutée maximale (Solution générée par IA).";
   }
 }

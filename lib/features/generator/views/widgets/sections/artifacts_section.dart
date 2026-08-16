@@ -82,13 +82,27 @@ class _ArtifactsSectionState extends ConsumerState<ArtifactsSection>
         final manager = SectionManager(widget.project);
         final maturityScores = manager.analyzeMaturity();
 
+        // Ajout dynamique d'un onglet "Preuves Techniques" basé sur les images LinkedIn
+        final technicalImages = maturityScores.entries
+            .where((e) => e.value > 0.5) // Seulement les points forts
+            .map((e) => e.key.skillImage)
+            .toSet()
+            .toList();
+
+        final allTabs = [...keys];
+        if (technicalImages.isNotEmpty) {
+          allTabs.add('proofs');
+        }
+
+        _syncTabController(allTabs);
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const ResponsiveText.titleMedium(
-              '📖 En savoir plus (IA ANALYZED)',
+              '📖 Immersion Projet (IA Solution)',
               style: TextStyle(
-                color: ColorHelpers.cyan, // Couleur vive
+                color: ColorHelpers.cyan,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1.0,
               ),
@@ -113,11 +127,11 @@ class _ArtifactsSectionState extends ConsumerState<ArtifactsSection>
                 unselectedLabelColor: ColorHelpers.textSecondary,
                 indicatorColor: ColorHelpers.cyan,
                 indicatorWeight: 3,
-                tabs: keys
+                tabs: allTabs
                     .map((k) => Tab(
                           child: Text(
-                            GithubArtifactsService.labelFor(k).toUpperCase(),
-                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 1.1),
+                            (k == 'proofs' ? '💡 Preuves Techniques' : GithubArtifactsService.labelFor(k)).toUpperCase(),
+                            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 1.1),
                           ),
                         ))
                     .toList(),
@@ -131,7 +145,11 @@ class _ArtifactsSectionState extends ConsumerState<ArtifactsSection>
               height: widget.info.isMobile ? 400 : 500,
               child: TabBarView(
                 controller: _tabController,
-                children: keys.map((k) {
+                children: allTabs.map((k) {
+                  if (k == 'proofs') {
+                    return _TechnicalProofsGallery(images: technicalImages);
+                  }
+
                   return ClipRRect(
                     borderRadius: BorderRadius.circular(16),
                     child: BackdropFilter(
@@ -139,9 +157,9 @@ class _ArtifactsSectionState extends ConsumerState<ArtifactsSection>
                       child: Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: ColorHelpers.cyan.withValues(alpha: 0.15), // Plus d'opacité
+                          color: ColorHelpers.cyan.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: ColorHelpers.cyan, width: 2), // Bordure pleine
+                          border: Border.all(color: ColorHelpers.cyan, width: 2),
                           boxShadow: [
                             BoxShadow(
                               color: ColorHelpers.cyan.withValues(alpha: 0.3),
@@ -182,9 +200,6 @@ class _ArtifactsSectionState extends ConsumerState<ArtifactsSection>
                               border: const Border(left: BorderSide(color: ColorHelpers.cyan, width: 4)),
                             ),
                           ),
-                          onTapLink: (text, href, title) {
-                            // Implémenter l'ouverture de lien si nécessaire
-                          },
                         ),
                       ),
                     ),
@@ -196,7 +211,7 @@ class _ArtifactsSectionState extends ConsumerState<ArtifactsSection>
             const SizedBox(height: 12),
             Center(
               child: Text(
-                "Framework d'expertise basé sur Flutter Production Readiness",
+                "Framework d'expertise basé sur Flutter Production Readiness & LinkedIn Insights",
                 style: TextStyle(
                   color: ColorHelpers.textMuted.withValues(alpha: 0.5),
                   fontSize: 10,
@@ -207,6 +222,54 @@ class _ArtifactsSectionState extends ConsumerState<ArtifactsSection>
           ],
         );
       },
+    );
+  }
+}
+
+/// Galerie de preuves techniques basées sur les screenshots LinkedIn
+class _TechnicalProofsGallery extends StatelessWidget {
+  final List<String> images;
+
+  const _TechnicalProofsGallery({required this.images});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.black26,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: ColorHelpers.border),
+      ),
+      child: PageView.builder(
+        itemCount: images.length,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                Expanded(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.asset(
+                      images[index],
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  "Concept technique appliqué dans ce projet (Source: FlutterSkills)",
+                  style: TextStyle(
+                    color: ColorHelpers.textSecondary,
+                    fontSize: 12,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 }

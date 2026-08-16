@@ -97,6 +97,7 @@ flutter:
     - assets/images/Emap/
     - assets/images/WorkShop/
     - assets/images/models/
+    - assets/images/FlutterSkills/
     - assets/data/
     - assets/fonts/Noto_Sans/
     - assets/fonts/Noto_Sans/static/

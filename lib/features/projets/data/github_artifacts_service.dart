@@ -4,27 +4,24 @@ import 'dart:developer' as developer;
 import 'package:http/http.dart' as http;
 
 /// Labels d'affichage pour chaque type d'artefact connu.
-/// Toute clé absente de cette map (cas exceptionnel, ex: 'securite')
-/// tombe sur un fallback qui met la 1ère lettre en majuscule.
 const Map<String, String> kArtifactLabels = {
+  'readme': '📖 README',
   'presentation': 'Présentation',
   'workthrough': 'Démarche & process',
   'valuation': 'Valorisation',
   'implementation': 'Mise en œuvre',
   'vision': 'Vision',
-  'readme': 'README',
   'securite': 'Sécurité',
 };
 
-/// Ordre d'affichage préféré. Les clés non listées ici sont ajoutées
-/// à la suite, dans l'ordre où elles ont été trouvées.
+/// Ordre d'affichage préféré.
 const List<String> kArtifactOrder = [
+  'readme',
   'presentation',
   'vision',
   'workthrough',
   'implementation',
   'valuation',
-  'readme',
   'securite',
 ];
 
@@ -62,16 +59,27 @@ class GithubArtifactsService {
       return {};
     }
 
-    final results = await Future.wait(
-      _candidateFilenames.map(
-        (name) => _fetchSingleFile(
-          owner: repoInfo.owner,
-          repo: repoInfo.repo,
-          path: '.artefacts/$projectId/$name.md',
-          token: token,
-        ).then((content) => MapEntry(name, content)),
-      ),
-    );
+    final results = await Future.wait([
+      // 1. Chercher le README à la racine
+      _fetchSingleFile(
+        owner: repoInfo.owner,
+        repo: repoInfo.repo,
+        path: 'README.md',
+        token: token,
+      ).then((content) => MapEntry('readme', content)),
+
+      // 2. Chercher les autres artefacts dans .artefacts/{projectId}/
+      ..._candidateFilenames
+          .where((name) => name != 'readme')
+          .map(
+            (name) => _fetchSingleFile(
+              owner: repoInfo.owner,
+              repo: repoInfo.repo,
+              path: '.artefacts/$projectId/$name.md',
+              token: token,
+            ).then((content) => MapEntry(name, content)),
+          ),
+    ]);
 
     final artifacts = <String, String>{
       for (final entry in results)
