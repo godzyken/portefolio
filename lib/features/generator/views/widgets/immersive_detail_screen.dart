@@ -12,7 +12,6 @@ import '../../../projets/data/project_section.dart';
 import '../../../projets/providers/projects_extentions_providers.dart';
 import '../../../wakatime/views/widgets/wakatime_badge.dart';
 import '../../data/extention_models.dart';
-import '../caracter_widget.dart';
 import '../generator_widgets_extentions.dart';
 
 class ImmersiveDetailScreen extends ConsumerStatefulWidget {
