@@ -40,6 +40,8 @@ class MainScaffold extends ConsumerWidget {
             ))
         .toList();
 
+    final showFooter = currentTab != AppTab.projects && currentTab != AppTab.experiences;
+
     return Scaffold(
       appBar: AppBar(
         leading: _NavMenuButton(items: bubbleItems),
@@ -95,7 +97,7 @@ class MainScaffold extends ConsumerWidget {
             ),
         ],
       ),
-      bottomNavigationBar: const PortfolioFooter(),
+      bottomNavigationBar: showFooter ? const PortfolioFooter() : null,
     );
   }
 }
