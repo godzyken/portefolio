@@ -151,22 +151,25 @@ class _ArtifactsSectionState extends ConsumerState<ArtifactsSection>
                   }
 
                   return ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(24),
                     child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                      filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
                       child: Container(
-                        padding: const EdgeInsets.all(20),
+                        padding: const EdgeInsets.all(24),
                         decoration: BoxDecoration(
-                          color: ColorHelpers.cyan.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: ColorHelpers.cyan, width: 2),
-                          boxShadow: [
-                            BoxShadow(
-                              color: ColorHelpers.cyan.withValues(alpha: 0.3),
-                              blurRadius: 25,
-                              spreadRadius: 4,
-                            ),
-                          ],
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              ColorHelpers.cyan.withValues(alpha: 0.1),
+                              Colors.black.withValues(alpha: 0.4),
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(24),
+                          border: Border.all(
+                            color: ColorHelpers.cyan.withValues(alpha: 0.3),
+                            width: 1.5,
+                          ),
                         ),
                         child: Markdown(
                           data: artifacts[k]!,

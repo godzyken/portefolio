@@ -2,6 +2,7 @@
   {
     "id": "projet_1",
     "title": "2RouesVertes",
+    "storyline": "Pionnier du e-commerce de mobilité douce en 2010. Déploiement d'une infrastructure robuste pour la vente de vélos électriques à une époque où le marché émergeait à peine.",
     "techDetails": {
       "architecture": "LAMP (Linux, Apache, MySQL, PHP)",
       "security": ".htaccess, chmod",
@@ -287,6 +288,7 @@
     "id": "projet_5",
     "title": "bat_track_v1",
     "githubRepoUrl": "https://github.com/godzyken/bat_track_v1",
+    "storyline": "L'innovation au service du BTP. Une application 'Offline-first' capable de gérer des environnements complexes avec synchronisation temps réel et visualisation 3D.",
     "points": [
       "🏗️ Application Flutter complète dédiée à la Construction 4.0",
       "🧩 Gestion centralisée des chantiers, clients, techniciens et interventions",
@@ -553,6 +555,7 @@
     "id": "projet_11",
     "title": "emap_services",
     "githubRepoUrl": "https://github.com/godzyken/emap_services",
+    "storyline": "Transformation digitale d'un service de proximité. L'enjeu était d'allier performance technique et simplicité d'usage pour des clients en situation d'urgence.",
     "techDetails": {
       "architecture": "Clean Architecture / Domain Driven",
       "stateManagement": "Riverpod 3 (Typed Providers)",

@@ -5,6 +5,7 @@ import '../../projets/data/project_data.dart';
 import '../../projets/data/project_section.dart';
 import '../views/generator_widgets_extentions.dart';
 import '../views/widgets/sections/artifacts_section.dart';
+import '../views/widgets/sections/project_theatre_section.dart';
 import '../../../core/affichage/tech_maturity_framework.dart';
 
 /// Gestionnaire centralisé pour la configuration des sections d'un projet
@@ -21,8 +22,8 @@ class SectionManager {
   /// Construit la liste complète des sections à afficher
   List<ProjectSection> buildSections(BuildContext context) {
     final sections = <ProjectSection>[
-      // Hero (toujours présent)
-      _buildHeroSection(),
+      // Théâtre Narratif (Remplaçant du Hero pour plus d'immersion)
+      _buildTheatreSection(),
     ];
 
     // SectionAperçu
@@ -67,6 +68,18 @@ class SectionManager {
     }
 
     return sections;
+  }
+
+  ProjectSection _buildTheatreSection() {
+    return ProjectSection(
+      id: 'hero',
+      title: 'Storytelling',
+      icon: Icons.auto_stories_outlined,
+      builder: (context, info) => ProjectTheatreSection(
+        project: project,
+        info: info,
+      ),
+    );
   }
 
   ProjectSection _buildHeroSection() {

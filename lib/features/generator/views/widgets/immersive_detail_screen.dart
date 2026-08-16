@@ -5,12 +5,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/colors_spec.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/provider/unified_image_provider.dart';
+import 'package:portefolio/core/ui/widgets/narrative_bubble.dart';
 import 'package:portefolio/features/generator/services/section_manager.dart';
 
 import '../../../projets/data/project_section.dart';
 import '../../../projets/providers/projects_extentions_providers.dart';
 import '../../../wakatime/views/widgets/wakatime_badge.dart';
 import '../../data/extention_models.dart';
+import '../caracter_widget.dart';
 import '../generator_widgets_extentions.dart';
 
 class ImmersiveDetailScreen extends ConsumerStatefulWidget {
@@ -35,12 +37,10 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
   @override
   void initState() {
     super.initState();
-
     _sectionManager = SectionManager(widget.project);
   }
 
   void _navigateToSection(String sectionId) {
-    // On s'assure que la modification se fait en dehors du build
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         ref.read(activeSectionProvider.notifier).update(sectionId);
@@ -66,7 +66,7 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
           Positioned.fill(
             child: Row(
               children: [
-                // Sidebar de navigation (desktop uniquement)
+                // Sidebar de navigation
                 if (showSidebar)
                   ProjectNavigationSidebar(
                     projectTitle: widget.project.title,
@@ -89,6 +89,33 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
             ),
           ),
 
+          // PERSONNAGE 3D ET BULLE NARRATIVE (Toujours présent en bas à gauche pour la vie)
+          if (!info.isMobile)
+            Positioned(
+              left: showSidebar ? 280 : 20,
+              bottom: 20,
+              child: SizedBox(
+                width: 250,
+                height: 350,
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    const CharacterViewer(),
+                    Positioned(
+                      top: -40,
+                      left: 100,
+                      child: SizedBox(
+                        width: 200,
+                        child: NarrativeBubble(
+                          text: _getNarrativeText(activeSection),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
           // Bouton fermer
           Positioned(
             top: 24,
@@ -96,7 +123,7 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
             child: _buildCloseButton(),
           ),
 
-          // Navigation mobile (bottom)
+          // Navigation mobile
           if (!showSidebar && sections.length > 1)
             Positioned(
               left: 0,
@@ -111,6 +138,20 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
         ],
       ),
     );
+  }
+
+  String _getNarrativeText(String sectionId) {
+    // On pourrait tirer ça du JSON projects.json plus tard
+    switch (sectionId) {
+      case 'hero':
+        return "Bienvenue dans l'univers de ${widget.project.title}. Laissez-moi vous guider à travers les coulisses de ce projet.";
+      case 'tech':
+        return "La forge technique. C'est ici que la magie opère avec une stack moderne et robuste.";
+      case 'artifacts':
+        return "Plongez dans les détails. J'ai documenté chaque étape pour une transparence totale.";
+      default:
+        return "Chaque pixel a été pensé pour offrir une expérience utilisateur sans compromis.";
+    }
   }
 
   Widget _buildMainContent(
@@ -128,7 +169,7 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
     final canGoForward = currentIndex < sections.length - 1;
 
     return GestureDetector(
-      behavior: HitTestBehavior.opaque, // Améliore la détection du swipe
+      behavior: HitTestBehavior.opaque,
       onHorizontalDragEnd: (details) {
         if (details.primaryVelocity! > 0 && canGoBack) {
           _navigateToSection(sections[currentIndex - 1].id);
@@ -138,28 +179,22 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
       },
       child: Stack(
         children: [
-          // CONTENU PRINCIPAL
           Positioned.fill(
-            // Utilise tout l'espace disponible
             child: Center(
               child: ConstrainedBox(
                 constraints: BoxConstraints(
                   maxWidth: info.isLandscape ? 1100 : double.infinity,
-                  // On force la hauteur à prendre tout l'espace disponible moins les paddings
                   maxHeight: info.size.height,
                 ),
                 child: Padding(
                   padding: EdgeInsets.fromLTRB(
-                    info.isMobile
-                        ? 16
-                        : 60, // Plus de padding sur les côtés pour les flèches
+                    info.isMobile ? 16 : 60,
                     info.isMobile ? 16 : 32,
                     info.isMobile ? 16 : 60,
                     info.isMobile ? 16 : 32,
                   ),
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 300),
-                    // Important pour que le switcher prenne toute la place
                     layoutBuilder:
                         (Widget? currentChild, List<Widget> previousChildren) {
                       return Stack(
@@ -174,8 +209,7 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
                         opacity: animation,
                         child: SlideTransition(
                           position: Tween<Offset>(
-                            begin: const Offset(
-                                0.05, 0), // Translation plus subtile
+                            begin: const Offset(0.05, 0),
                             end: Offset.zero,
                           ).animate(animation),
                           child: child,
@@ -183,7 +217,6 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
                       );
                     },
                     child: SizedBox.expand(
-                      // Force la section à remplir l'espace
                       key: ValueKey(activeSection),
                       child: section.builder(context, info),
                     ),
@@ -193,7 +226,6 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
             ),
           ),
 
-          // FLÈCHES DE NAVIGATION (Desktop)
           if (info.size.width > 1200) ...[
             if (canGoBack)
               NavigationArrow(
@@ -219,7 +251,7 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
         if (images.isNotEmpty)
           Positioned.fill(
             child: Opacity(
-              opacity: 0.2, // Un peu plus d'opacité pour voir l'image
+              opacity: 0.2,
               child: CachedImage(
                   path: images[0],
                   fit: BoxFit.cover,
