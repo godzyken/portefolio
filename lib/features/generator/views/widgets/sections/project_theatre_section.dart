@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:portefolio/core/affichage/colors_spec.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
+import 'package:portefolio/core/affichage/tech_maturity_framework.dart';
 import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
-import '../../data/extention_models.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../../core/provider/tracking_provider.dart';
 import '../../../../../core/service/tracking_service.dart';
+import '../../../../projets/data/project_data.dart';
+import '../../../services/section_manager.dart';
 
 /// Une section qui met en scène le projet comme un théâtre narratif.
 class ProjectTheatreSection extends ConsumerStatefulWidget {
@@ -45,7 +47,7 @@ class _ProjectTheatreSectionState extends ConsumerState<ProjectTheatreSection> {
           onSceneTap: (index) => setState(() => _currentScene = index),
         ),
         
-        const SizedBox(height: 24),
+        const SizedBox(height: 20),
 
         // THÉÂTRE (CONTENU DYNAMIQUE)
         Expanded(
@@ -55,7 +57,7 @@ class _ProjectTheatreSectionState extends ConsumerState<ProjectTheatreSection> {
               return FadeTransition(
                 opacity: animation,
                 child: ScaleTransition(
-                  scale: Tween<double>(begin: 0.95, end: 1.0).animate(animation),
+                  scale: Tween<double>(begin: 0.98, end: 1.0).animate(animation),
                   child: child,
                 ),
               );
@@ -95,39 +97,32 @@ class _SceneIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: WrapAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(scenes.length, (index) {
         final isActive = index == currentScene;
         return GestureDetector(
           onTap: () => onSceneTap(index),
           child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 12),
+            margin: const EdgeInsets.symmetric(horizontal: 8),
             child: Column(
               children: [
                 AnimatedContainer(
-                  duration: 300.ms,
-                  width: isActive ? 40 : 12,
+                  duration: const Duration(milliseconds: 300),
+                  width: isActive ? 30 : 8,
                   height: 4,
                   decoration: BoxDecoration(
                     color: isActive ? ColorHelpers.cyan : Colors.white24,
                     borderRadius: BorderRadius.circular(2),
-                    boxShadow: [
-                      if (isActive)
-                        BoxShadow(
-                          color: ColorHelpers.cyan.withValues(alpha: 0.5),
-                          blurRadius: 8,
-                        ),
-                    ],
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 6),
                 Text(
                   scenes[index],
                   style: TextStyle(
                     color: isActive ? Colors.white : Colors.white38,
-                    fontSize: 10,
+                    fontSize: 9,
                     fontWeight: FontWeight.w900,
-                    letterSpacing: 2,
+                    letterSpacing: 1.5,
                   ),
                 ),
               ],
@@ -148,23 +143,21 @@ class _VisionScene extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final images = project.cleanedImages ?? project.image ?? [];
+    final storyline = (project as dynamic).storyline ?? project.points[0];
     
     return Column(
       key: const ValueKey('vision'),
       children: [
         if (images.isNotEmpty)
           Expanded(
-            flex: 3,
+            flex: 4,
             child: _SceneHeroImage(image: images[0]),
           ),
-        const SizedBox(height: 24),
-        Expanded(
-          flex: 2,
-          child: _SceneDescription(
-            title: "LA GENÈSE",
-            text: project.points.isNotEmpty ? project.points[0] : "Conception d'une solution innovante.",
-            icon: Icons.lightbulb_outline,
-          ),
+        const SizedBox(height: 16),
+        _SceneDescription(
+          title: "LA VISION",
+          text: storyline,
+          icon: Icons.auto_awesome,
         ),
       ],
     );
@@ -179,26 +172,30 @@ class _ForgeScene extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // On essaye de trouver une image technique
-    final images = project.cleanedImages ?? project.image ?? [];
-    final techImage = images.length > 1 ? images[1] : (images.isNotEmpty ? images[0] : null);
+    final manager = SectionManager(project);
+    final maturity = manager.analyzeMaturity();
+    
+    // On récupère l'image LinkedIn du pilier le plus fort
+    String? techImageUrl;
+    if (maturity.isNotEmpty) {
+      final topPillar = maturity.entries.reduce((a, b) => a.value > b.value ? a : b).key;
+      techImageUrl = topPillar.skillImage;
+    }
 
     return Column(
       key: const ValueKey('forge'),
       children: [
-        if (techImage != null)
+        if (techImageUrl != null)
           Expanded(
-            flex: 3,
-            child: _SceneHeroImage(image: techImage, isTech: true),
+            flex: 4,
+            child: _SceneHeroImage(image: techImageUrl, isTech: true),
           ),
-        const SizedBox(height: 24),
-        const Expanded(
-          flex: 2,
-          child: _SceneDescription(
-            title: "L'ARCHITECTURE",
-            text: "Alignement sur les standards 'Flutter Production Readiness'. Modularité et performance au coeur du développement.",
-            icon: Icons.settings_input_component_outlined,
-          ),
+        const SizedBox(height: 16),
+        _SceneDescription(
+          title: "LA TECHNIQUE",
+          text: "Chaque choix technique est une brique vers la Production Readiness. Sécurité, Performance et Scalabilité.",
+          icon: Icons.terminal_rounded,
+          extra: TechMaturityRadar(scores: maturity, compact: true),
         ),
       ],
     );
@@ -216,7 +213,6 @@ class _ImpactScene extends StatelessWidget {
     if (project.lienProjet == null) return;
     final uri = Uri.parse(project.lienProjet!);
     
-    // Tracking
     ref.read(trackingServiceProvider).trackInteraction(
       projectId: project.id,
       projectName: project.title,
@@ -231,45 +227,83 @@ class _ImpactScene extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final results = project.results ?? ["Succès opérationnel et utilisateur."];
+    final results = project.results ?? ["Succès opérationnel."];
+    final images = project.cleanedImages ?? project.image ?? [];
+    final mainImage = images.isNotEmpty ? images[0] : null;
     
     return Column(
       key: const ValueKey('impact'),
       children: [
         Expanded(
-          flex: 3,
-          child: Center(
-            child: Icon(Icons.auto_graph_rounded, 
-              size: 80, 
-              color: ColorHelpers.cyan.withValues(alpha: 0.8)
-            ).animate(onPlay: (c) => c.repeat())
-             .shimmer(duration: 2.s)
-             .scale(duration: 1.s, curve: Curves.easeInOut),
-          ),
-        ),
-        const SizedBox(height: 24),
-        Expanded(
-          flex: 2,
-          child: _SceneDescription(
-            title: "RÉSULTATS",
-            text: results[0],
-            icon: Icons.verified_outlined,
-          ),
-        ),
-        if (project.lienProjet != null)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 20),
-            child: FilledButton.icon(
-              onPressed: _openLiveSite,
-              icon: const Icon(Icons.rocket_launch_outlined),
-              label: const Text("VISITER LE SITE LIVE"),
-              style: FilledButton.styleFrom(
-                backgroundColor: ColorHelpers.cyan,
-                foregroundColor: Colors.black,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          flex: 4,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              // FOND DE MISE EN SCÈNE
+              Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.03),
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: ColorHelpers.cyan.withValues(alpha: 0.2)),
+                ),
               ),
-            ),
-          ).animate().scale(delay: 500.ms),
+              
+              // MOCKUP MOBILE (MISE EN VIE)
+              if (mainImage != null)
+                Positioned(
+                  top: 20,
+                  bottom: 20,
+                  child: Container(
+                    width: info.isMobile ? 180 : 220,
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.black,
+                      borderRadius: BorderRadius.circular(30),
+                      border: Border.all(color: Colors.white24, width: 4),
+                      boxShadow: [
+                        BoxShadow(
+                          color: ColorHelpers.cyan.withValues(alpha: 0.3),
+                          blurRadius: 30,
+                        ),
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(22),
+                      child: SmartImage(
+                        path: mainImage,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                ).animate().slideY(begin: 0.5, end: 0, duration: 800.ms, curve: Curves.elasticOut),
+
+              // BOUTON ACTION
+              if (project.lienProjet != null)
+                Positioned(
+                  bottom: 40,
+                  child: FilledButton.icon(
+                    onPressed: _openLiveSite,
+                    icon: const Icon(Icons.rocket_launch_rounded),
+                    label: const Text("VOIR LE RÉSULTAT LIVE", 
+                      style: TextStyle(fontWeight: FontWeight.w900, fontSize: 11, letterSpacing: 1.2)),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: ColorHelpers.cyan,
+                      foregroundColor: Colors.black,
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                  ).animate().scale(delay: 600.ms),
+                ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+        _SceneDescription(
+          title: "L'IMPACT",
+          text: results[0],
+          icon: Icons.check_circle_outline,
+        ),
       ],
     );
   }
@@ -284,29 +318,31 @@ class _SceneHeroImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: double.infinity,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: isTech ? ColorHelpers.magenta.withValues(alpha: 0.3) : ColorHelpers.cyan.withValues(alpha: 0.3),
+          color: isTech ? ColorHelpers.magenta.withValues(alpha: 0.4) : ColorHelpers.cyan.withValues(alpha: 0.4),
           width: 2,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.5),
-            blurRadius: 30,
+            color: Colors.black54,
+            blurRadius: 20,
             spreadRadius: 5,
           ),
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(22),
+        borderRadius: BorderRadius.circular(18),
         child: SmartImage(
           path: image,
           fit: BoxFit.cover,
           width: double.infinity,
+          height: double.infinity,
         ),
       ),
-    );
+    ).animate().fadeIn(duration: 500.ms).scale(begin: const Offset(0.95, 0.95));
   }
 }
 
@@ -314,21 +350,31 @@ class _SceneDescription extends StatelessWidget {
   final String title;
   final String text;
   final IconData icon;
+  final Widget? extra;
 
   const _SceneDescription({
     required this.title,
     required this.text,
     required this.icon,
+    this.extra,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.05),
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Colors.white.withValues(alpha: 0.08),
+            Colors.white.withValues(alpha: 0.02),
+          ],
+        ),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white10),
+        border: Border.all(color: Colors.white12),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -336,31 +382,38 @@ class _SceneDescription extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, color: ColorHelpers.cyan, size: 20),
-              const SizedBox(width: 12),
+              Icon(icon, color: ColorHelpers.cyan, size: 18),
+              const SizedBox(width: 10),
               Text(
                 title,
                 style: const TextStyle(
                   color: Colors.white,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w900,
                   letterSpacing: 2,
-                  fontSize: 14,
+                  fontSize: 12,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           Text(
             text,
             textAlign: TextAlign.center,
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
             style: const TextStyle(
               color: Colors.white70,
-              fontSize: 16,
-              height: 1.5,
+              fontSize: 14,
+              height: 1.4,
+              fontStyle: FontStyle.italic,
             ),
           ),
+          if (extra != null) ...[
+            const SizedBox(height: 16),
+            extra!,
+          ],
         ],
       ),
-    );
+    ).animate().slideY(begin: 0.2, end: 0, duration: 400.ms);
   }
 }

@@ -129,6 +129,7 @@ class _ArtifactsSectionState extends ConsumerState<ArtifactsSection>
                 indicatorWeight: 3,
                 tabs: allTabs
                     .map((k) => Tab(
+                          icon: k == 'readme' ? const Icon(Icons.description_outlined, size: 16) : null,
                           child: Text(
                             (k == 'proofs' ? '💡 Preuves Techniques' : GithubArtifactsService.labelFor(k)).toUpperCase(),
                             style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 1.1),

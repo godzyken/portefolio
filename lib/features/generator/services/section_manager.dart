@@ -82,19 +82,6 @@ class SectionManager {
     );
   }
 
-  ProjectSection _buildHeroSection() {
-    return ProjectSection(
-      id: 'hero',
-      title: 'Présentation',
-      icon: Icons.home,
-      builder: (context, info) => HeroSection(
-        project: project,
-        info: info,
-        hasProgrammingTag: hasProgrammingTag(),
-      ),
-    );
-  }
-
   ProjectSection _buildLivePreviewSection() {
     return ProjectSection(
       id: 'live_preview',

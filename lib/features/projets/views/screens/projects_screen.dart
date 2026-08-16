@@ -106,7 +106,6 @@ class _ProjectCardGrid extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final info = ref.watch(responsiveInfoProvider);
-    final theme = Theme.of(context);
 
     final cols = info.isMobile
         ? 1
