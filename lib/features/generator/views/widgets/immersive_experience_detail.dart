@@ -12,7 +12,7 @@ import 'package:portefolio/features/generator/views/generator_widgets_extentions
 import '../../../projets/data/project_data.dart';
 import '../../../projets/data/project_section.dart';
 import '../../services/experience_section_manager.dart';
-import '../caracter_widget.dart';
+import 'caracter_widget.dart';
 
 /// Écran de détail immersif — expériences professionnelles.
 ///

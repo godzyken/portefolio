@@ -291,6 +291,7 @@ class _CyberNode extends StatelessWidget {
         border: Border.all(
             color: ColorHelpers.cyan.withValues(alpha: 0.6), width: 2),
         boxShadow: [
+          BoxShape.circle,
           BoxShadow(
             color: ColorHelpers.cyan.withValues(alpha: 0.3),
             blurRadius: 6,

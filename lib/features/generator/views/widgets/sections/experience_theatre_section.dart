@@ -6,7 +6,7 @@ import 'package:portefolio/core/affichage/tech_maturity_framework.dart';
 import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
 import 'package:portefolio/core/ui/widgets/narrative_bubble.dart';
 import '../../../../experience/data/experiences_data.dart';
-import '../services/section_manager.dart';
+import '../../../services/section_manager.dart';
 
 /// Version immersive et narrative pour une expérience professionnelle.
 /// Reproduit le layout du "Théâtre du Projet" pour les expériences.
