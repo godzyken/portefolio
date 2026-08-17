@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:rive/rive.dart';
 import 'package:portefolio/core/affichage/colors_spec.dart';
@@ -7,12 +8,12 @@ enum AvatarState { idle, talking, thinking }
 
 class AvatarDisplay extends StatefulWidget {
   final AvatarState state;
-  final String? rivAsset;
+  final String rivAsset;
 
   const AvatarDisplay({
     super.key,
     this.state = AvatarState.idle,
-    this.rivAsset,
+    this.rivAsset = 'assets/images/animations/avatar_animate.riv',
   });
 
   @override
@@ -28,14 +29,31 @@ class _AvatarDisplayState extends State<AvatarDisplay> {
   @override
   void initState() {
     super.initState();
-    if (widget.rivAsset != null) {
-      _loadRive();
-    }
+    _loadRive();
   }
 
   void _loadRive() {
-    // Logique de chargement Rive si on avait un fichier
-    // Sera implémentée quand l'asset .riv sera fourni
+    rootBundle.load(widget.rivAsset).then(
+      (data) async {
+        try {
+          final file = RiveFile.import(data);
+          final artboard = file.mainArtboard;
+          var controller = StateMachineController.fromArtboard(artboard, 'State Machine 1');
+          if (controller != null) {
+            artboard.addController(controller);
+            _isTalking = controller.findSMI('isTalking');
+            _isThinking = controller.findSMI('isThinking');
+          }
+          setState(() {
+            _riveArtboard = artboard;
+            _controller = controller;
+          });
+          _updateState();
+        } catch (e) {
+          debugPrint('Error loading Rive file: $e');
+        }
+      },
+    );
   }
 
   @override
@@ -61,7 +79,7 @@ class _AvatarDisplayState extends State<AvatarDisplay> {
     // tant que Rive n'est pas pleinement actif avec un asset.
     final _ = [_isTalking, _isThinking]; 
 
-    if (widget.rivAsset == null || _riveArtboard == null) {
+    if (_riveArtboard == null) {
       return _buildFallback();
     }
 
