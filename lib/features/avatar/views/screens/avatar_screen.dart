@@ -68,11 +68,25 @@ class _AvatarScreenState extends ConsumerState<AvatarScreen> {
 
     return Stack(
       children: [
-        // 1. L'AVATAR EN FOND (Plus grand)
+        // 1. L'AVATAR EN FOND (Plein écran)
         Positioned.fill(
-          child: Opacity(
-            opacity: 0.9,
-            child: AvatarDisplay(state: state),
+          child: AvatarDisplay(state: state),
+        ),
+
+        // Gradient subtil pour améliorer la lisibilité du texte
+        Positioned.fill(
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: [
+                  Colors.black.withValues(alpha: 0.4),
+                  Colors.transparent,
+                  Colors.black.withValues(alpha: 0.4),
+                ],
+              ),
+            ),
           ),
         ),
 

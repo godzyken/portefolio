@@ -100,15 +100,15 @@ class _AvatarDisplayState extends State<AvatarDisplay> {
 
   @override
   Widget build(BuildContext context) {
-    // Pour l'instant, on ignore les inputs inutilisés pour éviter les warnings
-    // tant que Rive n'est pas pleinement actif avec un asset.
-    final _ = [_isTalking, _isThinking]; 
-
     if (_riveArtboard == null) {
       return _buildFallback();
     }
 
-    return Rive(artboard: _riveArtboard!);
+    return Rive(
+      artboard: _riveArtboard!,
+      fit: BoxFit.cover, // ✅ Remplit l'écran comme un fond de studio
+      alignment: Alignment.center,
+    );
   }
 
   Widget _buildFallback() {
