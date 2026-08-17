@@ -40,6 +40,17 @@ class ExperienceTheatreSection extends StatelessWidget {
 
           const SizedBox(height: 24),
 
+          // BULLE IA (MOBILE : AU DESSUS DU CONTENU)
+          if (info.isMobile)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 20),
+              child: NarrativeBubble(
+                text: experience.tags.contains('Flutter') 
+                  ? "Cette expérience a été un pilier pour ma maîtrise de la Production Readiness."
+                  : "Une immersion riche en défis techniques et organisationnels.",
+              ),
+            ),
+
           // CONTENU NARRATIF + BULLES IA
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -53,6 +64,7 @@ class ExperienceTheatreSection extends StatelessWidget {
                     const SizedBox(height: 16),
                     if (experience.missions.isNotEmpty)
                       _MissionsCard(missions: experience.missions),
+                    const SizedBox(height: 40), // Padding pour le scroll mobile
                   ],
                 ),
               ),
@@ -112,6 +124,8 @@ class _ExperienceHeader extends StatelessWidget {
                   children: [
                     Text(
                       "Immersion '${experience.entreprise}' (${experience.poste})",
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         color: ColorHelpers.cyan,
                         fontWeight: FontWeight.bold,

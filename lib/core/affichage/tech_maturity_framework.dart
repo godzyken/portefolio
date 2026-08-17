@@ -194,13 +194,15 @@ class IAMaturityAnalysisCard extends StatelessWidget {
             children: [
               const Icon(Icons.auto_awesome, color: ColorHelpers.cyan, size: 20),
               const SizedBox(width: 12),
-              Text(
-                'AUDIT TECHNIQUE (IA ANALYZED)',
-                style: TextStyle(
-                  color: ColorHelpers.cyan.withValues(alpha: 0.9),
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.5,
-                  fontSize: 12,
+              const Expanded(
+                child: Text(
+                  'AUDIT TECHNIQUE (IA ANALYZED)',
+                  style: TextStyle(
+                    color: ColorHelpers.cyan,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.5,
+                    fontSize: 12,
+                  ),
                 ),
               ),
             ],

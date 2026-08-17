@@ -6,6 +6,7 @@ import 'package:portefolio/core/affichage/tech_maturity_framework.dart';
 import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:portefolio/core/ui/widgets/narrative_bubble.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../../core/provider/tracking_provider.dart';
 import '../../../../../core/service/tracking_service.dart';
@@ -146,21 +147,35 @@ class _VisionScene extends StatelessWidget {
     final manager = SectionManager(project);
     final storylineText = manager.storyline;
     
-    return Column(
+    final isCompact = info.size.height < 600;
+
+    return SingleChildScrollView(
       key: const ValueKey('vision'),
-      children: [
-        if (images.isNotEmpty)
-          Expanded(
-            flex: 4,
-            child: _SceneHeroImage(image: images[0]),
+      child: Column(
+        children: [
+          // BULLE IA (MOBILE)
+          if (info.isMobile)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: NarrativeBubble(
+                text: "Découvrez la genèse de ce projet. C'est ici que l'idée a pris vie.",
+              ),
+            ),
+
+          if (images.isNotEmpty)
+            Container(
+              height: isCompact ? 180 : 250,
+              margin: const EdgeInsets.only(bottom: 16),
+              child: _SceneHeroImage(image: images[0]),
+            ),
+          _SceneDescription(
+            title: "LA VISION",
+            text: storylineText,
+            icon: Icons.auto_awesome,
           ),
-        const SizedBox(height: 16),
-        _SceneDescription(
-          title: "LA VISION",
-          text: storylineText,
-          icon: Icons.auto_awesome,
-        ),
-      ],
+          const SizedBox(height: 60), // Plus d'espace en bas pour le scroll
+        ],
+      ),
     );
   }
 }
@@ -175,30 +190,42 @@ class _ForgeScene extends StatelessWidget {
   Widget build(BuildContext context) {
     final manager = SectionManager(project);
     final maturity = manager.analyzeMaturity();
+    final isCompact = info.size.height < 600;
     
-    // On récupère l'image LinkedIn du pilier le plus fort
     String? techImageUrl;
     if (maturity.isNotEmpty) {
       final topPillar = maturity.entries.reduce((a, b) => a.value > b.value ? a : b).key;
       techImageUrl = topPillar.skillImage;
     }
 
-    return Column(
+    return SingleChildScrollView(
       key: const ValueKey('forge'),
-      children: [
-        if (techImageUrl != null)
-          Expanded(
-            flex: 4,
-            child: _SceneHeroImage(image: techImageUrl, isTech: true),
+      child: Column(
+        children: [
+          // BULLE IA (MOBILE)
+          if (info.isMobile)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: NarrativeBubble(
+                text: "La forge technique. C'est ici que la magie opère avec une stack moderne et robuste.",
+              ),
+            ),
+
+          if (techImageUrl != null)
+            Container(
+              height: isCompact ? 180 : 250,
+              margin: const EdgeInsets.only(bottom: 16),
+              child: _SceneHeroImage(image: techImageUrl, isTech: true),
+            ),
+          _SceneDescription(
+            title: "LA TECHNIQUE",
+            text: "Chaque choix technique est une brique vers la Production Readiness. Sécurité, Performance et Scalabilité.",
+            icon: Icons.terminal_rounded,
+            extra: TechMaturityRadar(scores: maturity, compact: true),
           ),
-        const SizedBox(height: 16),
-        _SceneDescription(
-          title: "LA TECHNIQUE",
-          text: "Chaque choix technique est une brique vers la Production Readiness. Sécurité, Performance et Scalabilité.",
-          icon: Icons.terminal_rounded,
-          extra: TechMaturityRadar(scores: maturity, compact: true),
-        ),
-      ],
+          const SizedBox(height: 60),
+        ],
+      ),
     );
   }
 }
@@ -231,81 +258,88 @@ class _ImpactScene extends StatelessWidget {
     final results = project.results ?? ["Succès opérationnel."];
     final images = project.cleanedImages ?? project.image ?? [];
     final mainImage = images.isNotEmpty ? images[0] : null;
+    final isCompact = info.size.height < 600;
     
-    return Column(
+    return SingleChildScrollView(
       key: const ValueKey('impact'),
-      children: [
-        Expanded(
-          flex: 4,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              // FOND DE MISE EN SCÈNE
-              Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.03),
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: ColorHelpers.cyan.withValues(alpha: 0.2)),
-                ),
+      child: Column(
+        children: [
+          // BULLE IA (MOBILE)
+          if (info.isMobile)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: NarrativeBubble(
+                text: "L'impact final. Une solution prête pour la production avec des résultats concrets.",
               ),
-              
-              // MOCKUP MOBILE (MISE EN VIE)
-              if (mainImage != null)
-                Positioned(
-                  top: 20,
-                  bottom: 20,
-                  child: Container(
-                    width: info.isMobile ? 180 : 220,
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.black,
-                      borderRadius: BorderRadius.circular(30),
-                      border: Border.all(color: Colors.white24, width: 4),
-                      boxShadow: [
-                        BoxShadow(
-                          color: ColorHelpers.cyan.withValues(alpha: 0.3),
-                          blurRadius: 30,
+            ),
+
+          Container(
+            height: isCompact ? 200 : 280,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.03),
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: ColorHelpers.cyan.withValues(alpha: 0.2)),
+            ),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                if (mainImage != null)
+                  Positioned(
+                    top: 15,
+                    bottom: 15,
+                    child: Container(
+                      width: info.isMobile ? 140 : 180,
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: Colors.black,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: Colors.white24, width: 3),
+                        boxShadow: [
+                          BoxShadow(
+                            color: ColorHelpers.cyan.withValues(alpha: 0.3),
+                            blurRadius: 20,
+                          ),
+                        ],
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(15),
+                        child: SmartImage(
+                          path: mainImage,
+                          fit: BoxFit.cover,
                         ),
-                      ],
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(22),
-                      child: SmartImage(
-                        path: mainImage,
-                        fit: BoxFit.cover,
                       ),
                     ),
-                  ),
-                ).animate().slideY(begin: 0.5, end: 0, duration: const Duration(milliseconds: 800), curve: Curves.elasticOut),
+                  ).animate().slideY(begin: 0.5, end: 0, duration: const Duration(milliseconds: 800), curve: Curves.elasticOut),
 
-              // BOUTON ACTION
-              if (project.lienProjet != null)
-                Positioned(
-                  bottom: 40,
-                  child: FilledButton.icon(
-                    onPressed: _openLiveSite,
-                    icon: const Icon(Icons.rocket_launch_rounded),
-                    label: const Text("VOIR LE RÉSULTAT LIVE", 
-                      style: TextStyle(fontWeight: FontWeight.w900, fontSize: 11, letterSpacing: 1.2)),
-                    style: FilledButton.styleFrom(
-                      backgroundColor: ColorHelpers.cyan,
-                      foregroundColor: Colors.black,
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    ),
-                  ).animate().scale(delay: const Duration(milliseconds: 600)),
-                ),
-            ],
+                if (project.lienProjet != null)
+                  Positioned(
+                    bottom: 20,
+                    child: FilledButton.icon(
+                      onPressed: _openLiveSite,
+                      icon: const Icon(Icons.rocket_launch_rounded, size: 14),
+                      label: const Text("VOIR LE RÉSULTAT LIVE", 
+                        style: TextStyle(fontWeight: FontWeight.w900, fontSize: 10, letterSpacing: 1.1)),
+                      style: FilledButton.styleFrom(
+                        backgroundColor: ColorHelpers.cyan,
+                        foregroundColor: Colors.black,
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      ),
+                    ).animate().scale(delay: const Duration(milliseconds: 600)),
+                  ),
+              ],
+            ),
           ),
-        ),
-        const SizedBox(height: 16),
-        _SceneDescription(
-          title: "L'IMPACT",
-          text: results[0],
-          icon: Icons.check_circle_outline,
-        ),
-      ],
+          const SizedBox(height: 16),
+          _SceneDescription(
+            title: "L'IMPACT",
+            text: results[0],
+            icon: Icons.check_circle_outline,
+          ),
+          const SizedBox(height: 60),
+        ],
+      ),
     );
   }
 }
@@ -400,8 +434,6 @@ class _SceneDescription extends StatelessWidget {
           Text(
             text,
             textAlign: TextAlign.center,
-            maxLines: 3,
-            overflow: TextOverflow.ellipsis,
             style: const TextStyle(
               color: Colors.white70,
               fontSize: 14,

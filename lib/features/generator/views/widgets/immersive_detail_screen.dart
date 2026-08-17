@@ -88,7 +88,7 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
             ),
           ),
 
-          // PERSONNAGE 3D ET BULLE NARRATIVE
+          // PERSONNAGE 3D ET BULLE NARRATIVE (DESKTOP SEULEMENT)
           if (!info.isMobile)
             Positioned(
               left: showSidebar ? 280 : 20,
@@ -112,16 +112,6 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
                     ),
                   ],
                 ),
-              ),
-            )
-          else
-            // Version Mobile : Juste la bulle flottante en haut (discrète)
-            Positioned(
-              top: 80,
-              left: 16,
-              right: 16,
-              child: NarrativeBubble(
-                text: _getNarrativeText(activeSection),
               ),
             ),
 

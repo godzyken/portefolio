@@ -65,6 +65,8 @@ class _ArtifactsSectionState extends ConsumerState<ArtifactsSection>
       ),
     );
 
+    final isLandscape = widget.info.orientation == Orientation.landscape;
+
     return asyncArtifacts.when(
       loading: () => const Center(
         child: Padding(
@@ -77,14 +79,12 @@ class _ArtifactsSectionState extends ConsumerState<ArtifactsSection>
         if (artifacts.isEmpty) return const SizedBox.shrink();
 
         final keys = GithubArtifactsService.sortedKeys(artifacts);
-        _syncTabController(keys);
-
+        
         final manager = SectionManager(widget.project);
         final maturityScores = manager.analyzeMaturity();
 
-        // Ajout dynamique d'un onglet "Preuves Techniques" basé sur les images LinkedIn
         final technicalImages = maturityScores.entries
-            .where((e) => e.value > 0.5) // Seulement les points forts
+            .where((e) => e.value > 0.5)
             .map((e) => e.key.skillImage)
             .toSet()
             .toList();
@@ -96,136 +96,147 @@ class _ArtifactsSectionState extends ConsumerState<ArtifactsSection>
 
         _syncTabController(allTabs);
 
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const ResponsiveText.titleMedium(
-              '📖 Immersion Projet (IA Solution)',
-              style: TextStyle(
-                color: ColorHelpers.cyan,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1.0,
-              ),
-            ),
-            const SizedBox(height: 20),
-            
-            // ANALYSE DE MATURITÉ (IA)
-            IAMaturityAnalysisCard(scores: maturityScores),
-            
-            const SizedBox(height: 24),
-            
-            // TABS NAVIGATION IMMERSIVE
-            Container(
-              decoration: BoxDecoration(
-                border: Border(bottom: BorderSide(color: ColorHelpers.border.withValues(alpha: 0.5))),
-              ),
-              child: TabBar(
-                controller: _tabController,
-                isScrollable: true,
-                dividerColor: Colors.transparent,
-                labelColor: ColorHelpers.cyan,
-                unselectedLabelColor: ColorHelpers.textSecondary,
-                indicatorColor: ColorHelpers.cyan,
-                indicatorWeight: 3,
-                tabs: allTabs
-                    .map((k) => Tab(
-                          icon: k == 'readme' ? const Icon(Icons.description_outlined, size: 16) : null,
-                          child: Text(
-                            (k == 'proofs' ? '💡 Preuves Techniques' : GithubArtifactsService.labelFor(k)).toUpperCase(),
-                            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 1.1),
-                          ),
-                        ))
-                    .toList(),
-              ),
-            ),
-            
-            const SizedBox(height: 16),
-            
-            // CONTENU MD AVEC EFFET GLASS
-            SizedBox(
-              height: widget.info.isMobile ? 400 : 500,
-              child: TabBarView(
-                controller: _tabController,
-                children: allTabs.map((k) {
-                  if (k == 'proofs') {
-                    return _TechnicalProofsGallery(images: technicalImages);
-                  }
-
-                  return ClipRRect(
-                    borderRadius: BorderRadius.circular(24),
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-                      child: Container(
-                        padding: const EdgeInsets.all(24),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [
-                              ColorHelpers.cyan.withValues(alpha: 0.1),
-                              Colors.black.withValues(alpha: 0.4),
-                            ],
-                          ),
-                          borderRadius: BorderRadius.circular(24),
-                          border: Border.all(
-                            color: ColorHelpers.cyan.withValues(alpha: 0.3),
-                            width: 1.5,
-                          ),
-                        ),
-                        child: Markdown(
-                          data: artifacts[k]!,
-                          selectable: true,
-                          styleSheet: MarkdownStyleSheet.fromTheme(
-                            Theme.of(context),
-                          ).copyWith(
-                            p: const TextStyle(
-                              color: ColorHelpers.textSecondary,
-                              height: 1.6,
-                              fontSize: 14,
-                            ),
-                            h1: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 22,
-                            ),
-                            h2: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),
-                            code: const TextStyle(
-                              backgroundColor: Colors.black45,
-                              color: ColorHelpers.cyan,
-                              fontFamily: 'monospace',
-                            ),
-                            blockquoteDecoration: BoxDecoration(
-                              color: Colors.white10,
-                              borderRadius: BorderRadius.circular(8),
-                              border: const Border(left: BorderSide(color: ColorHelpers.cyan, width: 4)),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                }).toList(),
-              ),
-            ),
-            
-            const SizedBox(height: 12),
-            Center(
-              child: Text(
-                "Framework d'expertise basé sur Flutter Production Readiness & LinkedIn Insights",
+        return SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const ResponsiveText.titleMedium(
+                '📖 Immersion Projet (IA Solution)',
                 style: TextStyle(
-                  color: ColorHelpers.textMuted.withValues(alpha: 0.5),
-                  fontSize: 10,
-                  fontStyle: FontStyle.italic,
+                  color: ColorHelpers.cyan,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.0,
                 ),
               ),
-            ),
-          ],
+              const SizedBox(height: 20),
+              
+              IAMaturityAnalysisCard(scores: maturityScores),
+              
+              const SizedBox(height: 24),
+              
+              Container(
+                decoration: BoxDecoration(
+                  border: Border(bottom: BorderSide(color: ColorHelpers.border.withValues(alpha: 0.5))),
+                ),
+                child: TabBar(
+                  controller: _tabController,
+                  isScrollable: true,
+                  dividerColor: Colors.transparent,
+                  labelColor: ColorHelpers.cyan,
+                  unselectedLabelColor: ColorHelpers.textSecondary,
+                  indicatorColor: ColorHelpers.cyan,
+                  indicatorWeight: 3,
+                  tabs: allTabs
+                      .map((k) => Tab(
+                            icon: k == 'readme' ? const Icon(Icons.description_outlined, size: 16) : null,
+                            child: Text(
+                              (k == 'proofs' ? '💡 Preuves Techniques' : GithubArtifactsService.labelFor(k)).toUpperCase(),
+                              style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 1.1),
+                            ),
+                          ))
+                      .toList(),
+                ),
+              ),
+              
+              const SizedBox(height: 16),
+              
+              SizedBox(
+                height: isLandscape ? 300 : (widget.info.isMobile ? 450 : 550),
+                child: TabBarView(
+                  controller: _tabController,
+                  children: allTabs.map((k) {
+                    if (k == 'proofs') {
+                      return _TechnicalProofsGallery(images: technicalImages);
+                    }
+  
+                    return _MarkdownContentCard(content: artifacts[k]!);
+                  }).toList(),
+                ),
+              ),
+              
+              const SizedBox(height: 20),
+              Center(
+                child: Text(
+                  "Framework d'expertise basé sur Flutter Production Readiness & LinkedIn Insights",
+                  style: TextStyle(
+                    color: ColorHelpers.textMuted.withValues(alpha: 0.5),
+                    fontSize: 10,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 40), // Padding pour éviter que le menu mobile cache le texte
+            ],
+          ),
         );
       },
+    );
+  }
+}
+
+class _MarkdownContentCard extends StatelessWidget {
+  final String content;
+  const _MarkdownContentCard({required this.content});
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(24),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                ColorHelpers.cyan.withValues(alpha: 0.1),
+                Colors.black.withValues(alpha: 0.4),
+              ],
+            ),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(
+              color: ColorHelpers.cyan.withValues(alpha: 0.3),
+              width: 1.5,
+            ),
+          ),
+          child: Markdown(
+            data: content,
+            selectable: true,
+            shrinkWrap: false, // On veut que le Markdown gère son propre scroll à l'intérieur de la TabBarView
+            styleSheet: MarkdownStyleSheet.fromTheme(
+              Theme.of(context),
+            ).copyWith(
+              p: const TextStyle(
+                color: ColorHelpers.textSecondary,
+                height: 1.6,
+                fontSize: 14,
+              ),
+              h1: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 22,
+              ),
+              h2: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              ),
+              code: const TextStyle(
+                backgroundColor: Colors.black45,
+                color: ColorHelpers.cyan,
+                fontFamily: 'monospace',
+              ),
+              blockquoteDecoration: BoxDecoration(
+                color: Colors.white10,
+                borderRadius: BorderRadius.circular(8),
+                border: const Border(left: BorderSide(color: ColorHelpers.cyan, width: 4)),
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
