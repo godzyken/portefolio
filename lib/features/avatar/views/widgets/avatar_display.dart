@@ -38,19 +38,37 @@ class _AvatarDisplayState extends State<AvatarDisplay> {
         try {
           final file = RiveFile.import(data);
           final artboard = file.mainArtboard;
-          var controller = StateMachineController.fromArtboard(artboard, 'State Machine 1');
+
+          // 🤖 DÉTECTION AUTOMATIQUE : 
+          // On cherche 'State Machine 1', sinon on prend la première disponible.
+          final smName = artboard.stateMachines.any((sm) => sm.name == 'State Machine 1')
+              ? 'State Machine 1'
+              : (artboard.stateMachines.isNotEmpty ? artboard.stateMachines.first.name : null);
+
+          if (smName == null) return;
+
+          var controller = StateMachineController.fromArtboard(artboard, smName);
           if (controller != null) {
             artboard.addController(controller);
-            _isTalking = controller.findSMI('isTalking');
-            _isThinking = controller.findSMI('isThinking');
+            
+            // On cherche les inputs (insensible à la casse pour plus de souplesse)
+            for (var input in controller.inputs) {
+              final name = input.name.toLowerCase();
+              if (name.contains('talk')) _isTalking = input as SMIInput<bool>;
+              if (name.contains('think')) _isThinking = input as SMIInput<bool>;
+              
+              debugPrint('✅ Avatar Rive : Input détecté -> ${input.name}');
+            }
+            debugPrint('✅ Avatar Rive : State Machine utilisée -> $smName');
           }
+
           setState(() {
             _riveArtboard = artboard;
             _controller = controller;
           });
           _updateState();
         } catch (e) {
-          debugPrint('Error loading Rive file: $e');
+          debugPrint('❌ Erreur chargement Rive Avatar : $e');
         }
       },
     );

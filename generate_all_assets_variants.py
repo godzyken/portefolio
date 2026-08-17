@@ -19,7 +19,7 @@ import os
 
 # --- CONFIGURATION DES FORMATS ---
 RASTER_EXTS = {'.png', '.jpg', '.jpeg', '.webp'}
-COPY_ONLY_EXTS = {'.svg', '.json', '.gltf', '.bin', '.glb'}
+COPY_ONLY_EXTS = {'.svg', '.json', '.gltf', '.bin', '.glb', '.riv'}
 
 # --- CONFIGURATION DES CHEMINS ET TAILLES ---
 DEFAULT_SOURCE_DIR = Path('assets_source')
