@@ -6,6 +6,9 @@ import '../../projets/data/project_data.dart';
 import '../../projets/data/project_section.dart';
 import '../views/generator_widgets_extentions.dart';
 
+import '../views/widgets/sections/experience_theatre_section.dart';
+import '../../../core/affichage/tech_maturity_framework.dart';
+
 /// Tags qui indiquent une expérience IT / développement logiciel
 const _kItTags = {
   'flutter',
@@ -141,9 +144,9 @@ class ExperienceSectionManager {
 
   ProjectSection _presentationSection() => ProjectSection(
         id: 'presentation',
-        title: 'Présentation',
-        icon: Icons.business_center_outlined,
-        builder: (context, info) => ExperiencePresentationSection(
+        title: 'Storytelling',
+        icon: Icons.auto_stories_outlined,
+        builder: (context, info) => ExperienceTheatreSection(
           experience: experience,
           info: info,
         ),

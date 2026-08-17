@@ -11,6 +11,9 @@ import '../../../projets/data/project_data.dart';
 import '../../../projets/data/project_section.dart';
 import '../../services/experience_section_manager.dart';
 
+import '../../../../core/ui/widgets/narrative_bubble.dart';
+import '../caracter_widget.dart';
+
 /// Écran de détail immersif — expériences professionnelles.
 ///
 /// Utilise [ExperienceSectionManager] pour détecter automatiquement
@@ -143,6 +146,29 @@ class _ImmersiveExperienceDetailState
                 ],
               ),
             ),
+
+            // ── PERSONNAGE 3D ET NARRATION (Comme dans l'image de référence) ──
+            if (!info.isMobile)
+              Positioned(
+                right: 20,
+                bottom: 20,
+                child: SizedBox(
+                  width: 300,
+                  height: 450,
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      // Circuit lines / Connectivity background effect
+                      Positioned.fill(
+                        child: CustomPaint(
+                          painter: _CircuitPainter(),
+                        ),
+                      ),
+                      const CharacterViewer(),
+                    ],
+                  ),
+                ),
+              ),
 
             // ── Bouton fermer ─────────────────────────────────────────────
             Positioned(
@@ -361,4 +387,36 @@ class _CloseButton extends StatelessWidget {
       ),
     );
   }
+}
+
+class _CircuitPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = ColorHelpers.cyan.withValues(alpha: 0.15)
+      ..strokeWidth = 1.5
+      ..style = PaintingStyle.stroke;
+
+    final path = Path();
+    
+    // Simuler des lignes de circuit / connectivité
+    path.moveTo(size.width * 0.2, size.height);
+    path.lineTo(size.width * 0.2, size.height * 0.7);
+    path.lineTo(size.width * 0.5, size.height * 0.5);
+    path.lineTo(size.width * 0.5, size.height * 0.2);
+    
+    path.moveTo(size.width * 0.8, size.height);
+    path.lineTo(size.width * 0.8, size.height * 0.6);
+    path.lineTo(size.width * 0.4, size.height * 0.4);
+    
+    canvas.drawPath(path, paint);
+
+    // Petits points aux intersections
+    final dotPaint = Paint()..color = ColorHelpers.cyan.withValues(alpha: 0.4);
+    canvas.drawCircle(Offset(size.width * 0.5, size.height * 0.5), 4, dotPaint);
+    canvas.drawCircle(Offset(size.width * 0.4, size.height * 0.4), 3, dotPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

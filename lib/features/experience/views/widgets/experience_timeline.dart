@@ -14,6 +14,8 @@ final fadeCtrlProvider = Provider<AnimationController>((_) {
   throw UnimplementedError();
 });
 
+import 'package:portefolio/features/generator/views/widgets/immersive_experience_detail.dart';
+
 class ExperienceTimeline extends ConsumerWidget {
   final List<Experience> experiences;
   const ExperienceTimeline({super.key, required this.experiences});
@@ -144,101 +146,14 @@ class ExperienceTimeline extends ConsumerWidget {
     Experience experience,
     ResponsiveInfo info,
   ) {
-    showModalBottomSheet(
-      context: context,
-      useSafeArea: true,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => DraggableScrollableSheet(
-        expand: false,
-        initialChildSize: 0.7,
-        minChildSize: 0.5,
-        maxChildSize: 0.95,
-        builder: (context, scrollController) {
-          return Container(
-            decoration: BoxDecoration(
-              color: ColorHelpers.surface,
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(24)),
-              border: Border(
-                top: BorderSide(
-                  color: ColorHelpers.cyan.withValues(alpha: 0.3),
-                  width: 1.5,
-                ),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: ColorHelpers.cyan.withValues(alpha: 0.12),
-                  blurRadius: 40,
-                  spreadRadius: -8,
-                  offset: const Offset(0, -6),
-                ),
-              ],
-            ),
-            child: SingleChildScrollView(
-              controller: scrollController,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-              child: UnifiedContentCard(
-                title: experience.entreprise,
-                subtitle: "${experience.poste} • ${experience.periode}",
-                leading: Hero(
-                  tag: experience.id,
-                  child: ClipOval(
-                    child: SmartImage(
-                      path: experience.logo,
-                      width: 64,
-                      height: 64,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                content: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (experience.contexte.isNotEmpty) ...[
-                      ResponsiveText(
-                        experience.contexte,
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      const SizedBox(height: 12),
-                    ],
-                    if (experience.missions.isNotEmpty) ...[
-                      ResponsiveText("🎯 Missions",
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleSmall
-                              ?.copyWith(fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 4),
-                      ...experience.missions.map(
-                        (m) => Padding(
-                          padding: const EdgeInsets.only(bottom: 4),
-                          child: Text("• $m",
-                              style: Theme.of(context).textTheme.bodySmall),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                    ],
-                    if (experience.resultats.isNotEmpty) ...[
-                      ResponsiveText("🏁 Résultats",
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleSmall
-                              ?.copyWith(fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 4),
-                      ...experience.resultats.map(
-                        (r) => Padding(
-                          padding: const EdgeInsets.only(bottom: 4),
-                          child: Text("• $r",
-                              style: Theme.of(context).textTheme.bodySmall),
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-            ),
-          );
-        },
+    Navigator.of(context).push(
+      PageRouteBuilder(
+        pageBuilder: (_, a, __) => FadeTransition(
+          opacity: a,
+          child: ImmersiveExperienceDetail(experience: experience),
+        ),
+        transitionDuration: const Duration(milliseconds: 400),
+        fullscreenDialog: true,
       ),
     );
   }
