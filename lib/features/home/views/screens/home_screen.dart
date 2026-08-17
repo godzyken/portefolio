@@ -24,15 +24,30 @@ class HomeScreen extends ConsumerWidget {
       secondaryColor: theme.colorScheme.secondary,
       starCount: 150,
       child: SafeArea(
-        child: LayoutBuilder(builder: (context, constraints) {
-          return info.isPortrait
-              ? _buildPortraitLayout(context, info, theme)
-              : SingleChildScrollView(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 48, vertical: 32),
-                  child: _buildLandscapeLayout(context, info, theme),
-                );
-        }),
+        child: Stack(
+          children: [
+            LayoutBuilder(builder: (context, constraints) {
+              return info.isPortrait
+                  ? _buildPortraitLayout(context, info, theme)
+                  : SingleChildScrollView(
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: 48, vertical: 32),
+                      child: _buildLandscapeLayout(context, info, theme),
+                    );
+            }),
+            Positioned(
+              right: 24,
+              bottom: 24,
+              child: FloatingActionButton.extended(
+                onPressed: () => context.go('/avatar'),
+                backgroundColor: ColorHelpers.cyan,
+                foregroundColor: Colors.black,
+                icon: const Icon(Icons.psychology),
+                label: const Text("Besoin d'aide ?", style: TextStyle(fontWeight: FontWeight.bold)),
+              ).animate().scale(delay: const Duration(seconds: 2), duration: const Duration(milliseconds: 500)),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -219,6 +234,22 @@ class HomeScreen extends ConsumerWidget {
           icon: const Icon(Icons.work_outline),
           label: 'Voir mes projets',
           style: _btnStyle(theme, isMobile),
+        ),
+        ResponsiveButton.icon(
+          onPressed: () => context.go('/avatar'),
+          icon: const Icon(Icons.psychology_outlined, color: ColorHelpers.cyan),
+          label: 'Parler à mon Avatar',
+          style: OutlinedButton.styleFrom(
+            padding: EdgeInsets.symmetric(
+              horizontal: isMobile ? 24 : 32,
+              vertical: isMobile ? 16 : 20,
+            ),
+            side: const BorderSide(color: ColorHelpers.cyan, width: 2),
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+          ),
         ),
         ResponsiveButton.icon(
           onPressed: () => context.go('/contact'),

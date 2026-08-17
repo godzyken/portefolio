@@ -25,6 +25,7 @@ enum AppTab {
   home(path: '/', label: 'Home', icon: Icons.home),
   experiences(path: '/experiences', label: 'Exp', icon: Icons.history),
   projects(path: '/projects', label: 'Projets', icon: Icons.work),
+  avatar(path: '/avatar', label: 'Avatar IA', icon: Icons.psychology),
   contact(path: '/contact', label: 'Contact', icon: Icons.mail);
 
   final String path;
@@ -177,6 +178,9 @@ enum AppTab {
           ],
         );
 
+      case AppTab.avatar:
+        return const AppBarConfig(title: "Avatar Interactif");
+
       case AppTab.contact:
         return const AppBarConfig(title: "Contact");
     }
@@ -185,6 +189,7 @@ enum AppTab {
   static AppTab fromLocation(String location) {
     if (location.startsWith('/experiences')) return AppTab.experiences;
     if (location.startsWith('/projects')) return AppTab.projects;
+    if (location.startsWith('/avatar')) return AppTab.avatar;
     if (location.startsWith('/contact')) return AppTab.contact;
     return AppTab.home;
   }

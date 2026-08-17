@@ -53,11 +53,14 @@ class _AvatarDisplayState extends State<AvatarDisplay> {
             
             // On cherche les inputs (insensible à la casse pour plus de souplesse)
             for (var input in controller.inputs) {
-              final name = input.name.toLowerCase();
-              if (name.contains('talk')) _isTalking = input as SMIInput<bool>;
-              if (name.contains('think')) _isThinking = input as SMIInput<bool>;
-              
-              debugPrint('✅ Avatar Rive : Input détecté -> ${input.name}');
+              if (input is SMIInput<bool>) {
+                final name = input.name.toLowerCase();
+                if (name.contains('talk')) _isTalking = input;
+                if (name.contains('think')) _isThinking = input;
+                debugPrint('✅ Avatar Rive : Input bool détecté -> ${input.name}');
+              } else {
+                debugPrint('💡 Avatar Rive : Autre input trouvé -> ${input.name} (${input.runtimeType})');
+              }
             }
             debugPrint('✅ Avatar Rive : State Machine utilisée -> $smName');
           }

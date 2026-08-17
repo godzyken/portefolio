@@ -12,6 +12,7 @@ class AvatarScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    debugPrint('🚀 Build AvatarScreen');
     final info = ref.watch(responsiveInfoProvider);
     final chatState = ref.watch(avatarChatProvider);
     final isSpeaking = ref.watch(voiceServiceProvider);
@@ -24,18 +25,9 @@ class AvatarScreen extends ConsumerWidget {
       avatarState = AvatarState.talking;
     }
 
-    return Scaffold(
-      backgroundColor: ColorHelpers.surface,
-      appBar: AppBar(
-        title: const Text("AVATAR INTERACTIF", style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 2)),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
-      body: info.isMobile 
+    return Material(
+      color: ColorHelpers.surface,
+      child: info.isMobile 
           ? _buildMobileLayout(avatarState) 
           : _buildDesktopLayout(avatarState, info),
     );

@@ -37,6 +37,14 @@ class PortfolioFooter extends ConsumerWidget {
                 route: '/legal',
               ),
               _buildFooterInfo(
+                context,
+                theme,
+                info,
+                Icons.psychology_outlined,
+                'Parler à mon Avatar IA',
+                route: '/avatar',
+              ),
+              _buildFooterInfo(
                   context, theme, info, Icons.verified, 'Devis gratuit'),
             ],
           ),
