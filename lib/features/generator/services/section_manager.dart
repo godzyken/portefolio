@@ -268,6 +268,15 @@ class SectionManager {
         (project.resultsMap?.isNotEmpty ?? false);
   }
 
+  /// Retourne la storyline du projet avec un fallback
+  String get storyline {
+    try {
+      return project.storyline ?? (project.points.isNotEmpty ? project.points[0] : "Conception d'une solution innovante.");
+    } catch (_) {
+      return project.points.isNotEmpty ? project.points[0] : "Conception d'une solution innovante.";
+    }
+  }
+
   /// Retourne la liste des images du projet
   List<String> getImages() {
     final images = project.cleanedImages ?? project.image;

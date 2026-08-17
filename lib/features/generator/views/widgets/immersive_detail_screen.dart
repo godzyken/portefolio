@@ -150,10 +150,11 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
   }
 
   String _getNarrativeText(String sectionId) {
-    // On pourrait tirer ça du JSON projects.json plus tard
+    final manager = SectionManager(widget.project);
+    
     switch (sectionId) {
       case 'hero':
-        return "Bienvenue dans l'univers de ${widget.project.title}. Laissez-moi vous guider à travers les coulisses de ce projet.";
+        return manager.storyline;
       case 'tech':
         return "La forge technique. C'est ici que la magie opère avec une stack moderne et robuste.";
       case 'artifacts':

@@ -143,7 +143,8 @@ class _VisionScene extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final images = project.cleanedImages ?? project.image ?? [];
-    final storyline = (project as dynamic).storyline ?? project.points[0];
+    final manager = SectionManager(project);
+    final storylineText = manager.storyline;
     
     return Column(
       key: const ValueKey('vision'),
@@ -156,7 +157,7 @@ class _VisionScene extends StatelessWidget {
         const SizedBox(height: 16),
         _SceneDescription(
           title: "LA VISION",
-          text: storyline,
+          text: storylineText,
           icon: Icons.auto_awesome,
         ),
       ],
