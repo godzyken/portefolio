@@ -7,7 +7,6 @@ import '../../projets/data/project_section.dart';
 import '../views/generator_widgets_extentions.dart';
 
 import '../views/widgets/sections/experience_theatre_section.dart';
-import '../../../core/affichage/tech_maturity_framework.dart';
 
 /// Tags qui indiquent une expérience IT / développement logiciel
 const _kItTags = {
