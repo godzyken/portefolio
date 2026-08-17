@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/avatar/views/screens/avatar_screen.dart';
 import '../../features/about/views/screens/legal_mentions_screen.dart';
 import '../../features/admin/views/screens/admin_dashboard_screen.dart';
 import '../../features/admin/views/screens/admin_login_screen.dart';
@@ -121,6 +122,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               path: '/diagnostic',
               name: 'diagnostic',
               builder: (_, __) => const DiagnosticScreen(),
+            ),
+            GoRoute(
+              path: '/avatar',
+              name: 'avatar',
+              builder: (_, __) => const AvatarScreen(),
             ),
             GoRoute(
               path: '/legal',

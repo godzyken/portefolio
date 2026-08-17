@@ -69,6 +69,7 @@ dependencies:
   flutter_map_tile_caching: ^10.1.1
   objectbox_flutter_libs: ^4.3.1
   cloudflare_turnstile: ^3.7.2
+  rive: ^0.13.13
 
 
 dev_dependencies:

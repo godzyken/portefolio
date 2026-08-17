@@ -8,6 +8,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   geolocator_windows
   objectbox_flutter_libs
   printing
+  rive_common
   url_launcher_windows
 )
 

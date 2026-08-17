@@ -71,6 +71,11 @@ public final class GeneratedPluginRegistrant {
       Log.e(TAG, "Error registering plugin printing, net.nfet.flutter.printing.PrintingPlugin", e);
     }
     try {
+      flutterEngine.getPlugins().add(new app.rive.rive.RivePlugin());
+    } catch (Exception e) {
+      Log.e(TAG, "Error registering plugin rive_common, app.rive.rive.RivePlugin", e);
+    }
+    try {
       flutterEngine.getPlugins().add(new io.flutter.plugins.sharedpreferences.SharedPreferencesPlugin());
     } catch (Exception e) {
       Log.e(TAG, "Error registering plugin shared_preferences_android, io.flutter.plugins.sharedpreferences.SharedPreferencesPlugin", e);
