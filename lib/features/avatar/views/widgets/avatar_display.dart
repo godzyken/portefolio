@@ -33,48 +33,52 @@ class _AvatarDisplayState extends State<AvatarDisplay> {
   }
 
   void _loadRive() {
+    debugPrint('📥 Tentative de chargement Rive : ${widget.rivAsset}');
+    
     rootBundle.load(widget.rivAsset).then(
       (data) async {
         try {
+          // ✅ INITIALISATION REQUISE POUR LE WEB
+          await RiveFile.initialize();
+          
           final file = RiveFile.import(data);
           final artboard = file.mainArtboard;
 
-          // 🤖 DÉTECTION AUTOMATIQUE : 
-          // On cherche 'State Machine 1', sinon on prend la première disponible.
+          // On affiche l'artboard dès qu'il est chargé, même sans machine à états
+          setState(() => _riveArtboard = artboard);
+
+          // 🤖 DÉTECTION DE LA MACHINE À ÉTATS
           final smName = artboard.stateMachines.any((sm) => sm.name == 'State Machine 1')
               ? 'State Machine 1'
               : (artboard.stateMachines.isNotEmpty ? artboard.stateMachines.first.name : null);
 
-          if (smName == null) return;
-
-          var controller = StateMachineController.fromArtboard(artboard, smName);
-          if (controller != null) {
-            artboard.addController(controller);
-            
-            // On cherche les inputs (insensible à la casse pour plus de souplesse)
-            for (var input in controller.inputs) {
-              if (input is SMIInput<bool>) {
-                final name = input.name.toLowerCase();
-                if (name.contains('talk')) _isTalking = input;
-                if (name.contains('think')) _isThinking = input;
-                debugPrint('✅ Avatar Rive : Input bool détecté -> ${input.name}');
-              } else {
-                debugPrint('💡 Avatar Rive : Autre input trouvé -> ${input.name} (${input.runtimeType})');
+          if (smName != null) {
+            var controller = StateMachineController.fromArtboard(artboard, smName);
+            if (controller != null) {
+              artboard.addController(controller);
+              
+              for (var input in controller.inputs) {
+                if (input is SMIInput<bool>) {
+                  final name = input.name.toLowerCase();
+                  if (name.contains('talk')) _isTalking = input;
+                  if (name.contains('think')) _isThinking = input;
+                }
               }
+              _controller = controller;
+              debugPrint('✅ Avatar Rive : Machine "$smName" activée');
             }
-            debugPrint('✅ Avatar Rive : State Machine utilisée -> $smName');
+          } else {
+            debugPrint('⚠️ Avatar Rive : Aucune State Machine trouvée dans le fichier');
           }
-
-          setState(() {
-            _riveArtboard = artboard;
-            _controller = controller;
-          });
+          
           _updateState();
         } catch (e) {
-          debugPrint('❌ Erreur chargement Rive Avatar : $e');
+          debugPrint('❌ Erreur interprétation Rive : $e');
         }
       },
-    );
+    ).catchError((err) {
+      debugPrint('❌ Fichier introuvable ou erreur réseau : $err');
+    });
   }
 
   @override
