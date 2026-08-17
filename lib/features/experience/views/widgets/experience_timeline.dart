@@ -4,6 +4,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
 import 'package:timelines_plus/timelines_plus.dart';
+import 'package:portefolio/features/generator/views/widgets/immersive_experience_detail.dart';
 
 import '../../../../core/affichage/colors_spec.dart';
 import '../../../../core/affichage/screen_size_detector.dart';
@@ -13,8 +14,6 @@ import '../../data/experiences_data.dart';
 final fadeCtrlProvider = Provider<AnimationController>((_) {
   throw UnimplementedError();
 });
-
-import 'package:portefolio/features/generator/views/widgets/immersive_experience_detail.dart';
 
 class ExperienceTimeline extends ConsumerWidget {
   final List<Experience> experiences;

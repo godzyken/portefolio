@@ -2,16 +2,16 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:portefolio/core/affichage/colors_spec.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
+import 'package:portefolio/core/ui/widgets/narrative_bubble.dart';
 import 'package:portefolio/features/experience/data/experiences_data.dart';
 import 'package:portefolio/features/generator/views/generator_widgets_extentions.dart';
 
 import '../../../projets/data/project_data.dart';
 import '../../../projets/data/project_section.dart';
 import '../../services/experience_section_manager.dart';
-
-import '../../../../core/ui/widgets/narrative_bubble.dart';
 import '../caracter_widget.dart';
 
 /// Écran de détail immersif — expériences professionnelles.
