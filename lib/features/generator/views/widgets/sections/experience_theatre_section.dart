@@ -73,7 +73,7 @@ class ExperienceTheatreSection extends StatelessWidget {
                         const SizedBox(height: 20),
                         const NarrativeBubble(
                           text: "L'approche 'Production Readiness' a permis de sécuriser le code et d'optimiser les performances de 40%.",
-                        ).animate().fadeIn(delay: 500.ms),
+                        ).animate().fadeIn(delay: const Duration(milliseconds: 500)),
                       ],
                     ),
                   ),
@@ -136,7 +136,7 @@ class _ExperienceHeader extends StatelessWidget {
           ],
         ],
       ),
-    ).animate().fadeIn(duration: 600.ms).slideX(begin: -0.05, end: 0);
+    ).animate().fadeIn(duration: const Duration(milliseconds: 600)).slideX(begin: -0.05, end: 0);
   }
 }
 

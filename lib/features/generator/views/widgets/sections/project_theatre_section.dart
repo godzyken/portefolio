@@ -52,7 +52,7 @@ class _ProjectTheatreSectionState extends ConsumerState<ProjectTheatreSection> {
         // THÉÂTRE (CONTENU DYNAMIQUE)
         Expanded(
           child: AnimatedSwitcher(
-            duration: 600.ms,
+            duration: const Duration(milliseconds: 600),
             transitionBuilder: (child, animation) {
               return FadeTransition(
                 opacity: animation,
@@ -277,7 +277,7 @@ class _ImpactScene extends StatelessWidget {
                       ),
                     ),
                   ),
-                ).animate().slideY(begin: 0.5, end: 0, duration: 800.ms, curve: Curves.elasticOut),
+                ).animate().slideY(begin: 0.5, end: 0, duration: const Duration(milliseconds: 800), curve: Curves.elasticOut),
 
               // BOUTON ACTION
               if (project.lienProjet != null)
@@ -294,7 +294,7 @@ class _ImpactScene extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
-                  ).animate().scale(delay: 600.ms),
+                  ).animate().scale(delay: const Duration(milliseconds: 600)),
                 ),
             ],
           ),
@@ -343,7 +343,7 @@ class _SceneHeroImage extends StatelessWidget {
           height: double.infinity,
         ),
       ),
-    ).animate().fadeIn(duration: 500.ms).scale(begin: const Offset(0.95, 0.95));
+    ).animate().fadeIn(duration: const Duration(milliseconds: 500)).scale(begin: const Offset(0.95, 0.95));
   }
 }
 
@@ -415,6 +415,6 @@ class _SceneDescription extends StatelessWidget {
           ],
         ],
       ),
-    ).animate().slideY(begin: 0.2, end: 0, duration: 400.ms);
+    ).animate().slideY(begin: 0.2, end: 0, duration: const Duration(milliseconds: 400));
   }
 }

@@ -77,7 +77,7 @@ class NarrativeBubble extends StatelessWidget {
       ),
     )
     .animate()
-    .fadeIn(duration: 400.ms)
+    .fadeIn(duration: const Duration(milliseconds: 400))
     .slideY(begin: 0.1, end: 0, curve: Curves.easeOutCubic);
   }
 }
