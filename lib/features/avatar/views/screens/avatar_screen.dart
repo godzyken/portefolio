@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/colors_spec.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
-import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
+import '../../services/voice_service.dart';
 import '../widgets/avatar_display.dart';
 import '../widgets/avatar_chat_panel.dart';
 import '../../notifiers/avatar_chat_notifier.dart';
@@ -14,13 +14,15 @@ class AvatarScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final info = ref.watch(responsiveInfoProvider);
     final chatState = ref.watch(avatarChatProvider);
+    final isSpeaking = ref.watch(voiceServiceProvider);
     
     // Déterminer l'état de l'avatar
-    final avatarState = chatState.isLoading 
-        ? AvatarState.thinking 
-        : (chatState.asData?.value.isNotEmpty ?? false)
-            ? (chatState.asData!.value.last.role == MessageRole.avatar ? AvatarState.talking : AvatarState.idle)
-            : AvatarState.idle;
+    AvatarState avatarState = AvatarState.idle;
+    if (chatState.isLoading) {
+      avatarState = AvatarState.thinking;
+    } else if (isSpeaking) {
+      avatarState = AvatarState.talking;
+    }
 
     return Scaffold(
       backgroundColor: ColorHelpers.surface,

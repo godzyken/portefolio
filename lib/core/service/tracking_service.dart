@@ -1,7 +1,16 @@
 import 'dart:developer' as developer;
 import '../service/supabase_service.dart';
 
-enum TrackingAction { whatsapp, call, email, formSubmit, linkClick }
+enum TrackingAction { 
+  whatsapp, 
+  call, 
+  email, 
+  formSubmit, 
+  linkClick,
+  avatarQuestionAsked,
+  avatarDepthMilestone,
+  avatarLeadQualified
+}
 
 class TrackingService {
   Future<void> trackInteraction({

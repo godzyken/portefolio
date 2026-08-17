@@ -35,6 +35,7 @@ class _AvatarDisplayState extends State<AvatarDisplay> {
 
   void _loadRive() {
     // Logique de chargement Rive si on avait un fichier
+    // Sera implémentée quand l'asset .riv sera fourni
   }
 
   @override
@@ -49,7 +50,17 @@ class _AvatarDisplayState extends State<AvatarDisplay> {
   }
 
   @override
+  void dispose() {
+    _controller?.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    // Pour l'instant, on ignore les inputs inutilisés pour éviter les warnings
+    // tant que Rive n'est pas pleinement actif avec un asset.
+    final _ = [_isTalking, _isThinking]; 
+
     if (widget.rivAsset == null || _riveArtboard == null) {
       return _buildFallback();
     }

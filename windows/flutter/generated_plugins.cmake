@@ -5,6 +5,7 @@
 list(APPEND FLUTTER_PLUGIN_LIST
   app_links
   flutter_inappwebview_windows
+  flutter_tts
   geolocator_windows
   objectbox_flutter_libs
   printing

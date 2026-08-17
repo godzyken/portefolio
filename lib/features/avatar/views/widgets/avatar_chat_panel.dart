@@ -4,8 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/colors_spec.dart';
 import 'package:portefolio/core/service/turnstile_service.dart';
 import 'package:portefolio/core/ui/widgets/narrative_bubble.dart';
-import '../data/avatar_message.dart';
-import '../notifiers/avatar_chat_notifier.dart';
+import '../../data/avatar_message.dart';
+import '../../notifiers/avatar_chat_notifier.dart';
+import '../../notifiers/engagement_notifier.dart';
+import '../../services/avatar_lead_service.dart';
 
 class AvatarChatPanel extends ConsumerStatefulWidget {
   const AvatarChatPanel({super.key});
@@ -110,6 +112,12 @@ class _AvatarChatPanelState extends ConsumerState<AvatarChatPanel> {
   }
 
   Widget _buildMessageBubble(AvatarMessage msg) {
+    if (msg.type == MessageType.leadForm) {
+      return _AvatarLeadForm(onSubmitted: () {
+        setState(() {}); // Rafraîchir pour enlever le form si besoin ou montrer succès
+      });
+    }
+
     if (msg.role == MessageRole.avatar) {
       return NarrativeBubble(text: msg.content);
     } else {
@@ -186,6 +194,144 @@ class _AvatarChatPanelState extends ConsumerState<AvatarChatPanel> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _AvatarLeadForm extends ConsumerStatefulWidget {
+  final VoidCallback onSubmitted;
+  const _AvatarLeadForm({required this.onSubmitted});
+
+  @override
+  ConsumerState<_AvatarLeadForm> createState() => _AvatarLeadFormState();
+}
+
+class _AvatarLeadFormState extends ConsumerState<_AvatarLeadForm> {
+  final _formKey = GlobalKey<FormState>();
+  final _nameCtrl = TextEditingController();
+  final _emailCtrl = TextEditingController();
+  bool _isSubmitting = false;
+  bool _isDone = false;
+
+  Future<void> _submit() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isSubmitting = true);
+
+    try {
+      final engagement = ref.read(engagementProvider.notifier);
+      final chatMessages = ref.read(avatarChatProvider).asData?.value ?? [];
+      
+      final summary = chatMessages
+          .where((m) => m.type == MessageType.text)
+          .map((m) => "${m.role.name}: ${m.content}")
+          .join("\n");
+
+      await ref.read(avatarLeadServiceProvider).submit(
+        name: _nameCtrl.text,
+        email: _emailCtrl.text,
+        conversationSummary: summary,
+        pillarsExplored: engagement.exploredPillars,
+        maxDepthScore: engagement.maxDepth,
+      );
+
+      setState(() {
+        _isDone = true;
+        _isSubmitting = false;
+      });
+      widget.onSubmitted();
+    } catch (e) {
+      setState(() => _isSubmitting = false);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Échec de l'envoi. Veuillez réessayer.")),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_isDone) {
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.green.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.green.withValues(alpha: 0.5)),
+        ),
+        child: const Row(
+          children: [
+            Icon(Icons.check_circle, color: Colors.green),
+            SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                "C'est noté ! Je t'envoie le résumé technique par email.",
+                style: TextStyle(color: Colors.white, fontSize: 13),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: ColorHelpers.surfaceAlt,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: ColorHelpers.cyan.withValues(alpha: 0.4)),
+      ),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "DEMANDE DE RÉSUMÉ TECHNIQUE",
+              style: TextStyle(color: ColorHelpers.cyan, fontWeight: FontWeight.bold, fontSize: 12),
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _nameCtrl,
+              style: const TextStyle(color: Colors.white, fontSize: 14),
+              decoration: _inputDecoration("Nom"),
+              validator: (v) => v == null || v.isEmpty ? "Requis" : null,
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _emailCtrl,
+              style: const TextStyle(color: Colors.white, fontSize: 14),
+              decoration: _inputDecoration("Email"),
+              validator: (v) => v == null || !v.contains('@') ? "Email invalide" : null,
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _isSubmitting ? null : _submit,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: ColorHelpers.cyan,
+                  foregroundColor: Colors.black,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                child: _isSubmitting
+                    ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                    : const Text("RECEVOIR LE RÉSUMÉ", style: TextStyle(fontWeight: FontWeight.bold)),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  InputDecoration _inputDecoration(String label) {
+    return InputDecoration(
+      labelText: label,
+      labelStyle: const TextStyle(color: ColorHelpers.textSecondary, fontSize: 12),
+      enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: ColorHelpers.border)),
+      focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: ColorHelpers.cyan)),
     );
   }
 }

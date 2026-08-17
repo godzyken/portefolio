@@ -1,7 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/provider/json_data_provider.dart';
-import 'package:portefolio/features/experience/data/experiences_data.dart';
-import 'package:portefolio/features/projets/data/project_data.dart';
 
 class AvatarContextBuilder {
   final Ref ref;
@@ -48,7 +46,7 @@ class AvatarContextBuilder {
     String context = buffer.toString();
     // Tronquage rudimentaire si trop long (estimation 1 mot ≈ 1.3 tokens)
     if (context.length > 12000) {
-      context = context.substring(0, 12000) + "... [Contexte tronqué]";
+      context = "${context.substring(0, 12000)}... [Contexte tronqué]";
     }
     
     return context;

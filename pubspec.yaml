@@ -70,6 +70,7 @@ dependencies:
   objectbox_flutter_libs: ^4.3.1
   cloudflare_turnstile: ^3.7.2
   rive: ^0.13.13
+  flutter_tts: ^4.2.2
 
 
 dev_dependencies:

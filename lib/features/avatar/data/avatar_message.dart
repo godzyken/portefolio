@@ -1,6 +1,8 @@
 import 'package:portefolio/core/affichage/tech_maturity_framework.dart';
 
-enum MessageRole { user, avatar }
+enum MessageRole { user, avatar, system }
+
+enum MessageType { text, leadForm }
 
 class AvatarMessage {
   final String id;
@@ -8,6 +10,7 @@ class AvatarMessage {
   final String content;
   final DateTime timestamp;
   final TechPillar? relatedPillar;
+  final MessageType type;
 
   AvatarMessage({
     required this.id,
@@ -15,6 +18,7 @@ class AvatarMessage {
     required this.content,
     required this.timestamp,
     this.relatedPillar,
+    this.type = MessageType.text,
   });
 
   Map<String, dynamic> toJson() => {
