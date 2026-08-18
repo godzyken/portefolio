@@ -10,9 +10,10 @@ class EngagementNotifier extends Notifier<Map<TechPillar, int>> {
   }
 
   void incrementPillar(TechPillar pillar) {
+    final currentCount = state[pillar] ?? 0;
     state = {
       ...state,
-      pillar: state[pillar]! + 1,
+      pillar: currentCount + 1,
     };
   }
 

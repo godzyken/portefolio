@@ -81,9 +81,10 @@ class _AvatarDisplayState extends State<AvatarDisplay> {
             }
           }
           target ??= file.mainArtboard.instance();
-          smName ??= target.stateMachines.isNotEmpty
-              ? target.stateMachines.first.name
-              : null;
+          
+          if (smName == null && target.stateMachines.isNotEmpty) {
+            smName = target.stateMachines.first.name;
+          }
 
           developer.log(
             '🎯 Artboard retenu: "${target.name}" — state machine: '
