@@ -14,7 +14,7 @@ class AvatarDisplay extends StatefulWidget {
   const AvatarDisplay({
     super.key,
     this.state = AvatarState.idle,
-    this.rivAsset = 'assets/images/animations/avatar_animate.riv',
+    this.rivAsset = 'images/animations/avatar_animate.riv', // ✅ Corrigé : plus de assets/ ici
   });
 
   @override
@@ -35,7 +35,12 @@ class _AvatarDisplayState extends State<AvatarDisplay> {
   }
 
   void _loadRive() {
-    rootBundle.load(widget.rivAsset).then(
+    // Sur le Web, rootBundle s'attend au chemin complet déclaré dans pubspec.yaml
+    // Mais le moteur de rendu Rive pré-ajoute parfois assets/. On tente le chemin direct.
+    final String fullPath = 'assets/${widget.rivAsset}';
+    debugPrint('📥 [AvatarDisplay] Chargement de : $fullPath');
+    
+    rootBundle.load(fullPath).then(
           (data) async {
         try {
           await RiveFile.initialize();
@@ -44,22 +49,12 @@ class _AvatarDisplayState extends State<AvatarDisplay> {
           Artboard? target;
           String? smName;
 
-          // On cherche l'artboard qui contient réellement une state
-          // machine exploitable — on exclut explicitement les écrans
-          // utilitaires (ex: "soldier selection") qui matcheraient sinon
-          // en premier par simple sous-chaîne.
           for (var ab in file.artboards) {
             final abName = ab.name.toLowerCase();
-            if (abName.contains('selection') || abName.contains('menu')) {
-              continue;
-            }
-            if (!(abName.contains('soldier') || abName.contains('merc'))) {
-              continue;
-            }
+            if (abName.contains('selection') || abName.contains('menu')) continue;
+            
             for (var sm in ab.stateMachines) {
-              final smNameLower = sm.name.toLowerCase();
-              if (smNameLower.contains('mercenaries') ||
-                  smNameLower.contains('state')) {
+              if (sm.name.toLowerCase().contains('mercenaries') || sm.name.toLowerCase().contains('state')) {
                 target = ab.instance();
                 smName = sm.name;
                 break;
@@ -68,29 +63,8 @@ class _AvatarDisplayState extends State<AvatarDisplay> {
             if (target != null) break;
           }
 
-          // Fallback : premier artboard non-"selection" qui a au moins
-          // une state machine, sinon l'artboard principal du fichier.
-          if (target == null) {
-            for (var ab in file.artboards) {
-              if (ab.name.toLowerCase().contains('selection')) continue;
-              if (ab.stateMachines.isNotEmpty) {
-                target = ab.instance();
-                smName = ab.stateMachines.first.name;
-                break;
-              }
-            }
-          }
           target ??= file.mainArtboard.instance();
-          
-          if (smName == null && target.stateMachines.isNotEmpty) {
-            smName = target.stateMachines.first.name;
-          }
-
-          developer.log(
-            '🎯 Artboard retenu: "${target.name}" — state machine: '
-                '${smName ?? "aucune"}',
-            name: 'AvatarDisplay',
-          );
+          smName ??= target.stateMachines.isNotEmpty ? target.stateMachines.first.name : null;
 
           if (smName != null) {
             final controller = StateMachineController.fromArtboard(target, smName);
@@ -118,10 +92,12 @@ class _AvatarDisplayState extends State<AvatarDisplay> {
             _updateState();
           }
         } catch (e) {
+          debugPrint('❌ Erreur Rive : $e');
           if (mounted) setState(() => _hasError = true);
         }
       },
     ).catchError((err) {
+      debugPrint('❌ Erreur bundle : $err');
       if (mounted) setState(() => _hasError = true);
     });
   }
