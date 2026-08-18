@@ -33,7 +33,7 @@ class _AvatarDisplayState extends State<AvatarDisplay> {
   }
 
   void _loadRive() {
-    debugPrint('📥 [AvatarDisplay] Tentative de chargement : ${widget.rivAsset}');
+    debugPrint('📥 [AvatarDisplay] Tentative : ${widget.rivAsset}');
     
     rootBundle.load(widget.rivAsset).then(
       (data) async {
@@ -41,57 +41,66 @@ class _AvatarDisplayState extends State<AvatarDisplay> {
           await RiveFile.initialize();
           final file = RiveFile.import(data);
           
-          // 🤖 RECHERCHE INTELLIGENTE DE L'ARTBOARD
           Artboard? targetArtboard;
           
-          // On liste tous les artboards pour trouver celui qui a la machine 'Two mercenaries'
+          // On cherche spécifiquement "soldier selection" ou celui qui a la machine
           for (final artboard in file.artboards) {
-            if (artboard.stateMachines.any((sm) => sm.name == 'Two mercenaries' || sm.name == 'State Machine 1')) {
+            if (artboard.name == 'soldier selection' || 
+                artboard.stateMachines.any((sm) => sm.name == 'Two mercenaries')) {
               targetArtboard = artboard.instance();
-              debugPrint('🎯 [AvatarDisplay] Artboard détecté : ${artboard.name}');
+              debugPrint('🎯 [AvatarDisplay] Artboard utilisé : ${artboard.name}');
               break;
             }
           }
 
-          // Si on n'a rien trouvé, on prend le mainArtboard
           targetArtboard ??= file.mainArtboard.instance();
 
-          // ⚙️ CONFIGURATION DU CONTROLLER
           final smName = targetArtboard.stateMachines.any((sm) => sm.name == 'Two mercenaries')
               ? 'Two mercenaries'
               : (targetArtboard.stateMachines.isNotEmpty ? targetArtboard.stateMachines.first.name : null);
 
-          StateMachineController? controller;
           if (smName != null) {
-            controller = StateMachineController.fromArtboard(targetArtboard, smName);
+            final controller = StateMachineController.fromArtboard(targetArtboard, smName);
             if (controller != null) {
               targetArtboard.addController(controller);
+              
+              // 🔍 SCAN COMPLET DES INPUTS POUR DEBUG
               for (var input in controller.inputs) {
+                debugPrint('💡 [AvatarDisplay] Input trouvé : ${input.name} (${input.runtimeType})');
+                
+                final name = input.name.toLowerCase();
                 if (input is SMIInput<bool>) {
-                  final name = input.name.toLowerCase();
                   if (name.contains('talk')) _isTalking = input;
                   if (name.contains('think')) _isThinking = input;
+                  
+                  // 🔥 AUTO-ACTIVER : Si c'est un sélecteur, on l'active par défaut
+                  if (name.contains('select') || name.contains('show')) {
+                    input.value = true;
+                  }
+                }
+                if (input is SMIInput<double> || input is SMIInput<int>) {
+                   // Si c'est un index (0 ou 1), on s'assure qu'il n'est pas à une valeur "vide"
+                   // (Souvent 0 ou 1 pour choisir entre les deux mercenaires)
                 }
               }
+              _controller = controller;
             }
           }
 
           if (mounted) {
             setState(() {
               _riveArtboard = targetArtboard;
-              _controller = controller;
               _hasError = false;
             });
             _updateState();
-            debugPrint('✅ [AvatarDisplay] Rendu prêt sur Artboard: ${targetArtboard?.name}');
           }
         } catch (e) {
-          debugPrint('❌ [AvatarDisplay] Erreur interprétation : $e');
+          debugPrint('❌ [AvatarDisplay] Erreur : $e');
           setState(() => _hasError = true);
         }
       },
     ).catchError((err) {
-      debugPrint('❌ [AvatarDisplay] Erreur accès fichier : $err');
+      debugPrint('❌ [AvatarDisplay] Erreur : $err');
       if (mounted) setState(() => _hasError = true);
     });
   }
@@ -118,27 +127,17 @@ class _AvatarDisplayState extends State<AvatarDisplay> {
     if (_hasError) return _buildErrorFallback();
     if (_riveArtboard == null) return _buildLoading();
 
-    return Rive(
-      artboard: _riveArtboard!,
-      fit: BoxFit.cover, // ✅ Remplit l'écran pour l'effet théâtre
-      alignment: Alignment.center,
-    );
-  }
-
-  Widget _buildLoading() {
-    return const Center(child: CircularProgressIndicator(color: ColorHelpers.cyan));
-  }
-
-  Widget _buildErrorFallback() {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.error_outline, color: Colors.redAccent, size: 40),
-          const SizedBox(height: 10),
-          Text("Erreur d'affichage", style: TextStyle(color: Colors.white.withValues(alpha: 0.5))),
-        ],
+    return Container(
+      color: Colors.white.withValues(alpha: 0.02), // Zone de rendu visible pour debug
+      child: Rive(
+        artboard: _riveArtboard!,
+        fit: BoxFit.fitHeight, // ✅ On privilégie la hauteur pour voir le corps entier
+        alignment: Alignment.bottomCenter, // ✅ On ancre au sol
       ),
     );
   }
+
+  Widget _buildLoading() => const Center(child: CircularProgressIndicator(color: ColorHelpers.cyan));
+
+  Widget _buildErrorFallback() => const Center(child: Icon(Icons.error_outline, color: Colors.redAccent));
 }
