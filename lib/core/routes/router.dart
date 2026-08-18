@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -20,8 +21,24 @@ import '../../features/projets/views/screens/projects_screen.dart';
 import '../notifier/notifiers.dart';
 import '../provider/providers.dart';
 
+/// Capture la route réellement demandée par l'utilisateur (deep link web
+/// via HashUrlStrategy, ex: recharger sur /#/avatar) AVANT que
+/// `initialLocation: '/splash'` ne l'écrase. Sans ça, le splash renvoyait
+/// systématiquement vers '/' quelle que soit l'URL demandée, ce qui faisait
+/// passer brièvement par HomeScreen (et son CharacterViewer 3D) à chaque
+/// chargement, même en arrivant directement sur /avatar.
+String _resolveDeepLinkTargetRoute() {
+  if (!kIsWeb) return '/';
+  final fragment = Uri.base.fragment;
+  if (fragment.isEmpty || fragment == '/splash' || fragment == '/') {
+    return '/';
+  }
+  return fragment.startsWith('/') ? fragment : '/$fragment';
+}
+
 final goRouterProvider = Provider<GoRouter>((ref) {
   final notifier = ref.read(routerNotifierProvider.notifier);
+  final deepLinkTarget = _resolveDeepLinkTargetRoute();
   // On crée les clés DIRECTEMENT ici
   // Elles seront recréées si le provider est invalidé (ex: logout)
   final rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
@@ -50,7 +67,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         GoRoute(
           path: '/splash',
           name: 'splash',
-          builder: (_, __) => const SplashScreen(targetRoute: '/'),
+          builder: (_, __) => SplashScreen(targetRoute: deepLinkTarget),
         ),
 
         // ── Admin (formulaire de gestion des tarifs, hors navbar publique) ─

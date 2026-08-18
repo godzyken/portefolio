@@ -1,3 +1,5 @@
+import 'dart:developer' as developer;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rive/rive.dart';
@@ -34,33 +36,60 @@ class _AvatarDisplayState extends State<AvatarDisplay> {
 
   void _loadRive() {
     rootBundle.load(widget.rivAsset).then(
-      (data) async {
+          (data) async {
         try {
           await RiveFile.initialize();
           final file = RiveFile.import(data);
-          
-          Artboard? target;
-          
-          // On cherche un artboard safe
-          for (var ab in file.artboards) {
-            if (ab.name.toLowerCase().contains('soldier') || ab.name.toLowerCase().contains('merc')) {
-              target = ab.instance();
-              break;
-            }
-          }
-          target ??= file.mainArtboard.instance();
 
-          // On cherche une machine à états safe
+          Artboard? target;
           String? smName;
-          if (target.stateMachines.isNotEmpty) {
-            for (var sm in target.stateMachines) {
-              if (sm.name.toLowerCase().contains('mercenaries') || sm.name.toLowerCase().contains('state')) {
+
+          // On cherche l'artboard qui contient réellement une state
+          // machine exploitable — on exclut explicitement les écrans
+          // utilitaires (ex: "soldier selection") qui matcheraient sinon
+          // en premier par simple sous-chaîne.
+          for (var ab in file.artboards) {
+            final abName = ab.name.toLowerCase();
+            if (abName.contains('selection') || abName.contains('menu')) {
+              continue;
+            }
+            if (!(abName.contains('soldier') || abName.contains('merc'))) {
+              continue;
+            }
+            for (var sm in ab.stateMachines) {
+              final smNameLower = sm.name.toLowerCase();
+              if (smNameLower.contains('mercenaries') ||
+                  smNameLower.contains('state')) {
+                target = ab.instance();
                 smName = sm.name;
                 break;
               }
             }
-            smName ??= target.stateMachines.first.name;
+            if (target != null) break;
           }
+
+          // Fallback : premier artboard non-"selection" qui a au moins
+          // une state machine, sinon l'artboard principal du fichier.
+          if (target == null) {
+            for (var ab in file.artboards) {
+              if (ab.name.toLowerCase().contains('selection')) continue;
+              if (ab.stateMachines.isNotEmpty) {
+                target = ab.instance();
+                smName = ab.stateMachines.first.name;
+                break;
+              }
+            }
+          }
+          target ??= file.mainArtboard.instance();
+          smName ??= target.stateMachines.isNotEmpty
+              ? target.stateMachines.first.name
+              : null;
+
+          developer.log(
+            '🎯 Artboard retenu: "${target.name}" — state machine: '
+                '${smName ?? "aucune"}',
+            name: 'AvatarDisplay',
+          );
 
           if (smName != null) {
             final controller = StateMachineController.fromArtboard(target, smName);
@@ -73,7 +102,7 @@ class _AvatarDisplayState extends State<AvatarDisplay> {
                   if (name.contains('think')) _isThinking = input;
                 }
                 if (name.contains('state') && input is SMIInput<double>) {
-                  input.value = 1.0; 
+                  input.value = 1.0;
                 }
               }
               _controller = controller;
