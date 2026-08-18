@@ -12,7 +12,7 @@ class AvatarDisplay extends StatefulWidget {
   const AvatarDisplay({
     super.key,
     this.state = AvatarState.idle,
-    this.rivAsset = 'assets/images/animations/avatar_animate.riv', // ✅ Chemin complet impératif
+    this.rivAsset = 'assets/images/animations/avatar_animate.riv',
   });
 
   @override
@@ -33,25 +33,39 @@ class _AvatarDisplayState extends State<AvatarDisplay> {
   }
 
   void _loadRive() {
-    debugPrint('📥 [AvatarDisplay] Chargement : ${widget.rivAsset}');
+    debugPrint('📥 [AvatarDisplay] Tentative de chargement : ${widget.rivAsset}');
     
     rootBundle.load(widget.rivAsset).then(
       (data) async {
         try {
           await RiveFile.initialize();
           final file = RiveFile.import(data);
-          final artboard = file.mainArtboard;
+          
+          // 🤖 RECHERCHE INTELLIGENTE DE L'ARTBOARD
+          Artboard? targetArtboard;
+          
+          // On liste tous les artboards pour trouver celui qui a la machine 'Two mercenaries'
+          for (final artboard in file.artboards) {
+            if (artboard.stateMachines.any((sm) => sm.name == 'Two mercenaries' || sm.name == 'State Machine 1')) {
+              targetArtboard = artboard.instance();
+              debugPrint('🎯 [AvatarDisplay] Artboard détecté : ${artboard.name}');
+              break;
+            }
+          }
 
-          // 🤖 DÉTECTION DE LA MACHINE À ÉTATS
-          final smName = artboard.stateMachines.any((sm) => sm.name == 'State Machine 1')
-              ? 'State Machine 1'
-              : (artboard.stateMachines.isNotEmpty ? artboard.stateMachines.first.name : null);
+          // Si on n'a rien trouvé, on prend le mainArtboard
+          targetArtboard ??= file.mainArtboard.instance();
+
+          // ⚙️ CONFIGURATION DU CONTROLLER
+          final smName = targetArtboard.stateMachines.any((sm) => sm.name == 'Two mercenaries')
+              ? 'Two mercenaries'
+              : (targetArtboard.stateMachines.isNotEmpty ? targetArtboard.stateMachines.first.name : null);
 
           StateMachineController? controller;
           if (smName != null) {
-            controller = StateMachineController.fromArtboard(artboard, smName);
+            controller = StateMachineController.fromArtboard(targetArtboard, smName);
             if (controller != null) {
-              artboard.addController(controller);
+              targetArtboard.addController(controller);
               for (var input in controller.inputs) {
                 if (input is SMIInput<bool>) {
                   final name = input.name.toLowerCase();
@@ -62,15 +76,14 @@ class _AvatarDisplayState extends State<AvatarDisplay> {
             }
           }
 
-          // ✅ MISE À JOUR DE L'ÉTAT POUR AFFICHAGE
           if (mounted) {
             setState(() {
-              _riveArtboard = artboard;
+              _riveArtboard = targetArtboard;
               _controller = controller;
               _hasError = false;
             });
             _updateState();
-            debugPrint('✅ [AvatarDisplay] Rendu prêt. Machine: $smName');
+            debugPrint('✅ [AvatarDisplay] Rendu prêt sur Artboard: ${targetArtboard?.name}');
           }
         } catch (e) {
           debugPrint('❌ [AvatarDisplay] Erreur interprétation : $e');
@@ -78,7 +91,7 @@ class _AvatarDisplayState extends State<AvatarDisplay> {
         }
       },
     ).catchError((err) {
-      debugPrint('❌ [AvatarDisplay] Erreur réseau/accès : $err');
+      debugPrint('❌ [AvatarDisplay] Erreur accès fichier : $err');
       if (mounted) setState(() => _hasError = true);
     });
   }
@@ -107,7 +120,7 @@ class _AvatarDisplayState extends State<AvatarDisplay> {
 
     return Rive(
       artboard: _riveArtboard!,
-      fit: BoxFit.contain, // ✅ On passe en contain pour être sûr de voir le perso au début
+      fit: BoxFit.cover, // ✅ Remplit l'écran pour l'effet théâtre
       alignment: Alignment.center,
     );
   }
@@ -123,16 +136,9 @@ class _AvatarDisplayState extends State<AvatarDisplay> {
         children: [
           const Icon(Icons.error_outline, color: Colors.redAccent, size: 40),
           const SizedBox(height: 10),
-          Text("Erreur d'affichage avatar", style: TextStyle(color: Colors.white.withValues(alpha: 0.5))),
+          Text("Erreur d'affichage", style: TextStyle(color: Colors.white.withValues(alpha: 0.5))),
         ],
       ),
     );
   }
-
-  Widget _buildFallback() {
-    // Gardé par compatibilité mais remplacé par _buildLoading/_buildError
-    return const SizedBox.shrink();
-  }
-
-  IconData _getIconForState() => Icons.face; // Non utilisé
 }
