@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:rive/rive.dart';
 import 'package:portefolio/core/affichage/colors_spec.dart';
 
@@ -13,7 +12,7 @@ class AvatarDisplay extends StatefulWidget {
   const AvatarDisplay({
     super.key,
     this.state = AvatarState.idle,
-    this.rivAsset = 'assets/images/animations/avatar_animate.riv',
+    this.rivAsset = 'assets/images/animations/avatar_animate.riv', // ✅ Chemin complet impératif
   });
 
   @override
@@ -25,6 +24,7 @@ class _AvatarDisplayState extends State<AvatarDisplay> {
   StateMachineController? _controller;
   SMIInput<bool>? _isTalking;
   SMIInput<bool>? _isThinking;
+  bool _hasError = false;
 
   @override
   void initState() {
@@ -33,30 +33,25 @@ class _AvatarDisplayState extends State<AvatarDisplay> {
   }
 
   void _loadRive() {
-    debugPrint('📥 Tentative de chargement Rive : ${widget.rivAsset}');
+    debugPrint('📥 [AvatarDisplay] Chargement : ${widget.rivAsset}');
     
     rootBundle.load(widget.rivAsset).then(
       (data) async {
         try {
-          // ✅ INITIALISATION REQUISE POUR LE WEB
           await RiveFile.initialize();
-          
           final file = RiveFile.import(data);
           final artboard = file.mainArtboard;
-
-          // On affiche l'artboard dès qu'il est chargé, même sans machine à états
-          setState(() => _riveArtboard = artboard);
 
           // 🤖 DÉTECTION DE LA MACHINE À ÉTATS
           final smName = artboard.stateMachines.any((sm) => sm.name == 'State Machine 1')
               ? 'State Machine 1'
               : (artboard.stateMachines.isNotEmpty ? artboard.stateMachines.first.name : null);
 
+          StateMachineController? controller;
           if (smName != null) {
-            var controller = StateMachineController.fromArtboard(artboard, smName);
+            controller = StateMachineController.fromArtboard(artboard, smName);
             if (controller != null) {
               artboard.addController(controller);
-              
               for (var input in controller.inputs) {
                 if (input is SMIInput<bool>) {
                   final name = input.name.toLowerCase();
@@ -64,20 +59,27 @@ class _AvatarDisplayState extends State<AvatarDisplay> {
                   if (name.contains('think')) _isThinking = input;
                 }
               }
-              _controller = controller;
-              debugPrint('✅ Avatar Rive : Machine "$smName" activée');
             }
-          } else {
-            debugPrint('⚠️ Avatar Rive : Aucune State Machine trouvée dans le fichier');
           }
-          
-          _updateState();
+
+          // ✅ MISE À JOUR DE L'ÉTAT POUR AFFICHAGE
+          if (mounted) {
+            setState(() {
+              _riveArtboard = artboard;
+              _controller = controller;
+              _hasError = false;
+            });
+            _updateState();
+            debugPrint('✅ [AvatarDisplay] Rendu prêt. Machine: $smName');
+          }
         } catch (e) {
-          debugPrint('❌ Erreur interprétation Rive : $e');
+          debugPrint('❌ [AvatarDisplay] Erreur interprétation : $e');
+          setState(() => _hasError = true);
         }
       },
     ).catchError((err) {
-      debugPrint('❌ Fichier introuvable ou erreur réseau : $err');
+      debugPrint('❌ [AvatarDisplay] Erreur réseau/accès : $err');
+      if (mounted) setState(() => _hasError = true);
     });
   }
 
@@ -88,8 +90,8 @@ class _AvatarDisplayState extends State<AvatarDisplay> {
   }
 
   void _updateState() {
-    _isTalking?.value = widget.state == AvatarState.talking;
-    _isThinking?.value = widget.state == AvatarState.thinking;
+    if (_isTalking != null) _isTalking!.value = widget.state == AvatarState.talking;
+    if (_isThinking != null) _isThinking!.value = widget.state == AvatarState.thinking;
   }
 
   @override
@@ -100,78 +102,37 @@ class _AvatarDisplayState extends State<AvatarDisplay> {
 
   @override
   Widget build(BuildContext context) {
-    if (_riveArtboard == null) {
-      return _buildFallback();
-    }
+    if (_hasError) return _buildErrorFallback();
+    if (_riveArtboard == null) return _buildLoading();
 
     return Rive(
       artboard: _riveArtboard!,
-      fit: BoxFit.cover, // ✅ Remplit l'écran comme un fond de studio
+      fit: BoxFit.contain, // ✅ On passe en contain pour être sûr de voir le perso au début
       alignment: Alignment.center,
     );
   }
 
-  Widget _buildFallback() {
+  Widget _buildLoading() {
+    return const Center(child: CircularProgressIndicator(color: ColorHelpers.cyan));
+  }
+
+  Widget _buildErrorFallback() {
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            width: 200,
-            height: 200,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: ColorHelpers.cyan, width: 2),
-              boxShadow: [
-                BoxShadow(
-                  color: ColorHelpers.cyan.withValues(alpha: 0.2),
-                  blurRadius: 20,
-                  spreadRadius: 5,
-                ),
-              ],
-            ),
-            child: Icon(
-              _getIconForState(),
-              size: 100,
-              color: ColorHelpers.cyan,
-            ),
-          )
-              .animate(onPlay: (controller) => controller.repeat())
-              .shimmer(duration: 2.seconds, color: ColorHelpers.cyan.withValues(alpha: 0.1))
-              .shake(hz: 2, curve: Curves.easeInOut),
-          const SizedBox(height: 20),
-          Text(
-            _getTextForState(),
-            style: const TextStyle(
-              color: ColorHelpers.cyan,
-              fontFamily: 'monospace',
-              letterSpacing: 1.2,
-            ),
-          ),
+          const Icon(Icons.error_outline, color: Colors.redAccent, size: 40),
+          const SizedBox(height: 10),
+          Text("Erreur d'affichage avatar", style: TextStyle(color: Colors.white.withValues(alpha: 0.5))),
         ],
       ),
     );
   }
 
-  IconData _getIconForState() {
-    switch (widget.state) {
-      case AvatarState.idle:
-        return Icons.face_rounded;
-      case AvatarState.talking:
-        return Icons.record_voice_over_rounded;
-      case AvatarState.thinking:
-        return Icons.psychology_rounded;
-    }
+  Widget _buildFallback() {
+    // Gardé par compatibilité mais remplacé par _buildLoading/_buildError
+    return const SizedBox.shrink();
   }
 
-  String _getTextForState() {
-    switch (widget.state) {
-      case AvatarState.idle:
-        return "SYSTÈME PRÊT";
-      case AvatarState.talking:
-        return "TRANSMISSION...";
-      case AvatarState.thinking:
-        return "ANALYSE EN COURS...";
-    }
-  }
+  IconData _getIconForState() => Icons.face; // Non utilisé
 }
