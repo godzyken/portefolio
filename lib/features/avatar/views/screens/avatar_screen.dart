@@ -104,11 +104,11 @@ class _AvatarScreenState extends ConsumerState<AvatarScreen> {
           ),
 
         // 3. LES SLIDES D'APPUI (À droite)
-        if (lastMessage?.relatedPillar != null)
+        if (lastMessage != null && lastMessage.relatedPillar != null)
           Positioned(
             right: info.isMobile ? 20 : 40,
             bottom: info.isMobile ? 120 : 150,
-            child: _buildPillarSlide(lastMessage!.relatedPillar!, info),
+            child: _buildPillarSlide(lastMessage.relatedPillar!, info),
           ),
 
         // 4. ZONE DE SAISIE (Discrète en bas)
