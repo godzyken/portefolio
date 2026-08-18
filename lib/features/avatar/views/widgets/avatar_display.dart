@@ -27,13 +27,14 @@ class _AvatarDisplayState extends ConsumerState<AvatarDisplay> {
   ViewModelInstanceNumber? _stateIndexBind;
 
   void _onLoaded(RiveLoaded loaded) {
+    debugPrint('🎬 [AvatarDisplay] Chargé : Artboard="${loaded.controller.artboard.name}"');
+    
     // 🔗 RÉCUPÉRATION DU VIEW MODEL (Data Binding)
     final viewModel = loaded.viewModelInstance;
     
     if (viewModel != null) {
-      debugPrint('🔗 Data Binding Rive détecté');
+      debugPrint('🔗 [AvatarDisplay] Data Binding Rive détecté');
       
-      // Accès aux propriétés définies dans l'éditeur Rive
       _isTalkingBind = viewModel.boolean('isTalking') ?? viewModel.boolean('talking');
       _isThinkingBind = viewModel.boolean('isThinking') ?? viewModel.boolean('thinking');
       _stateIndexBind = viewModel.number('State');
@@ -42,9 +43,9 @@ class _AvatarDisplayState extends ConsumerState<AvatarDisplay> {
         _stateIndexBind!.value = 1.0;
       }
     } else {
-      debugPrint('⚠️ Aucun View Model trouvé. On se replie sur les inputs classiques.');
-      final sm = loaded.controller.stateMachine;
-      // On peut aussi lier des BooleanInput/NumberInput ici en secours
+      debugPrint('⚠️ [AvatarDisplay] Aucun View Model trouvé. Utilisation des inputs classiques.');
+      final stateMachine = loaded.controller.stateMachine;
+      // On pourrait lier des inputs ici si nécessaire
     }
     
     _updateState();
@@ -66,13 +67,16 @@ class _AvatarDisplayState extends ConsumerState<AvatarDisplay> {
     return RiveWidgetBuilder(
       fileLoader: FileLoader.fromAsset(
         widget.rivAsset,
-        riveFactory: Factory.rive,
+        // ✅ On passe en Factory.flutter pour une compatibilité maximale sur le Web
+        riveFactory: Factory.flutter,
       ),
       // 🪄 ACTIVATION DU DATA BINDING AUTOMATIQUE
       dataBind: const AutoBind(),
       
-      artboardSelector: const ArtboardNamed('Soldier 1'),
+      // ✅ On laisse l'Artboard par défaut ou on cherche "soldier selection" qui semblait fonctionner
+      artboardSelector: const ArtboardNamed('soldier selection'),
       stateMachineSelector: const StateMachineNamed('Two mercenaries'),
+      
       onLoaded: _onLoaded,
       builder: (context, state) {
         if (state is RiveLoading) {
@@ -90,8 +94,16 @@ class _AvatarDisplayState extends ConsumerState<AvatarDisplay> {
         }
         
         if (state is RiveFailed) {
-          return const Center(
-            child: Icon(Icons.error_outline, color: Colors.redAccent),
+          debugPrint('❌ [AvatarDisplay] Erreur : ${state.error}');
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.error_outline, color: Colors.redAccent, size: 40),
+                const SizedBox(height: 8),
+                Text('Erreur Rive: ${state.error}', style: const TextStyle(color: Colors.white54, fontSize: 10)),
+              ],
+            ),
           );
         }
         
