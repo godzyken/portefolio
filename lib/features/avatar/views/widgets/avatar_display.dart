@@ -33,7 +33,7 @@ class _AvatarDisplayState extends State<AvatarDisplay> {
   }
 
   void _loadRive() {
-    debugPrint('📥 [AvatarDisplay] Tentative : ${widget.rivAsset}');
+    debugPrint('📥 [AvatarDisplay] Chargement : ${widget.rivAsset}');
     
     rootBundle.load(widget.rivAsset).then(
       (data) async {
@@ -41,58 +41,64 @@ class _AvatarDisplayState extends State<AvatarDisplay> {
           await RiveFile.initialize();
           final file = RiveFile.import(data);
           
-          Artboard? targetArtboard;
-          for (final artboard in file.artboards) {
-            if (artboard.name.toLowerCase().contains('soldier') || 
-                artboard.stateMachines.any((sm) => sm.name.toLowerCase().contains('mercenaries'))) {
-              targetArtboard = artboard.instance();
-              break;
-            }
+          // 🔍 DEBUG : Lister tous les Artboards disponibles
+          for (var ab in file.artboards) {
+            debugPrint('🗂️ Artboard disponible dans le fichier : ${ab.name}');
           }
 
-          targetArtboard ??= file.mainArtboard.instance();
+          // On cherche l'Artboard le plus probable
+          Artboard? target;
+          try {
+            // Tentative 1 : chercher un artboard qui contient "soldier" ou "mercenary"
+            target = file.artboards.firstWhere(
+              (ab) => ab.name.toLowerCase().contains('soldier') || ab.name.toLowerCase().contains('merc'),
+            ).instance();
+          } catch (_) {
+            // Tentative 2 : prendre le mainArtboard
+            target = file.mainArtboard.instance();
+          }
 
-          // On cherche la machine à états
-          final sm = targetArtboard.stateMachines.firstWhere(
-            (sm) => sm.name.toLowerCase().contains('mercenaries') || sm.name == 'State Machine 1',
-            orElse: () => targetArtboard!.stateMachines.first,
-          );
+          debugPrint('🎯 [AvatarDisplay] Artboard sélectionné : ${target.name}');
 
-          final controller = StateMachineController.fromArtboard(targetArtboard, sm.name);
-          
-          if (controller != null) {
-            targetArtboard.addController(controller);
-            
-            for (var input in controller.inputs) {
-              final name = input.name.toLowerCase();
-              if (input is SMIInput<bool>) {
-                if (name.contains('talk')) _isTalking = input;
-                if (name.contains('think')) _isThinking = input;
+          // On cherche une machine à états
+          if (target.stateMachines.isNotEmpty) {
+            final sm = target.stateMachines.firstWhere(
+              (s) => s.name.toLowerCase().contains('mercenaries') || s.name.toLowerCase().contains('state'),
+              orElse: () => target!.stateMachines.first,
+            );
+
+            final controller = StateMachineController.fromArtboard(target, sm.name);
+            if (controller != null) {
+              target.addController(controller);
+              for (var input in controller.inputs) {
+                final name = input.name.toLowerCase();
+                if (input is SMIInput<bool>) {
+                  if (name.contains('talk')) _isTalking = input;
+                  if (name.contains('think')) _isThinking = input;
+                }
+                // 🔥 On essaie de forcer l'affichage
+                if (name.contains('state') && input is SMIInput<double>) {
+                  input.value = 1.0; 
+                }
               }
-              // 🔥 ON FORCE L'AFFICHAGE DU MERCENAIRE
-              if (name.contains('state') && input is SMIInput<double>) {
-                input.value = 1.0; // On sélectionne le premier soldat
-                debugPrint('🚀 [AvatarDisplay] State forcé à 1.0');
-              }
+              _controller = controller;
             }
           }
 
           if (mounted) {
             setState(() {
-              _riveArtboard = targetArtboard;
-              _controller = controller; // On stocke pour le dispose
+              _riveArtboard = target;
               _hasError = false;
             });
             _updateState();
-            debugPrint('✅ [AvatarDisplay] Prêt sur Artboard: ${targetArtboard.name}');
           }
         } catch (e) {
-          debugPrint('❌ [AvatarDisplay] Erreur : $e');
+          debugPrint('❌ [AvatarDisplay] Erreur build : $e');
           if (mounted) setState(() => _hasError = true);
         }
       },
     ).catchError((err) {
-      debugPrint('❌ [AvatarDisplay] Erreur FATALE : $err');
+      debugPrint('❌ [AvatarDisplay] Erreur Asset : $err');
       if (mounted) setState(() => _hasError = true);
     });
   }
@@ -104,7 +110,6 @@ class _AvatarDisplayState extends State<AvatarDisplay> {
   }
 
   void _updateState() {
-    // Sécurisation contre le null check
     if (_isTalking != null) _isTalking!.value = widget.state == AvatarState.talking;
     if (_isThinking != null) _isThinking!.value = widget.state == AvatarState.thinking;
   }
