@@ -24,6 +24,7 @@ class _AvatarScreenState extends ConsumerState<AvatarScreen> {
   @override
   Widget build(BuildContext context) {
     debugPrint('🚀 Build AvatarScreen');
+    
     final info = ref.watch(responsiveInfoProvider);
     final chatState = ref.watch(avatarChatProvider);
     final isSpeaking = ref.watch(voiceServiceProvider);
@@ -56,17 +57,14 @@ class _AvatarScreenState extends ConsumerState<AvatarScreen> {
       ),
       body: _isTheatreMode 
           ? _buildTheatreLayout(avatarState, info, chatState)
-          : (info.isMobile ? _buildMobileLayout(avatarState) : _buildDesktopLayout(avatarState, info)),
+          : _buildChatLayout(avatarState, info),
     );
   }
 
   Widget _buildTheatreLayout(AvatarState state, ResponsiveInfo info, AsyncValue<List<AvatarMessage>> chatState) {
     final List<AvatarMessage> messages = chatState.asData?.value ?? [];
-    final AvatarMessage? lastMessage = messages.isNotEmpty ? messages.last : null;
-    final bool isAvatarTalking = (lastMessage?.role == MessageRole.avatar) || state == AvatarState.thinking;
-
-    // ✅ SÉCURISATION DU PILIER TECHNIQUE
-    final TechPillar? activePillar = lastMessage?.relatedPillar;
+    final AvatarMessage? lastMsg = messages.isEmpty ? null : messages.last;
+    final bool isAvatarTalking = (lastMsg?.role == MessageRole.avatar) || (state == AvatarState.thinking);
 
     return Stack(
       children: [
@@ -74,7 +72,7 @@ class _AvatarScreenState extends ConsumerState<AvatarScreen> {
         
         Positioned.fill(
           child: Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               gradient: LinearGradient(
                 colors: [Colors.black45, Colors.transparent, Colors.black45],
               ),
@@ -82,21 +80,21 @@ class _AvatarScreenState extends ConsumerState<AvatarScreen> {
           ),
         ),
 
-        if (lastMessage != null && isAvatarTalking)
+        if (lastMsg != null && isAvatarTalking)
           Positioned(
             left: info.isMobile ? 20 : 50,
             top: info.isMobile ? 100 : 150,
             child: SizedBox(
-              width: info.isMobile ? info.size.width - 40 : 400,
-              child: NarrativeBubble(text: lastMessage.content).animate().fadeIn().slideX(begin: -0.1, end: 0),
+              width: info.isMobile ? (info.size.width - 40) : 400,
+              child: NarrativeBubble(text: lastMsg.content).animate().fadeIn(),
             ),
           ),
 
-        if (activePillar != null)
+        if (lastMsg != null && lastMsg.relatedPillar != null)
           Positioned(
             right: info.isMobile ? 20 : 40,
             bottom: info.isMobile ? 120 : 150,
-            child: _buildPillarSlide(activePillar, info),
+            child: _buildPillarSlide(lastMsg.relatedPillar!, info),
           ),
 
         Positioned(
@@ -105,7 +103,7 @@ class _AvatarScreenState extends ConsumerState<AvatarScreen> {
           bottom: 0,
           child: Container(
             padding: EdgeInsets.only(bottom: info.isMobile ? 20 : 40, left: 20, right: 20),
-            child: _CompactInputArea(),
+            child: const _CompactInputArea(),
           ),
         ),
       ],
@@ -129,17 +127,13 @@ class _AvatarScreenState extends ConsumerState<AvatarScreen> {
             child: Image.asset(pillar.skillImage, height: info.isMobile ? 120 : 250, fit: BoxFit.cover),
           ),
           const SizedBox(height: 12),
-          Text(pillar.label.toUpperCase(), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900)),
+          Text(pillar.label.toUpperCase(), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         ],
       ).animate().fadeIn().scale(),
     );
   }
 
-  Widget _buildMobileLayout(AvatarState state) {
-     return Material(color: ColorHelpers.surface, child: Center(child: AvatarDisplay(state: state)));
-  }
-
-  Widget _buildDesktopLayout(AvatarState state, ResponsiveInfo info) {
+  Widget _buildChatLayout(AvatarState state, ResponsiveInfo info) {
     return Material(
       color: ColorHelpers.surface,
       child: Row(
@@ -154,12 +148,19 @@ class _AvatarScreenState extends ConsumerState<AvatarScreen> {
 }
 
 class _CompactInputArea extends ConsumerStatefulWidget {
+  const _CompactInputArea();
   @override
   ConsumerState<_CompactInputArea> createState() => _CompactInputAreaState();
 }
 
 class _CompactInputAreaState extends ConsumerState<_CompactInputArea> {
   final _ctrl = TextEditingController();
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Row(
