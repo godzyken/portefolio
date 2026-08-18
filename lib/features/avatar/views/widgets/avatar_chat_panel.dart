@@ -96,7 +96,7 @@ class _AvatarChatPanelState extends ConsumerState<AvatarChatPanel> {
           const SizedBox(height: 24),
           if (TurnstileService.isConfigured)
             CloudflareTurnstile(
-              siteKey: TurnstileService.siteKey!,
+              siteKey: TurnstileService.siteKey ?? '',
               onTokenReceived: (token) {
                 setState(() => _isVerified = true);
               },
@@ -214,7 +214,8 @@ class _AvatarLeadFormState extends ConsumerState<_AvatarLeadForm> {
   bool _isDone = false;
 
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) return;
+    final formState = _formKey.currentState;
+    if (formState == null || !formState.validate()) return;
 
     setState(() => _isSubmitting = true);
 

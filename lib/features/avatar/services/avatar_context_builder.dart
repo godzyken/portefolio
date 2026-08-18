@@ -33,7 +33,7 @@ class AvatarContextBuilder {
       }
       buffer.writeln("  Points clés : ${proj.points.join(', ')}");
       if (proj.tags != null) {
-        buffer.writeln("  Tags : ${proj.tags!.join(', ')}");
+        buffer.writeln("  Tags : ${proj.tags?.join(', ')}");
       }
     }
 
