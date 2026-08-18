@@ -15,11 +15,20 @@ class SplashScreen extends ConsumerStatefulWidget {
   final Color? backgroundColor;
   final String targetRoute;
 
+  /// Si false, ce SplashScreen sert uniquement d'indicateur visuel de
+  /// chargement — il ne relance PAS le provider de précache et ne
+  /// déclenche AUCUNE navigation. Utilisé quand SplashScreen est réutilisé
+  /// comme simple placeholder (ex: PrecacheWrapper qui enveloppe déjà
+  /// l'app entière) pour éviter un double-précache et une navigation
+  /// fantôme vers targetRoute à chaque remount.
+  final bool navigateOnReady;
+
   const SplashScreen({
     super.key,
     this.logo,
     this.backgroundColor,
     this.targetRoute = '/',
+    this.navigateOnReady = true,
   });
 
   @override
@@ -52,6 +61,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
+      if (!widget.navigateOnReady) return;
       // ✅ On lance le précache mais on NE passe plus le context au notifier
       ref.read(splashProvider.notifier).start();
     });
@@ -69,21 +79,25 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     final stats = ref.watch(imageCacheStatsProvider);
 
     // ✅ Navigation gérée ICI dans le widget, pas dans le notifier
-    ref.listen<SplashState>(splashProvider, (previous, next) {
-      if (next.phase == SplashPhase.ready && mounted) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (!mounted) return;
-          context.go(widget.targetRoute);
-        });
-      }
-    });
+    // — seulement si ce SplashScreen est bien celui du routing initial,
+    // pas une réutilisation passive comme placeholder de chargement.
+    if (widget.navigateOnReady) {
+      ref.listen<SplashState>(splashProvider, (previous, next) {
+        if (next.phase == SplashPhase.ready && mounted) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!mounted) return;
+            context.go(widget.targetRoute);
+          });
+        }
+      });
+    }
 
     final double progress = splashState.progress > 0
         ? splashState.progress
         : (stats.totalAssets > 0
-            ? ((stats.totalLoaded + stats.failed) / stats.totalAssets)
-                .clamp(0.0, 1.0)
-            : 0.0);
+        ? ((stats.totalLoaded + stats.failed) / stats.totalAssets)
+        .clamp(0.0, 1.0)
+        : 0.0);
 
     final bool isInitializing =
         splashState.phase == SplashPhase.idle || stats.totalAssets == 0;
@@ -167,7 +181,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                 'assets/images/entreprises/logo_godzyken.png',
                 fit: BoxFit.cover,
                 errorBuilder: (_, __, ___) =>
-                    const Icon(Icons.person, size: 50, color: Colors.white),
+                const Icon(Icons.person, size: 50, color: Colors.white),
               ),
         ),
       ),
@@ -181,22 +195,22 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
           Opacity(opacity: _fadeAnimation.value, child: child),
       child: isTitle
           ? ResponsiveText.displaySmall(
-              text,
-              style: const TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-                letterSpacing: 2,
-              ),
-            )
+        text,
+        style: const TextStyle(
+          fontSize: 32,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+          letterSpacing: 2,
+        ),
+      )
           : ResponsiveText.titleMedium(
-              text,
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.white.withValues(alpha: 0.6),
-                letterSpacing: 1,
-              ),
-            ),
+        text,
+        style: TextStyle(
+          fontSize: 16,
+          color: Colors.white.withValues(alpha: 0.6),
+          letterSpacing: 1,
+        ),
+      ),
     );
   }
 
@@ -227,10 +241,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   }
 
   Widget _buildStatusText(
-    SplashState state,
-    double progress,
-    bool isInitializing,
-  ) {
+      SplashState state,
+      double progress,
+      bool isInitializing,
+      ) {
     return FadeTransition(
       opacity: _fadeAnimation,
       child: Column(
