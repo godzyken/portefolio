@@ -8,18 +8,16 @@ class VoiceService extends Notifier<bool> {
 
   @override
   bool build() {
-    // Initialisation asynchrone sécurisée
-    _init();
+    _safeInit();
     return false;
   }
 
-  Future<void> _init() async {
+  Future<void> _safeInit() async {
     if (_initialized) return;
     
     try {
-      // ✅ SÉCURISATION WEB : vérification de disponibilité avant appel
-      final dynamic languages = await _tts.getLanguages;
-      if (languages != null) {
+      final dynamic langResult = await _tts.getLanguages;
+      if (langResult != null) {
         await _tts.setLanguage("fr-FR");
       }
       
@@ -27,14 +25,8 @@ class VoiceService extends Notifier<bool> {
       await _tts.setVolume(1.0);
       await _tts.setPitch(1.0);
 
-      _tts.setStartHandler(() {
-        state = true;
-      });
-
-      _tts.setCompletionHandler(() {
-        state = false;
-      });
-
+      _tts.setStartHandler(() => state = true);
+      _tts.setCompletionHandler(() => state = false);
       _tts.setErrorHandler((msg) {
         developer.log("TTS Error: $msg", name: 'VoiceService');
         state = false;
@@ -42,19 +34,16 @@ class VoiceService extends Notifier<bool> {
       
       _initialized = true;
     } catch (e) {
-      developer.log("TTS Initialization failed: $e", name: 'VoiceService');
-      // On ne crash pas, l'avatar restera muet mais l'app fonctionnera
+      developer.log("TTS Safe Init failed: $e", name: 'VoiceService');
     }
   }
 
   Future<void> speak(String text) async {
     if (text.isEmpty) return;
-    
     try {
       final cleanText = text.replaceAll(RegExp(r'[*#_]'), '');
       await _tts.speak(cleanText);
     } catch (e) {
-      developer.log("TTS Speak failed: $e", name: 'VoiceService');
       state = false;
     }
   }

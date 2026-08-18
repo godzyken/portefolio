@@ -52,7 +52,7 @@ dependencies:
   flutter_dotenv: ^6.0.0
   emailjs: ^4.0.0
   flutter_highlight: ^0.7.0
-  timelines_plus: 2.0.0
+  timelines_plus: ^2.0.1
   flutter_animate: ^4.5.2
   hive: ^2.2.3
   flutter_colorpicker: ^1.1.0
@@ -69,7 +69,7 @@ dependencies:
   flutter_map_tile_caching: ^10.1.1
   objectbox_flutter_libs: ^4.3.1
   cloudflare_turnstile: ^3.7.2
-  rive: ^0.13.13
+  rive: ^0.14.11
   flutter_tts: ^4.2.2
 
 

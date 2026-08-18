@@ -9,6 +9,8 @@ import '../../notifiers/avatar_chat_notifier.dart';
 import '../../notifiers/engagement_notifier.dart';
 import '../../services/avatar_lead_service.dart';
 
+/// Panneau de chat classique (Mode Terminal).
+/// Utilise Riverpod 3 via [ConsumerStatefulWidget].
 class AvatarChatPanel extends ConsumerStatefulWidget {
   const AvatarChatPanel({super.key});
 
@@ -94,7 +96,7 @@ class _AvatarChatPanelState extends ConsumerState<AvatarChatPanel> {
             style: TextStyle(color: ColorHelpers.textSecondary, fontSize: 12),
           ),
           const SizedBox(height: 24),
-          if (TurnstileService.isConfigured)
+          if (TurnstileService.isConfigured && TurnstileService.siteKey != null)
             CloudflareTurnstile(
               siteKey: TurnstileService.siteKey ?? '',
               onTokenReceived: (token) {
@@ -113,9 +115,7 @@ class _AvatarChatPanelState extends ConsumerState<AvatarChatPanel> {
 
   Widget _buildMessageBubble(AvatarMessage msg) {
     if (msg.type == MessageType.leadForm) {
-      return _AvatarLeadForm(onSubmitted: () {
-        setState(() {}); // Rafraîchir pour enlever le form si besoin ou montrer succès
-      });
+      return _AvatarLeadForm(onSubmitted: () => setState(() {}));
     }
 
     if (msg.role == MessageRole.avatar) {
@@ -175,10 +175,7 @@ class _AvatarChatPanelState extends ConsumerState<AvatarChatPanel> {
                 ),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               ),
-              onSubmitted: (val) {
-                ref.read(avatarChatProvider.notifier).sendMessage(val);
-                _controller.clear();
-              },
+              onSubmitted: (val) => _send(),
             ),
           ),
           const SizedBox(width: 10),
@@ -186,15 +183,18 @@ class _AvatarChatPanelState extends ConsumerState<AvatarChatPanel> {
             backgroundColor: ColorHelpers.cyan,
             child: IconButton(
               icon: const Icon(Icons.send, color: Colors.black),
-              onPressed: () {
-                ref.read(avatarChatProvider.notifier).sendMessage(_controller.text);
-                _controller.clear();
-              },
+              onPressed: _send,
             ),
           ),
         ],
       ),
     );
+  }
+
+  void _send() {
+    if (_controller.text.trim().isEmpty) return;
+    ref.read(avatarChatProvider.notifier).sendMessage(_controller.text);
+    _controller.clear();
   }
 }
 

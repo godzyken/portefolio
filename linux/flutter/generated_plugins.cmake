@@ -6,7 +6,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   gtk
   objectbox_flutter_libs
   printing
-  rive_common
+  rive_native
   url_launcher_linux
 )
 

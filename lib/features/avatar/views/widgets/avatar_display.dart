@@ -1,12 +1,12 @@
-import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rive/rive.dart';
 import 'package:portefolio/core/affichage/colors_spec.dart';
 
 enum AvatarState { idle, talking, thinking }
 
-class AvatarDisplay extends StatefulWidget {
+/// Widget d'affichage de l'Avatar utilisant le Data Binding de Rive 0.14.x.
+class AvatarDisplay extends ConsumerStatefulWidget {
   final AvatarState state;
   final String rivAsset;
 
@@ -17,92 +17,37 @@ class AvatarDisplay extends StatefulWidget {
   });
 
   @override
-  State<AvatarDisplay> createState() => _AvatarDisplayState();
+  ConsumerState<AvatarDisplay> createState() => _AvatarDisplayState();
 }
 
-class _AvatarDisplayState extends State<AvatarDisplay> {
-  Artboard? _riveArtboard;
-  StateMachineController? _controller;
-  SMIInput<bool>? _isTalking;
-  SMIInput<bool>? _isThinking;
-  bool _hasError = false;
+class _AvatarDisplayState extends ConsumerState<AvatarDisplay> {
+  // Références vers le Data Binding (View Model)
+  ViewModelInstanceBoolean? _isTalkingBind;
+  ViewModelInstanceBoolean? _isThinkingBind;
+  ViewModelInstanceNumber? _stateIndexBind;
 
-  @override
-  void initState() {
-    super.initState();
-    _loadRive();
-  }
-
-  void _loadRive() {
-    rootBundle.load(widget.rivAsset).then(
-      (data) async {
-        try {
-          await RiveFile.initialize();
-          final file = RiveFile.import(data);
-
-          Artboard? target;
-          String? smName;
-
-          // 1. Recherche ultra-sécurisée de l'Artboard
-          final List<Artboard> abs = file.artboards.toList();
-          if (abs.isEmpty) throw Exception("Fichier Rive vide");
-
-          for (final ab in abs) {
-            final name = ab.name.toLowerCase();
-            if (name.contains('soldier 1') || name.contains('hero')) {
-              target = ab.instance();
-              break;
-            }
-          }
-          
-          target ??= file.mainArtboard.instance();
-
-          // 2. Recherche ultra-sécurisée de la Machine
-          final List<StateMachine> sms = target.stateMachines.toList();
-          if (sms.isNotEmpty) {
-            for (final sm in sms) {
-              final n = sm.name.toLowerCase();
-              if (n.contains('mercenaries') || n.contains('state')) {
-                smName = sm.name;
-                break;
-              }
-            }
-            smName ??= sms.first.name;
-          }
-
-          if (smName != null) {
-            final controller = StateMachineController.fromArtboard(target, smName);
-            if (controller != null) {
-              target.addController(controller);
-              for (var input in controller.inputs) {
-                final inputName = input.name.toLowerCase();
-                if (input is SMIInput<bool>) {
-                  if (inputName.contains('talk')) _isTalking = input;
-                  if (inputName.contains('think')) _isThinking = input;
-                }
-                if (inputName.contains('state') && input is SMIInput<double>) {
-                  input.value = 1.0;
-                }
-              }
-              _controller = controller;
-            }
-          }
-
-          if (mounted) {
-            setState(() {
-              _riveArtboard = target;
-              _hasError = false;
-            });
-            _updateState();
-          }
-        } catch (e) {
-          developer.log('❌ Rive Error: $e', name: 'AvatarDisplay');
-          if (mounted) setState(() => _hasError = true);
-        }
-      },
-    ).catchError((err) {
-      if (mounted) setState(() => _hasError = true);
-    });
+  void _onLoaded(RiveLoaded loaded) {
+    // 🔗 RÉCUPÉRATION DU VIEW MODEL (Data Binding)
+    final viewModel = loaded.viewModelInstance;
+    
+    if (viewModel != null) {
+      debugPrint('🔗 Data Binding Rive détecté');
+      
+      // Accès aux propriétés définies dans l'éditeur Rive
+      _isTalkingBind = viewModel.boolean('isTalking') ?? viewModel.boolean('talking');
+      _isThinkingBind = viewModel.boolean('isThinking') ?? viewModel.boolean('thinking');
+      _stateIndexBind = viewModel.number('State');
+      
+      if (_stateIndexBind != null) {
+        _stateIndexBind!.value = 1.0;
+      }
+    } else {
+      debugPrint('⚠️ Aucun View Model trouvé. On se replie sur les inputs classiques.');
+      final sm = loaded.controller.stateMachine;
+      // On peut aussi lier des BooleanInput/NumberInput ici en secours
+    }
+    
+    _updateState();
   }
 
   @override
@@ -112,28 +57,46 @@ class _AvatarDisplayState extends State<AvatarDisplay> {
   }
 
   void _updateState() {
-    final talk = _isTalking;
-    final think = _isThinking;
-    if (talk != null) talk.value = widget.state == AvatarState.talking;
-    if (think != null) think.value = widget.state == AvatarState.thinking;
-  }
-
-  @override
-  void dispose() {
-    _controller?.dispose();
-    super.dispose();
+    _isTalkingBind?.value = widget.state == AvatarState.talking;
+    _isThinkingBind?.value = widget.state == AvatarState.thinking;
   }
 
   @override
   Widget build(BuildContext context) {
-    final ab = _riveArtboard;
-    if (_hasError) return const Center(child: Icon(Icons.error_outline, color: Colors.redAccent));
-    if (ab == null) return const Center(child: CircularProgressIndicator(color: ColorHelpers.cyan));
-
-    return Rive(
-      artboard: ab,
-      fit: BoxFit.cover,
-      alignment: Alignment.center,
+    return RiveWidgetBuilder(
+      fileLoader: FileLoader.fromAsset(
+        widget.rivAsset,
+        riveFactory: Factory.rive,
+      ),
+      // 🪄 ACTIVATION DU DATA BINDING AUTOMATIQUE
+      dataBind: const AutoBind(),
+      
+      artboardSelector: const ArtboardNamed('Soldier 1'),
+      stateMachineSelector: const StateMachineNamed('Two mercenaries'),
+      onLoaded: _onLoaded,
+      builder: (context, state) {
+        if (state is RiveLoading) {
+          return const Center(
+            child: CircularProgressIndicator(color: ColorHelpers.cyan),
+          );
+        }
+        
+        if (state is RiveLoaded) {
+          return RiveWidget(
+            controller: state.controller,
+            fit: Fit.cover,
+            alignment: Alignment.center,
+          );
+        }
+        
+        if (state is RiveFailed) {
+          return const Center(
+            child: Icon(Icons.error_outline, color: Colors.redAccent),
+          );
+        }
+        
+        return const SizedBox.shrink();
+      },
     );
   }
 }
