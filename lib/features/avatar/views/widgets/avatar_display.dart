@@ -1,5 +1,4 @@
 import 'dart:developer' as developer;
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rive/rive.dart';
@@ -14,7 +13,7 @@ class AvatarDisplay extends StatefulWidget {
   const AvatarDisplay({
     super.key,
     this.state = AvatarState.idle,
-    this.rivAsset = 'images/animations/avatar_animate.riv', // ✅ Corrigé : plus de assets/ ici
+    this.rivAsset = 'assets/images/animations/avatar_animate.riv',
   });
 
   @override
@@ -35,13 +34,8 @@ class _AvatarDisplayState extends State<AvatarDisplay> {
   }
 
   void _loadRive() {
-    // Sur le Web, rootBundle s'attend au chemin complet déclaré dans pubspec.yaml
-    // Mais le moteur de rendu Rive pré-ajoute parfois assets/. On tente le chemin direct.
-    final String fullPath = 'assets/${widget.rivAsset}';
-    debugPrint('📥 [AvatarDisplay] Chargement de : $fullPath');
-    
-    rootBundle.load(fullPath).then(
-          (data) async {
+    rootBundle.load(widget.rivAsset).then(
+      (data) async {
         try {
           await RiveFile.initialize();
           final file = RiveFile.import(data);
@@ -49,34 +43,44 @@ class _AvatarDisplayState extends State<AvatarDisplay> {
           Artboard? target;
           String? smName;
 
-          for (var ab in file.artboards) {
-            final abName = ab.name.toLowerCase();
-            if (abName.contains('selection') || abName.contains('menu')) continue;
-            
-            for (var sm in ab.stateMachines) {
-              if (sm.name.toLowerCase().contains('mercenaries') || sm.name.toLowerCase().contains('state')) {
-                target = ab.instance();
+          // 1. Recherche ultra-sécurisée de l'Artboard
+          final List<Artboard> abs = file.artboards.toList();
+          if (abs.isEmpty) throw Exception("Fichier Rive vide");
+
+          for (final ab in abs) {
+            final name = ab.name.toLowerCase();
+            if (name.contains('soldier 1') || name.contains('hero')) {
+              target = ab.instance();
+              break;
+            }
+          }
+          
+          target ??= file.mainArtboard.instance();
+
+          // 2. Recherche ultra-sécurisée de la Machine
+          final List<StateMachine> sms = target.stateMachines.toList();
+          if (sms.isNotEmpty) {
+            for (final sm in sms) {
+              final n = sm.name.toLowerCase();
+              if (n.contains('mercenaries') || n.contains('state')) {
                 smName = sm.name;
                 break;
               }
             }
-            if (target != null) break;
+            smName ??= sms.first.name;
           }
-
-          target ??= file.mainArtboard.instance();
-          smName ??= target.stateMachines.isNotEmpty ? target.stateMachines.first.name : null;
 
           if (smName != null) {
             final controller = StateMachineController.fromArtboard(target, smName);
             if (controller != null) {
               target.addController(controller);
               for (var input in controller.inputs) {
-                final name = input.name.toLowerCase();
+                final inputName = input.name.toLowerCase();
                 if (input is SMIInput<bool>) {
-                  if (name.contains('talk')) _isTalking = input;
-                  if (name.contains('think')) _isThinking = input;
+                  if (inputName.contains('talk')) _isTalking = input;
+                  if (inputName.contains('think')) _isThinking = input;
                 }
-                if (name.contains('state') && input is SMIInput<double>) {
+                if (inputName.contains('state') && input is SMIInput<double>) {
                   input.value = 1.0;
                 }
               }
@@ -92,12 +96,11 @@ class _AvatarDisplayState extends State<AvatarDisplay> {
             _updateState();
           }
         } catch (e) {
-          debugPrint('❌ Erreur Rive : $e');
+          developer.log('❌ Rive Error: $e', name: 'AvatarDisplay');
           if (mounted) setState(() => _hasError = true);
         }
       },
     ).catchError((err) {
-      debugPrint('❌ Erreur bundle : $err');
       if (mounted) setState(() => _hasError = true);
     });
   }
@@ -123,12 +126,12 @@ class _AvatarDisplayState extends State<AvatarDisplay> {
 
   @override
   Widget build(BuildContext context) {
-    final artboard = _riveArtboard;
+    final ab = _riveArtboard;
     if (_hasError) return const Center(child: Icon(Icons.error_outline, color: Colors.redAccent));
-    if (artboard == null) return const Center(child: CircularProgressIndicator(color: ColorHelpers.cyan));
+    if (ab == null) return const Center(child: CircularProgressIndicator(color: ColorHelpers.cyan));
 
     return Rive(
-      artboard: artboard,
+      artboard: ab,
       fit: BoxFit.cover,
       alignment: Alignment.center,
     );

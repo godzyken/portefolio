@@ -4,17 +4,17 @@ import 'package:portefolio/core/affichage/tech_maturity_framework.dart';
 class EngagementNotifier extends Notifier<Map<TechPillar, int>> {
   @override
   Map<TechPillar, int> build() {
-    return {
+    // On initialise la map de manière immuable et safe
+    return Map<TechPillar, int>.unmodifiable({
       for (var pillar in TechPillar.values) pillar: 0,
-    };
+    });
   }
 
   void incrementPillar(TechPillar pillar) {
-    final currentCount = state[pillar] ?? 0; // ✅ Plus de '!'
-    state = {
-      ...state,
-      pillar: currentCount + 1,
-    };
+    final currentMap = Map<TechPillar, int>.from(state);
+    final currentCount = currentMap[pillar] ?? 0;
+    currentMap[pillar] = currentCount + 1;
+    state = currentMap;
   }
 
   bool get isQualified {
@@ -31,13 +31,19 @@ class EngagementNotifier extends Notifier<Map<TechPillar, int>> {
 
   int get maxDepth {
     if (state.isEmpty) return 0;
-    return state.values.fold(0, (max, val) => val > max ? val : max);
+    int max = 0;
+    for (var val in state.values) {
+      if (val > max) max = val;
+    }
+    return max;
   }
 
-  List<String> get exploredPillars => state.entries
+  List<String> get exploredPillars {
+    return state.entries
       .where((e) => e.value > 0)
       .map((e) => e.key.label)
       .toList();
+  }
 
   TechPillar? classifyMessage(String text) {
     final lowerText = text.toLowerCase();
@@ -49,14 +55,14 @@ class EngagementNotifier extends Notifier<Map<TechPillar, int>> {
 
   bool _matchesPillar(TechPillar pillar, String text) {
     switch (pillar) {
-      case TechPillar.architecture: return text.contains('arch') || text.contains('clean');
-      case TechPillar.stateManagement: return text.contains('state') || text.contains('riverpod');
-      case TechPillar.testing: return text.contains('test') || text.contains('qualité');
-      case TechPillar.security: return text.contains('secu') || text.contains('auth');
-      case TechPillar.performance: return text.contains('perf') || text.contains('optim');
-      case TechPillar.cicd: return text.contains('ci') || text.contains('cd');
-      case TechPillar.monitoring: return text.contains('monitor') || text.contains('log');
-      case TechPillar.aiSmart: return text.contains('ia') || text.contains('ai');
+      case TechPillar.architecture: return text.contains('arch') || text.contains('clean') || text.contains('dossier');
+      case TechPillar.stateManagement: return text.contains('state') || text.contains('riverpod') || text.contains('donnée');
+      case TechPillar.testing: return text.contains('test') || text.contains('qualité') || text.contains('mock');
+      case TechPillar.security: return text.contains('secu') || text.contains('auth') || text.contains('crypt') || text.contains('token');
+      case TechPillar.performance: return text.contains('perf') || text.contains('optim') || text.contains('vitesse');
+      case TechPillar.cicd: return text.contains('ci') || text.contains('cd') || text.contains('deploy') || text.contains('git');
+      case TechPillar.monitoring: return text.contains('monitor') || text.contains('log') || text.contains('sentry');
+      case TechPillar.aiSmart: return text.contains('ia') || text.contains('ai') || text.contains('openai') || text.contains('llm');
     }
   }
 }

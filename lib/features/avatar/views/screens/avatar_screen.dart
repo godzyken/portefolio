@@ -61,9 +61,9 @@ class _AvatarScreenState extends ConsumerState<AvatarScreen> {
   }
 
   Widget _buildTheatreLayout(AvatarState state, ResponsiveInfo info, AsyncValue<List<AvatarMessage>> chatState) {
-    final messages = chatState.asData?.value ?? [];
-    final lastMessage = messages.isNotEmpty ? messages.last : null;
-    final isAvatarTalking = lastMessage?.role == MessageRole.avatar || state == AvatarState.thinking;
+    final List<AvatarMessage> messages = chatState.asData?.value ?? [];
+    final AvatarMessage? lastMessage = messages.isNotEmpty ? messages.last : null;
+    final bool isAvatarTalking = (lastMessage?.role == MessageRole.avatar) || state == AvatarState.thinking;
 
     // ✅ SÉCURISATION DU PILIER TECHNIQUE
     final TechPillar? activePillar = lastMessage?.relatedPillar;
@@ -76,7 +76,7 @@ class _AvatarScreenState extends ConsumerState<AvatarScreen> {
           child: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Colors.black.withValues(alpha: 0.4), Colors.transparent, Colors.black.withValues(alpha: 0.4)],
+                colors: [Colors.black45, Colors.transparent, Colors.black45],
               ),
             ),
           ),
@@ -92,7 +92,6 @@ class _AvatarScreenState extends ConsumerState<AvatarScreen> {
             ),
           ),
 
-        // ✅ PLUS DE '!' ICI
         if (activePillar != null)
           Positioned(
             right: info.isMobile ? 20 : 40,
@@ -118,7 +117,7 @@ class _AvatarScreenState extends ConsumerState<AvatarScreen> {
       width: info.isMobile ? 180 : 350,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.7),
+        color: Colors.black.withValues(alpha: 0.85),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: pillar.color.withValues(alpha: 0.5), width: 2),
       ),
@@ -137,16 +136,7 @@ class _AvatarScreenState extends ConsumerState<AvatarScreen> {
   }
 
   Widget _buildMobileLayout(AvatarState state) {
-    return Material(
-      color: ColorHelpers.surface,
-      child: Column(
-        children: [
-          const SizedBox(height: 80),
-          SizedBox(height: 250, child: AvatarDisplay(state: state)),
-          const Expanded(child: AvatarChatPanel()),
-        ],
-      ),
-    );
+     return Material(color: ColorHelpers.surface, child: Center(child: AvatarDisplay(state: state)));
   }
 
   Widget _buildDesktopLayout(AvatarState state, ResponsiveInfo info) {
