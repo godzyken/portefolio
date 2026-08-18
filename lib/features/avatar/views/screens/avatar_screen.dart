@@ -7,6 +7,7 @@ import 'package:portefolio/core/affichage/tech_maturity_framework.dart';
 import 'package:portefolio/core/ui/widgets/narrative_bubble.dart';
 import '../../services/voice_service.dart';
 import '../widgets/avatar_display.dart';
+import '../widgets/avatar_chat_panel.dart';
 import '../../notifiers/avatar_chat_notifier.dart';
 import '../../data/avatar_message.dart';
 
@@ -64,7 +65,7 @@ class _AvatarScreenState extends ConsumerState<AvatarScreen> {
     final lastMessage = messages.isNotEmpty ? messages.last : null;
     final isAvatarTalking = lastMessage?.role == MessageRole.avatar || state == AvatarState.thinking;
 
-    // ✅ SÉCURISATION DU PILIER TECHNIQUE (Slide)
+    // ✅ SÉCURISATION DU PILIER TECHNIQUE
     final TechPillar? activePillar = lastMessage?.relatedPillar;
 
     return Stack(
@@ -135,13 +136,29 @@ class _AvatarScreenState extends ConsumerState<AvatarScreen> {
     );
   }
 
-  Widget _buildMobileLayout(AvatarState state) => _buildBasicLayout(state, isMobile: true);
-  Widget _buildDesktopLayout(AvatarState state, ResponsiveInfo info) => _buildBasicLayout(state, isMobile: false);
-
-  Widget _buildBasicLayout(AvatarState state, {required bool isMobile}) {
+  Widget _buildMobileLayout(AvatarState state) {
     return Material(
       color: ColorHelpers.surface,
-      child: Center(child: AvatarDisplay(state: state)),
+      child: Column(
+        children: [
+          const SizedBox(height: 80),
+          SizedBox(height: 250, child: AvatarDisplay(state: state)),
+          const Expanded(child: AvatarChatPanel()),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDesktopLayout(AvatarState state, ResponsiveInfo info) {
+    return Material(
+      color: ColorHelpers.surface,
+      child: Row(
+        children: [
+          Expanded(flex: 4, child: AvatarDisplay(state: state)),
+          const VerticalDivider(width: 1, color: Colors.white10),
+          const Expanded(flex: 6, child: AvatarChatPanel()),
+        ],
+      ),
     );
   }
 }
@@ -164,8 +181,9 @@ class _CompactInputAreaState extends ConsumerState<_CompactInputArea> {
             decoration: InputDecoration(
               hintText: "Une question technique ?",
               filled: true,
-              fillColor: Colors.white10,
+              fillColor: Colors.black45,
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(30), borderSide: BorderSide.none),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 20),
             ),
             onSubmitted: (v) {
               ref.read(avatarChatProvider.notifier).sendMessage(v);
@@ -174,12 +192,15 @@ class _CompactInputAreaState extends ConsumerState<_CompactInputArea> {
           ),
         ),
         const SizedBox(width: 8),
-        IconButton(
-          icon: const Icon(Icons.send, color: ColorHelpers.cyan),
-          onPressed: () {
-            ref.read(avatarChatProvider.notifier).sendMessage(_ctrl.text);
-            _ctrl.clear();
-          },
+        CircleAvatar(
+          backgroundColor: ColorHelpers.cyan,
+          child: IconButton(
+            icon: const Icon(Icons.send, color: Colors.black, size: 20),
+            onPressed: () {
+              ref.read(avatarChatProvider.notifier).sendMessage(_ctrl.text);
+              _ctrl.clear();
+            },
+          ),
         ),
       ],
     );
