@@ -151,12 +151,16 @@ void _precacheImagesInBackground(
   }
 }
 
-/// Précache un fichier Rive
+// Dans lib/core/provider/precache_providers.dart
+
 Future<bool> _precacheRive(String path) async {
   try {
-    await RiveFile.initialize();
-    // Charger le fichier en mémoire via rootBundle pour qu'il soit en cache
-    await rootBundle.load(path);
+    // ✅ Nouvelle méthode d'initialisation Rive 2
+    await RiveNative.init();
+
+    // ✅ Chargement via l'API File moderne avec la factory appropriée
+    await File.asset(path, riveFactory: Factory.flutter);
+
     developer.log('✅ Rive précaché: $path');
     return true;
   } catch (e) {
