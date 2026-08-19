@@ -21,45 +21,37 @@ class AvatarDisplay extends ConsumerStatefulWidget {
 }
 
 class _AvatarDisplayState extends ConsumerState<AvatarDisplay> {
-  // Références vers le Data Binding (View Model)
-  ViewModelInstanceBoolean? _isTalkingBind;
-  ViewModelInstanceBoolean? _isThinkingBind;
-  ViewModelInstanceNumber? _stateIndexBind;
-
+  // On n'utilise PLUS de variables late ou de références persistantes risquées
+  
   void _onLoaded(RiveLoaded loaded) {
-    debugPrint('🎬 [AvatarDisplay] Chargé : Artboard="${loaded.controller.artboard.name}"');
-    
-    // 🔗 RÉCUPÉRATION DU VIEW MODEL (Data Binding)
-    final viewModel = loaded.viewModelInstance;
-    
-    if (viewModel != null) {
-      debugPrint('🔗 [AvatarDisplay] Data Binding Rive détecté');
-      
-      _isTalkingBind = viewModel.boolean('isTalking') ?? viewModel.boolean('talking');
-      _isThinkingBind = viewModel.boolean('isThinking') ?? viewModel.boolean('thinking');
-      _stateIndexBind = viewModel.number('State');
-      
-      if (_stateIndexBind != null) {
-        _stateIndexBind!.value = 1.0;
-      }
-    } else {
-      debugPrint('⚠️ [AvatarDisplay] Aucun View Model trouvé. Utilisation des inputs classiques.');
-      final stateMachine = loaded.controller.stateMachine;
-      // On pourrait lier des inputs ici si nécessaire
-    }
-    
-    _updateState();
+    debugPrint('🎬 [AvatarDisplay] Artboard "${loaded.controller.artboard.name}" chargé');
+    _applySync(loaded);
   }
 
   @override
   void didUpdateWidget(AvatarDisplay oldWidget) {
     super.didUpdateWidget(oldWidget);
-    _updateState();
+    // On ne fait rien ici, la synchronisation se fera au build via le controller
   }
 
-  void _updateState() {
-    _isTalkingBind?.value = widget.state == AvatarState.talking;
-    _isThinkingBind?.value = widget.state == AvatarState.thinking;
+  void _applySync(RiveLoaded loaded) {
+    final viewModel = loaded.viewModelInstance;
+    if (viewModel == null) return;
+
+    // Synchronisation directe et sécurisée
+    try {
+      final talking = viewModel.boolean('isTalking') ?? viewModel.boolean('talking');
+      final thinking = viewModel.boolean('isThinking') ?? viewModel.boolean('thinking');
+      final stateIdx = viewModel.number('State');
+
+      talking?.value = widget.state == AvatarState.talking;
+      thinking?.value = widget.state == AvatarState.thinking;
+      if (stateIdx != null && stateIdx.value == 0) {
+        stateIdx.value = 1.0;
+      }
+    } catch (e) {
+      debugPrint('⚠️ [AvatarDisplay] Erreur sync DataBinding : $e');
+    }
   }
 
   @override
@@ -67,25 +59,21 @@ class _AvatarDisplayState extends ConsumerState<AvatarDisplay> {
     return RiveWidgetBuilder(
       fileLoader: FileLoader.fromAsset(
         widget.rivAsset,
-        // ✅ On passe en Factory.flutter pour une compatibilité maximale sur le Web
-        riveFactory: Factory.flutter,
+        riveFactory: Factory.flutter, // Stable sur Web
       ),
-      // 🪄 ACTIVATION DU DATA BINDING AUTOMATIQUE
       dataBind: const AutoBind(),
-      
-      // ✅ On laisse l'Artboard par défaut ou on cherche "soldier selection" qui semblait fonctionner
       artboardSelector: const ArtboardNamed('soldier selection'),
       stateMachineSelector: const StateMachineNamed('Two mercenaries'),
-      
       onLoaded: _onLoaded,
       builder: (context, state) {
         if (state is RiveLoading) {
-          return const Center(
-            child: CircularProgressIndicator(color: ColorHelpers.cyan),
-          );
+          return const Center(child: CircularProgressIndicator(color: ColorHelpers.cyan));
         }
         
         if (state is RiveLoaded) {
+          // 🔥 SYNCHRONISATION À CHAQUE REBUILD
+          _applySync(state);
+          
           return RiveWidget(
             controller: state.controller,
             fit: Fit.cover,
@@ -94,17 +82,7 @@ class _AvatarDisplayState extends ConsumerState<AvatarDisplay> {
         }
         
         if (state is RiveFailed) {
-          debugPrint('❌ [AvatarDisplay] Erreur : ${state.error}');
-          return Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.error_outline, color: Colors.redAccent, size: 40),
-                const SizedBox(height: 8),
-                Text('Erreur Rive: ${state.error}', style: const TextStyle(color: Colors.white54, fontSize: 10)),
-              ],
-            ),
-          );
+          return const Center(child: Icon(Icons.error_outline, color: Colors.redAccent));
         }
         
         return const SizedBox.shrink();
