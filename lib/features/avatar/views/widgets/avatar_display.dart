@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rive/rive.dart';
 import 'package:portefolio/core/affichage/colors_spec.dart';
+import 'package:portefolio/core/config/assets_config.dart';
 
 enum AvatarState { idle, talking, thinking }
 
@@ -13,7 +14,7 @@ class AvatarDisplay extends ConsumerStatefulWidget {
   const AvatarDisplay({
     super.key,
     this.state = AvatarState.idle,
-    this.rivAsset = 'assets/images/animations/avatar_animate.riv',
+    this.rivAsset = AssetsConfig.avatarRivePath,
   });
 
   @override

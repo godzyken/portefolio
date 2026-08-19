@@ -11,4 +11,7 @@ class AssetsConfig {
   /// URL du modèle 3D
   static String get characterModelUrl =>
       '$githubRawBaseUrl/assets_source/models/perso_samurail.glb';
+
+  /// Chemin de l'avatar Rive
+  static const String avatarRivePath = 'assets/images/animations/avatar_animate.riv';
 }

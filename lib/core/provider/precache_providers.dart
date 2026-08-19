@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart' as svg;
+import 'package:rive/rive.dart';
 
+import '../config/assets_config.dart';
 import '../notifier/precache_notifier.dart';
 import 'json_data_provider.dart';
 
@@ -149,6 +151,20 @@ void _precacheImagesInBackground(
   }
 }
 
+/// Précache un fichier Rive
+Future<bool> _precacheRive(String path) async {
+  try {
+    await RiveFile.initialize();
+    // Charger le fichier en mémoire via rootBundle pour qu'il soit en cache
+    await rootBundle.load(path);
+    developer.log('✅ Rive précaché: $path');
+    return true;
+  } catch (e) {
+    developer.log('⚠️ Échec précache Rive: $path ($e)');
+    return false;
+  }
+}
+
 /// Exécution complète du précache (JSON → Fonts → Images)
 Future<PrecacheReport> runOptimizedPrecache(Ref ref) async {
   developer.log('🚀 [1/4] Précache optimisé...');
@@ -182,12 +198,13 @@ Future<PrecacheReport> runOptimizedPrecache(Ref ref) async {
       ),
     ]);
 
-    // ── Étape 3 : Images ─────────────────────────────
-    developer.log('➡️ [4/4] Précache images critiques...');
+    // ── Étape 3 : Images et Rive ─────────────────────────────
+    developer.log('➡️ [4/4] Précache images critiques et Rive...');
     final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
 
-    final allImages = manifest
-        .listAssets()
+    final allAssets = manifest.listAssets();
+
+    final allImages = allAssets
         .where((p) => p.startsWith('assets/images/'))
         .where((p) =>
             !p.contains('/2.0x/') &&
@@ -204,6 +221,12 @@ Future<PrecacheReport> runOptimizedPrecache(Ref ref) async {
 
     developer.log('📸 ${criticalImages.length} images critiques à précacher');
 
+    final List<Future<bool>> loaders = [];
+    
+    // Ajout du précache Rive
+    loaders.add(_precacheRive(AssetsConfig.avatarRivePath));
+
+    // Lancement en batch
     final results = await _precacheImagesInBatches(
       criticalImages,
       config,
@@ -211,8 +234,11 @@ Future<PrecacheReport> runOptimizedPrecache(Ref ref) async {
       timeout: const Duration(seconds: 2),
     );
 
-    success = results.where((r) => r).length;
-    failed = results.where((r) => !r).length;
+    // On attend aussi le Rive loader
+    final riveResult = await loaders.first;
+    
+    success = results.where((r) => r).length + (riveResult ? 1 : 0);
+    failed = results.where((r) => !r).length + (riveResult ? 0 : 1);
 
     // ── Étape 4 : Reste en background ─────────────────
     final remainingImages =
