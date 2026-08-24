@@ -422,13 +422,18 @@ class _SceneDescription extends StatelessWidget {
             children: [
               Icon(icon, color: ColorHelpers.cyan, size: 18),
               const SizedBox(width: 10),
-              Text(
-                title,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 2,
-                  fontSize: 12,
+              Flexible(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    title,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 2,
+                      fontSize: 12,
+                    ),
+                  ),
                 ),
               ),
             ],

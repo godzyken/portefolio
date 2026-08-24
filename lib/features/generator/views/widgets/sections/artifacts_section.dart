@@ -100,12 +100,16 @@ class _ArtifactsSectionState extends ConsumerState<ArtifactsSection>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const ResponsiveText.titleMedium(
-                '📖 Immersion Projet (IA Solution)',
-                style: TextStyle(
-                  color: ColorHelpers.cyan,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.0,
+              const FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: ResponsiveText.titleMedium(
+                  '📖 Immersion Projet (IA Solution)',
+                  style: TextStyle(
+                    color: ColorHelpers.cyan,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.0,
+                  ),
                 ),
               ),
               const SizedBox(height: 20),

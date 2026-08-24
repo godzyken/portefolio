@@ -67,6 +67,29 @@ class ExperienceTheatreSection extends StatelessWidget {
                         ? maturity.entries.reduce((a, b) => a.value > b.value ? a : b).key 
                         : null,
                     ),
+                    
+                    // NOUVEAU : IMAGE D'EXPÉRIENCE SI DISPONIBLE
+                    if (experience.image.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16),
+                        child: Container(
+                          height: 180,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: Colors.white10),
+                            boxShadow: [BoxShadow(color: Colors.black45, blurRadius: 10)],
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(19),
+                            child: SmartImage(
+                              path: experience.image,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                      ).animate().fadeIn(delay: 300.ms),
+
                     const SizedBox(height: 16),
                     if (experience.missions.isNotEmpty)
                       _MissionsCard(missions: experience.missions),
