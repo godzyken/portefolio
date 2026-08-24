@@ -251,11 +251,17 @@ class ProjectBottomNavigation extends StatelessWidget {
                           size: 24,
                         ),
                         const SizedBox(height: 4),
-                        ResponsiveText.bodySmall(
-                          section.title,
-                          style: TextStyle(
-                            color: isActive ? Colors.blue : Colors.white60,
-                            fontSize: 10,
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: ResponsiveText.bodySmall(
+                              section.title,
+                              style: TextStyle(
+                                color: isActive ? Colors.blue : Colors.white60,
+                                fontSize: 10,
+                              ),
+                            ),
                           ),
                         ),
                       ],

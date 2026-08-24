@@ -27,23 +27,24 @@ class ExperienceTheatreSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // HEADER IMMERSIF
-          _ExperienceHeader(experience: experience, maturity: maturity),
+          _ExperienceHeader(experience: experience, maturity: maturity, info: info),
 
           const SizedBox(height: 32),
 
-          // TITRE DE LA SCÈNE ACTIVE (Ex: DÉVELOPPEMENT & PERFORMANCE)
+          // TITRE DE LA SCÈNE ACTIVE
           _SceneTitle(
             title: experience.tags.contains('Flutter') 
               ? 'DÉVELOPPEMENT & PERFORMANCE' 
               : 'STRATÉGIE & RÉALISATION',
+            info: info,
           ),
 
           const SizedBox(height: 24),
 
-          // BULLE IA (MOBILE : AU DESSUS DU CONTENU)
+          // BULLE IA (MOBILE)
           if (info.isMobile)
             Padding(
-              padding: const EdgeInsets.only(bottom: 20),
+              padding: const EdgeInsets.only(bottom: 24),
               child: NarrativeBubble(
                 text: experience.tags.contains('Flutter') 
                   ? "Cette expérience a été un pilier pour ma maîtrise de la Production Readiness."
@@ -60,11 +61,16 @@ class ExperienceTheatreSection extends StatelessWidget {
                 flex: 7,
                 child: Column(
                   children: [
-                    _MainDescriptionCard(text: experience.contexte),
+                    _MainDescriptionCard(
+                      text: experience.contexte,
+                      topPillar: maturity.isNotEmpty 
+                        ? maturity.entries.reduce((a, b) => a.value > b.value ? a : b).key 
+                        : null,
+                    ),
                     const SizedBox(height: 16),
                     if (experience.missions.isNotEmpty)
                       _MissionsCard(missions: experience.missions),
-                    const SizedBox(height: 40), // Padding pour le scroll mobile
+                    const SizedBox(height: 60), // Padding pour le scroll mobile
                   ],
                 ),
               ),
@@ -99,13 +105,18 @@ class ExperienceTheatreSection extends StatelessWidget {
 class _ExperienceHeader extends StatelessWidget {
   final Experience experience;
   final Map<TechPillar, double> maturity;
+  final ResponsiveInfo info;
 
-  const _ExperienceHeader({required this.experience, required this.maturity});
+  const _ExperienceHeader({
+    required this.experience, 
+    required this.maturity,
+    required this.info,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(info.isMobile ? 20 : 24),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.03),
         borderRadius: BorderRadius.circular(24),
@@ -116,26 +127,51 @@ class _ExperienceHeader extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.hub_outlined, color: ColorHelpers.cyan, size: 24),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: ColorHelpers.cyan.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Icon(Icons.hub_outlined, color: ColorHelpers.cyan, size: info.isMobile ? 20 : 24),
+              ),
               const SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      "Immersion '${experience.entreprise}' (${experience.poste})",
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: ColorHelpers.cyan,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Immersion '${experience.entreprise}'",
+                        style: TextStyle(
+                          color: ColorHelpers.cyan,
+                          fontWeight: FontWeight.bold,
+                          fontSize: info.isMobile ? 18 : 22,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      "Détails : ${experience.periode}",
-                      style: const TextStyle(color: Colors.white54, fontSize: 13),
+                      experience.poste,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.8),
+                        fontSize: info.isMobile ? 13 : 15,
+                        fontWeight: FontWeight.w500,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      "🗓 ${experience.periode}",
+                      style: TextStyle(
+                        color: Colors.white54, 
+                        fontSize: info.isMobile ? 11 : 12,
+                        fontFamily: 'monospace',
+                      ),
                     ),
                   ],
                 ),
@@ -143,8 +179,8 @@ class _ExperienceHeader extends StatelessWidget {
             ],
           ),
           if (maturity.isNotEmpty) ...[
-            const SizedBox(height: 20),
-            TechMaturityRadar(scores: maturity, compact: false),
+            const SizedBox(height: 24),
+            TechMaturityRadar(scores: maturity, compact: info.isMobile),
           ],
         ],
       ),
@@ -154,8 +190,9 @@ class _ExperienceHeader extends StatelessWidget {
 
 class _SceneTitle extends StatelessWidget {
   final String title;
+  final ResponsiveInfo info;
 
-  const _SceneTitle({required this.title});
+  const _SceneTitle({required this.title, required this.info});
 
   @override
   Widget build(BuildContext context) {
@@ -164,15 +201,21 @@ class _SceneTitle extends StatelessWidget {
       children: [
         Row(
           children: [
-            const Icon(Icons.location_on, color: ColorHelpers.cyan, size: 18),
+            Icon(Icons.location_on, color: ColorHelpers.cyan, size: info.isMobile ? 16 : 18),
             const SizedBox(width: 12),
-            Text(
-              title,
-              style: const TextStyle(
-                color: ColorHelpers.cyan,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 1.5,
-                fontSize: 14,
+            Expanded(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    color: ColorHelpers.cyan,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1.5,
+                    fontSize: info.isMobile ? 12 : 14,
+                  ),
+                ),
               ),
             ),
           ],
@@ -180,7 +223,7 @@ class _SceneTitle extends StatelessWidget {
         const SizedBox(height: 8),
         Container(
           height: 3,
-          width: 200,
+          width: info.isMobile ? 120 : 200,
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [ColorHelpers.cyan, ColorHelpers.cyan.withValues(alpha: 0)],
@@ -194,25 +237,83 @@ class _SceneTitle extends StatelessWidget {
 
 class _MainDescriptionCard extends StatelessWidget {
   final String text;
+  final TechPillar? topPillar;
 
-  const _MainDescriptionCard({required this.text});
+  const _MainDescriptionCard({required this.text, this.topPillar});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: Colors.black.withValues(alpha: 0.4),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: Colors.white12),
       ),
-      child: Text(
-        text,
-        style: const TextStyle(
-          color: Colors.white70,
-          fontSize: 15,
-          height: 1.6,
-        ),
+      child: Stack(
+        children: [
+          // IMAGE DE FOND (PILLIER TECHNIQUE)
+          if (topPillar != null)
+            Positioned(
+              right: -50,
+              bottom: -50,
+              child: Opacity(
+                opacity: 0.15,
+                child: Image.asset(
+                  topPillar!.skillImage,
+                  width: 300,
+                  height: 300,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          
+          Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (topPillar != null)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: topPillar!.color.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: topPillar!.color.withValues(alpha: 0.3)),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(topPillar!.icon, color: topPillar!.color, size: 14),
+                          const SizedBox(width: 8),
+                          Text(
+                            topPillar!.label.toUpperCase(),
+                            style: TextStyle(
+                              color: topPillar!.color,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 1.2,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                Text(
+                  text,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 15,
+                    height: 1.6,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -226,30 +327,67 @@ class _MissionsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: ColorHelpers.surface.withValues(alpha: 0.3),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white10),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            ColorHelpers.surface.withValues(alpha: 0.5),
+            Colors.black.withValues(alpha: 0.3),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: ColorHelpers.cyan.withValues(alpha: 0.1)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: missions.map((m) => Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
             children: [
-              const Icon(Icons.check_circle_outline, color: ColorHelpers.cyan, size: 16),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  m,
-                  style: const TextStyle(color: Colors.white60, fontSize: 14),
+              Icon(Icons.auto_awesome, color: ColorHelpers.cyan, size: 18),
+              SizedBox(width: 12),
+              Text(
+                "MISSIONS & RÉALISATIONS",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900,
+                  fontSize: 12,
+                  letterSpacing: 1.5,
                 ),
               ),
             ],
           ),
-        )).toList(),
+          const SizedBox(height: 20),
+          ...missions.map((m) => Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  margin: const EdgeInsets.only(top: 4),
+                  padding: const EdgeInsets.all(2),
+                  decoration: BoxDecoration(
+                    color: ColorHelpers.cyan.withValues(alpha: 0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.check, color: ColorHelpers.cyan, size: 10),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Text(
+                    m,
+                    style: const TextStyle(
+                      color: Colors.white70, 
+                      fontSize: 14,
+                      height: 1.4,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          )).toList(),
+        ],
       ),
     );
   }

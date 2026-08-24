@@ -121,6 +121,7 @@ class _ArtifactsSectionState extends ConsumerState<ArtifactsSection>
                 child: TabBar(
                   controller: _tabController,
                   isScrollable: true,
+                  tabAlignment: TabAlignment.start,
                   dividerColor: Colors.transparent,
                   labelColor: ColorHelpers.cyan,
                   unselectedLabelColor: ColorHelpers.textSecondary,
@@ -129,9 +130,15 @@ class _ArtifactsSectionState extends ConsumerState<ArtifactsSection>
                   tabs: allTabs
                       .map((k) => Tab(
                             icon: k == 'readme' ? const Icon(Icons.description_outlined, size: 16) : null,
-                            child: Text(
-                              (k == 'proofs' ? '💡 Preuves Techniques' : GithubArtifactsService.labelFor(k)).toUpperCase(),
-                              style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 1.1),
+                            child: ConstrainedBox(
+                              constraints: const BoxConstraints(maxWidth: 150),
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  (k == 'proofs' ? '💡 Preuves Techniques' : GithubArtifactsService.labelFor(k)).toUpperCase(),
+                                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 1.1),
+                                ),
+                              ),
                             ),
                           ))
                       .toList(),

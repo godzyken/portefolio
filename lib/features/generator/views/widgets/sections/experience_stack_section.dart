@@ -44,11 +44,17 @@ class ExperienceStackSection extends ConsumerWidget {
                 padding: 4,
               ),
               const SizedBox(width: 12),
-              const ResponsiveText.titleLarge(
-                'Stack Technique',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+              const Expanded(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: ResponsiveText.titleLarge(
+                    'Stack Technique',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
               ),
             ],

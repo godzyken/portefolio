@@ -254,17 +254,23 @@ class ExperiencePresentationSection extends StatelessWidget {
             children: [
               if (experience.logo.isNotEmpty)
                 Container(
-                  width: 72,
-                  height: 72,
+                  width: 80,
+                  height: 80,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(20),
                     color: Colors.white.withValues(alpha: 0.1),
                     border: Border.all(
                       color: Colors.white.withValues(alpha: 0.2),
                     ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 10,
+                      ),
+                    ],
                   ),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(15),
+                    borderRadius: BorderRadius.circular(19),
                     child: SmartImage(
                       path: experience.logo,
                       fit: BoxFit.contain,
@@ -272,54 +278,62 @@ class ExperiencePresentationSection extends StatelessWidget {
                     ),
                   ),
                 ),
-              const SizedBox(width: 16),
+              const SizedBox(width: 20),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      experience.poste,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        experience.poste,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.5,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        Container(
-                          width: 6,
-                          height: 6,
-                          decoration: const BoxDecoration(
-                            color: Color(0xFFFF2D78),
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          experience.entreprise,
-                          style: const TextStyle(
-                            color: Color(0xFFFF2D78),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
                     ),
                     const SizedBox(height: 6),
                     Row(
                       children: [
+                        Container(
+                          width: 8,
+                          height: 8,
+                          decoration: const BoxDecoration(
+                            color: ColorHelpers.magenta,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            experience.entreprise,
+                            style: const TextStyle(
+                              color: ColorHelpers.magenta,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 1.1,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
                         const Icon(
                           Icons.schedule_outlined,
-                          size: 13,
+                          size: 14,
                           color: Colors.white54,
                         ),
-                        const SizedBox(width: 6),
+                        const SizedBox(width: 8),
                         Text(
                           experience.periode,
                           style: const TextStyle(
-                            color: Colors.white54,
+                            color: Colors.white38,
                             fontSize: 12,
                             fontFamily: 'monospace',
                           ),
@@ -334,29 +348,30 @@ class ExperiencePresentationSection extends StatelessWidget {
 
           // Tags
           if (experience.tags.isNotEmpty) ...[
-            const SizedBox(height: 20),
+            const SizedBox(height: 32),
             Wrap(
-              spacing: 6,
-              runSpacing: 6,
+              spacing: 8,
+              runSpacing: 8,
               children: experience.tags.map((tag) {
                 return Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
+                    horizontal: 12,
+                    vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.07),
-                    borderRadius: BorderRadius.circular(6),
+                    color: ColorHelpers.cyan.withValues(alpha: 0.05),
+                    borderRadius: BorderRadius.circular(8),
                     border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.15),
+                      color: ColorHelpers.cyan.withValues(alpha: 0.2),
                     ),
                   ),
                   child: Text(
-                    tag,
+                    tag.toUpperCase(),
                     style: const TextStyle(
-                      color: Colors.white70,
-                      fontSize: 11,
-                      letterSpacing: 0.3,
+                      color: ColorHelpers.cyan,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1.0,
                     ),
                   ),
                 );
@@ -366,12 +381,19 @@ class ExperiencePresentationSection extends StatelessWidget {
 
           // Contexte
           if (experience.contexte.isNotEmpty) ...[
-            const SizedBox(height: 24),
+            const SizedBox(height: 32),
             Container(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.04),
-                borderRadius: BorderRadius.circular(16),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Colors.white.withValues(alpha: 0.05),
+                    Colors.white.withValues(alpha: 0.02),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(24),
                 border: Border.all(
                   color: Colors.white.withValues(alpha: 0.1),
                 ),
@@ -383,27 +405,29 @@ class ExperiencePresentationSection extends StatelessWidget {
                     children: [
                       Icon(
                         Icons.info_outline,
-                        size: 16,
-                        color: theme.colorScheme.primary,
+                        size: 18,
+                        color: ColorHelpers.cyan,
                       ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Contexte',
+                      const SizedBox(width: 12),
+                      const Text(
+                        'CONTEXTE DE MISSION',
                         style: TextStyle(
-                          color: theme.colorScheme.primary,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 13,
+                          color: ColorHelpers.cyan,
+                          fontWeight: FontWeight.w900,
+                          fontSize: 12,
+                          letterSpacing: 1.2,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 16),
                   Text(
                     experience.contexte,
                     style: const TextStyle(
                       color: Colors.white70,
-                      fontSize: 14,
+                      fontSize: 15,
                       height: 1.6,
+                      fontWeight: FontWeight.w400,
                     ),
                   ),
                 ],
@@ -413,18 +437,31 @@ class ExperiencePresentationSection extends StatelessWidget {
 
           // Image
           if (experience.image.isNotEmpty) ...[
-            const SizedBox(height: 24),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: SmartImage(
-                path: experience.image,
-                fit: BoxFit.contain,
-                width: double.infinity,
-                height: 200,
-                enableShimmer: true,
+            const SizedBox(height: 32),
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(color: Colors.white12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black54,
+                    blurRadius: 20,
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(23),
+                child: SmartImage(
+                  path: experience.image,
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  height: 250,
+                  enableShimmer: true,
+                ),
               ),
             ),
           ],
+          const SizedBox(height: 60),
         ],
       ),
     );
@@ -456,58 +493,60 @@ class _SimpleListSection extends StatelessWidget {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(8),
+                  color: color.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: color.withValues(alpha: 0.3)),
                 ),
                 child: Icon(icon, color: color, size: 20),
               ),
-              const SizedBox(width: 12),
-              Text(
-                title,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+              const SizedBox(width: 16),
+              Expanded(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    title.toUpperCase(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1.5,
+                    ),
+                  ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 24),
+          
+          // GRILLE DE CARTES (Visuel)
           ...items.map(
-            (item) => Padding(
-              padding: const EdgeInsets.only(bottom: 12),
+            (item) => Container(
+              margin: const EdgeInsets.only(bottom: 16),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.03),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+              ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    margin: const EdgeInsets.only(top: 4),
-                    child: useCheck
-                        ? Icon(
-                            Icons.check_circle_outline,
-                            size: 16,
-                            color: color,
-                          )
-                        : Container(
-                            width: 6,
-                            height: 6,
-                            margin: const EdgeInsets.only(top: 5),
-                            decoration: BoxDecoration(
-                              color: color,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
+                  Icon(
+                    useCheck ? Icons.check_circle : Icons.arrow_right_alt,
+                    size: 18,
+                    color: color.withValues(alpha: 0.7),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 16),
                   Expanded(
                     child: Text(
                       item,
                       style: const TextStyle(
-                        color: Colors.white,
+                        color: Colors.white70,
                         fontSize: 14,
                         height: 1.5,
-                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ),
@@ -515,6 +554,7 @@ class _SimpleListSection extends StatelessWidget {
               ),
             ),
           ),
+          const SizedBox(height: 40),
         ],
       ),
     );
@@ -537,30 +577,51 @@ class _CodeSnippetSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
-              Icon(Icons.code, color: Colors.greenAccent, size: 20),
-              SizedBox(width: 10),
-              Text(
-                'Extrait de code',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.greenAccent.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.greenAccent.withValues(alpha: 0.3)),
+                ),
+                child: const Icon(Icons.code, color: Colors.greenAccent, size: 20),
+              ),
+              const SizedBox(width: 16),
+              const Expanded(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'EXTRAIT TECHNIQUE',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1.5,
+                    ),
+                  ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 24),
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: const Color(0xFF0D1117),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: Colors.greenAccent.withValues(alpha: 0.3),
+                color: Colors.greenAccent.withValues(alpha: 0.2),
               ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black54,
+                  blurRadius: 10,
+                ),
+              ],
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -568,18 +629,20 @@ class _CodeSnippetSection extends StatelessWidget {
                 // Header type éditeur
                 Row(
                   children: [
-                    _dot(Colors.red),
-                    const SizedBox(width: 6),
-                    _dot(Colors.amber),
-                    const SizedBox(width: 6),
-                    _dot(Colors.green),
+                    _dot(const Color(0xFFFF5F56)),
+                    const SizedBox(width: 8),
+                    _dot(const Color(0xFFFFBD2E)),
+                    const SizedBox(width: 8),
+                    _dot(const Color(0xFF27C93F)),
+                    const Spacer(),
+                    const Text('DART / FLUTTER', style: TextStyle(color: Colors.white24, fontSize: 9, fontWeight: FontWeight.bold)),
                   ],
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 24),
                 SelectableText(
                   code,
                   style: const TextStyle(
-                    color: Colors.greenAccent,
+                    color: Color(0xFF9FE1CB),
                     fontFamily: 'monospace',
                     fontSize: 13,
                     height: 1.6,
@@ -588,14 +651,15 @@ class _CodeSnippetSection extends StatelessWidget {
               ],
             ),
           ),
+          const SizedBox(height: 40),
         ],
       ),
     );
   }
 
   Widget _dot(Color c) => Container(
-        width: 12,
-        height: 12,
+        width: 10,
+        height: 10,
         decoration: BoxDecoration(color: c, shape: BoxShape.circle),
       );
 }

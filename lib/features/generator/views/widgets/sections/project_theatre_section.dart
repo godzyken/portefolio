@@ -97,40 +97,43 @@ class _SceneIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(scenes.length, (index) {
-        final isActive = index == currentScene;
-        return GestureDetector(
-          onTap: () => onSceneTap(index),
-          child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 8),
-            child: Column(
-              children: [
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  width: isActive ? 30 : 8,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: isActive ? ColorHelpers.cyan : Colors.white24,
-                    borderRadius: BorderRadius.circular(2),
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: List.generate(scenes.length, (index) {
+          final isActive = index == currentScene;
+          return GestureDetector(
+            onTap: () => onSceneTap(index),
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 8),
+              child: Column(
+                children: [
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    width: isActive ? 30 : 8,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: isActive ? ColorHelpers.cyan : Colors.white24,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  scenes[index],
-                  style: TextStyle(
-                    color: isActive ? Colors.white : Colors.white38,
-                    fontSize: 9,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 1.5,
+                  const SizedBox(height: 6),
+                  Text(
+                    scenes[index],
+                    style: TextStyle(
+                      color: isActive ? Colors.white : Colors.white38,
+                      fontSize: 9,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1.5,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        );
-      }),
+          );
+        }),
+      ),
     );
   }
 }

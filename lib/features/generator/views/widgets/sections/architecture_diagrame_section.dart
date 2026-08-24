@@ -431,13 +431,19 @@ class ArchitectureDiagramSection extends ConsumerWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              const Text(
-                'Architecture systeme',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 0.3,
+              const Expanded(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Architecture systeme',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 0.3,
+                    ),
+                  ),
                 ),
               ),
             ],
