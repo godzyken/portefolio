@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:portefolio/core/affichage/colors_spec.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/affichage/tech_maturity_framework.dart';
+import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
 import 'package:portefolio/core/ui/widgets/narrative_bubble.dart';
 import '../../../../experience/data/experiences_data.dart';
 

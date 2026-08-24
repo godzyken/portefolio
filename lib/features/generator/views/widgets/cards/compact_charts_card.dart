@@ -45,12 +45,13 @@ class CompactKPICards extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Flexible(
-                child: ResponsiveText.bodySmall(
-                  entry.key,
-                  style: const TextStyle(color: Colors.white70, fontSize: 10),
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: ResponsiveText.bodySmall(
+                    entry.key,
+                    style: const TextStyle(color: Colors.white70, fontSize: 10),
+                    textAlign: TextAlign.center,
+                  ),
                 ),
               ),
               const SizedBox(height: 4),

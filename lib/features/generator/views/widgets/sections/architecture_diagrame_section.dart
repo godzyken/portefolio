@@ -460,17 +460,27 @@ class ArchitectureDiagramSection extends ConsumerWidget {
           // Diagramme SVG
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: Colors.white.withValues(alpha: 0.03),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(24),
               border: Border.all(
                 color: Colors.white.withValues(alpha: 0.08),
               ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black45,
+                  blurRadius: 15,
+                ),
+              ],
             ),
-            child: SvgPicture.string(
-              svgString,
-              fit: BoxFit.contain,
+            child: InteractiveViewer(
+              maxScale: 2.5,
+              minScale: 0.8,
+              child: SvgPicture.string(
+                svgString,
+                fit: BoxFit.contain,
+              ),
             ),
           ),
 

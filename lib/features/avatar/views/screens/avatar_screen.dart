@@ -176,7 +176,12 @@ class _HUDSlide extends StatelessWidget {
             children: [
               Icon(pillar.icon, color: pillar.color, size: 18),
               const SizedBox(width: 10),
-              Text(pillar.label.toUpperCase(), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 12)),
+              Flexible(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(pillar.label.toUpperCase(), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 12)),
+                ),
+              ),
             ],
           ),
         ],

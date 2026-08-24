@@ -139,10 +139,14 @@ class GlobalExpertiseSection extends ConsumerWidget {
                         ),
                         const ResponsiveBox(width: 12),
                         Expanded(
-                          child: ResponsiveText.bodyMedium(
-                            skill.name,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w600,
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: Alignment.centerLeft,
+                            child: ResponsiveText.bodyMedium(
+                              skill.name,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ),
                         ),

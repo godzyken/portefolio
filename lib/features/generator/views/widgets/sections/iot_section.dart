@@ -117,12 +117,17 @@ class _IoTSectionState extends State<IoTSection> {
               color: isActive ? Colors.cyanAccent : Colors.white60,
             ),
             const SizedBox(width: 6),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
-                color: isActive ? Colors.white : Colors.white60,
+            Flexible(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+                    color: isActive ? Colors.white : Colors.white60,
+                  ),
+                ),
               ),
             ),
           ],

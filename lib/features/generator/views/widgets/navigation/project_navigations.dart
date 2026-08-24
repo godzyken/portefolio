@@ -66,13 +66,16 @@ class ProjectNavigationSidebar extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ResponsiveText.titleMedium(
-            projectTitle,
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: ResponsiveText.titleMedium(
+              projectTitle,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            maxLines: 2,
           ),
           if (headerExtra != null) ...[
             const SizedBox(height: 8),

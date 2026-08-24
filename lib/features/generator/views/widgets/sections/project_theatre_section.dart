@@ -443,10 +443,10 @@ class _SceneDescription extends StatelessWidget {
             text,
             textAlign: TextAlign.center,
             style: const TextStyle(
-              color: Colors.white70,
+              color: Colors.white,
               fontSize: 14,
-              height: 1.4,
-              fontStyle: FontStyle.italic,
+              height: 1.5,
+              fontWeight: FontWeight.w400,
             ),
           ),
           if (extra != null) ...[
