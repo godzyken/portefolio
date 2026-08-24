@@ -130,12 +130,17 @@ class TechMaturityRadar extends StatelessWidget {
               children: [
                 Icon(pillar.icon, size: 16, color: pillar.color),
                 const SizedBox(width: 6),
-                Text(
-                  compact ? '' : pillar.label,
-                  style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.9),
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
+                Flexible(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      compact ? '' : pillar.label,
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.9),
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ),
                 if (!compact) ...[

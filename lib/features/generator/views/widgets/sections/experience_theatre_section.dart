@@ -90,14 +90,80 @@ class ExperienceTheatreSection extends StatelessWidget {
                         const NarrativeBubble(
                           text: "L'approche 'Production Readiness' a permis de sécuriser le code et d'optimiser les performances de 40%.",
                         ).animate().fadeIn(delay: const Duration(milliseconds: 500)),
+                        const SizedBox(height: 32),
+                        // NOUVELLE CARTE VISUELLE POUR LES NON-TECHNIQUES
+                        _ImpactMiniCard(experience: experience),
                       ],
                     ),
                   ),
                 ),
             ],
           ),
+          
+          // SUR MOBILE : IMPACT EN BAS
+          if (info.isMobile) ...[
+            const SizedBox(height: 32),
+            _ImpactMiniCard(experience: experience),
+            const SizedBox(height: 40),
+          ],
         ],
       ),
+    );
+  }
+}
+
+class _ImpactMiniCard extends StatelessWidget {
+  final Experience experience;
+  const _ImpactMiniCard({required this.experience});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: ColorHelpers.cyan.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: ColorHelpers.cyan.withValues(alpha: 0.2)),
+      ),
+      child: Column(
+        children: [
+          const Text(
+            "RÉSUMÉ D'IMPACT",
+            style: TextStyle(
+              color: ColorHelpers.cyan,
+              fontWeight: FontWeight.w900,
+              fontSize: 10,
+              letterSpacing: 2,
+            ),
+          ),
+          const SizedBox(height: 20),
+          _ImpactRow(icon: Icons.rocket_launch, label: "Mise en service", value: "Production Ready"),
+          const Divider(height: 24, color: Colors.white10),
+          _ImpactRow(icon: Icons.trending_up, label: "Performance", value: "Optimisée"),
+          const Divider(height: 24, color: Colors.white10),
+          _ImpactRow(icon: Icons.security, label: "Sécurité", value: "Validée"),
+        ],
+      ),
+    );
+  }
+}
+
+class _ImpactRow extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+  const _ImpactRow({required this.icon, required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(icon, color: Colors.white54, size: 16),
+        const SizedBox(width: 12),
+        Text(label, style: const TextStyle(color: Colors.white38, fontSize: 11)),
+        const Spacer(),
+        Text(value, style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold)),
+      ],
     );
   }
 }
@@ -343,52 +409,90 @@ class _MissionsCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
-              Icon(Icons.auto_awesome, color: ColorHelpers.cyan, size: 18),
-              SizedBox(width: 12),
-              Text(
-                "MISSIONS & RÉALISATIONS",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w900,
-                  fontSize: 12,
-                  letterSpacing: 1.5,
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: ColorHelpers.cyan.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.auto_awesome, color: ColorHelpers.cyan, size: 18),
+              ),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Text(
+                  "MISSIONS & RÉALISATIONS",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 12,
+                    letterSpacing: 1.5,
+                  ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 20),
-          ...missions.map((m) => Padding(
-            padding: const EdgeInsets.only(bottom: 16),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  margin: const EdgeInsets.only(top: 4),
-                  padding: const EdgeInsets.all(2),
-                  decoration: BoxDecoration(
-                    color: ColorHelpers.cyan.withValues(alpha: 0.2),
-                    shape: BoxShape.circle,
+          const SizedBox(height: 24),
+          ...missions.map((m) {
+            final icon = _getMissionIcon(m);
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 20),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    margin: const EdgeInsets.only(top: 2),
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: ColorHelpers.cyan.withValues(alpha: 0.05),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: ColorHelpers.cyan.withValues(alpha: 0.1)),
+                    ),
+                    child: Icon(icon, color: ColorHelpers.cyan, size: 16),
                   ),
-                  child: const Icon(Icons.check, color: ColorHelpers.cyan, size: 10),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Text(
-                    m,
-                    style: const TextStyle(
-                      color: Colors.white70, 
-                      fontSize: 14,
-                      height: 1.4,
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          m,
+                          style: const TextStyle(
+                            color: Colors.white, 
+                            fontSize: 14,
+                            height: 1.5,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Container(
+                          height: 1,
+                          width: 40,
+                          color: ColorHelpers.cyan.withValues(alpha: 0.2),
+                        ),
+                      ],
                     ),
                   ),
-                ),
-              ],
-            ),
-          )).toList(),
+                ],
+              ),
+            );
+          }).toList(),
         ],
       ),
     );
+  }
+
+  IconData _getMissionIcon(String text) {
+    final t = text.toLowerCase();
+    if (t.contains('développe') || t.contains('code')) return Icons.code_rounded;
+    if (t.contains('test') || t.contains('qualité')) return Icons.bug_report_outlined;
+    if (t.contains('architect') || t.contains('concept')) return Icons.account_tree_outlined;
+    if (t.contains('performance') || t.contains('optim')) return Icons.speed_rounded;
+    if (t.contains('sécu')) return Icons.security_rounded;
+    if (t.contains('ia') || t.contains('intelligent')) return Icons.auto_awesome_mosaic;
+    if (t.contains('lead') || t.contains('manage')) return Icons.groups_rounded;
+    if (t.contains('client') || t.contains('besoin')) return Icons.contact_support_outlined;
+    return Icons.task_alt_rounded;
   }
 }

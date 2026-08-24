@@ -244,22 +244,25 @@ class ProjectBottomNavigation extends StatelessWidget {
                     ),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: Alignment.center,
                       children: [
                         Icon(
                           section.icon,
                           color: isActive ? Colors.blue : Colors.white60,
-                          size: 24,
+                          size: 20, // Taille d'icône un peu plus petite
                         ),
                         const SizedBox(height: 4),
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          padding: const EdgeInsets.symmetric(horizontal: 2),
                           child: FittedBox(
                             fit: BoxFit.scaleDown,
-                            child: ResponsiveText.bodySmall(
+                            child: Text(
                               section.title,
+                              textAlign: TextAlign.center,
                               style: TextStyle(
                                 color: isActive ? Colors.blue : Colors.white60,
-                                fontSize: 10,
+                                fontSize: 9, // Encore plus petit pour mobile
+                                fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
                               ),
                             ),
                           ),

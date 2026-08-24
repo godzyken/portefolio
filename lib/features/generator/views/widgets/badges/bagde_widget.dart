@@ -58,18 +58,28 @@ class BadgeWidget extends StatelessWidget {
             const SizedBox(width: 4),
           ],
           if (label != null) ...[
-            ResponsiveText.bodySmall(
-              label!,
-              style: const TextStyle(color: Colors.white70, fontSize: 11),
+            Flexible(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: ResponsiveText.bodySmall(
+                  label!,
+                  style: const TextStyle(color: Colors.white70, fontSize: 11),
+                ),
+              ),
             ),
             const SizedBox(width: 6),
           ],
-          ResponsiveText.bodySmall(
-            text,
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: label != null ? FontWeight.bold : FontWeight.normal,
-              fontSize: label != null ? 13 : 12,
+          Flexible(
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: ResponsiveText.bodySmall(
+                text,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: label != null ? FontWeight.bold : FontWeight.normal,
+                  fontSize: label != null ? 13 : 12,
+                ),
+              ),
             ),
           ),
         ],

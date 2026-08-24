@@ -340,18 +340,25 @@ String _generateSvg(_ArchDiagram d, bool isDark) {
 String _rowInline(double y, double x, double w, double h,
     (String, String, String, String) s, String title, String sub) {
   final cx = x + w / 2;
-  return '''
-    <rect x="$x" y="$y" width="$w" height="$h" rx="8" fill="${s.$1}" stroke="${s.$2}" stroke-width="0.5"/>
-    ${_text(cx, y + h * 0.38, _truncate(title, 30), s.$3, 'middle', true)}
-    ${sub.isNotEmpty ? _text(cx, y + h * 0.68, _truncate(sub, 50), s.$4, 'middle', false, size: 11) : ''}
-  ''';
+  final buf = StringBuffer();
+  buf.write('<rect x="$x" y="$y" width="$w" height="$h" rx="8" fill="${s.$1}" stroke="${s.$2}" stroke-width="0.5"/>');
+  buf.write(_text(cx, y + h * 0.38, _truncate(title, 30), s.$3, 'middle', true));
+  if (sub.isNotEmpty) {
+    buf.write(_text(cx, y + h * 0.68, _truncate(sub, 50), s.$4, 'middle', false, size: 11));
+  }
+  return buf.toString();
 }
 
 String _text(
     double x, double y, String content, String color, String anchor, bool bold,
     {double size = 13}) {
-  final weight = bold ? 'font-weight="500"' : '';
-  return '<text x="$x" y="$y" text-anchor="$anchor" dominant-baseline="central" fill="$color" font-family="sans-serif" font-size="$size" $weight>$content</text>';
+  final weightAttr = bold ? ' font-weight="500"' : '';
+  // Utilisation de la concaténation brute pour éviter que l'IDE n'interprète 
+  // la chaîne comme un template XML/SVG et ne génère des avertissements sur les placeholders.
+  return '<text x="' + x.toString() + '" y="' + y.toString() + 
+         '" text-anchor="' + anchor + '" dominant-baseline="central" fill="' + color + 
+         '" font-family="sans-serif" font-size="' + size.toString() + '"' + 
+         weightAttr + '>' + content + '</text>';
 }
 // ─────────────────────────────────────────────────────────────────────────────
 // Helpers SVG
