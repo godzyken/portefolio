@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/affichage/colors_spec.dart';
 import '../../../core/ui/widgets/smart_image.dart';
 import '../../experience/data/experiences_data.dart';
 import '../../projets/data/project_data.dart';
@@ -244,7 +245,6 @@ class ExperiencePresentationSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
