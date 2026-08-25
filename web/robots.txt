@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://godzyken.github.io/portefolio/sitemap.xml
