@@ -16,6 +16,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:portefolio/app.dart';
 import 'package:portefolio/core/provider/providers.dart';
 import 'package:portefolio/features/home/views/screens/home_screen.dart';
+import 'package:portefolio/features/parametres/themes/provider/theme_repository_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'services/bootstrap_service_test.dart';
@@ -77,6 +78,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
+            sharedPreferencesProvider.overrideWithValue(mockPrefs),
             bootstrapProvider.overrideWithValue(bootstrap),
             bootstrapFutureProvider.overrideWith((ref) => bootstrap),
             //  assetServiceProvider.overrideWithValue(MockAssetService()),
@@ -87,7 +89,8 @@ void main() {
         ),
       );
 
-      await Future.delayed(const Duration(milliseconds: 500));
+      // Attendre la fin du délai minimal du SplashScreen (1500ms) + chargement thème
+      await Future.delayed(const Duration(milliseconds: 2500));
 
       await tester.pump();
     });

@@ -1,7 +1,14 @@
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:portefolio/core/service/assets_service.dart';
+
+void main() {
+  test('Placeholder for AssetsService', () {
+    // Ce fichier contient uniquement des mocks pour d'autres tests
+  });
+}
 
 class MockAssetService extends AssetService {
   @override

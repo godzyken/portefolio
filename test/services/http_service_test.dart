@@ -1,6 +1,13 @@
 import 'dart:io';
 
+import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+
+void main() {
+  test('Placeholder for HttpService', () {
+    // Ce fichier contient uniquement des mocks pour d'autres tests
+  });
+}
 
 class MockHttpClient extends Mock implements HttpClient {}
 

@@ -807,5 +807,39 @@
         "sécurité": "10/10"
       }
     }
+  },
+  {
+    "id": "e_foot_amateur",
+    "title": "E-Foot Amateur ERP",
+    "storyline": "ERP et plateforme de gestion pour le football amateur - V1 MVP & Phase Pilote. Centralisation de la gestion des clubs, joueurs, et compétitions.",
+    "githubRepoUrl": "https://github.com/godzyken/e_foot_amateur",
+    "techDetails": {
+      "architecture": "Clean Architecture / DDD",
+      "state_management": "BLoC (flutter_bloc 9.1.1)",
+      "backend": "Firebase (Firestore, Auth, Messaging, App Check)",
+      "security": "Firebase App Check",
+      "payments": "Stripe"
+    },
+    "points": [
+      "⚽ ERP et plateforme de gestion pour le football amateur",
+      "🏗️ Clean Architecture / DDD pour une maintenabilité maximale",
+      "🔥 Backend Firebase complet (Auth, Firestore, Cloud Messaging)",
+      "🛡️ Sécurité renforcée via Firebase App Check",
+      "💳 Intégration des paiements via Stripe",
+      "📊 Pilotage Financier et Conformité Sportive automatisée",
+      "🤖 Assistant IA stratégique pour les dirigeants de clubs"
+    ],
+    "image": [],
+    "platform": ["Android", "iOS", "Web", "Linux", "macOS", "Windows"],
+    "tags": ["Flutter", "Dart", "Firebase", "Stripe", "ERP", "Sport", "IA", "Clean Architecture"],
+    "results": [
+      "Phase pilote opérationnelle avec le club CCFC",
+      "Automatisation des règles FFF (Licences, Suspensions)",
+      "Valorisation comptable du bénévolat"
+    ],
+    "development": {
+      "focus": "Productivité & Conformité",
+      "status": "Phase Pilote"
+    }
   }
 ]

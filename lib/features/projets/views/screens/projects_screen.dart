@@ -116,16 +116,16 @@ class _ProjectCardGrid extends ConsumerWidget {
                 : 3;
 
     return Padding(
-      padding: EdgeInsets.all(info.isMobile ? 12 : 20),
+      padding: EdgeInsets.all(info.isMobile ? 16 : 24),
       child: GridView.builder(
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: cols,
-          crossAxisSpacing: 12,
-          mainAxisSpacing: 12,
-          childAspectRatio: info.isMobile ? 1.6 : 1.4,
+          crossAxisSpacing: 20,
+          mainAxisSpacing: 20,
+          childAspectRatio: 0.8,
         ),
         itemCount: projects.length,
-        itemBuilder: (context, index) => _ProjectCard(
+        itemBuilder: (context, index) => ModernProjectCard(
           project: projects[index],
           isSelected: selected.any((p) => p.id == projects[index].id),
           onTap: () => _openDetail(context, projects[index]),

@@ -8,8 +8,8 @@ import 'package:portefolio/core/service/tracking_service.dart';
 import 'package:portefolio/core/ui/sections/section_system.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'live_preview_frame_web.dart'
-    if (dart.library.io) 'live_preview_frame_web.dart' as frame_impl;
+import 'live_preview_frame_stub.dart'
+    if (dart.library.js_util) 'live_preview_frame_web.dart' as frame_impl;
 
 class LivePreviewSection extends ConsumerWidget {
   final String url;

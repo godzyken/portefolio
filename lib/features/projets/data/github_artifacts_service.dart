@@ -77,7 +77,29 @@ class GithubArtifactsService {
               repo: repoInfo.repo,
               path: '.artefacts/$projectId/$name.md',
               token: token,
-            ).then((content) => MapEntry(name, content)),
+            ).then((content) async {
+              // Fallback : chercher dans .ai/ si absent de .artefacts/ (Convention Godzyken)
+              if (content == null) {
+                String? aiPath;
+                switch (name) {
+                  case 'presentation': aiPath = 'PROJECT.md'; break;
+                  case 'vision': aiPath = 'ARCHITECTURE.md'; break;
+                  case 'workthrough': aiPath = 'ROADMAP.md'; break;
+                  case 'implementation': aiPath = 'DECISIONS.md'; break;
+                }
+                
+                if (aiPath != null) {
+                  final aiContent = await _fetchSingleFile(
+                    owner: repoInfo.owner,
+                    repo: repoInfo.repo,
+                    path: '.ai/$aiPath',
+                    token: token,
+                  );
+                  return MapEntry(name, aiContent);
+                }
+              }
+              return MapEntry(name, content);
+            }),
           ),
     ]);
 

@@ -8,13 +8,14 @@ void main() {
       expect(charts, isEmpty);
     });
 
-    test('createChartsFromDevelopment with ROI data', () {
-      final dev = {
-        '6_roi_global': {'roi_3_ans': '150%'}
+    test('createChartsFromResults with scalar ROI data', () {
+      final results = {
+        'roi': '150%'
       };
-      final charts = ChartDataFactory.createChartsFromResults(dev);
+      final charts = ChartDataFactory.createChartsFromResults(results);
       expect(charts, isNotEmpty);
-      expect(charts.first.type, ChartType.scatterChart);
+      expect(charts.first.type, ChartType.kpiCards);
+      expect(charts.first.kpiValues!['ROI'], '150%');
     });
   });
 }
