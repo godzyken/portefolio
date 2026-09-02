@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
+import 'package:portefolio/features/experience/views/widgets/experience_widgets_extentions.dart';
 import 'package:portefolio/resources/resources.dart';
 
 class AboutSection extends ConsumerStatefulWidget {
@@ -243,6 +244,12 @@ class _AboutSectionState extends ConsumerState<AboutSection>
         _buildAnimatedText(
           delay: 800,
           child: _buildStats(context, theme, isCentered),
+        ),
+        const ResponsiveBox(paddingSize: ResponsiveSpacing.xl),
+        // Analytics
+        _buildAnimatedText(
+          delay: 1000,
+          child: const ExperienceAnalyticsWidget(),
         ),
       ],
     );

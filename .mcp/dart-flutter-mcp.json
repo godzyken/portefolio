@@ -1,0 +1,5 @@
+{
+  "project_type": "flutter",
+  "entry_point": "lib/main.dart",
+  "enable_diagnostics": true
+}
