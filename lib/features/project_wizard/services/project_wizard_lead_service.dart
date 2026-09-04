@@ -76,16 +76,17 @@ class ProjectWizardLeadService {
       }
 
       if (projectTemplateId != null) {
-        // Option B: Template pro envoyé au client avec BCC (si configuré côté EmailJS)
+        // Option B: Template pro envoyé au client avec BCC (ton email de contrôle)
         await emailJs.sendProjectReport(
           recipientEmail: email,
           templateId: projectTemplateId,
           projectData: {
             "to_email": email,
+            "bcc": "isgodzy@gmail.com", // Ton email de contrôle RGPD
+            "site_name": "Portfolio (Wizard IA)",
             "name": name.isEmpty ? 'Client Projet' : name,
-            "message": buffer.toString(), // On garde le message complet pour le BCC
+            "message": buffer.toString(),
             "ai_analysis": aiAnalysisText,
-            // Ajout des champs séparés au cas où le template les utilise
             "project_context": description.context,
             "project_target": description.targetAudience,
             "project_goals": description.goals,
@@ -96,6 +97,9 @@ class ProjectWizardLeadService {
         await emailJs.sendEmail(
           name: name.isEmpty ? 'Client Projet' : name,
           email: email,
+          siteName: "Portfolio (Wizard IA)",
+          emailTitle: "🚀 Nouvelle analyse de projet",
+          siteFooter: "Emryck Doré — Solution Architect",
           message: buffer.toString(),
         );
       }

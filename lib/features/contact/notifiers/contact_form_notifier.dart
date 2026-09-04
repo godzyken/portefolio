@@ -34,6 +34,10 @@ class ContactFormNotifier extends Notifier<ContactFormState> {
             email:
                 state.email.isNotEmpty ? state.email : "no-reply@example.com",
             message: state.message.isNotEmpty ? state.message : "-",
+            siteName: "Portfolio (Contact Direct)",
+            emailTitle: "👋 Nouveau message de contact",
+            siteFooter: "Emryck Doré — Solution Architect",
+            bcc: "isgodzy@gmail.com",
           );
           state = state.copyWith(status: SubmitStatus.success);
           break;

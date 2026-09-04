@@ -51,6 +51,10 @@ class AvatarLeadService {
       await emailJs.sendEmail(
         name: name.isEmpty ? 'Prospect Avatar' : name,
         email: email,
+        siteName: "Portfolio (Avatar IA)",
+        emailTitle: "🤖 Nouvel engagement via l'IA",
+        siteFooter: "Emryck Doré — Expertise IA & Flutter",
+        bcc: "isgodzy@gmail.com", // Ton email de contrôle
         message: 'NOUVEL ENGAGEMENT AVATAR DÉTECTÉ\n'
             '----------------------------------------\n'
             'Client : ${name.isEmpty ? "Anonyme" : name} ($email)\n'

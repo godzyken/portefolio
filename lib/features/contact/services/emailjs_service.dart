@@ -52,18 +52,27 @@ class EmailJsService {
     required String name,
     required String email,
     required String message,
+    String? phone,
+    String siteName = "Portfolio",
+    String emailTitle = "Nouveau message de contact",
+    String siteFooter = "Emryck Doré — Flutter Developer",
+    String? bcc,
   }) async {
     final templateParams = {
-      "name": name,
-      "email": email,
-      "title": "Contact depuis le portfolio",
+      "from_name": name,
+      "from_email": email,
+      "phone": phone ?? "-",
+      "site_name": siteName,
+      "email_title": emailTitle,
+      "site_footer": siteFooter,
       "message": message,
+      "bcc": bcc ?? "",
       "time": DateTime.now().toString(),
     };
 
     try {
       await _post(templateParams);
-      developer.log("✅ EmailJS sent successfully");
+      developer.log("✅ EmailJS sent successfully for $siteName");
     } catch (e) {
       developer.log("EmailJS error: $e");
       rethrow;
