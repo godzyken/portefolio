@@ -118,9 +118,12 @@ class ExperienceAnalyticsWidget extends ConsumerWidget {
                   },
                 ),
               ),
-              leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-              topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-              rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              leftTitles:
+                  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              topTitles:
+                  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              rightTitles:
+                  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
             ),
             borderData: FlBorderData(show: false),
             lineBarsData: [
@@ -174,9 +177,12 @@ class ExperienceAnalyticsWidget extends ConsumerWidget {
                   },
                 ),
               ),
-              leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-              topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-              rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              leftTitles:
+                  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              topTitles:
+                  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              rightTitles:
+                  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
             ),
             borderData: FlBorderData(show: false),
             barGroups: [
@@ -239,7 +245,8 @@ class _BaseAnalyticsCard extends StatelessWidget {
           ),
           ResponsiveText.bodySmall(
             subtitle,
-            style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha: 0.6)),
+            style: TextStyle(
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6)),
           ),
           const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
           child,

@@ -32,8 +32,8 @@ class HomeScreen extends ConsumerWidget {
               return info.isPortrait
                   ? _buildPortraitLayout(context, info, theme)
                   : SingleChildScrollView(
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: 48, vertical: 32),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 48, vertical: 32),
                       child: _buildLandscapeLayout(context, info, theme),
                     );
             }),
@@ -45,8 +45,11 @@ class HomeScreen extends ConsumerWidget {
                 backgroundColor: ColorHelpers.cyan,
                 foregroundColor: Colors.black,
                 icon: const Icon(Icons.psychology),
-                label: const Text("Besoin d'aide ?", style: TextStyle(fontWeight: FontWeight.bold)),
-              ).animate().scale(delay: const Duration(seconds: 2), duration: const Duration(milliseconds: 500)),
+                label: const Text("Besoin d'aide ?",
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+              ).animate().scale(
+                  delay: const Duration(seconds: 2),
+                  duration: const Duration(milliseconds: 500)),
             ),
           ],
         ),

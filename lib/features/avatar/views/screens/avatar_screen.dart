@@ -26,7 +26,7 @@ class _AvatarScreenState extends ConsumerState<AvatarScreen> {
     final info = ref.watch(responsiveInfoProvider);
     final chatState = ref.watch(avatarChatProvider);
     final isSpeaking = ref.watch(voiceServiceProvider);
-    
+
     AvatarState avatarState = AvatarState.idle;
     if (chatState.isLoading) {
       avatarState = AvatarState.thinking;
@@ -46,22 +46,25 @@ class _AvatarScreenState extends ConsumerState<AvatarScreen> {
         ),
         actions: [
           IconButton(
-            icon: Icon(_isTheatreMode ? Icons.terminal : Icons.theater_comedy, color: ColorHelpers.cyan),
+            icon: Icon(_isTheatreMode ? Icons.terminal : Icons.theater_comedy,
+                color: ColorHelpers.cyan),
             onPressed: () => setState(() => _isTheatreMode = !_isTheatreMode),
           ),
           const SizedBox(width: 16),
         ],
       ),
-      body: _isTheatreMode 
+      body: _isTheatreMode
           ? _buildTheatreHUD(avatarState, info, chatState)
           : _buildClassicChat(avatarState, info),
     );
   }
 
-  Widget _buildTheatreHUD(AvatarState state, ResponsiveInfo info, AsyncValue<List<AvatarMessage>> chatState) {
+  Widget _buildTheatreHUD(AvatarState state, ResponsiveInfo info,
+      AsyncValue<List<AvatarMessage>> chatState) {
     final List<AvatarMessage> messages = chatState.asData?.value ?? [];
     final AvatarMessage? lastMsg = messages.isEmpty ? null : messages.last;
-    final bool isAvatarTalking = (lastMsg?.role == MessageRole.avatar) || (state == AvatarState.thinking);
+    final bool isAvatarTalking = (lastMsg?.role == MessageRole.avatar) ||
+        (state == AvatarState.thinking);
     final TechPillar? activePillar = lastMsg?.relatedPillar;
 
     return Stack(
@@ -73,7 +76,10 @@ class _AvatarScreenState extends ConsumerState<AvatarScreen> {
               gradient: RadialGradient(
                 center: Alignment.center,
                 radius: 1.2,
-                colors: [ColorHelpers.cyan.withValues(alpha: 0.05), Colors.black],
+                colors: [
+                  ColorHelpers.cyan.withValues(alpha: 0.05),
+                  Colors.black
+                ],
               ),
             ),
           ),
@@ -88,13 +94,15 @@ class _AvatarScreenState extends ConsumerState<AvatarScreen> {
             width: info.size.width * 0.5,
             child: Stack(
               children: [
-                Positioned.fill(child: CustomPaint(painter: _HUDSignalsPainter())),
+                Positioned.fill(
+                    child: CustomPaint(painter: _HUDSignalsPainter())),
                 AvatarDisplay(state: state),
               ],
             ),
           )
         else
-          Positioned.fill(child: Opacity(opacity: 0.3, child: AvatarDisplay(state: state))),
+          Positioned.fill(
+              child: Opacity(opacity: 0.3, child: AvatarDisplay(state: state))),
 
         // 💬 BULLE IA (Positionnée pour pointer vers l'avatar)
         if (lastMsg != null && isAvatarTalking)
@@ -103,14 +111,18 @@ class _AvatarScreenState extends ConsumerState<AvatarScreen> {
             top: info.isMobile ? 120 : 200,
             child: SizedBox(
               width: info.isMobile ? info.size.width - 40 : 450,
-              child: NarrativeBubble(text: lastMsg.content).animate().fadeIn().slideX(begin: -0.1, end: 0),
+              child: NarrativeBubble(text: lastMsg.content)
+                  .animate()
+                  .fadeIn()
+                  .slideX(begin: -0.1, end: 0),
             ),
           ),
 
         // 📊 SLIDE TECHNIQUE (Centrale / Appui)
         if (activePillar != null)
           Align(
-            alignment: info.isMobile ? Alignment.center : const Alignment(-0.2, 0.5),
+            alignment:
+                info.isMobile ? Alignment.center : const Alignment(-0.2, 0.5),
             child: _HUDSlide(pillar: activePillar, info: info),
           ),
 
@@ -160,15 +172,19 @@ class _HUDSlide extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.black.withValues(alpha: 0.8),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: pillar.color.withValues(alpha: 0.6), width: 1.5),
-        boxShadow: [BoxShadow(color: pillar.color.withValues(alpha: 0.2), blurRadius: 30)],
+        border:
+            Border.all(color: pillar.color.withValues(alpha: 0.6), width: 1.5),
+        boxShadow: [
+          BoxShadow(color: pillar.color.withValues(alpha: 0.2), blurRadius: 30)
+        ],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
-            child: Image.asset(pillar.skillImage, height: info.isMobile ? 120 : 220, fit: BoxFit.cover),
+            child: Image.asset(pillar.skillImage,
+                height: info.isMobile ? 120 : 220, fit: BoxFit.cover),
           ),
           const SizedBox(height: 12),
           Row(
@@ -179,7 +195,11 @@ class _HUDSlide extends StatelessWidget {
               Flexible(
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
-                  child: Text(pillar.label.toUpperCase(), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 12)),
+                  child: Text(pillar.label.toUpperCase(),
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w900,
+                          fontSize: 12)),
                 ),
               ),
             ],
@@ -226,7 +246,8 @@ class _HUDInputAreaState extends ConsumerState<_HUDInputArea> {
           CircleAvatar(
             backgroundColor: ColorHelpers.cyan,
             child: IconButton(
-              icon: const Icon(Icons.arrow_upward, color: Colors.black, size: 20),
+              icon:
+                  const Icon(Icons.arrow_upward, color: Colors.black, size: 20),
               onPressed: _send,
             ),
           ),
@@ -261,6 +282,7 @@ class _HUDSignalsPainter extends CustomPainter {
     }
     canvas.drawPath(path, paint);
   }
+
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

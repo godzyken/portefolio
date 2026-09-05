@@ -88,8 +88,7 @@ class SectionManager {
       title: 'Aperçu',
       icon: Icons.preview,
       builder: (context, info) => LivePreviewSection(
-        url: project.lienProjet!,
-        projectTitle: project.title,
+        project: project,
         info: info,
       ),
     );
@@ -271,9 +270,14 @@ class SectionManager {
   /// Retourne la storyline du projet avec un fallback
   String get storyline {
     try {
-      return project.storyline ?? (project.points.isNotEmpty ? project.points[0] : "Conception d'une solution innovante.");
+      return project.storyline ??
+          (project.points.isNotEmpty
+              ? project.points[0]
+              : "Conception d'une solution innovante.");
     } catch (_) {
-      return project.points.isNotEmpty ? project.points[0] : "Conception d'une solution innovante.";
+      return project.points.isNotEmpty
+          ? project.points[0]
+          : "Conception d'une solution innovante.";
     }
   }
 
@@ -307,42 +311,62 @@ class SectionManager {
     final scores = <TechPillar, double>{};
     final pointsText = project.points.join(' ').toLowerCase();
     final techDetailsText = project.techDetails?.toString().toLowerCase() ?? '';
-    final allText = '$pointsText $techDetailsText ${project.title.toLowerCase()}';
+    final allText =
+        '$pointsText $techDetailsText ${project.title.toLowerCase()}';
 
     for (final pillar in TechPillar.values) {
       double score = 0.1; // SCORE MINIMAL FORCÉ POUR VISIBILITÉ
       switch (pillar) {
         case TechPillar.architecture:
-          if (allText.contains('arch') || allText.contains('clean')) score += 0.4;
+          if (allText.contains('arch') || allText.contains('clean'))
+            score += 0.4;
           if (allText.contains('modul')) score += 0.3;
           if (allText.contains('ddd') || allText.contains('mvvm')) score += 0.3;
           break;
         case TechPillar.stateManagement:
-          if (allText.contains('riverpod') || allText.contains('bloc')) score += 0.5;
-          if (allText.contains('prov') || allText.contains('getit') || allText.contains('state')) score += 0.3;
+          if (allText.contains('riverpod') || allText.contains('bloc'))
+            score += 0.5;
+          if (allText.contains('prov') ||
+              allText.contains('getit') ||
+              allText.contains('state')) score += 0.3;
           break;
         case TechPillar.testing:
           if (allText.contains('test')) score += 0.4;
-          if (allText.contains('qualité') || allText.contains('ready')) score += 0.3;
+          if (allText.contains('qualité') || allText.contains('ready'))
+            score += 0.3;
           break;
         case TechPillar.security:
-          if (allText.contains('auth') || allText.contains('secu')) score += 0.3;
-          if (allText.contains('chiffr') || allText.contains('crypt') || allText.contains('ssl')) score += 0.4;
+          if (allText.contains('auth') || allText.contains('secu'))
+            score += 0.3;
+          if (allText.contains('chiffr') ||
+              allText.contains('crypt') ||
+              allText.contains('ssl')) score += 0.4;
           break;
         case TechPillar.performance:
-          if (allText.contains('fps') || allText.contains('fluide') || allText.contains('perf')) score += 0.3;
+          if (allText.contains('fps') ||
+              allText.contains('fluide') ||
+              allText.contains('perf')) score += 0.3;
           if (allText.contains('optim')) score += 0.3;
-          if (allText.contains('async') || allText.contains('future')) score += 0.4;
+          if (allText.contains('async') || allText.contains('future'))
+            score += 0.4;
           break;
         case TechPillar.cicd:
-          if (allText.contains('github') || allText.contains('git') || allText.contains('deploy')) score += 0.5;
+          if (allText.contains('github') ||
+              allText.contains('git') ||
+              allText.contains('deploy')) score += 0.5;
           break;
         case TechPillar.monitoring:
-          if (allText.contains('sentry') || allText.contains('fireb') || allText.contains('log')) score += 0.4;
-          if (allText.contains('analytic') || allText.contains('suivi')) score += 0.3;
+          if (allText.contains('sentry') ||
+              allText.contains('fireb') ||
+              allText.contains('log')) score += 0.4;
+          if (allText.contains('analytic') || allText.contains('suivi'))
+            score += 0.3;
           break;
         case TechPillar.aiSmart:
-          if (allText.contains('ia ') || allText.contains('ai ') || allText.contains('gpt') || allText.contains('intel')) score += 0.5;
+          if (allText.contains('ia ') ||
+              allText.contains('ai ') ||
+              allText.contains('gpt') ||
+              allText.contains('intel')) score += 0.5;
           if (allText.contains('smart')) score += 0.5;
           break;
       }

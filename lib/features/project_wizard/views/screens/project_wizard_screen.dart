@@ -20,14 +20,16 @@ class ProjectWizardScreen extends ConsumerWidget {
     final notifier = ref.read(projectWizardProvider.notifier);
     final aiService = ref.watch(projectWizardAiServiceProvider);
 
-    final totalSteps = 8; // 0-3 inputs, 4 loading, 5 advice, 6 selection, 7 final info
+    final totalSteps =
+        8; // 0-3 inputs, 4 loading, 5 advice, 6 selection, 7 final info
 
     return Scaffold(
       backgroundColor: const Color(0xFF1A1A2E),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text('Assistant de Projet IA', style: TextStyle(color: Colors.white)),
+        title: const Text('Assistant de Projet IA',
+            style: TextStyle(color: Colors.white)),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
@@ -56,11 +58,13 @@ class ProjectWizardScreen extends ConsumerWidget {
                   Expanded(
                     child: AnimatedSwitcher(
                       duration: const Duration(milliseconds: 400),
-                      child: _buildCurrentStep(state, notifier, aiService, theme),
+                      child:
+                          _buildCurrentStep(state, notifier, aiService, theme),
                     ),
                   ),
                   if (state.currentStep < 4 || state.currentStep >= 5)
-                    _buildNavigation(state, notifier, aiService, theme, context),
+                    _buildNavigation(
+                        state, notifier, aiService, theme, context),
                 ],
               ),
             ),
@@ -160,7 +164,8 @@ class ProjectWizardScreen extends ConsumerWidget {
                 child: const Text('Précédent'),
               ),
             ),
-          if (!isFirstStep && state.currentStep != 5 && !isSubmitting) const SizedBox(width: 16),
+          if (!isFirstStep && state.currentStep != 5 && !isSubmitting)
+            const SizedBox(width: 16),
           Expanded(
             flex: 2,
             child: FilledButton(
@@ -172,7 +177,8 @@ class ProjectWizardScreen extends ConsumerWidget {
                         }
                       } else if (isLastStep) {
                         notifier.submitLead();
-                      } else if (state.currentStep == 5 && state.errorMessage != null) {
+                      } else if (state.currentStep == 5 &&
+                          state.errorMessage != null) {
                         notifier.nextStep(); // to 6
                         notifier.nextStep(); // to 7
                       } else {
@@ -188,13 +194,15 @@ class ProjectWizardScreen extends ConsumerWidget {
                   ? const SizedBox(
                       width: 20,
                       height: 20,
-                      child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                      child: CircularProgressIndicator(
+                          color: Colors.white, strokeWidth: 2),
                     )
                   : Text(isAnalysisStep
                       ? 'Analyser avec l\'IA'
                       : (isLastStep
                           ? 'Envoyer'
-                          : (state.currentStep == 5 && state.errorMessage != null
+                          : (state.currentStep == 5 &&
+                                  state.errorMessage != null
                               ? 'Continuer sans analyse'
                               : 'Suivant'))),
             ),

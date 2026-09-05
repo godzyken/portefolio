@@ -26,7 +26,8 @@ class ProjectTheatreSection extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<ProjectTheatreSection> createState() => _ProjectTheatreSectionState();
+  ConsumerState<ProjectTheatreSection> createState() =>
+      _ProjectTheatreSectionState();
 }
 
 class _ProjectTheatreSectionState extends ConsumerState<ProjectTheatreSection> {
@@ -48,7 +49,7 @@ class _ProjectTheatreSectionState extends ConsumerState<ProjectTheatreSection> {
           scenes: _scenes,
           onSceneTap: (index) => setState(() => _currentScene = index),
         ),
-        
+
         const SizedBox(height: 20),
 
         // THÉÂTRE (CONTENU DYNAMIQUE)
@@ -59,7 +60,8 @@ class _ProjectTheatreSectionState extends ConsumerState<ProjectTheatreSection> {
               return FadeTransition(
                 opacity: animation,
                 child: ScaleTransition(
-                  scale: Tween<double>(begin: 0.98, end: 1.0).animate(animation),
+                  scale:
+                      Tween<double>(begin: 0.98, end: 1.0).animate(animation),
                   child: child,
                 ),
               );
@@ -78,7 +80,8 @@ class _ProjectTheatreSectionState extends ConsumerState<ProjectTheatreSection> {
       case 1:
         return _ForgeScene(project: widget.project, info: widget.info);
       case 2:
-        return _ImpactScene(project: widget.project, info: widget.info, ref: ref);
+        return _ImpactScene(
+            project: widget.project, info: widget.info, ref: ref);
       default:
         return const SizedBox.shrink();
     }
@@ -150,7 +153,7 @@ class _VisionScene extends StatelessWidget {
     final images = project.cleanedImages ?? project.image ?? [];
     final manager = SectionManager(project);
     final storylineText = manager.storyline;
-    
+
     final isCompact = info.size.height < 600;
 
     return SingleChildScrollView(
@@ -162,7 +165,8 @@ class _VisionScene extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(bottom: 16),
               child: NarrativeBubble(
-                text: "Découvrez la genèse de ce projet. C'est ici que l'idée a pris vie.",
+                text:
+                    "Découvrez la genèse de ce projet. C'est ici que l'idée a pris vie.",
               ),
             ),
 
@@ -195,10 +199,11 @@ class _ForgeScene extends StatelessWidget {
     final manager = SectionManager(project);
     final maturity = manager.analyzeMaturity();
     final isCompact = info.size.height < 600;
-    
+
     String? techImageUrl;
     if (maturity.isNotEmpty) {
-      final topPillar = maturity.entries.reduce((a, b) => a.value > b.value ? a : b).key;
+      final topPillar =
+          maturity.entries.reduce((a, b) => a.value > b.value ? a : b).key;
       techImageUrl = topPillar.skillImage;
     }
 
@@ -211,7 +216,8 @@ class _ForgeScene extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(bottom: 16),
               child: NarrativeBubble(
-                text: "La forge technique. C'est ici que la magie opère avec une stack moderne et robuste.",
+                text:
+                    "La forge technique. C'est ici que la magie opère avec une stack moderne et robuste.",
               ),
             ),
 
@@ -223,7 +229,8 @@ class _ForgeScene extends StatelessWidget {
             ),
           _SceneDescription(
             title: "LA TECHNIQUE",
-            text: "Chaque choix technique est une brique vers la Production Readiness. Sécurité, Performance et Scalabilité.",
+            text:
+                "Chaque choix technique est une brique vers la Production Readiness. Sécurité, Performance et Scalabilité.",
             icon: Icons.terminal_rounded,
             extra: TechMaturityRadar(scores: maturity, compact: true),
           ),
@@ -239,14 +246,15 @@ class _ImpactScene extends StatelessWidget {
   final ResponsiveInfo info;
   final WidgetRef ref;
 
-  const _ImpactScene({required this.project, required this.info, required this.ref});
+  const _ImpactScene(
+      {required this.project, required this.info, required this.ref});
 
   Future<void> _openLiveSite() async {
     if (project.lienProjet == null) return;
     final uri = Uri.parse(project.lienProjet!);
-    
+
     ref.read(trackingServiceProvider).trackInteraction(
-      projectId: project.id,
+      projectId: project.analyticsId,
       projectName: project.title,
       action: TrackingAction.linkClick,
       details: {'url': project.lienProjet, 'source': 'theatre_impact_scene'},
@@ -263,7 +271,7 @@ class _ImpactScene extends StatelessWidget {
     final images = project.cleanedImages ?? project.image ?? [];
     final mainImage = images.isNotEmpty ? images[0] : null;
     final isCompact = info.size.height < 600;
-    
+
     return SingleChildScrollView(
       key: const ValueKey('impact'),
       child: Column(
@@ -273,7 +281,8 @@ class _ImpactScene extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(bottom: 16),
               child: NarrativeBubble(
-                text: "L'impact final. Une solution prête pour la production avec des résultats concrets.",
+                text:
+                    "L'impact final. Une solution prête pour la production avec des résultats concrets.",
               ),
             ),
 
@@ -285,7 +294,7 @@ class _ImpactScene extends StatelessWidget {
               info: info,
             ),
           ),
-          
+
           const SizedBox(height: 24),
 
           Container(
@@ -294,7 +303,8 @@ class _ImpactScene extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.white.withValues(alpha: 0.03),
               borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: ColorHelpers.cyan.withValues(alpha: 0.2)),
+              border:
+                  Border.all(color: ColorHelpers.cyan.withValues(alpha: 0.2)),
             ),
             child: Stack(
               alignment: Alignment.center,
@@ -322,24 +332,33 @@ class _ImpactScene extends StatelessWidget {
                         child: SmartImage(
                           path: mainImage,
                           fit: BoxFit.cover,
+                          enableFullScreenOnTap: true,
                         ),
                       ),
                     ),
-                  ).animate().slideY(begin: 0.5, end: 0, duration: const Duration(milliseconds: 800), curve: Curves.elasticOut),
-
+                  ).animate().slideY(
+                      begin: 0.5,
+                      end: 0,
+                      duration: const Duration(milliseconds: 800),
+                      curve: Curves.elasticOut),
                 if (project.lienProjet != null)
                   Positioned(
                     bottom: 20,
                     child: FilledButton.icon(
                       onPressed: _openLiveSite,
                       icon: const Icon(Icons.rocket_launch_rounded, size: 14),
-                      label: const Text("VOIR LE RÉSULTAT LIVE", 
-                        style: TextStyle(fontWeight: FontWeight.w900, fontSize: 10, letterSpacing: 1.1)),
+                      label: const Text("VOIR LE RÉSULTAT LIVE",
+                          style: TextStyle(
+                              fontWeight: FontWeight.w900,
+                              fontSize: 10,
+                              letterSpacing: 1.1)),
                       style: FilledButton.styleFrom(
                         backgroundColor: ColorHelpers.cyan,
                         foregroundColor: Colors.black,
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 12),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
                       ),
                     ).animate().scale(delay: const Duration(milliseconds: 600)),
                   ),
@@ -372,7 +391,9 @@ class _SceneHeroImage extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: isTech ? ColorHelpers.magenta.withValues(alpha: 0.4) : ColorHelpers.cyan.withValues(alpha: 0.4),
+          color: isTech
+              ? ColorHelpers.magenta.withValues(alpha: 0.4)
+              : ColorHelpers.cyan.withValues(alpha: 0.4),
           width: 2,
         ),
         boxShadow: [
@@ -390,9 +411,13 @@ class _SceneHeroImage extends StatelessWidget {
           fit: BoxFit.cover,
           width: double.infinity,
           height: double.infinity,
+          enableFullScreenOnTap: true,
         ),
       ),
-    ).animate().fadeIn(duration: const Duration(milliseconds: 500)).scale(begin: const Offset(0.95, 0.95));
+    )
+        .animate()
+        .fadeIn(duration: const Duration(milliseconds: 500))
+        .scale(begin: const Offset(0.95, 0.95));
   }
 }
 
@@ -467,6 +492,7 @@ class _SceneDescription extends StatelessWidget {
           ],
         ],
       ),
-    ).animate().slideY(begin: 0.2, end: 0, duration: const Duration(milliseconds: 400));
+    ).animate().slideY(
+        begin: 0.2, end: 0, duration: const Duration(milliseconds: 400));
   }
 }

@@ -1,11 +1,11 @@
 import 'dart:developer' as developer;
 import '../service/supabase_service.dart';
 
-enum TrackingAction { 
-  whatsapp, 
-  call, 
-  email, 
-  formSubmit, 
+enum TrackingAction {
+  whatsapp,
+  call,
+  email,
+  formSubmit,
   linkClick,
   avatarQuestionAsked,
   avatarDepthMilestone,
@@ -20,7 +20,8 @@ class TrackingService {
     Map<String, dynamic>? details,
   }) async {
     if (!SupabaseService.isReady) {
-      developer.log('⚠️ Tracking ignored: Supabase not ready', name: 'TrackingService');
+      developer.log('⚠️ Tracking ignored: Supabase not ready',
+          name: 'TrackingService');
       return;
     }
 
@@ -32,9 +33,11 @@ class TrackingService {
         'action_type': actionStr,
         'details': details,
       });
-      developer.log('✅ Interaction tracked: $projectId -> $actionStr', name: 'TrackingService');
+      developer.log('✅ Interaction tracked: $projectId -> $actionStr',
+          name: 'TrackingService');
     } catch (e, st) {
-      developer.log('❌ Failed to track interaction', name: 'TrackingService', error: e, stackTrace: st);
+      developer.log('❌ Failed to track interaction',
+          name: 'TrackingService', error: e, stackTrace: st);
     }
   }
 }

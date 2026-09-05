@@ -66,7 +66,7 @@ class _ResultsSectionState extends State<ResultsSection> {
             BadgeList(
               badges: _buildResultBadges(results),
             ),
-          
+
           const SizedBox(height: 24),
 
           // NOUVEAU : Graphiques dynamiques (WakaTime / Supabase)
@@ -84,7 +84,8 @@ class _ResultsSectionState extends State<ResultsSection> {
           if (_charts.isNotEmpty) ...[
             const ResponsiveText.bodyMedium(
               '📊 Indicateurs complémentaires',
-              style: TextStyle(color: Colors.white70, fontWeight: FontWeight.bold),
+              style:
+                  TextStyle(color: Colors.white70, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             SizedBox(

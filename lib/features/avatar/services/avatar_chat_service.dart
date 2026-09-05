@@ -45,7 +45,8 @@ class AvatarChatService {
       );
 
       if (response.statusCode != 200) {
-        developer.log("OpenAI error: ${response.body}", name: 'AvatarChatService');
+        developer.log("OpenAI error: ${response.body}",
+            name: 'AvatarChatService');
         return "Une erreur technique s'est produite lors de la génération de ma réponse.";
       }
 
@@ -61,14 +62,17 @@ class AvatarChatService {
   String _buildDepthInstructions(Map<TechPillar, int> scores) {
     final buffer = StringBuffer();
     buffer.writeln("### DIRECTIVES DE PROFONDEUR TECHNIQUE :");
-    
+
     scores.forEach((pillar, count) {
       if (count < 2) {
-        buffer.writeln("- Pour le pilier ${pillar.label} : Reste vulgarisé, donne une vue d'ensemble.");
+        buffer.writeln(
+            "- Pour le pilier ${pillar.label} : Reste vulgarisé, donne une vue d'ensemble.");
       } else if (count >= 2 && count < 5) {
-        buffer.writeln("- Pour le pilier ${pillar.label} : Entre dans les détails d'implémentation, cite des packages ou des patterns précis.");
+        buffer.writeln(
+            "- Pour le pilier ${pillar.label} : Entre dans les détails d'implémentation, cite des packages ou des patterns précis.");
       } else {
-        buffer.writeln("- Pour le pilier ${pillar.label} : Niveau EXPERT. Donne des extraits de code, explique l'architecture en profondeur et suggère explicitement à l'utilisateur de consulter l'artefact .md correspondant (ex: implementation.md) pour voir les preuves techniques.");
+        buffer.writeln(
+            "- Pour le pilier ${pillar.label} : Niveau EXPERT. Donne des extraits de code, explique l'architecture en profondeur et suggère explicitement à l'utilisateur de consulter l'artefact .md correspondant (ex: implementation.md) pour voir les preuves techniques.");
       }
     });
 

@@ -59,7 +59,8 @@ class EnvConfigService {
 
     final emailJsPublicKey = const String.fromEnvironment('EMAILJS_PUBLIC_KEY');
 
-    final emailJsProjectTemplateId = const String.fromEnvironment('EMAILJS_PROJECT_TEMPLATE_ID');
+    final emailJsProjectTemplateId =
+        const String.fromEnvironment('EMAILJS_PROJECT_TEMPLATE_ID');
 
     final whatsappPhone = const String.fromEnvironment('WHATSAPP_PHONE');
 
@@ -82,7 +83,8 @@ class EnvConfigService {
       emailJsServiceId: emailJsServiceId,
       emailJsTemplateId: emailJsTemplateId,
       emailJsPublicKey: emailJsPublicKey,
-      emailJsProjectTemplateId: emailJsProjectTemplateId.isEmpty ? null : emailJsProjectTemplateId,
+      emailJsProjectTemplateId:
+          emailJsProjectTemplateId.isEmpty ? null : emailJsProjectTemplateId,
       whatsappPhone: whatsappPhone,
       oneDriveUrl: oneDriveUrl,
       wakaTimeApiKey: waka.isEmpty ? null : waka,
@@ -119,7 +121,8 @@ class EnvConfigService {
     }
 
     if ((githubToken ?? '').isEmpty) {
-      errors.add('GITHUB_TOKEN manquant (optionnel, mais évite le rate-limit GitHub API)');
+      errors.add(
+          'GITHUB_TOKEN manquant (optionnel, mais évite le rate-limit GitHub API)');
     }
 
     if ((googleCalendarClientId ?? '').isEmpty) {

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Fond circulaire -->
+  <circle cx="256" cy="256" r="240" fill="#EBF4FF" />
+  
+  <!-- Tête / Visage -->
+  <circle cx="256" cy="190" r="80" fill="#F3D2B3" />
+  
+  <!-- Buste / Corps -->
+  <path d="M120,420 C120,310 180,280 256,280 C332,280 392,310 392,420 Z" fill="#2563EB" />
+  
+  <!-- Casque Audio -->
+  <path d="M160,190 A96,96 0 0,1 352,190" fill="none" stroke="#1E293B" stroke-width="20" stroke-linecap="round" />
+  <rect x="140" y="160" rx="12" ry="12" width="28" height="60" fill="#0F172A" />
+  <rect x="344" y="160" rx="12" ry="12" width="28" height="60" fill="#0F172A" />
+  
+  <!-- Micro du casque -->
+  <path d="M356,200 L300,240" fill="none" stroke="#0F172A" stroke-width="10" stroke-linecap="round" />
+  <circle cx="292" cy="245" r="12" fill="#0F172A" />
+</svg>

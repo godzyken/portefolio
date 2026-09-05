@@ -47,8 +47,8 @@ class NarrativeBubble extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  const Icon(Icons.auto_awesome, 
-                    color: ColorHelpers.cyan, size: 14),
+                  const Icon(Icons.auto_awesome,
+                      color: ColorHelpers.cyan, size: 14),
                   const SizedBox(width: 8),
                   Text(
                     'ANALYSE IA',
@@ -76,8 +76,8 @@ class NarrativeBubble extends StatelessWidget {
         ),
       ),
     )
-    .animate()
-    .fadeIn(duration: const Duration(milliseconds: 400))
-    .slideY(begin: 0.1, end: 0, curve: Curves.easeOutCubic);
+        .animate()
+        .fadeIn(duration: const Duration(milliseconds: 400))
+        .slideY(begin: 0.1, end: 0, curve: Curves.easeOutCubic);
   }
 }

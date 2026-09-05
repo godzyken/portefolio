@@ -47,6 +47,22 @@ class ProjectInfo {
     this.development,
   });
 
+  /// Identifiant robuste pour les services externes (Analytics, GitHub, etc.)
+  ///
+  /// Retourne 'emap_services' pour EMAP, sinon nettoie le titre ou utilise l'ID
+  /// si celui-ci n'est pas un générique 'projet_X'.
+  String get analyticsId {
+    final t = title.toLowerCase();
+    if (t.contains('emap')) return 'emap_services';
+    if (t.contains('e-foot')) return 'e-foot_amateur';
+
+    // Si l'ID est explicite (pas un projet_123), on le garde
+    if (!id.startsWith('projet_')) return id;
+
+    // Sinon on préfère le titre nettoyé (ex: 'bat_track_v1')
+    return title.toLowerCase().trim().replaceAll(' ', '_');
+  }
+
   // Getter qui retourne les images nettoyées
   List<String>? get cleanedImages {
     if (image == null) return null;

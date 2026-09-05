@@ -200,12 +200,13 @@ class CalendarAvailabilityService {
         if (isAvailable) {
           availableSlots.add(slot);
         } else {
-          developer.log('❌ Créneau ${slot.hour}:${slot.minute} non disponible (occupé)');
+          developer.log(
+              '❌ Créneau ${slot.hour}:${slot.minute} non disponible (occupé)');
         }
       }
     } catch (e) {
       developer.log('❌ Erreur lors du calcul des créneaux: $e');
-      // En cas d'erreur de l'API, on peut décider de retourner les slots par défaut 
+      // En cas d'erreur de l'API, on peut décider de retourner les slots par défaut
       // ou de laisser remonter l'erreur. Ici on laisse remonter pour que availableTimeSlotsProvider le gère.
       rethrow;
     }

@@ -26,7 +26,8 @@ class EmailJsService {
     required this.publicKey,
   });
 
-  Future<void> _post(Map<String, dynamic> templateParams, {String? overrideTemplateId}) async {
+  Future<void> _post(Map<String, dynamic> templateParams,
+      {String? overrideTemplateId}) async {
     final body = <String, dynamic>{
       'service_id': serviceId,
       'template_id': overrideTemplateId ?? templateId,
@@ -41,8 +42,8 @@ class EmailJsService {
     );
 
     if (response.statusCode != 200) {
-      developer.log(
-          "❌ EmailJS error: ${response.statusCode} ::: ${response.body}");
+      developer
+          .log("❌ EmailJS error: ${response.statusCode} ::: ${response.body}");
       throw Exception(
           "Erreur EmailJS (${response.statusCode}): ${response.body}");
     }

@@ -27,12 +27,13 @@ import '../provider/providers.dart';
 /// systématiquement vers '/' quelle que soit l'URL demandée, ce qui faisait
 /// passer brièvement par HomeScreen (et son CharacterViewer 3D) à chaque
 /// chargement, même en arrivant directement sur /avatar.
-String _resolveDeepLinkTargetRoute()  {
+String _resolveDeepLinkTargetRoute() {
   if (!kIsWeb) return '/';
   final fragment = Uri.base.fragment;
   debugPrint('🔍 [Router] Uri.base = ${Uri.base} | fragment = "$fragment"');
   if (fragment.isEmpty || fragment == '/splash' || fragment == '/') {
-    debugPrint('🔍 [Router] → deepLinkTarget résolu à "/" (fragment vide/splash/racine)');
+    debugPrint(
+        '🔍 [Router] → deepLinkTarget résolu à "/" (fragment vide/splash/racine)');
     return '/';
   }
   final resolved = fragment.startsWith('/') ? fragment : '/$fragment';
@@ -60,7 +61,9 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               const Icon(Icons.error_outline, size: 64, color: Colors.red),
               const SizedBox(height: 16),
               Text('Page non trouvée : ${state.uri.path}'),
-              TextButton(onPressed: () => context.go('/'), child: const Text('Retour')),
+              TextButton(
+                  onPressed: () => context.go('/'),
+                  child: const Text('Retour')),
             ],
           ),
         ),

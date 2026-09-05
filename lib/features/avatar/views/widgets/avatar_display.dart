@@ -38,7 +38,7 @@ class _AvatarDisplayState extends ConsumerState<AvatarDisplay> {
     if (_stateIndex != null && _stateIndex!.value == 0) {
       _stateIndex!.value = 1.0;
     }
-    
+
     _updateState();
   }
 
@@ -52,7 +52,7 @@ class _AvatarDisplayState extends ConsumerState<AvatarDisplay> {
     // Mise à jour sécurisée des inputs
     final talking = _isTalking;
     final thinking = _isThinking;
-    
+
     if (talking != null) {
       talking.value = widget.state == AvatarState.talking;
     }
@@ -74,9 +74,10 @@ class _AvatarDisplayState extends ConsumerState<AvatarDisplay> {
       onLoaded: _onLoaded,
       builder: (context, state) {
         if (state is RiveLoading) {
-          return const Center(child: CircularProgressIndicator(color: ColorHelpers.cyan));
+          return const Center(
+              child: CircularProgressIndicator(color: ColorHelpers.cyan));
         }
-        
+
         if (state is RiveLoaded) {
           return RiveWidget(
             controller: state.controller,
@@ -84,11 +85,12 @@ class _AvatarDisplayState extends ConsumerState<AvatarDisplay> {
             alignment: Alignment.center,
           );
         }
-        
+
         if (state is RiveFailed) {
-          return const Center(child: Icon(Icons.error_outline, color: Colors.redAccent));
+          return const Center(
+              child: Icon(Icons.error_outline, color: Colors.redAccent));
         }
-        
+
         return const SizedBox.shrink();
       },
     );

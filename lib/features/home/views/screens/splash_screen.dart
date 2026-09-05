@@ -95,9 +95,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     final double progress = splashState.progress > 0
         ? splashState.progress
         : (stats.totalAssets > 0
-        ? ((stats.totalLoaded + stats.failed) / stats.totalAssets)
-        .clamp(0.0, 1.0)
-        : 0.0);
+            ? ((stats.totalLoaded + stats.failed) / stats.totalAssets)
+                .clamp(0.0, 1.0)
+            : 0.0);
 
     final bool isInitializing =
         splashState.phase == SplashPhase.idle || stats.totalAssets == 0;
@@ -181,7 +181,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                 'assets/images/entreprises/logo_godzyken.png',
                 fit: BoxFit.cover,
                 errorBuilder: (_, __, ___) =>
-                const Icon(Icons.person, size: 50, color: Colors.white),
+                    const Icon(Icons.person, size: 50, color: Colors.white),
               ),
         ),
       ),
@@ -195,22 +195,22 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
           Opacity(opacity: _fadeAnimation.value, child: child),
       child: isTitle
           ? ResponsiveText.displaySmall(
-        text,
-        style: const TextStyle(
-          fontSize: 32,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-          letterSpacing: 2,
-        ),
-      )
+              text,
+              style: const TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                letterSpacing: 2,
+              ),
+            )
           : ResponsiveText.titleMedium(
-        text,
-        style: TextStyle(
-          fontSize: 16,
-          color: Colors.white.withValues(alpha: 0.6),
-          letterSpacing: 1,
-        ),
-      ),
+              text,
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.white.withValues(alpha: 0.6),
+                letterSpacing: 1,
+              ),
+            ),
     );
   }
 
@@ -241,10 +241,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   }
 
   Widget _buildStatusText(
-      SplashState state,
-      double progress,
-      bool isInitializing,
-      ) {
+    SplashState state,
+    double progress,
+    bool isInitializing,
+  ) {
     return FadeTransition(
       opacity: _fadeAnimation,
       child: Column(

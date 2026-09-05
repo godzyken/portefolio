@@ -9,9 +9,7 @@ void main() {
     });
 
     test('createChartsFromResults with scalar ROI data', () {
-      final results = {
-        'roi': '150%'
-      };
+      final results = {'roi': '150%'};
       final charts = ChartDataFactory.createChartsFromResults(results);
       expect(charts, isNotEmpty);
       expect(charts.first.type, ChartType.kpiCards);

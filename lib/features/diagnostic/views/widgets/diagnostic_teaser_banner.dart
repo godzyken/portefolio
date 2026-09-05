@@ -28,8 +28,8 @@ class DiagnosticTeaserBanner extends StatelessWidget {
             ],
           ),
           borderRadius: BorderRadius.circular(20),
-          border:
-              Border.all(color: theme.colorScheme.primary.withValues(alpha: 0.4)),
+          border: Border.all(
+              color: theme.colorScheme.primary.withValues(alpha: 0.4)),
         ),
         child: Row(
           children: [

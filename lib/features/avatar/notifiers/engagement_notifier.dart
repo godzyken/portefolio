@@ -20,7 +20,7 @@ class EngagementNotifier extends Notifier<Map<TechPillar, int>> {
   bool get isQualified {
     int totalScore = 0;
     int pillarsWithQuestions = 0;
-    
+
     state.forEach((pillar, count) {
       totalScore += count;
       if (count > 0) pillarsWithQuestions++;
@@ -40,9 +40,9 @@ class EngagementNotifier extends Notifier<Map<TechPillar, int>> {
 
   List<String> get exploredPillars {
     return state.entries
-      .where((e) => e.value > 0)
-      .map((e) => e.key.label)
-      .toList();
+        .where((e) => e.value > 0)
+        .map((e) => e.key.label)
+        .toList();
   }
 
   TechPillar? classifyMessage(String text) {
@@ -55,18 +55,46 @@ class EngagementNotifier extends Notifier<Map<TechPillar, int>> {
 
   bool _matchesPillar(TechPillar pillar, String text) {
     switch (pillar) {
-      case TechPillar.architecture: return text.contains('arch') || text.contains('clean') || text.contains('dossier');
-      case TechPillar.stateManagement: return text.contains('state') || text.contains('riverpod') || text.contains('donnée');
-      case TechPillar.testing: return text.contains('test') || text.contains('qualité') || text.contains('mock');
-      case TechPillar.security: return text.contains('secu') || text.contains('auth') || text.contains('crypt') || text.contains('token');
-      case TechPillar.performance: return text.contains('perf') || text.contains('optim') || text.contains('vitesse');
-      case TechPillar.cicd: return text.contains('ci') || text.contains('cd') || text.contains('deploy') || text.contains('git');
-      case TechPillar.monitoring: return text.contains('monitor') || text.contains('log') || text.contains('sentry');
-      case TechPillar.aiSmart: return text.contains('ia') || text.contains('ai') || text.contains('openai') || text.contains('llm');
+      case TechPillar.architecture:
+        return text.contains('arch') ||
+            text.contains('clean') ||
+            text.contains('dossier');
+      case TechPillar.stateManagement:
+        return text.contains('state') ||
+            text.contains('riverpod') ||
+            text.contains('donnée');
+      case TechPillar.testing:
+        return text.contains('test') ||
+            text.contains('qualité') ||
+            text.contains('mock');
+      case TechPillar.security:
+        return text.contains('secu') ||
+            text.contains('auth') ||
+            text.contains('crypt') ||
+            text.contains('token');
+      case TechPillar.performance:
+        return text.contains('perf') ||
+            text.contains('optim') ||
+            text.contains('vitesse');
+      case TechPillar.cicd:
+        return text.contains('ci') ||
+            text.contains('cd') ||
+            text.contains('deploy') ||
+            text.contains('git');
+      case TechPillar.monitoring:
+        return text.contains('monitor') ||
+            text.contains('log') ||
+            text.contains('sentry');
+      case TechPillar.aiSmart:
+        return text.contains('ia') ||
+            text.contains('ai') ||
+            text.contains('openai') ||
+            text.contains('llm');
     }
   }
 }
 
-final engagementProvider = NotifierProvider<EngagementNotifier, Map<TechPillar, int>>(
+final engagementProvider =
+    NotifierProvider<EngagementNotifier, Map<TechPillar, int>>(
   EngagementNotifier.new,
 );

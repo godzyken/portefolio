@@ -43,7 +43,8 @@ class _DiagnosticLeadFormState extends ConsumerState<DiagnosticLeadForm> {
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: theme.colorScheme.primary.withValues(alpha: 0.3)),
+        border:
+            Border.all(color: theme.colorScheme.primary.withValues(alpha: 0.3)),
       ),
       child: Form(
         key: _formKey,
@@ -52,7 +53,8 @@ class _DiagnosticLeadFormState extends ConsumerState<DiagnosticLeadForm> {
           children: [
             ResponsiveText.titleMedium(
               'Recevez votre rapport détaillé',
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                  color: Colors.white, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             const ResponsiveText.bodySmall(
@@ -75,7 +77,8 @@ class _DiagnosticLeadFormState extends ConsumerState<DiagnosticLeadForm> {
             const SizedBox(height: 12),
             MessageFormField(
               labelText: 'Résumé du projet',
-              hintText: 'Décrivez brièvement votre projet pour contextualiser le score...',
+              hintText:
+                  'Décrivez brièvement votre projet pour contextualiser le score...',
               onChanged: notifier.updateProjectSummary,
             ),
             const SizedBox(height: 12),
@@ -86,8 +89,8 @@ class _DiagnosticLeadFormState extends ConsumerState<DiagnosticLeadForm> {
               decoration: InputDecoration(
                 labelText: 'Entreprise (optionnel)',
                 labelStyle: const TextStyle(color: Colors.white70),
-                prefixIcon:
-                    Icon(Icons.business_outlined, color: theme.colorScheme.primary),
+                prefixIcon: Icon(Icons.business_outlined,
+                    color: theme.colorScheme.primary),
                 filled: true,
                 fillColor: Colors.white.withValues(alpha: 0.05),
                 border: OutlineInputBorder(
@@ -111,7 +114,8 @@ class _DiagnosticLeadFormState extends ConsumerState<DiagnosticLeadForm> {
                 onPressed: isLoading
                     ? null
                     : () async {
-                        if (!(_formKey.currentState?.validate() ?? false)) return;
+                        if (!(_formKey.currentState?.validate() ?? false))
+                          return;
                         await notifier.submitLead(widget.result);
                       },
                 icon: isLoading
@@ -122,7 +126,8 @@ class _DiagnosticLeadFormState extends ConsumerState<DiagnosticLeadForm> {
                             strokeWidth: 2, color: Colors.white),
                       )
                     : const Icon(Icons.send),
-                label: Text(isLoading ? 'Envoi en cours...' : 'Recevoir mon rapport'),
+                label: Text(
+                    isLoading ? 'Envoi en cours...' : 'Recevoir mon rapport'),
                 style: FilledButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   backgroundColor: theme.colorScheme.primary,

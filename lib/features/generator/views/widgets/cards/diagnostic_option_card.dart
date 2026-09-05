@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../../../../../core/ui/cards/base_card.dart';
 import '../../../../../core/ui/widgets/responsive_text.dart';
 
-
 class DiagnosticOptionCard extends StatelessWidget {
   const DiagnosticOptionCard({
     super.key,
@@ -27,8 +26,9 @@ class DiagnosticOptionCard extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         margin: EdgeInsets.zero,
         borderRadius: BorderRadius.circular(14),
-        backgroundColor:
-            selected ? color.withValues(alpha: 0.18) : Colors.white.withValues(alpha: 0.05),
+        backgroundColor: selected
+            ? color.withValues(alpha: 0.18)
+            : Colors.white.withValues(alpha: 0.05),
         borderColor: selected ? color : Colors.white.withValues(alpha: 0.15),
         borderWidth: selected ? 2 : 1,
         enableHover: onTap != null,

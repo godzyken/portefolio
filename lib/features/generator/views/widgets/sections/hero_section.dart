@@ -35,7 +35,9 @@ class HeroSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final manager = SectionManager(project);
     final maturity = manager.analyzeMaturity();
-    developer.log('DEBUG: HeroSection maturity for ${project.title}: ${maturity.length} pillars found', name: 'UI_DEBUG');
+    developer.log(
+        'DEBUG: HeroSection maturity for ${project.title}: ${maturity.length} pillars found',
+        name: 'UI_DEBUG');
 
     final images = _getImages();
     final useRowLayout = info.size.width > 900;

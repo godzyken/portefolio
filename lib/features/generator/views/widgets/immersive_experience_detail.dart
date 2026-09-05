@@ -396,17 +396,17 @@ class _CircuitPainter extends CustomPainter {
       ..style = PaintingStyle.stroke;
 
     final path = Path();
-    
+
     // Simuler des lignes de circuit / connectivité
     path.moveTo(size.width * 0.2, size.height);
     path.lineTo(size.width * 0.2, size.height * 0.7);
     path.lineTo(size.width * 0.5, size.height * 0.5);
     path.lineTo(size.width * 0.5, size.height * 0.2);
-    
+
     path.moveTo(size.width * 0.8, size.height);
     path.lineTo(size.width * 0.8, size.height * 0.6);
     path.lineTo(size.width * 0.4, size.height * 0.4);
-    
+
     canvas.drawPath(path, paint);
 
     // Petits points aux intersections

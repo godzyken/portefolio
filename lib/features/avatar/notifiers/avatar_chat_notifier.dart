@@ -38,7 +38,7 @@ class AvatarChatNotifier extends AsyncNotifier<List<AvatarMessage>> {
 
     // 2. Déclencher la réflexion
     state = const AsyncLoading<List<AvatarMessage>>();
-    // On restaure immédiatement les messages pour que le UI puisse les afficher 
+    // On restaure immédiatement les messages pour que le UI puisse les afficher
     // tout en voyant l'état isLoading
     state = AsyncData(List.from(_messages));
 
@@ -66,7 +66,8 @@ class AvatarChatNotifier extends AsyncNotifier<List<AvatarMessage>> {
     ref.read(voiceServiceProvider.notifier).speak(response);
 
     // 4. Vérification qualification Lead
-    if (engagement.isQualified && !_messages.any((m) => m.type == MessageType.leadForm)) {
+    if (engagement.isQualified &&
+        !_messages.any((m) => m.type == MessageType.leadForm)) {
       _offerLeadCapture();
     }
   }
@@ -75,7 +76,8 @@ class AvatarChatNotifier extends AsyncNotifier<List<AvatarMessage>> {
     final offerMsg = AvatarMessage(
       id: "lead_offer_${DateTime.now().millisecondsSinceEpoch}",
       role: MessageRole.avatar,
-      content: "Je vois que tu t'intéresses de près à mon expertise technique. Serais-tu intéressé pour qu'on poursuive cet échange par email ? Je peux t'envoyer un résumé de notre conversation.",
+      content:
+          "Je vois que tu t'intéresses de près à mon expertise technique. Serais-tu intéressé pour qu'on poursuive cet échange par email ? Je peux t'envoyer un résumé de notre conversation.",
       timestamp: DateTime.now(),
     );
 
@@ -93,6 +95,7 @@ class AvatarChatNotifier extends AsyncNotifier<List<AvatarMessage>> {
   }
 }
 
-final avatarChatProvider = AsyncNotifierProvider<AvatarChatNotifier, List<AvatarMessage>>(
+final avatarChatProvider =
+    AsyncNotifierProvider<AvatarChatNotifier, List<AvatarMessage>>(
   AvatarChatNotifier.new,
 );

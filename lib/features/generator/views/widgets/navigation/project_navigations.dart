@@ -265,7 +265,9 @@ class ProjectBottomNavigation extends StatelessWidget {
                               style: TextStyle(
                                 color: isActive ? Colors.blue : Colors.white60,
                                 fontSize: 9, // Encore plus petit pour mobile
-                                fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+                                fontWeight: isActive
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
                               ),
                             ),
                           ),

@@ -76,7 +76,8 @@ class BadgeWidget extends StatelessWidget {
                 text,
                 style: TextStyle(
                   color: Colors.white,
-                  fontWeight: label != null ? FontWeight.bold : FontWeight.normal,
+                  fontWeight:
+                      label != null ? FontWeight.bold : FontWeight.normal,
                   fontSize: label != null ? 13 : 12,
                 ),
               ),

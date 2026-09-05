@@ -51,14 +51,17 @@ class _AvatarChatPanelState extends ConsumerState<AvatarChatPanel> {
                 return const Center(
                   child: Text(
                     "Posez-moi une question sur le parcours de Soufiane.",
-                    style: TextStyle(color: ColorHelpers.textSecondary, fontStyle: FontStyle.italic),
+                    style: TextStyle(
+                        color: ColorHelpers.textSecondary,
+                        fontStyle: FontStyle.italic),
                   ),
                 );
               }
               _scrollToBottom();
               return ListView.builder(
                 controller: _scrollController,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
                 itemCount: messages.length,
                 itemBuilder: (context, index) {
                   final msg = messages[index];
@@ -69,7 +72,8 @@ class _AvatarChatPanelState extends ConsumerState<AvatarChatPanel> {
                 },
               );
             },
-            loading: () => const Center(child: CircularProgressIndicator(color: ColorHelpers.cyan)),
+            loading: () => const Center(
+                child: CircularProgressIndicator(color: ColorHelpers.cyan)),
             error: (err, _) => Center(child: Text("Erreur: $err")),
           ),
         ),
@@ -124,7 +128,8 @@ class _AvatarChatPanelState extends ConsumerState<AvatarChatPanel> {
       return Align(
         alignment: Alignment.centerRight,
         child: Container(
-          constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.7),
+          constraints:
+              BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.7),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: ColorHelpers.cyan.withValues(alpha: 0.1),
@@ -173,7 +178,8 @@ class _AvatarChatPanelState extends ConsumerState<AvatarChatPanel> {
                   borderRadius: BorderRadius.circular(25),
                   borderSide: BorderSide(color: ColorHelpers.cyan),
                 ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               ),
               onSubmitted: (val) => _send(),
             ),
@@ -222,19 +228,19 @@ class _AvatarLeadFormState extends ConsumerState<_AvatarLeadForm> {
     try {
       final engagement = ref.read(engagementProvider.notifier);
       final chatMessages = ref.read(avatarChatProvider).asData?.value ?? [];
-      
+
       final summary = chatMessages
           .where((m) => m.type == MessageType.text)
           .map((m) => "${m.role.name}: ${m.content}")
           .join("\n");
 
       await ref.read(avatarLeadServiceProvider).submit(
-        name: _nameCtrl.text,
-        email: _emailCtrl.text,
-        conversationSummary: summary,
-        pillarsExplored: engagement.exploredPillars,
-        maxDepthScore: engagement.maxDepth,
-      );
+            name: _nameCtrl.text,
+            email: _emailCtrl.text,
+            conversationSummary: summary,
+            pillarsExplored: engagement.exploredPillars,
+            maxDepthScore: engagement.maxDepth,
+          );
 
       setState(() {
         _isDone = true;
@@ -245,7 +251,8 @@ class _AvatarLeadFormState extends ConsumerState<_AvatarLeadForm> {
       setState(() => _isSubmitting = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Échec de l'envoi. Veuillez réessayer.")),
+          const SnackBar(
+              content: Text("Échec de l'envoi. Veuillez réessayer.")),
         );
       }
     }
@@ -290,7 +297,10 @@ class _AvatarLeadFormState extends ConsumerState<_AvatarLeadForm> {
           children: [
             const Text(
               "DEMANDE DE RÉSUMÉ TECHNIQUE",
-              style: TextStyle(color: ColorHelpers.cyan, fontWeight: FontWeight.bold, fontSize: 12),
+              style: TextStyle(
+                  color: ColorHelpers.cyan,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12),
             ),
             const SizedBox(height: 16),
             TextFormField(
@@ -304,7 +314,8 @@ class _AvatarLeadFormState extends ConsumerState<_AvatarLeadForm> {
               controller: _emailCtrl,
               style: const TextStyle(color: Colors.white, fontSize: 14),
               decoration: _inputDecoration("Email"),
-              validator: (v) => v == null || !v.contains('@') ? "Email invalide" : null,
+              validator: (v) =>
+                  v == null || !v.contains('@') ? "Email invalide" : null,
             ),
             const SizedBox(height: 20),
             SizedBox(
@@ -314,11 +325,16 @@ class _AvatarLeadFormState extends ConsumerState<_AvatarLeadForm> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: ColorHelpers.cyan,
                   foregroundColor: Colors.black,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
                 ),
                 child: _isSubmitting
-                    ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                    : const Text("RECEVOIR LE RÉSUMÉ", style: TextStyle(fontWeight: FontWeight.bold)),
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2))
+                    : const Text("RECEVOIR LE RÉSUMÉ",
+                        style: TextStyle(fontWeight: FontWeight.bold)),
               ),
             ),
           ],
@@ -330,9 +346,12 @@ class _AvatarLeadFormState extends ConsumerState<_AvatarLeadForm> {
   InputDecoration _inputDecoration(String label) {
     return InputDecoration(
       labelText: label,
-      labelStyle: const TextStyle(color: ColorHelpers.textSecondary, fontSize: 12),
-      enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: ColorHelpers.border)),
-      focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: ColorHelpers.cyan)),
+      labelStyle:
+          const TextStyle(color: ColorHelpers.textSecondary, fontSize: 12),
+      enabledBorder: UnderlineInputBorder(
+          borderSide: BorderSide(color: ColorHelpers.border)),
+      focusedBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(color: ColorHelpers.cyan)),
     );
   }
 }

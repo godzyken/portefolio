@@ -59,8 +59,8 @@ class Service {
       basePrice: (json['basePrice'] ?? json['base_price']) == null
           ? null
           : ((json['basePrice'] ?? json['base_price']) as num).toDouble(),
-      priceUnit: (json['priceUnit'] ?? json['price_unit']) as String? ??
-          'sur devis',
+      priceUnit:
+          (json['priceUnit'] ?? json['price_unit']) as String? ?? 'sur devis',
       priceNote: (json['priceNote'] ?? json['price_note']) as String?,
     );
   }

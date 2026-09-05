@@ -5,7 +5,6 @@ import '../data/models/project_wizard_models.dart';
 import '../services/project_wizard_ai_service.dart';
 import '../services/project_wizard_lead_service.dart';
 
-
 enum ProjectSubmitStatus { idle, loading, success, error }
 
 class ProjectWizardState {
@@ -69,27 +68,33 @@ class ProjectWizardNotifier extends Notifier<ProjectWizardState> {
   }
 
   void updateContext(String value) {
-    state = state.copyWith(description: state.description.copyWith(context: value));
+    state =
+        state.copyWith(description: state.description.copyWith(context: value));
   }
 
   void updateTarget(String value) {
-    state = state.copyWith(description: state.description.copyWith(targetAudience: value));
+    state = state.copyWith(
+        description: state.description.copyWith(targetAudience: value));
   }
 
   void updateGoals(String value) {
-    state = state.copyWith(description: state.description.copyWith(goals: value));
+    state =
+        state.copyWith(description: state.description.copyWith(goals: value));
   }
 
   void updateTechnical(String value) {
-    state = state.copyWith(description: state.description.copyWith(technicalConstraints: value));
+    state = state.copyWith(
+        description: state.description.copyWith(technicalConstraints: value));
   }
 
   void updateBudget(String value) {
-    state = state.copyWith(description: state.description.copyWith(budgetRange: value));
+    state = state.copyWith(
+        description: state.description.copyWith(budgetRange: value));
   }
 
   void updateLeadName(String value) => state = state.copyWith(leadName: value);
-  void updateLeadEmail(String value) => state = state.copyWith(leadEmail: value);
+  void updateLeadEmail(String value) =>
+      state = state.copyWith(leadEmail: value);
 
   void nextStep() {
     state = state.copyWith(currentStep: state.currentStep + 1);
@@ -102,7 +107,9 @@ class ProjectWizardNotifier extends Notifier<ProjectWizardState> {
   }
 
   Future<void> analyzeProject(ProjectWizardAiService aiService) async {
-    state = state.copyWith(status: ProjectWizardStatus.analyzing, currentStep: 4); // Step 4 is analysis
+    state = state.copyWith(
+        status: ProjectWizardStatus.analyzing,
+        currentStep: 4); // Step 4 is analysis
     try {
       final advice = await aiService.getStrategicAdvice(state.description);
       state = state.copyWith(
@@ -120,11 +127,12 @@ class ProjectWizardNotifier extends Notifier<ProjectWizardState> {
   }
 
   Future<void> submitLead() async {
-    state = state.copyWith(submitStatus: ProjectSubmitStatus.loading, submitError: null);
-    
+    state = state.copyWith(
+        submitStatus: ProjectSubmitStatus.loading, submitError: null);
+
     try {
       final service = ref.read(projectWizardLeadServiceProvider);
-      
+
       final selectedStrategy = state.advice?.options.firstWhere(
         (o) => o.id == state.selectedOptionId,
         orElse: () => state.advice!.options.first,
@@ -134,20 +142,21 @@ class ProjectWizardNotifier extends Notifier<ProjectWizardState> {
         name: state.leadName,
         email: state.leadEmail,
         description: state.description,
-        selectedStrategy: state.selectedOptionId != null ? selectedStrategy : null,
+        selectedStrategy:
+            state.selectedOptionId != null ? selectedStrategy : null,
         aiSummary: state.advice?.summary,
       );
-      
+
       ref.read(trackingServiceProvider).trackInteraction(
-            projectId: 'portfolio',
-            projectName: 'Portfolio',
-            action: TrackingAction.formSubmit,
-            details: {
-              'type': 'project_wizard',
-              'strategy': selectedStrategy?.title,
-              'has_ai': state.advice != null,
-            },
-          );
+        projectId: 'portfolio',
+        projectName: 'Portfolio',
+        action: TrackingAction.formSubmit,
+        details: {
+          'type': 'project_wizard',
+          'strategy': selectedStrategy?.title,
+          'has_ai': state.advice != null,
+        },
+      );
 
       state = state.copyWith(submitStatus: ProjectSubmitStatus.success);
     } catch (e) {

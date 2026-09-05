@@ -38,9 +38,10 @@ class AvatarLeadService {
           'pillars_explored': pillarsExplored,
           'max_depth_score': maxDepthScore,
         });
-        developer.log('✅ Lead Avatar enregistré dans Supabase', name: 'AvatarLeadService');
+        developer.log('✅ Lead Avatar enregistré dans Supabase',
+            name: 'AvatarLeadService');
       } catch (e, st) {
-        developer.log('❌ Erreur insertion Supabase Lead Avatar: $e', 
+        developer.log('❌ Erreur insertion Supabase Lead Avatar: $e',
             name: 'AvatarLeadService', error: e, stackTrace: st);
       }
     }
@@ -63,9 +64,10 @@ class AvatarLeadService {
             '----------------------------------------\n'
             'RÉSUMÉ CONVERSATION :\n$conversationSummary',
       );
-      developer.log('✅ Email de notification Avatar envoyé', name: 'AvatarLeadService');
+      developer.log('✅ Email de notification Avatar envoyé',
+          name: 'AvatarLeadService');
     } catch (e, st) {
-      developer.log('❌ Erreur envoi EmailJS Lead Avatar: $e', 
+      developer.log('❌ Erreur envoi EmailJS Lead Avatar: $e',
           name: 'AvatarLeadService', error: e, stackTrace: st);
       if (!SupabaseService.isReady) rethrow;
     }

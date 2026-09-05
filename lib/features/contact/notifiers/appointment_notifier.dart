@@ -109,11 +109,13 @@ class AppointmentNotifier extends Notifier<AppointmentState> {
           );
           developer.log('✅ Événement Google Calendar créé');
         } catch (e) {
-          developer.log('⚠️ Échec création événement Calendar (non bloquant): $e');
+          developer
+              .log('⚠️ Échec création événement Calendar (non bloquant): $e');
           // On continue pour envoyer au moins l'email
         }
       } else {
-        developer.log('ℹ️ Service Calendar non disponible, saut de la création d\'événement');
+        developer.log(
+            'ℹ️ Service Calendar non disponible, saut de la création d\'événement');
       }
 
       // Envoyer l'email de confirmation (toujours fait)

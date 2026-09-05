@@ -8,7 +8,8 @@ class ProjectWizardAiService {
 
   ProjectWizardAiService(this.apiKey);
 
-  Future<AIStrategicAdvice> getStrategicAdvice(ProjectDescription description) async {
+  Future<AIStrategicAdvice> getStrategicAdvice(
+      ProjectDescription description) async {
     final url = Uri.parse("https://api.openai.com/v1/chat/completions");
 
     final prompt = _buildPrompt(description);
@@ -24,11 +25,12 @@ class ProjectWizardAiService {
         "messages": [
           {
             "role": "system",
-            "content": "You are a senior digital strategist and software architect. Analyze the project description and provide 3 strategic options in JSON format. The JSON should match the AIStrategicAdvice model structure."
+            "content":
+                "You are a senior digital strategist and software architect. Analyze the project description and provide 3 strategic options in JSON format. The JSON should match the AIStrategicAdvice model structure."
           },
           {"role": "user", "content": prompt},
         ],
-        "response_format": { "type": "json_object" },
+        "response_format": {"type": "json_object"},
         "temperature": 0.7,
       }),
     );
@@ -37,17 +39,19 @@ class ProjectWizardAiService {
       developer.log("OpenAI error: ${response.body}");
       final errorData = jsonDecode(response.body);
       final errorCode = errorData['error']?['code'];
-      
+
       if (errorCode == 'insufficient_quota') {
-        throw Exception("Le quota de l'IA est épuisé. Vous pouvez quand même continuer sans l'analyse.");
+        throw Exception(
+            "Le quota de l'IA est épuisé. Vous pouvez quand même continuer sans l'analyse.");
       }
-      
-      throw Exception("Erreur lors de l'analyse IA. Veuillez réessayer plus tard.");
+
+      throw Exception(
+          "Erreur lors de l'analyse IA. Veuillez réessayer plus tard.");
     }
 
     final data = jsonDecode(response.body);
     final content = data["choices"]?[0]?["message"]?["content"];
-    
+
     if (content == null) {
       throw Exception("Réponse IA vide");
     }

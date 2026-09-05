@@ -22,7 +22,8 @@ class _StepLayout extends StatelessWidget {
       children: [
         ResponsiveText.titleLarge(
           title,
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style:
+              const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
         ResponsiveText.bodyMedium(
@@ -40,20 +41,23 @@ class ProjectContextFrame extends StatelessWidget {
   final String initialValue;
   final ValueChanged<String> onChanged;
 
-  const ProjectContextFrame({super.key, required this.initialValue, required this.onChanged});
+  const ProjectContextFrame(
+      {super.key, required this.initialValue, required this.onChanged});
 
   @override
   Widget build(BuildContext context) {
     return _StepLayout(
       title: 'Quel est votre projet ?',
-      description: 'Décrivez brièvement le concept et l\'origine de votre idée.',
+      description:
+          'Décrivez brièvement le concept et l\'origine de votre idée.',
       child: TextFormField(
         initialValue: initialValue,
         onChanged: onChanged,
         maxLines: 5,
         style: const TextStyle(color: Colors.white),
         decoration: InputDecoration(
-          hintText: 'Ex: Je souhaite créer une plateforme de mise en relation pour...',
+          hintText:
+              'Ex: Je souhaite créer une plateforme de mise en relation pour...',
           hintStyle: const TextStyle(color: Colors.white24),
           filled: true,
           fillColor: Colors.white.withValues(alpha: 0.05),
@@ -68,13 +72,15 @@ class ProjectTargetFrame extends StatelessWidget {
   final String initialValue;
   final ValueChanged<String> onChanged;
 
-  const ProjectTargetFrame({super.key, required this.initialValue, required this.onChanged});
+  const ProjectTargetFrame(
+      {super.key, required this.initialValue, required this.onChanged});
 
   @override
   Widget build(BuildContext context) {
     return _StepLayout(
       title: 'À qui s\'adresse-t-il ?',
-      description: 'Définissez votre audience cible (B2B, B2C, âge, besoins...).',
+      description:
+          'Définissez votre audience cible (B2B, B2C, âge, besoins...).',
       child: TextFormField(
         initialValue: initialValue,
         onChanged: onChanged,
@@ -96,13 +102,15 @@ class ProjectGoalsFrame extends StatelessWidget {
   final String initialValue;
   final ValueChanged<String> onChanged;
 
-  const ProjectGoalsFrame({super.key, required this.initialValue, required this.onChanged});
+  const ProjectGoalsFrame(
+      {super.key, required this.initialValue, required this.onChanged});
 
   @override
   Widget build(BuildContext context) {
     return _StepLayout(
       title: 'Quels sont vos objectifs ?',
-      description: 'Quels sont les indicateurs de succès (CA, nombre d\'utilisateurs...) ?',
+      description:
+          'Quels sont les indicateurs de succès (CA, nombre d\'utilisateurs...) ?',
       child: TextFormField(
         initialValue: initialValue,
         onChanged: onChanged,
@@ -154,7 +162,8 @@ class ProjectTechnicalFrame extends StatelessWidget {
                 hintStyle: const TextStyle(color: Colors.white24),
                 filled: true,
                 fillColor: Colors.white.withValues(alpha: 0.05),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
               ),
             ),
             const SizedBox(height: 24),
@@ -169,7 +178,8 @@ class ProjectTechnicalFrame extends StatelessWidget {
                 hintStyle: const TextStyle(color: Colors.white24),
                 filled: true,
                 fillColor: Colors.white.withValues(alpha: 0.05),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
               ),
             ),
           ],
@@ -225,12 +235,14 @@ class ProjectAdviceFrame extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.warning_amber_rounded, color: Colors.redAccent, size: 48),
+              const Icon(Icons.warning_amber_rounded,
+                  color: Colors.redAccent, size: 48),
               const SizedBox(height: 16),
               ResponsiveText.bodyMedium(
                 errorMessage!,
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
               const ResponsiveText.bodySmall(
@@ -262,13 +274,15 @@ class ProjectAdviceFrame extends StatelessWidget {
               ),
               child: ResponsiveText.bodyMedium(
                 advice!.summary,
-                style: const TextStyle(color: Colors.white, fontStyle: FontStyle.italic),
+                style: const TextStyle(
+                    color: Colors.white, fontStyle: FontStyle.italic),
               ),
             ),
             const SizedBox(height: 24),
             const ResponsiveText.titleMedium(
               'Recommandation Technique',
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              style:
+                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             ResponsiveText.bodySmall(
@@ -300,7 +314,8 @@ class ProjectSelectionFrame extends StatelessWidget {
 
     return _StepLayout(
       title: 'Choisissez votre stratégie',
-      description: 'Sélectionnez l\'approche qui vous semble la plus pertinente.',
+      description:
+          'Sélectionnez l\'approche qui vous semble la plus pertinente.',
       child: ListView.builder(
         itemCount: advice!.options.length,
         itemBuilder: (context, index) {
@@ -315,7 +330,9 @@ class ProjectSelectionFrame extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: isSelected ? Colors.blue.withValues(alpha: 0.2) : Colors.white.withValues(alpha: 0.05),
+                  color: isSelected
+                      ? Colors.blue.withValues(alpha: 0.2)
+                      : Colors.white.withValues(alpha: 0.05),
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
                     color: isSelected ? Colors.blue : Colors.white10,
@@ -330,10 +347,13 @@ class ProjectSelectionFrame extends StatelessWidget {
                         Expanded(
                           child: ResponsiveText.bodyLarge(
                             option.title,
-                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold),
                           ),
                         ),
-                        if (isSelected) const Icon(Icons.check_circle, color: Colors.blue),
+                        if (isSelected)
+                          const Icon(Icons.check_circle, color: Colors.blue),
                       ],
                     ),
                     const SizedBox(height: 8),
@@ -356,7 +376,8 @@ class ProjectFinalFrame extends StatelessWidget {
   final ProjectWizardState state;
   final ProjectWizardNotifier notifier;
 
-  const ProjectFinalFrame({super.key, required this.state, required this.notifier});
+  const ProjectFinalFrame(
+      {super.key, required this.state, required this.notifier});
 
   @override
   Widget build(BuildContext context) {

@@ -32,9 +32,7 @@ class ProjectDescription {
   }
 
   bool get isValid =>
-      context.isNotEmpty &&
-      targetAudience.isNotEmpty &&
-      goals.isNotEmpty;
+      context.isNotEmpty && targetAudience.isNotEmpty && goals.isNotEmpty;
 }
 
 class StrategicOption {

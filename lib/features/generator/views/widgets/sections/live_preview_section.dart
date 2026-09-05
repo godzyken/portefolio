@@ -6,32 +6,30 @@ import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/provider/tracking_provider.dart';
 import 'package:portefolio/core/service/tracking_service.dart';
 import 'package:portefolio/core/ui/sections/section_system.dart';
+import 'package:portefolio/features/projets/data/project_data.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'live_preview_frame_stub.dart'
     if (dart.library.js_util) 'live_preview_frame_web.dart' as frame_impl;
 
 class LivePreviewSection extends ConsumerWidget {
-  final String url;
-  final String projectTitle;
+  final ProjectInfo project;
   final ResponsiveInfo info;
 
   const LivePreviewSection({
     super.key,
-    required this.url,
-    required this.projectTitle,
+    required this.project,
     required this.info,
   });
+
+  String get url => project.lienProjet ?? "";
 
   Future<void> _openExternally(WidgetRef ref) async {
     final uri = Uri.parse(url);
 
-    // Dynamic tracking based on project title
-    final pid = projectTitle.toLowerCase().contains('emap') ? 'emap_services' : projectTitle.toLowerCase().replaceAll(' ', '_');
-    
     ref.read(trackingServiceProvider).trackInteraction(
-      projectId: pid,
-      projectName: projectTitle,
+      projectId: project.analyticsId,
+      projectName: project.title,
       action: TrackingAction.linkClick,
       details: {'url': url, 'source': 'portfolio_live_preview'},
     );
@@ -79,7 +77,9 @@ class LivePreviewSection extends ConsumerWidget {
               height: previewHeight,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-                child: kIsWeb ? _buildIframe() : _buildNativeFallback(context, ref),
+                child: kIsWeb
+                    ? _buildIframe()
+                    : _buildNativeFallback(context, ref),
               ),
             ),
           ]),
@@ -121,7 +121,7 @@ class LivePreviewSection extends ConsumerWidget {
           FilledButton.icon(
             onPressed: () => _openExternally(ref),
             icon: const Icon(Icons.open_in_new),
-            label: Text('Ouvrir $projectTitle'),
+            label: Text('Ouvrir ${project.title}'),
           ),
         ]));
   }

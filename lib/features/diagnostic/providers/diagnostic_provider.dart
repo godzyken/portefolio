@@ -37,8 +37,8 @@ final diagnosticResultProvider = Provider<DiagnosticResult?>((ref) {
 
   final categoryScores = config.categories.map((category) {
     final questions = questionsByCategory[category.id] ?? const [];
-    final score = questions.fold<int>(
-        0, (sum, q) => sum + (state.answers[q.id] ?? 0));
+    final score =
+        questions.fold<int>(0, (sum, q) => sum + (state.answers[q.id] ?? 0));
     final maxScore = questions.fold<int>(0, (sum, q) => sum + q.maxScore);
     return DiagnosticCategoryScore(
       category: category,

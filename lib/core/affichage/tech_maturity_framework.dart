@@ -67,18 +67,23 @@ enum TechPillar {
   final Color color;
   final String skillImage;
 
-  const TechPillar(this.label, this.description, this.icon, this.color, this.skillImage);
+  const TechPillar(
+      this.label, this.description, this.icon, this.color, this.skillImage);
 
   static TechPillar? fromString(String value) {
     final lower = value.toLowerCase();
     if (lower.contains('arch')) return TechPillar.architecture;
-    if (lower.contains('state') || lower.contains('flux')) return TechPillar.stateManagement;
+    if (lower.contains('state') || lower.contains('flux'))
+      return TechPillar.stateManagement;
     if (lower.contains('test')) return TechPillar.testing;
     if (lower.contains('secu')) return TechPillar.security;
     if (lower.contains('perf')) return TechPillar.performance;
-    if (lower.contains('ci') || lower.contains('cd') || lower.contains('auto')) return TechPillar.cicd;
-    if (lower.contains('monitor') || lower.contains('analytic')) return TechPillar.monitoring;
-    if (lower.contains('ai') || lower.contains('ia') || lower.contains('intel')) return TechPillar.aiSmart;
+    if (lower.contains('ci') || lower.contains('cd') || lower.contains('auto'))
+      return TechPillar.cicd;
+    if (lower.contains('monitor') || lower.contains('analytic'))
+      return TechPillar.monitoring;
+    if (lower.contains('ai') || lower.contains('ia') || lower.contains('intel'))
+      return TechPillar.aiSmart;
     return null;
   }
 }
@@ -106,7 +111,8 @@ class TechMaturityRadar extends StatelessWidget {
         final score = e.value;
 
         return Tooltip(
-          message: '${pillar.label}: ${(score * 100).toInt()}% - ${pillar.description}',
+          message:
+              '${pillar.label}: ${(score * 100).toInt()}% - ${pillar.description}',
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
@@ -197,7 +203,8 @@ class IAMaturityAnalysisCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.auto_awesome, color: ColorHelpers.cyan, size: 20),
+              const Icon(Icons.auto_awesome,
+                  color: ColorHelpers.cyan, size: 20),
               const SizedBox(width: 12),
               const Expanded(
                 child: Text(
@@ -230,11 +237,13 @@ class IAMaturityAnalysisCard extends StatelessWidget {
   }
 
   String _generateAISummary() {
-    if (scores.isEmpty) return "Analyse de structure en cours... Alignement optimal avec le framework FlutterSkills détecté.";
-    
-    final topPillar = scores.entries.reduce((a, b) => a.value > b.value ? a : b).key;
-    
+    if (scores.isEmpty)
+      return "Analyse de structure en cours... Alignement optimal avec le framework FlutterSkills détecté.";
+
+    final topPillar =
+        scores.entries.reduce((a, b) => a.value > b.value ? a : b).key;
+
     return "🚀 EXPERTISE IA : Ce projet valide les standards 'Production Readiness' en ${topPillar.label.toLowerCase()}. "
-           "L'architecture immersive et la gestion des performances garantissent une valeur ajoutée maximale (Solution générée par IA).";
+        "L'architecture immersive et la gestion des performances garantissent une valeur ajoutée maximale (Solution générée par IA).";
   }
 }

@@ -9,6 +9,7 @@ final projectWizardAiServiceProvider = Provider<ProjectWizardAiService?>((ref) {
   return ProjectWizardAiService(apiKey);
 });
 
-final projectWizardProvider = NotifierProvider<ProjectWizardNotifier, ProjectWizardState>(
+final projectWizardProvider =
+    NotifierProvider<ProjectWizardNotifier, ProjectWizardState>(
   ProjectWizardNotifier.new,
 );

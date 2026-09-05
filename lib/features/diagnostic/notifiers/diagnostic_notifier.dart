@@ -6,7 +6,6 @@ import '../service/diagnostic_lead_service.dart';
 import '../data/models/diagnostic_models.dart';
 import '../data/state/diagnostic_state.dart';
 
-
 class DiagnosticNotifier extends Notifier<DiagnosticState> {
   @override
   DiagnosticState build() => const DiagnosticState();
@@ -75,17 +74,17 @@ class DiagnosticNotifier extends Notifier<DiagnosticState> {
         percent: result.percent,
         levelTitle: result.level.title,
       );
-      
+
       ref.read(trackingServiceProvider).trackInteraction(
-            projectId: 'portfolio',
-            projectName: 'Portfolio',
-            action: TrackingAction.formSubmit,
-            details: {
-              'type': 'diagnostic',
-              'score': result.percent,
-              'level': result.level.title,
-            },
-          );
+        projectId: 'portfolio',
+        projectName: 'Portfolio',
+        action: TrackingAction.formSubmit,
+        details: {
+          'type': 'diagnostic',
+          'score': result.percent,
+          'level': result.level.title,
+        },
+      );
 
       state = state.copyWith(submitStatus: LeadSubmitStatus.success);
     } catch (e) {

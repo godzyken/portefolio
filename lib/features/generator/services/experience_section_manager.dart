@@ -520,7 +520,7 @@ class _SimpleListSection extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 24),
-          
+
           // GRILLE DE CARTES (Visuel)
           ...items.map(
             (item) => Container(
@@ -584,9 +584,11 @@ class _CodeSnippetSection extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: Colors.greenAccent.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.greenAccent.withValues(alpha: 0.3)),
+                  border: Border.all(
+                      color: Colors.greenAccent.withValues(alpha: 0.3)),
                 ),
-                child: const Icon(Icons.code, color: Colors.greenAccent, size: 20),
+                child:
+                    const Icon(Icons.code, color: Colors.greenAccent, size: 20),
               ),
               const SizedBox(width: 16),
               const Expanded(
@@ -635,7 +637,11 @@ class _CodeSnippetSection extends StatelessWidget {
                     const SizedBox(width: 8),
                     _dot(const Color(0xFF27C93F)),
                     const Spacer(),
-                    const Text('DART / FLUTTER', style: TextStyle(color: Colors.white24, fontSize: 9, fontWeight: FontWeight.bold)),
+                    const Text('DART / FLUTTER',
+                        style: TextStyle(
+                            color: Colors.white24,
+                            fontSize: 9,
+                            fontWeight: FontWeight.bold)),
                   ],
                 ),
                 const SizedBox(height: 24),

@@ -48,13 +48,13 @@ class _IoTSectionState extends State<IoTSection> {
             borderRadius: BorderRadius.circular(20),
             child: _showCatalog
                 ? Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              color: const Color(0xFF0F172A),
-              child: SingleChildScrollView(
-                child: IoTToolsCatalog(info: widget.info),
-              ),
-            )
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    color: const Color(0xFF0F172A),
+                    child: SingleChildScrollView(
+                      child: IoTToolsCatalog(info: widget.info),
+                    ),
+                  )
                 : const EnhancedIotDashboardScreen(),
           ),
         ),

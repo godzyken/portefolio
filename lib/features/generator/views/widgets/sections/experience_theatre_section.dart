@@ -28,15 +28,16 @@ class ExperienceTheatreSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // HEADER IMMERSIF
-          _ExperienceHeader(experience: experience, maturity: maturity, info: info),
+          _ExperienceHeader(
+              experience: experience, maturity: maturity, info: info),
 
           const SizedBox(height: 32),
 
           // TITRE DE LA SCÈNE ACTIVE
           _SceneTitle(
-            title: experience.tags.contains('Flutter') 
-              ? 'DÉVELOPPEMENT & PERFORMANCE' 
-              : 'STRATÉGIE & RÉALISATION',
+            title: experience.tags.contains('Flutter')
+                ? 'DÉVELOPPEMENT & PERFORMANCE'
+                : 'STRATÉGIE & RÉALISATION',
             info: info,
           ),
 
@@ -47,9 +48,9 @@ class ExperienceTheatreSection extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(bottom: 24),
               child: NarrativeBubble(
-                text: experience.tags.contains('Flutter') 
-                  ? "Cette expérience a été un pilier pour ma maîtrise de la Production Readiness."
-                  : "Une immersion riche en défis techniques et organisationnels.",
+                text: experience.tags.contains('Flutter')
+                    ? "Cette expérience a été un pilier pour ma maîtrise de la Production Readiness."
+                    : "Une immersion riche en défis techniques et organisationnels.",
               ),
             ),
 
@@ -64,11 +65,13 @@ class ExperienceTheatreSection extends StatelessWidget {
                   children: [
                     _MainDescriptionCard(
                       text: experience.contexte,
-                      topPillar: maturity.isNotEmpty 
-                        ? maturity.entries.reduce((a, b) => a.value > b.value ? a : b).key 
-                        : null,
+                      topPillar: maturity.isNotEmpty
+                          ? maturity.entries
+                              .reduce((a, b) => a.value > b.value ? a : b)
+                              .key
+                          : null,
                     ),
-                    
+
                     // NOUVEAU : IMAGE D'EXPÉRIENCE SI DISPONIBLE
                     if (experience.image.isNotEmpty)
                       Padding(
@@ -79,7 +82,9 @@ class ExperienceTheatreSection extends StatelessWidget {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(color: Colors.white10),
-                            boxShadow: [BoxShadow(color: Colors.black45, blurRadius: 10)],
+                            boxShadow: [
+                              BoxShadow(color: Colors.black45, blurRadius: 10)
+                            ],
                           ),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(19),
@@ -108,12 +113,16 @@ class ExperienceTheatreSection extends StatelessWidget {
                     child: Column(
                       children: [
                         const NarrativeBubble(
-                          text: "Plongez dans les détails. J'ai documenté des tech specs spécifiques à cette expérience.",
+                          text:
+                              "Plongez dans les détails. J'ai documenté des tech specs spécifiques à cette expérience.",
                         ),
                         const SizedBox(height: 20),
                         const NarrativeBubble(
-                          text: "L'approche 'Production Readiness' a permis de sécuriser le code et d'optimiser les performances de 40%.",
-                        ).animate().fadeIn(delay: const Duration(milliseconds: 500)),
+                          text:
+                              "L'approche 'Production Readiness' a permis de sécuriser le code et d'optimiser les performances de 40%.",
+                        )
+                            .animate()
+                            .fadeIn(delay: const Duration(milliseconds: 500)),
                         const SizedBox(height: 32),
                         // NOUVELLE CARTE VISUELLE POUR LES NON-TECHNIQUES
                         _ImpactMiniCard(experience: experience),
@@ -123,7 +132,7 @@ class ExperienceTheatreSection extends StatelessWidget {
                 ),
             ],
           ),
-          
+
           // SUR MOBILE : IMPACT EN BAS
           if (info.isMobile) ...[
             const SizedBox(height: 32),
@@ -161,9 +170,15 @@ class _ImpactMiniCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 20),
-          _ImpactRow(icon: Icons.rocket_launch, label: "Mise en service", value: "Production Ready"),
+          _ImpactRow(
+              icon: Icons.rocket_launch,
+              label: "Mise en service",
+              value: "Production Ready"),
           const Divider(height: 24, color: Colors.white10),
-          _ImpactRow(icon: Icons.trending_up, label: "Performance", value: "Optimisée"),
+          _ImpactRow(
+              icon: Icons.trending_up,
+              label: "Performance",
+              value: "Optimisée"),
           const Divider(height: 24, color: Colors.white10),
           _ImpactRow(icon: Icons.security, label: "Sécurité", value: "Validée"),
         ],
@@ -176,7 +191,8 @@ class _ImpactRow extends StatelessWidget {
   final IconData icon;
   final String label;
   final String value;
-  const _ImpactRow({required this.icon, required this.label, required this.value});
+  const _ImpactRow(
+      {required this.icon, required this.label, required this.value});
 
   @override
   Widget build(BuildContext context) {
@@ -184,9 +200,14 @@ class _ImpactRow extends StatelessWidget {
       children: [
         Icon(icon, color: Colors.white54, size: 16),
         const SizedBox(width: 12),
-        Text(label, style: const TextStyle(color: Colors.white38, fontSize: 11)),
+        Text(label,
+            style: const TextStyle(color: Colors.white38, fontSize: 11)),
         const Spacer(),
-        Text(value, style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold)),
+        Text(value,
+            style: const TextStyle(
+                color: Colors.white,
+                fontSize: 11,
+                fontWeight: FontWeight.bold)),
       ],
     );
   }
@@ -198,7 +219,7 @@ class _ExperienceHeader extends StatelessWidget {
   final ResponsiveInfo info;
 
   const _ExperienceHeader({
-    required this.experience, 
+    required this.experience,
     required this.maturity,
     required this.info,
   });
@@ -223,7 +244,8 @@ class _ExperienceHeader extends StatelessWidget {
                   color: ColorHelpers.cyan.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: Icon(Icons.hub_outlined, color: ColorHelpers.cyan, size: info.isMobile ? 20 : 24),
+                child: Icon(Icons.hub_outlined,
+                    color: ColorHelpers.cyan, size: info.isMobile ? 20 : 24),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -258,7 +280,7 @@ class _ExperienceHeader extends StatelessWidget {
                     Text(
                       "🗓 ${experience.periode}",
                       style: TextStyle(
-                        color: Colors.white54, 
+                        color: Colors.white54,
                         fontSize: info.isMobile ? 11 : 12,
                         fontFamily: 'monospace',
                       ),
@@ -274,7 +296,10 @@ class _ExperienceHeader extends StatelessWidget {
           ],
         ],
       ),
-    ).animate().fadeIn(duration: const Duration(milliseconds: 600)).slideX(begin: -0.05, end: 0);
+    )
+        .animate()
+        .fadeIn(duration: const Duration(milliseconds: 600))
+        .slideX(begin: -0.05, end: 0);
   }
 }
 
@@ -291,7 +316,8 @@ class _SceneTitle extends StatelessWidget {
       children: [
         Row(
           children: [
-            Icon(Icons.location_on, color: ColorHelpers.cyan, size: info.isMobile ? 16 : 18),
+            Icon(Icons.location_on,
+                color: ColorHelpers.cyan, size: info.isMobile ? 16 : 18),
             const SizedBox(width: 12),
             Expanded(
               child: FittedBox(
@@ -316,7 +342,10 @@ class _SceneTitle extends StatelessWidget {
           width: info.isMobile ? 120 : 200,
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [ColorHelpers.cyan, ColorHelpers.cyan.withValues(alpha: 0)],
+              colors: [
+                ColorHelpers.cyan,
+                ColorHelpers.cyan.withValues(alpha: 0)
+              ],
             ),
           ),
         ),
@@ -357,7 +386,7 @@ class _MainDescriptionCard extends StatelessWidget {
                 ),
               ),
             ),
-          
+
           Padding(
             padding: const EdgeInsets.all(24),
             child: Column(
@@ -367,16 +396,19 @@ class _MainDescriptionCard extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(bottom: 12),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
                         color: topPillar!.color.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: topPillar!.color.withValues(alpha: 0.3)),
+                        border: Border.all(
+                            color: topPillar!.color.withValues(alpha: 0.3)),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(topPillar!.icon, color: topPillar!.color, size: 14),
+                          Icon(topPillar!.icon,
+                              color: topPillar!.color, size: 14),
                           const SizedBox(width: 8),
                           Text(
                             topPillar!.label.toUpperCase(),
@@ -441,7 +473,8 @@ class _MissionsCard extends StatelessWidget {
                   color: ColorHelpers.cyan.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.auto_awesome, color: ColorHelpers.cyan, size: 18),
+                child: const Icon(Icons.auto_awesome,
+                    color: ColorHelpers.cyan, size: 18),
               ),
               const SizedBox(width: 12),
               const Expanded(
@@ -471,7 +504,8 @@ class _MissionsCard extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: ColorHelpers.cyan.withValues(alpha: 0.05),
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: ColorHelpers.cyan.withValues(alpha: 0.1)),
+                      border: Border.all(
+                          color: ColorHelpers.cyan.withValues(alpha: 0.1)),
                     ),
                     child: Icon(icon, color: ColorHelpers.cyan, size: 16),
                   ),
@@ -483,7 +517,7 @@ class _MissionsCard extends StatelessWidget {
                         Text(
                           m,
                           style: const TextStyle(
-                            color: Colors.white, 
+                            color: Colors.white,
                             fontSize: 14,
                             height: 1.5,
                             fontWeight: FontWeight.w400,
@@ -509,14 +543,20 @@ class _MissionsCard extends StatelessWidget {
 
   IconData _getMissionIcon(String text) {
     final t = text.toLowerCase();
-    if (t.contains('développe') || t.contains('code')) return Icons.code_rounded;
-    if (t.contains('test') || t.contains('qualité')) return Icons.bug_report_outlined;
-    if (t.contains('architect') || t.contains('concept')) return Icons.account_tree_outlined;
-    if (t.contains('performance') || t.contains('optim')) return Icons.speed_rounded;
+    if (t.contains('développe') || t.contains('code'))
+      return Icons.code_rounded;
+    if (t.contains('test') || t.contains('qualité'))
+      return Icons.bug_report_outlined;
+    if (t.contains('architect') || t.contains('concept'))
+      return Icons.account_tree_outlined;
+    if (t.contains('performance') || t.contains('optim'))
+      return Icons.speed_rounded;
     if (t.contains('sécu')) return Icons.security_rounded;
-    if (t.contains('ia') || t.contains('intelligent')) return Icons.auto_awesome_mosaic;
+    if (t.contains('ia') || t.contains('intelligent'))
+      return Icons.auto_awesome_mosaic;
     if (t.contains('lead') || t.contains('manage')) return Icons.groups_rounded;
-    if (t.contains('client') || t.contains('besoin')) return Icons.contact_support_outlined;
+    if (t.contains('client') || t.contains('besoin'))
+      return Icons.contact_support_outlined;
     return Icons.task_alt_rounded;
   }
 }

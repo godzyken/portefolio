@@ -108,8 +108,8 @@ class _IntroView extends ConsumerWidget {
         const SizedBox(height: 16),
         ResponsiveText.bodyLarge(
           'En 3 minutes, ${config.questions.length} questions pour obtenir un score, '
-              'une synthèse visuelle par thématique et des recommandations concrètes '
-              'pour accélérer votre transformation digitale.',
+          'une synthèse visuelle par thématique et des recommandations concrètes '
+          'pour accélérer votre transformation digitale.',
           textAlign: TextAlign.center,
           style: const TextStyle(color: Colors.white70, height: 1.5),
         ),
@@ -131,11 +131,11 @@ class _IntroView extends ConsumerWidget {
           child: FilledButton.icon(
             onPressed: () {
               ref.read(trackingServiceProvider).trackInteraction(
-                    projectId: 'portfolio',
-                    projectName: 'Portfolio',
-                    action: TrackingAction.linkClick,
-                    details: {'type': 'diagnostic_start'},
-                  );
+                projectId: 'portfolio',
+                projectName: 'Portfolio',
+                action: TrackingAction.linkClick,
+                details: {'type': 'diagnostic_start'},
+              );
               ref.read(diagnosticNotifierProvider.notifier).start();
             },
             icon: const Icon(Icons.play_arrow),
@@ -219,19 +219,21 @@ class _QuestionsViewState extends ConsumerState<_QuestionsView> {
         const SizedBox(height: 8),
         ResponsiveText.titleLarge(
           question.text,
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style:
+              const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 24),
         ...question.options.map((opt) => Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: DiagnosticOptionCard(
-            label: opt.label,
-            selected: _pendingScore == opt.score,
-            onTap: _pendingScore == null ? () => select(opt.score) : null,
-          ),
-        )),
+              padding: const EdgeInsets.only(bottom: 12),
+              child: DiagnosticOptionCard(
+                label: opt.label,
+                selected: _pendingScore == opt.score,
+                onTap: _pendingScore == null ? () => select(opt.score) : null,
+              ),
+            )),
       ],
-    ).animate(key: ValueKey('${question.id}_anim'))
+    )
+        .animate(key: ValueKey('${question.id}_anim'))
         .fadeIn(duration: 300.ms)
         .slideX(begin: 0.04, end: 0);
   }
@@ -267,7 +269,8 @@ class _ResultView extends ConsumerWidget {
         ResponsiveText.titleLarge(
           result.level.title,
           textAlign: TextAlign.center,
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style:
+              const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 12),
         ResponsiveText.bodyLarge(
@@ -280,18 +283,19 @@ class _ResultView extends ConsumerWidget {
           alignment: Alignment.centerLeft,
           child: ResponsiveText.titleMedium(
             'Votre score par thématique',
-            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            style: const TextStyle(
+                color: Colors.white, fontWeight: FontWeight.bold),
           ),
         ),
         const SizedBox(height: 16),
         ...result.categoryScores.map((cs) => Padding(
-          padding: const EdgeInsets.only(bottom: 16),
-          child: DiagnosticCategoryBar(
-            label: cs.category.title,
-            percent: cs.percent,
-            color: theme.colorScheme.secondary,
-          ),
-        )),
+              padding: const EdgeInsets.only(bottom: 16),
+              child: DiagnosticCategoryBar(
+                label: cs.category.title,
+                percent: cs.percent,
+                color: theme.colorScheme.secondary,
+              ),
+            )),
         const SizedBox(height: 16),
         const Align(
           alignment: Alignment.centerLeft,
@@ -355,11 +359,11 @@ class _ThankYouCard extends ConsumerWidget {
             child: FilledButton.icon(
               onPressed: () {
                 ref.read(trackingServiceProvider).trackInteraction(
-                      projectId: 'portfolio',
-                      projectName: 'Portfolio',
-                      action: TrackingAction.linkClick,
-                      details: {'type': 'diagnostic_to_contact'},
-                    );
+                  projectId: 'portfolio',
+                  projectName: 'Portfolio',
+                  action: TrackingAction.linkClick,
+                  details: {'type': 'diagnostic_to_contact'},
+                );
                 context.go('/contact');
               },
               icon: const Icon(Icons.calendar_month),

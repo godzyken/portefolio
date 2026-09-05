@@ -41,7 +41,9 @@ class ClientJourneyTimeline extends ConsumerWidget {
             index: i,
             isLast: i == plan.services.length - 1,
             service: plan.services[i],
-            color: i.isEven ? theme.colorScheme.primary : theme.colorScheme.secondary,
+            color: i.isEven
+                ? theme.colorScheme.primary
+                : theme.colorScheme.secondary,
           ),
       ],
     );
@@ -62,15 +64,15 @@ class _TimelineStep extends StatelessWidget {
   final Color color;
 
   IconData get _icon => switch (service.id) {
-    'audit' => Icons.fact_check_outlined,
-    'amoa' => Icons.assignment_outlined,
-    'project' => Icons.timeline_outlined,
-    'flutter' => Icons.phone_iphone_outlined,
-    'transformation' => Icons.sync_alt_outlined,
-    'ai' => Icons.smart_toy_outlined,
-    'training' => Icons.school_outlined,
-    _ => Icons.check_circle_outline,
-  };
+        'audit' => Icons.fact_check_outlined,
+        'amoa' => Icons.assignment_outlined,
+        'project' => Icons.timeline_outlined,
+        'flutter' => Icons.phone_iphone_outlined,
+        'transformation' => Icons.sync_alt_outlined,
+        'ai' => Icons.smart_toy_outlined,
+        'training' => Icons.school_outlined,
+        _ => Icons.check_circle_outline,
+      };
 
   @override
   Widget build(BuildContext context) {
@@ -133,23 +135,23 @@ class _TimelineStep extends StatelessWidget {
                       runSpacing: 8,
                       children: service.deliverables
                           .map((d) => Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 5),
-                        decoration: BoxDecoration(
-                          color: color.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                              color: color.withValues(alpha: 0.3)),
-                        ),
-                        child: Text(
-                          d,
-                          style: TextStyle(
-                            color: color,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ))
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 5),
+                                decoration: BoxDecoration(
+                                  color: color.withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                      color: color.withValues(alpha: 0.3)),
+                                ),
+                                child: Text(
+                                  d,
+                                  style: TextStyle(
+                                    color: color,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ))
                           .toList(),
                     ),
                   ],

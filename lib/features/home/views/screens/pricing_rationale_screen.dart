@@ -73,7 +73,6 @@ class PricingRationaleScreen extends ConsumerWidget {
                       Text(rationale.introText,
                           style: theme.textTheme.bodyLarge),
                       const SizedBox(height: 32),
-
                       if (rationale.marketComparison.isNotEmpty) ...[
                         Text('Prix constatés sur le marché',
                             style: theme.textTheme.titleLarge),
@@ -81,7 +80,6 @@ class PricingRationaleScreen extends ConsumerWidget {
                         _MarketTable(rows: rationale.marketComparison),
                         const SizedBox(height: 32),
                       ],
-
                       if (rationale.portageBreakdown.isNotEmpty) ...[
                         Text('Comment se construit ma rémunération',
                             style: theme.textTheme.titleLarge),
@@ -89,7 +87,6 @@ class PricingRationaleScreen extends ConsumerWidget {
                         _PortageBreakdownCard(data: rationale.portageBreakdown),
                         const SizedBox(height: 32),
                       ],
-
                       if (rationale.hasExample) ...[
                         Text('Exemple concret',
                             style: theme.textTheme.titleLarge),
@@ -97,7 +94,6 @@ class PricingRationaleScreen extends ConsumerWidget {
                         _ExampleCard(data: rationale.anonymizedExample),
                         const SizedBox(height: 32),
                       ],
-
                       packsAsync.when(
                         loading: () => const SizedBox.shrink(),
                         error: (_, __) => const SizedBox.shrink(),
@@ -127,19 +123,18 @@ class PricingRationaleScreen extends ConsumerWidget {
                           );
                         },
                       ),
-
                       const SizedBox(height: 24),
                       FilledButton.icon(
                         onPressed: () {
                           ref.read(trackingServiceProvider).trackInteraction(
-                                projectId: 'portfolio',
-                                projectName: 'Portfolio',
-                                action: TrackingAction.linkClick,
-                                details: {
-                                  'type': 'project_wizard_start',
-                                  'source_service': serviceId,
-                                },
-                              );
+                            projectId: 'portfolio',
+                            projectName: 'Portfolio',
+                            action: TrackingAction.linkClick,
+                            details: {
+                              'type': 'project_wizard_start',
+                              'source_service': serviceId,
+                            },
+                          );
                           context.push('/project-wizard');
                         },
                         icon: const Icon(Icons.rocket_launch_outlined),
@@ -197,8 +192,8 @@ class _MarketTable extends StatelessWidget {
         ),
         children: [
           TableRow(
-            decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceContainerHighest),
+            decoration:
+                BoxDecoration(color: theme.colorScheme.surfaceContainerHighest),
             children: [
               _cell('Prestation', context, bold: true),
               _cell('Freelance', context, bold: true),

@@ -15,7 +15,8 @@ class AnalyticsDashboardView extends ConsumerWidget {
       error: (e, _) => Center(child: Text('Erreur analytics: $e')),
       data: (projects) {
         if (servicesIsEmpty(projects)) {
-          return const Center(child: Text('Aucune donnée de tracking pour le moment.'));
+          return const Center(
+              child: Text('Aucune donnée de tracking pour le moment.'));
         }
 
         return RefreshIndicator(
@@ -23,7 +24,8 @@ class AnalyticsDashboardView extends ConsumerWidget {
           child: ListView.builder(
             padding: const EdgeInsets.all(16),
             itemCount: projects.length,
-            itemBuilder: (context, index) => _ProjectAnalyticsCard(analytics: projects[index]),
+            itemBuilder: (context, index) =>
+                _ProjectAnalyticsCard(analytics: projects[index]),
           ),
         );
       },
@@ -53,23 +55,28 @@ class _ProjectAnalyticsCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(Icons.analytics_outlined, color: theme.colorScheme.primary),
+                Icon(Icons.analytics_outlined,
+                    color: theme.colorScheme.primary),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     analytics.projectName ?? analytics.projectId,
-                    style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                    style: theme.textTheme.titleLarge
+                        ?.copyWith(fontWeight: FontWeight.bold),
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
                     color: theme.colorScheme.primaryContainer,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
                     'ID: ${analytics.projectId}',
-                    style: TextStyle(fontSize: 12, color: theme.colorScheme.onPrimaryContainer),
+                    style: TextStyle(
+                        fontSize: 12,
+                        color: theme.colorScheme.onPrimaryContainer),
                   ),
                 ),
               ],
@@ -109,7 +116,8 @@ class _ProjectAnalyticsCard extends StatelessWidget {
               children: analytics.actionsByType.entries.map((e) {
                 return Chip(
                   label: Text('${e.key}: ${e.value}'),
-                  backgroundColor: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+                  backgroundColor: theme.colorScheme.surfaceContainerHighest
+                      .withValues(alpha: 0.3),
                   side: BorderSide.none,
                 );
               }).toList(),
@@ -120,15 +128,20 @@ class _ProjectAnalyticsCard extends StatelessWidget {
     );
   }
 
-  Widget _buildStatItem(BuildContext context, String label, String value, IconData icon, Color color) {
+  Widget _buildStatItem(BuildContext context, String label, String value,
+      IconData icon, Color color) {
     final theme = Theme.of(context);
     return Expanded(
       child: Column(
         children: [
           Icon(icon, color: color, size: 24),
           const SizedBox(height: 8),
-          Text(value, style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
-          Text(label, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+          Text(value,
+              style: theme.textTheme.headlineSmall
+                  ?.copyWith(fontWeight: FontWeight.bold)),
+          Text(label,
+              style: theme.textTheme.bodySmall
+                  ?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
         ],
       ),
     );

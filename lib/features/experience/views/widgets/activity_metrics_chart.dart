@@ -24,7 +24,8 @@ class ActivityMetricsChart extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<ActivityMetricsChart> createState() => _ActivityMetricsChartState();
+  ConsumerState<ActivityMetricsChart> createState() =>
+      _ActivityMetricsChartState();
 }
 
 class _ActivityMetricsChartState extends ConsumerState<ActivityMetricsChart> {
@@ -75,7 +76,8 @@ class _ActivityMetricsChartState extends ConsumerState<ActivityMetricsChart> {
               _viewMode == ChartViewMode.recruteur
                   ? '📊 Performance & Qualité'
                   : '🚀 Activité Temps Réel',
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                  color: Colors.white, fontWeight: FontWeight.bold),
             ),
             ResponsiveText.bodySmall(
               _viewMode == ChartViewMode.recruteur
@@ -137,11 +139,13 @@ class _ActivityMetricsChartState extends ConsumerState<ActivityMetricsChart> {
                   String label = groupIndex == 0 ? 'Temps (h)' : 'Qualité (%)';
                   return BarTooltipItem(
                     '$label\n',
-                    const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    const TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
                     children: [
                       TextSpan(
                         text: rod.toY.toStringAsFixed(1),
-                        style: TextStyle(color: rod.color, fontWeight: FontWeight.w500),
+                        style: TextStyle(
+                            color: rod.color, fontWeight: FontWeight.w500),
                       ),
                     ],
                   );
@@ -178,8 +182,10 @@ class _ActivityMetricsChartState extends ConsumerState<ActivityMetricsChart> {
                   ),
                 ),
               ),
-              topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-              rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              topTitles:
+                  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              rightTitles:
+                  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
             ),
             gridData: FlGridData(
               show: true,
@@ -233,7 +239,8 @@ class _ActivityMetricsChartState extends ConsumerState<ActivityMetricsChart> {
   }
 
   Widget _buildArtisanView() {
-    final analyticsAsync = ref.watch(liveAnalyticsStreamProvider(widget.project.id));
+    final analyticsAsync =
+        ref.watch(liveAnalyticsStreamProvider(widget.project.analyticsId));
 
     return analyticsAsync.when(
       data: (analytics) {
@@ -285,12 +292,14 @@ class _ActivityMetricsChartState extends ConsumerState<ActivityMetricsChart> {
                   reservedSize: 32,
                   interval: 1,
                   getTitlesWidget: (value, meta) {
-                    final date = DateTime.fromMillisecondsSinceEpoch(value.toInt());
+                    final date =
+                        DateTime.fromMillisecondsSinceEpoch(value.toInt());
                     return Padding(
                       padding: const EdgeInsets.only(top: 8),
                       child: Text(
                         '${date.hour}h',
-                        style: const TextStyle(color: Colors.white60, fontSize: 10),
+                        style: const TextStyle(
+                            color: Colors.white60, fontSize: 10),
                       ),
                     );
                   },
@@ -306,8 +315,10 @@ class _ActivityMetricsChartState extends ConsumerState<ActivityMetricsChart> {
                   reservedSize: 40,
                 ),
               ),
-              topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-              rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              topTitles:
+                  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              rightTitles:
+                  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
             ),
             borderData: FlBorderData(show: false),
             lineBarsData: [
@@ -337,7 +348,8 @@ class _ActivityMetricsChartState extends ConsumerState<ActivityMetricsChart> {
     final benchmark = widget.project.resultsMap?['benchmark'];
     if (benchmark != null) {
       if (benchmark is Map) {
-        final scoreStr = benchmark['score']?.toString().replaceAll('/100', '') ?? '80';
+        final scoreStr =
+            benchmark['score']?.toString().replaceAll('/100', '') ?? '80';
         return double.tryParse(scoreStr) ?? 80.0;
       }
     }
@@ -348,7 +360,7 @@ class _ActivityMetricsChartState extends ConsumerState<ActivityMetricsChart> {
     // On groupe par heure sur les dernières 24h
     final now = DateTime.now();
     final Map<int, double> hourlyVolume = {};
-    
+
     for (var a in analytics) {
       final diff = now.difference(a.createdAt).inHours;
       if (diff < 24) {

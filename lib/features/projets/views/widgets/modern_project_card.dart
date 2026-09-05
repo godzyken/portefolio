@@ -22,7 +22,7 @@ class ModernProjectCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final images = project.cleanedImages ?? [];
-    
+
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
@@ -33,14 +33,14 @@ class ModernProjectCard extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(24),
             border: Border.all(
-              color: isSelected 
-                  ? theme.colorScheme.primary 
+              color: isSelected
+                  ? theme.colorScheme.primary
                   : Colors.white.withValues(alpha: 0.1),
               width: isSelected ? 2 : 1.5,
             ),
             boxShadow: [
               BoxShadow(
-                color: isSelected 
+                color: isSelected
                     ? theme.colorScheme.primary.withValues(alpha: 0.3)
                     : Colors.black.withValues(alpha: 0.2),
                 blurRadius: 20,
@@ -82,19 +82,21 @@ class ModernProjectCard extends StatelessWidget {
                                 ? SmartImage(
                                     path: images.first,
                                     fit: BoxFit.cover,
+                                    enableFullScreenOnTap: true,
                                   )
                                 : Center(
                                     child: Icon(
                                       Icons.rocket_launch_outlined,
                                       size: 48,
-                                      color: Colors.white.withValues(alpha: 0.2),
+                                      color:
+                                          Colors.white.withValues(alpha: 0.2),
                                     ),
                                   ),
                           ),
                         ),
                       ),
                       const SizedBox(height: 16),
-                      
+
                       // Titre
                       Text(
                         project.title,
@@ -107,10 +109,13 @@ class ModernProjectCard extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 6),
-                      
+
                       // Description (Storyline ou premier point)
                       Text(
-                        project.storyline ?? (project.points.isNotEmpty ? project.points.first : ""),
+                        project.storyline ??
+                            (project.points.isNotEmpty
+                                ? project.points.first
+                                : ""),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: GoogleFonts.openSans(
@@ -120,7 +125,7 @@ class ModernProjectCard extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      
+
                       // Badges
                       if (project.tags != null)
                         Wrap(
@@ -146,7 +151,8 @@ class ModernProjectCard extends StatelessWidget {
                         color: theme.colorScheme.primary,
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.check, size: 14, color: Colors.white),
+                      child: const Icon(Icons.check,
+                          size: 14, color: Colors.white),
                     ),
                   ),
               ],

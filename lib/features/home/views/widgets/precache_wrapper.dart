@@ -90,7 +90,7 @@ class _PrecacheWrapperState extends ConsumerState<PrecacheWrapper> {
                   padding: const EdgeInsets.symmetric(horizontal: 32),
                   child: ResponsiveText.displaySmall(
                     'Certaines ressources n\'ont pas pu être chargées.\n'
-                        'L\'application continuera avec les ressources disponibles.',
+                    'L\'application continuera avec les ressources disponibles.',
                     style: TextStyle(
                       color: Colors.white.withValues(alpha: 0.6),
                       fontSize: 12,

@@ -141,7 +141,7 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
 
   String _getNarrativeText(String sectionId) {
     final manager = SectionManager(widget.project);
-    
+
     switch (sectionId) {
       case 'hero':
         return manager.storyline;
@@ -225,7 +225,6 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
               ),
             ),
           ),
-
           if (info.size.width > 1200) ...[
             if (canGoBack)
               NavigationArrow(

@@ -24,8 +24,12 @@ class AdminDashboardScreen extends ConsumerWidget {
           title: const Text('Admin Dashboard'),
           bottom: const TabBar(
             tabs: [
-              Tab(icon: Icon(Icons.analytics_outlined), text: 'Analytics & Conversions'),
-              Tab(icon: Icon(Icons.settings_outlined), text: 'Tarifs & Services'),
+              Tab(
+                  icon: Icon(Icons.analytics_outlined),
+                  text: 'Analytics & Conversions'),
+              Tab(
+                  icon: Icon(Icons.settings_outlined),
+                  text: 'Tarifs & Services'),
             ],
           ),
           actions: [
@@ -84,7 +88,8 @@ class _NotAuthorized extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.block, size: 48, color: Theme.of(context).colorScheme.error),
+            Icon(Icons.block,
+                size: 48, color: Theme.of(context).colorScheme.error),
             const SizedBox(height: 16),
             const Text(
               'Ce compte n\'est pas autorisé à modifier les tarifs.\n'
@@ -161,14 +166,19 @@ class _ServiceAdminCardState extends ConsumerState<_ServiceAdminCard> {
     try {
       await ref.read(pricingAdminControllerProvider).upsertServicePrice(
             serviceId: widget.service.id,
-            basePrice:
-                _priceCtrl.text.trim().isEmpty ? null : double.tryParse(_priceCtrl.text.trim()),
-            priceUnit: _unitCtrl.text.trim().isEmpty ? 'sur devis' : _unitCtrl.text.trim(),
-            priceNote: _noteCtrl.text.trim().isEmpty ? null : _noteCtrl.text.trim(),
+            basePrice: _priceCtrl.text.trim().isEmpty
+                ? null
+                : double.tryParse(_priceCtrl.text.trim()),
+            priceUnit: _unitCtrl.text.trim().isEmpty
+                ? 'sur devis'
+                : _unitCtrl.text.trim(),
+            priceNote:
+                _noteCtrl.text.trim().isEmpty ? null : _noteCtrl.text.trim(),
           );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Tarif de "${widget.service.title}" enregistré ✅')),
+          SnackBar(
+              content: Text('Tarif de "${widget.service.title}" enregistré ✅')),
         );
       }
     } catch (e) {
@@ -184,7 +194,8 @@ class _ServiceAdminCardState extends ConsumerState<_ServiceAdminCard> {
 
   @override
   Widget build(BuildContext context) {
-    final packsAsync = ref.watch(pricingPacksForServiceProvider(widget.service.id));
+    final packsAsync =
+        ref.watch(pricingPacksForServiceProvider(widget.service.id));
 
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
@@ -212,7 +223,8 @@ class _ServiceAdminCardState extends ConsumerState<_ServiceAdminCard> {
                   width: 140,
                   child: TextField(
                     controller: _priceCtrl,
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType:
+                        const TextInputType.numberWithOptions(decimal: true),
                     decoration: const InputDecoration(
                       labelText: 'Prix de base',
                       border: OutlineInputBorder(),
@@ -246,7 +258,9 @@ class _ServiceAdminCardState extends ConsumerState<_ServiceAdminCard> {
                   onPressed: _saving ? null : _save,
                   icon: _saving
                       ? const SizedBox(
-                          width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2))
                       : const Icon(Icons.save_outlined, size: 18),
                   label: const Text('Enregistrer'),
                 ),
@@ -256,7 +270,8 @@ class _ServiceAdminCardState extends ConsumerState<_ServiceAdminCard> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Packs / offres', style: Theme.of(context).textTheme.titleMedium),
+                Text('Packs / offres',
+                    style: Theme.of(context).textTheme.titleMedium),
                 TextButton.icon(
                   icon: const Icon(Icons.add),
                   label: const Text('Ajouter un pack'),
@@ -283,7 +298,8 @@ class _ServiceAdminCardState extends ConsumerState<_ServiceAdminCard> {
                 }
                 return Column(
                   children: packs
-                      .map((pack) => _PackTile(pack: pack, serviceId: widget.service.id))
+                      .map((pack) =>
+                          _PackTile(pack: pack, serviceId: widget.service.id))
                       .toList(),
                 );
               },
@@ -303,7 +319,9 @@ class _PackTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ListTile(
-      leading: pack.isFeatured ? const Icon(Icons.star, color: Colors.amber) : const Icon(Icons.card_giftcard_outlined),
+      leading: pack.isFeatured
+          ? const Icon(Icons.star, color: Colors.amber)
+          : const Icon(Icons.card_giftcard_outlined),
       title: Text('${pack.name} — ${pack.priceLabel}'),
       subtitle: Text(pack.description ?? pack.features.join(' · ')),
       trailing: Row(
@@ -311,7 +329,8 @@ class _PackTile extends ConsumerWidget {
         children: [
           IconButton(
             icon: const Icon(Icons.edit_outlined),
-            onPressed: () => showPackFormDialog(context, ref, serviceId: serviceId, existing: pack),
+            onPressed: () => showPackFormDialog(context, ref,
+                serviceId: serviceId, existing: pack),
           ),
           IconButton(
             icon: const Icon(Icons.delete_outline),
@@ -322,13 +341,19 @@ class _PackTile extends ConsumerWidget {
                   title: const Text('Supprimer ce pack ?'),
                   content: Text('"${pack.name}" sera définitivement supprimé.'),
                   actions: [
-                    TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Annuler')),
-                    FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Supprimer')),
+                    TextButton(
+                        onPressed: () => Navigator.pop(context, false),
+                        child: const Text('Annuler')),
+                    FilledButton(
+                        onPressed: () => Navigator.pop(context, true),
+                        child: const Text('Supprimer')),
                   ],
                 ),
               );
               if (confirm == true && pack.id != null) {
-                await ref.read(pricingAdminControllerProvider).deletePack(pack.id!);
+                await ref
+                    .read(pricingAdminControllerProvider)
+                    .deletePack(pack.id!);
               }
             },
           ),

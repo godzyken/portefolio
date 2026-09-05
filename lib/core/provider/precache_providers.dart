@@ -226,7 +226,7 @@ Future<PrecacheReport> runOptimizedPrecache(Ref ref) async {
     developer.log('📸 ${criticalImages.length} images critiques à précacher');
 
     final List<Future<bool>> loaders = [];
-    
+
     // Ajout du précache Rive
     loaders.add(_precacheRive(AssetsConfig.avatarRivePath));
 
@@ -240,7 +240,7 @@ Future<PrecacheReport> runOptimizedPrecache(Ref ref) async {
 
     // On attend aussi le Rive loader
     final riveResult = await loaders.first;
-    
+
     success = results.where((r) => r).length + (riveResult ? 1 : 0);
     failed = results.where((r) => !r).length + (riveResult ? 0 : 1);
 

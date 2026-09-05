@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,7 +8,6 @@ import 'package:shimmer/shimmer.dart';
 
 import '../../affichage/colors_spec.dart';
 import '../../provider/unified_image_provider.dart';
-import '../../service/unified_image_manager.dart';
 import '../responsive_constants.dart';
 
 // ---------------------------------------------------------------------------
@@ -18,74 +18,12 @@ enum ResponsiveImageSize { small, medium, large, xlarge }
 
 /// Placeholder transparent 1×1 px — évite un flash blanc lors des transitions.
 const List<int> kTransparentImage = [
-  0x89,
-  0x50,
-  0x4E,
-  0x47,
-  0x0D,
-  0x0A,
-  0x1A,
-  0x0A,
-  0x00,
-  0x00,
-  0x00,
-  0x0D,
-  0x49,
-  0x48,
-  0x44,
-  0x52,
-  0x00,
-  0x00,
-  0x00,
-  0x01,
-  0x00,
-  0x00,
-  0x00,
-  0x01,
-  0x08,
-  0x06,
-  0x00,
-  0x00,
-  0x00,
-  0x1F,
-  0x15,
-  0xC4,
-  0x89,
-  0x00,
-  0x00,
-  0x00,
-  0x0A,
-  0x49,
-  0x44,
-  0x41,
-  0x54,
-  0x78,
-  0x9C,
-  0x63,
-  0xF8,
-  0xCF,
-  0x00,
-  0x00,
-  0x02,
-  0x0C,
-  0x01,
-  0x01,
-  0xA2,
-  0xA5,
-  0x3D,
-  0x1D,
-  0x00,
-  0x00,
-  0x00,
-  0x00,
-  0x49,
-  0x45,
-  0x4E,
-  0x44,
-  0xAE,
-  0x42,
-  0x60,
-  0x82,
+  0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0x00, 0x00, 0x00, 0x0D,
+  0x49, 0x48, 0x44, 0x52, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01,
+  0x08, 0x06, 0x00, 0x00, 0x00, 0x1F, 0x15, 0xC4, 0x89, 0x00, 0x00, 0x00,
+  0x0A, 0x49, 0x44, 0x41, 0x54, 0x78, 0x9C, 0x63, 0xF8, 0xCF, 0x00, 0x00,
+  0x02, 0x0C, 0x01, 0x01, 0xA2, 0xA5, 0x3D, 0x1D, 0x00, 0x00, 0x00, 0x00,
+  0x49, 0x45, 0x4E, 0x44, 0xAE, 0x42, 0x60, 0x82,
 ];
 
 final Uint8List transparentImage = Uint8List.fromList(kTransparentImage);
@@ -95,8 +33,6 @@ final Uint8List transparentImage = Uint8List.fromList(kTransparentImage);
 // ---------------------------------------------------------------------------
 
 /// [CustomPainter] pour les SVG avec support complet de [BoxFit].
-///
-/// Utilisé par [SmartImage] et [CachedImage] ; ne pas dupliquer ailleurs.
 class SvgPainter extends CustomPainter {
   final PictureInfo pictureInfo;
   final BoxFit fit;
@@ -147,12 +83,6 @@ class SvgPainter extends CustomPainter {
 }
 
 /// Widget image universel : PNG / JPG / WEBP / SVG, local ou réseau.
-///
-/// - Préchargement transparent via [UnifiedImageManager]
-/// - Shimmer pendant le chargement
-/// - Fallback gradient + icône en cas d'erreur
-/// - Tailles responsives via [ResponsiveImageSize]
-/// - BorderRadius, border, boxShadow, BoxFit complets
 class SmartImage extends ConsumerStatefulWidget {
   final String path;
   final double? width;
@@ -163,6 +93,7 @@ class SmartImage extends ConsumerStatefulWidget {
   final ResponsiveImageSize? responsiveSize;
   final bool autoPreload;
   final bool enableShimmer;
+  final bool enableFullScreenOnTap;
   final Duration fadeDuration;
   final Color? color;
   final BlendMode? colorBlendMode;
@@ -181,6 +112,7 @@ class SmartImage extends ConsumerStatefulWidget {
     this.responsiveSize,
     this.autoPreload = true,
     this.enableShimmer = true,
+    this.enableFullScreenOnTap = false,
     this.fadeDuration = const Duration(milliseconds: 400),
     this.color,
     this.colorBlendMode,
@@ -259,7 +191,7 @@ class _SmartImageState extends ConsumerState<SmartImage> {
             ? _buildShimmer(w, h)
             : _buildImage(w, h);
 
-    return ClipRRect(
+    Widget finalContent = ClipRRect(
       borderRadius: radius,
       child: Container(
         decoration: BoxDecoration(
@@ -268,6 +200,31 @@ class _SmartImageState extends ConsumerState<SmartImage> {
           boxShadow: widget.boxShadow,
         ),
         child: AnimatedSwitcher(duration: widget.fadeDuration, child: child),
+      ),
+    );
+
+    if (widget.enableFullScreenOnTap && !_hasError && !_isLoading) {
+      return GestureDetector(
+        onTap: () => _showFullScreen(context),
+        child: MouseRegion(
+          cursor: SystemMouseCursors.zoomIn,
+          child: finalContent,
+        ),
+      );
+    }
+
+    return finalContent;
+  }
+
+  void _showFullScreen(BuildContext context) {
+    Navigator.of(context).push(
+      PageRouteBuilder(
+        opaque: false,
+        barrierColor: Colors.black.withValues(alpha: 0.9),
+        pageBuilder: (context, _, __) => _FullScreenOverlay(path: widget.path),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(opacity: animation, child: child);
+        },
       ),
     );
   }
@@ -285,7 +242,6 @@ class _SmartImageState extends ConsumerState<SmartImage> {
           child: CustomPaint(painter: SvgPainter(cached, widget.fit)),
         );
       }
-      // SVG pas encore en cache (chargement en cours) → direct Flutter SVG
       return SvgPicture.asset(
         widget.path,
         width: w,
@@ -328,7 +284,6 @@ class _SmartImageState extends ConsumerState<SmartImage> {
     );
 
     final safeW = (w != null && w.isFinite) ? w : 100.0;
-    final safeH = (h != null && h.isFinite) ? h : safeW;
 
     return Container(
       width: w,
@@ -360,4 +315,50 @@ class _SmartImageState extends ConsumerState<SmartImage> {
         ResponsiveImageSize.large => c.avatarL,
         ResponsiveImageSize.xlarge => c.avatarXL,
       };
+}
+
+class _FullScreenOverlay extends StatelessWidget {
+  final String path;
+  const _FullScreenOverlay({required this.path});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+              child: Container(color: Colors.black45),
+            ),
+          ),
+          Center(
+            child: InteractiveViewer(
+              minScale: 0.5,
+              maxScale: 5.0,
+              child: Image(
+                image: path.startsWith('http')
+                    ? NetworkImage(path)
+                    : AssetImage(path) as ImageProvider,
+                fit: BoxFit.contain,
+              ),
+            ),
+          ),
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Align(
+                alignment: Alignment.topRight,
+                child: IconButton(
+                  icon: const Icon(Icons.close, color: Colors.white, size: 32),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

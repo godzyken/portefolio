@@ -1,4 +1,3 @@
-
 class TitledContent {
   final String title;
   final String content;
@@ -116,19 +115,19 @@ class TechnologyStack {
       cms: (json['cms'] as List?)?.cast<String>() ?? const [],
       database: (json['database'] as List?)?.cast<String>() ?? const [],
       projectManagement:
-      (json['projectManagement'] as List?)?.cast<String>() ?? const [],
+          (json['projectManagement'] as List?)?.cast<String>() ?? const [],
       cloud: (json['cloud'] as List?)?.cast<String>() ?? const [],
     );
   }
 
   List<String> get all => {
-    ...frontend,
-    ...backend,
-    ...cms,
-    ...database,
-    ...projectManagement,
-    ...cloud,
-  }.toList();
+        ...frontend,
+        ...backend,
+        ...cms,
+        ...database,
+        ...projectManagement,
+        ...cloud,
+      }.toList();
 }
 
 class PriceRange {
@@ -136,7 +135,8 @@ class PriceRange {
   final num max;
   final String currency;
 
-  const PriceRange({required this.min, required this.max, this.currency = 'EUR'});
+  const PriceRange(
+      {required this.min, required this.max, this.currency = 'EUR'});
 
   factory PriceRange.fromJson(Map<String, dynamic> json) {
     return PriceRange(
@@ -168,7 +168,8 @@ class DailyRatePricing {
 
   factory DailyRatePricing.fromJson(Map<String, dynamic> json) {
     return DailyRatePricing(
-      dailyRate: DailyRateRange.fromJson(json['dailyRate'] as Map<String, dynamic>),
+      dailyRate:
+          DailyRateRange.fromJson(json['dailyRate'] as Map<String, dynamic>),
     );
   }
 }
@@ -194,12 +195,12 @@ class BusinessPricing {
     return BusinessPricing(
       audit: PriceRange.fromJson(json['audit'] as Map<String, dynamic>),
       consulting:
-      DailyRatePricing.fromJson(json['consulting'] as Map<String, dynamic>),
+          DailyRatePricing.fromJson(json['consulting'] as Map<String, dynamic>),
       amoa: DailyRatePricing.fromJson(json['amoa'] as Map<String, dynamic>),
       projectManagement: DailyRatePricing.fromJson(
           json['projectManagement'] as Map<String, dynamic>),
       flutterApplication:
-      Map<String, num>.from(json['flutterApplication'] as Map),
+          Map<String, num>.from(json['flutterApplication'] as Map),
       maintenance: Map<String, num>.from(json['maintenance'] as Map),
     );
   }
@@ -232,12 +233,12 @@ class BusinessModelSplit {
 
   /// Répartition prête à afficher (ex: dans un graphique en secteurs).
   List<MapEntry<String, num>> get breakdown => [
-    MapEntry('Conseil', consulting),
-    MapEntry('Développement', development),
-    MapEntry('Maintenance', maintenance),
-    MapEntry('Formation', training),
-    MapEntry('Audit', audit),
-  ];
+        MapEntry('Conseil', consulting),
+        MapEntry('Développement', development),
+        MapEntry('Maintenance', maintenance),
+        MapEntry('Formation', training),
+        MapEntry('Audit', audit),
+      ];
 }
 
 class RoadmapMilestone {
@@ -309,35 +310,37 @@ class BusinessPlan {
       title: json['title'] as String,
       subtitle: json['subtitle'] as String,
       version: json['version'] as String? ?? '1.0.0',
-      executiveSummary:
-      TitledContent.fromJson(json['executiveSummary'] as Map<String, dynamic>),
+      executiveSummary: TitledContent.fromJson(
+          json['executiveSummary'] as Map<String, dynamic>),
       vision: TitledContent.fromJson(json['vision'] as Map<String, dynamic>),
       mission: TitledContent.fromJson(json['mission'] as Map<String, dynamic>),
       values: (json['values'] as List)
           .map((v) => BusinessValue.fromJson(v as Map<String, dynamic>))
           .toList(),
-      positioning:
-      BusinessPositioning.fromJson(json['positioning'] as Map<String, dynamic>),
+      positioning: BusinessPositioning.fromJson(
+          json['positioning'] as Map<String, dynamic>),
       market: BusinessMarket.fromJson(json['market'] as Map<String, dynamic>),
       services: (json['services'] as List)
           .map((s) => BusinessPlanService.fromJson(s as Map<String, dynamic>))
           .toList(),
       clients: (json['clients'] as List?)?.cast<String>() ?? const [],
       expertise: (json['expertise'] as List)
-          .map((e) => BusinessExpertiseLevel.fromJson(e as Map<String, dynamic>))
+          .map(
+              (e) => BusinessExpertiseLevel.fromJson(e as Map<String, dynamic>))
           .toList(),
-      technologies:
-      TechnologyStack.fromJson(json['technologies'] as Map<String, dynamic>),
-      pricing: BusinessPricing.fromJson(json['pricing'] as Map<String, dynamic>),
-      businessModel:
-      BusinessModelSplit.fromJson(json['businessModel'] as Map<String, dynamic>),
+      technologies: TechnologyStack.fromJson(
+          json['technologies'] as Map<String, dynamic>),
+      pricing:
+          BusinessPricing.fromJson(json['pricing'] as Map<String, dynamic>),
+      businessModel: BusinessModelSplit.fromJson(
+          json['businessModel'] as Map<String, dynamic>),
       roadmap: (json['roadmap'] as List)
           .map((r) => RoadmapMilestone.fromJson(r as Map<String, dynamic>))
           .toList(),
       competitiveAdvantages:
-      (json['competitiveAdvantages'] as List?)?.cast<String>() ?? const [],
-      longTermVision:
-      TitledContent.fromJson(json['longTermVision'] as Map<String, dynamic>),
+          (json['competitiveAdvantages'] as List?)?.cast<String>() ?? const [],
+      longTermVision: TitledContent.fromJson(
+          json['longTermVision'] as Map<String, dynamic>),
     );
   }
 

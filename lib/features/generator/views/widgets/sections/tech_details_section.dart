@@ -30,9 +30,11 @@ class TechDetailsSection extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: ColorHelpers.cyan.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: ColorHelpers.cyan.withValues(alpha: 0.3)),
+                  border: Border.all(
+                      color: ColorHelpers.cyan.withValues(alpha: 0.3)),
                 ),
-                child: const Icon(Icons.settings_suggest_outlined, color: ColorHelpers.cyan, size: 22),
+                child: const Icon(Icons.settings_suggest_outlined,
+                    color: ColorHelpers.cyan, size: 22),
               ),
               const SizedBox(width: 16),
               const Expanded(
@@ -85,7 +87,7 @@ class _TechDetailCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final icon = _getTechIcon(label);
-    
+
     return Container(
       width: info.isMobile ? (info.size.width - 40) : 220,
       padding: const EdgeInsets.all(20),
@@ -141,8 +143,10 @@ class _TechDetailCard extends StatelessWidget {
   IconData _getTechIcon(String label) {
     final l = label.toLowerCase();
     if (l.contains('version') || l.contains('build')) return Icons.tag;
-    if (l.contains('deploy') || l.contains('héberg') || l.contains('host')) return Icons.cloud_upload_outlined;
-    if (l.contains('state') || l.contains('donnée')) return Icons.account_tree_outlined;
+    if (l.contains('deploy') || l.contains('héberg') || l.contains('host'))
+      return Icons.cloud_upload_outlined;
+    if (l.contains('state') || l.contains('donnée'))
+      return Icons.account_tree_outlined;
     if (l.contains('perf')) return Icons.speed;
     if (l.contains('test')) return Icons.biotech;
     if (l.contains('arch')) return Icons.architecture;

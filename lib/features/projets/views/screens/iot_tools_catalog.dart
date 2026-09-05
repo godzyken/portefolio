@@ -41,9 +41,9 @@ class IoTToolsCatalog extends StatelessWidget {
           const SizedBox(height: 6),
           ResponsiveText(
             'Panorama des familles d\'outils connectés qui alimentent ce '
-                'type de dashboard : de la localisation d\'engins à la '
-                'remontée d\'alertes, en passant par la connectivité et '
-                'l\'intégration BIM.',
+            'type de dashboard : de la localisation d\'engins à la '
+            'remontée d\'alertes, en passant par la connectivité et '
+            'l\'intégration BIM.',
             style: TextStyle(
               color: Colors.white.withValues(alpha: 0.65),
               fontSize: 12,

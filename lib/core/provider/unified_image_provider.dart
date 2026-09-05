@@ -148,8 +148,8 @@ class CachedImage extends ConsumerWidget {
     }
   }
 
-  Widget _buildRasterImage(BuildContext context, WidgetRef ref,
-      UnifiedImageManager manager) {
+  Widget _buildRasterImage(
+      BuildContext context, WidgetRef ref, UnifiedImageManager manager) {
     if (manager.hasFailed(path)) {
       return _buildError(context, ref, manager);
     }
@@ -171,8 +171,8 @@ class CachedImage extends ConsumerWidget {
     return _buildPlaceholder();
   }
 
-  Widget _buildSvgImage(BuildContext context, WidgetRef ref,
-      UnifiedImageManager manager) {
+  Widget _buildSvgImage(
+      BuildContext context, WidgetRef ref, UnifiedImageManager manager) {
     if (manager.hasFailed(path)) {
       return _buildError(context, ref, manager);
     }
@@ -190,8 +190,7 @@ class CachedImage extends ConsumerWidget {
   }
 
   Widget _buildPlaceholder() {
-    return placeholder ??
-        ShimmerBox(width: width, height: height);
+    return placeholder ?? ShimmerBox(width: width, height: height);
   }
 
   Widget _buildError(

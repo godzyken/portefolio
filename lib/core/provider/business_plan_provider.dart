@@ -16,7 +16,7 @@ final businessPlanProvider = FutureProvider<BusinessPlan>((ref) async {
 /// Accès rapide à un service du business plan par id
 /// (`audit`, `amoa`, `project`, `flutter`, `transformation`, `ai`, `training`).
 final businessPlanServiceProvider =
-Provider.family<BusinessPlanService?, String>((ref, id) {
+    Provider.family<BusinessPlanService?, String>((ref, id) {
   final plan = ref.watch(businessPlanProvider).asData?.value;
   return plan?.serviceById(id);
 }, name: 'BusinessPlanServiceById');
@@ -30,8 +30,8 @@ final businessPlanStatsProvider = Provider<BusinessPlanStats>((ref) {
   final averageExpertiseLevel = plan.expertise.isEmpty
       ? 0
       : (plan.expertise.fold<int>(0, (sum, e) => sum + e.level) /
-      plan.expertise.length)
-      .round();
+              plan.expertise.length)
+          .round();
 
   return BusinessPlanStats(
     servicesCount: plan.services.length,

@@ -61,7 +61,10 @@ class _ArtifactsSectionState extends ConsumerState<ArtifactsSection>
   Widget build(BuildContext context) {
     final asyncArtifacts = ref.watch(
       projectArtifactsProvider(
-        (repoUrl: widget.project.githubRepoUrl!, projectId: widget.project.id),
+        (
+          repoUrl: widget.project.githubRepoUrl!,
+          projectId: widget.project.analyticsId
+        ),
       ),
     );
 
@@ -79,7 +82,7 @@ class _ArtifactsSectionState extends ConsumerState<ArtifactsSection>
         if (artifacts.isEmpty) return const SizedBox.shrink();
 
         final keys = GithubArtifactsService.sortedKeys(artifacts);
-        
+
         final manager = SectionManager(widget.project);
         final maturityScores = manager.analyzeMaturity();
 
@@ -113,14 +116,16 @@ class _ArtifactsSectionState extends ConsumerState<ArtifactsSection>
                 ),
               ),
               const SizedBox(height: 20),
-              
+
               IAMaturityAnalysisCard(scores: maturityScores),
-              
+
               const SizedBox(height: 24),
-              
+
               Container(
                 decoration: BoxDecoration(
-                  border: Border(bottom: BorderSide(color: ColorHelpers.border.withValues(alpha: 0.5))),
+                  border: Border(
+                      bottom: BorderSide(
+                          color: ColorHelpers.border.withValues(alpha: 0.5))),
                 ),
                 child: TabBar(
                   controller: _tabController,
@@ -133,14 +138,23 @@ class _ArtifactsSectionState extends ConsumerState<ArtifactsSection>
                   indicatorWeight: 3,
                   tabs: allTabs
                       .map((k) => Tab(
-                            icon: k == 'readme' ? const Icon(Icons.description_outlined, size: 16) : null,
+                            icon: k == 'readme'
+                                ? const Icon(Icons.description_outlined,
+                                    size: 16)
+                                : null,
                             child: ConstrainedBox(
                               constraints: const BoxConstraints(maxWidth: 150),
                               child: FittedBox(
                                 fit: BoxFit.scaleDown,
                                 child: Text(
-                                  (k == 'proofs' ? '💡 Preuves Techniques' : GithubArtifactsService.labelFor(k)).toUpperCase(),
-                                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 1.1),
+                                  (k == 'proofs'
+                                          ? '💡 Preuves Techniques'
+                                          : GithubArtifactsService.labelFor(k))
+                                      .toUpperCase(),
+                                  style: const TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w900,
+                                      letterSpacing: 1.1),
                                 ),
                               ),
                             ),
@@ -148,9 +162,9 @@ class _ArtifactsSectionState extends ConsumerState<ArtifactsSection>
                       .toList(),
                 ),
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               SizedBox(
                 height: isLandscape ? 300 : (widget.info.isMobile ? 450 : 550),
                 child: TabBarView(
@@ -159,12 +173,12 @@ class _ArtifactsSectionState extends ConsumerState<ArtifactsSection>
                     if (k == 'proofs') {
                       return _TechnicalProofsGallery(images: technicalImages);
                     }
-  
+
                     return _MarkdownContentCard(content: artifacts[k]!);
                   }).toList(),
                 ),
               ),
-              
+
               const SizedBox(height: 20),
               Center(
                 child: Text(
@@ -176,7 +190,9 @@ class _ArtifactsSectionState extends ConsumerState<ArtifactsSection>
                   ),
                 ),
               ),
-              const SizedBox(height: 40), // Padding pour éviter que le menu mobile cache le texte
+              const SizedBox(
+                  height:
+                      40), // Padding pour éviter que le menu mobile cache le texte
             ],
           ),
         );
@@ -215,7 +231,8 @@ class _MarkdownContentCard extends StatelessWidget {
           child: Markdown(
             data: content,
             selectable: true,
-            shrinkWrap: false, // On veut que le Markdown gère son propre scroll à l'intérieur de la TabBarView
+            shrinkWrap:
+                false, // On veut que le Markdown gère son propre scroll à l'intérieur de la TabBarView
             styleSheet: MarkdownStyleSheet.fromTheme(
               Theme.of(context),
             ).copyWith(
@@ -242,7 +259,8 @@ class _MarkdownContentCard extends StatelessWidget {
               blockquoteDecoration: BoxDecoration(
                 color: Colors.white10,
                 borderRadius: BorderRadius.circular(8),
-                border: const Border(left: BorderSide(color: ColorHelpers.cyan, width: 4)),
+                border: const Border(
+                    left: BorderSide(color: ColorHelpers.cyan, width: 4)),
               ),
             ),
           ),
@@ -276,9 +294,10 @@ class _TechnicalProofsGallery extends StatelessWidget {
                 Expanded(
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(12),
-                    child: Image.asset(
-                      images[index],
+                    child: SmartImage(
+                      path: images[index],
                       fit: BoxFit.contain,
+                      enableFullScreenOnTap: true,
                     ),
                   ),
                 ),

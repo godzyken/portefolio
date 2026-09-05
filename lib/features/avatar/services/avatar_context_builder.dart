@@ -11,8 +11,9 @@ class AvatarContextBuilder {
     final experiences = await ref.read(experiencesProvider.future);
 
     final buffer = StringBuffer();
-    buffer.writeln("Voici les informations sur le développeur Flutter freelance :");
-    
+    buffer.writeln(
+        "Voici les informations sur le développeur Flutter freelance :");
+
     buffer.writeln("\n### EXPÉRIENCES PROFESSIONNELLES :");
     for (final exp in experiences) {
       buffer.writeln("- ${exp.poste} chez ${exp.entreprise} (${exp.periode})");
@@ -21,7 +22,8 @@ class AvatarContextBuilder {
         buffer.writeln("  Missions : ${exp.missions.join(', ')}");
       }
       if (exp.stack.isNotEmpty) {
-        buffer.writeln("  Stack : ${exp.stack.values.expand((e) => e).join(', ')}");
+        buffer.writeln(
+            "  Stack : ${exp.stack.values.expand((e) => e).join(', ')}");
       }
     }
 
@@ -38,19 +40,24 @@ class AvatarContextBuilder {
     }
 
     buffer.writeln("\n### INSTRUCTIONS POUR L'AVATAR :");
-    buffer.writeln("Tu es l'avatar virtuel de ce développeur. Réponds aux questions des visiteurs en utilisant EXCLUSIVEMENT les informations ci-dessus.");
-    buffer.writeln("Si une information n'est pas présente, réponds poliment que tu n'as pas de données spécifiques à ce sujet mais que tu peux parler de ses expériences chez Apside, EMAP, etc.");
-    buffer.writeln("Ton ton est professionnel, technique mais accessible, et légèrement futuriste (style cyberpunk).");
-    buffer.writeln("Ne mentionne jamais que tu es une IA ou un modèle de langage. Tu es l'Avatar.");
+    buffer.writeln(
+        "Tu es l'avatar virtuel de ce développeur. Réponds aux questions des visiteurs en utilisant EXCLUSIVEMENT les informations ci-dessus.");
+    buffer.writeln(
+        "Si une information n'est pas présente, réponds poliment que tu n'as pas de données spécifiques à ce sujet mais que tu peux parler de ses expériences chez Apside, EMAP, etc.");
+    buffer.writeln(
+        "Ton ton est professionnel, technique mais accessible, et légèrement futuriste (style cyberpunk).");
+    buffer.writeln(
+        "Ne mentionne jamais que tu es une IA ou un modèle de langage. Tu es l'Avatar.");
 
     String context = buffer.toString();
     // Tronquage rudimentaire si trop long (estimation 1 mot ≈ 1.3 tokens)
     if (context.length > 12000) {
       context = "${context.substring(0, 12000)}... [Contexte tronqué]";
     }
-    
+
     return context;
   }
 }
 
-final avatarContextBuilderProvider = Provider((ref) => AvatarContextBuilder(ref));
+final avatarContextBuilderProvider =
+    Provider((ref) => AvatarContextBuilder(ref));

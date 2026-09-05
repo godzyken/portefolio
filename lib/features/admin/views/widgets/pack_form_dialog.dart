@@ -118,8 +118,10 @@ class _PackFormDialogState extends ConsumerState<_PackFormDialog> {
               children: [
                 TextFormField(
                   controller: _nameCtrl,
-                  decoration: const InputDecoration(labelText: 'Nom (ex: Découverte)'),
-                  validator: (v) => (v == null || v.trim().isEmpty) ? 'Requis' : null,
+                  decoration:
+                      const InputDecoration(labelText: 'Nom (ex: Découverte)'),
+                  validator: (v) =>
+                      (v == null || v.trim().isEmpty) ? 'Requis' : null,
                 ),
                 const SizedBox(height: 8),
                 Row(
@@ -127,11 +129,13 @@ class _PackFormDialogState extends ConsumerState<_PackFormDialog> {
                     Expanded(
                       child: TextFormField(
                         controller: _priceCtrl,
-                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                        keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true),
                         decoration: const InputDecoration(labelText: 'Prix'),
                         validator: (v) {
                           if (v == null || v.trim().isEmpty) return 'Requis';
-                          if (double.tryParse(v.trim()) == null) return 'Nombre invalide';
+                          if (double.tryParse(v.trim()) == null)
+                            return 'Nombre invalide';
                           return null;
                         },
                       ),
@@ -140,7 +144,8 @@ class _PackFormDialogState extends ConsumerState<_PackFormDialog> {
                     Expanded(
                       child: TextFormField(
                         controller: _unitCtrl,
-                        decoration: const InputDecoration(labelText: 'Unité (€, €/mois...)'),
+                        decoration: const InputDecoration(
+                            labelText: 'Unité (€, €/mois...)'),
                       ),
                     ),
                   ],
@@ -148,7 +153,8 @@ class _PackFormDialogState extends ConsumerState<_PackFormDialog> {
                 const SizedBox(height: 8),
                 TextFormField(
                   controller: _descCtrl,
-                  decoration: const InputDecoration(labelText: 'Description courte'),
+                  decoration:
+                      const InputDecoration(labelText: 'Description courte'),
                 ),
                 const SizedBox(height: 8),
                 TextFormField(
@@ -166,7 +172,8 @@ class _PackFormDialogState extends ConsumerState<_PackFormDialog> {
                       child: TextFormField(
                         controller: _priorityCtrl,
                         keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(labelText: 'Ordre d\'affichage'),
+                        decoration: const InputDecoration(
+                            labelText: 'Ordre d\'affichage'),
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -193,7 +200,10 @@ class _PackFormDialogState extends ConsumerState<_PackFormDialog> {
         FilledButton(
           onPressed: _saving ? null : _submit,
           child: _saving
-              ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+              ? const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2))
               : const Text('Enregistrer'),
         ),
       ],

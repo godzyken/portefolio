@@ -13,5 +13,6 @@ class ProjectAnalytics {
     required this.actionsByType,
   });
 
-  double get conversionRate => totalInteractions == 0 ? 0 : (totalConversions / totalInteractions) * 100;
+  double get conversionRate =>
+      totalInteractions == 0 ? 0 : (totalConversions / totalInteractions) * 100;
 }

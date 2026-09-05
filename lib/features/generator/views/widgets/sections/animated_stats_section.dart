@@ -4,8 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../../core/provider/business_plan_provider.dart';
 import '../../../../../core/ui/widgets/responsive_text.dart';
 
-
-
 /// Section de chiffres clés animés (compteurs qui montent), alimentée par
 /// [businessPlanStatsProvider] — donc par `business_plan.json`.
 class AnimatedStatsSection extends ConsumerWidget {

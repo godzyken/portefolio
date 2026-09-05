@@ -7,8 +7,6 @@ import '../../../../../core/provider/business_plan_provider.dart';
 import '../../../../../core/ui/sections/section_system.dart';
 import '../../../../../core/ui/widgets/responsive_text.dart';
 
-
-
 /// Section storytelling de la home : "votre quotidien aujourd'hui" (douleur)
 /// → "notre vision" → positionnement → appel à l'action.
 ///

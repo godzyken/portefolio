@@ -107,13 +107,15 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
             children: [
               _buildHeader(theme),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
                 child: _buildProgressBar(theme),
               ),
               Expanded(
                 child: AnimatedSwitcher(
                   duration: const Duration(milliseconds: 400),
-                  transitionBuilder: (Widget child, Animation<double> animation) {
+                  transitionBuilder:
+                      (Widget child, Animation<double> animation) {
                     return FadeTransition(
                       opacity: animation,
                       child: SlideTransition(
@@ -251,21 +253,24 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
               controller: _nameController,
               onChanged: (val) => ref
                   .read(appointmentProvider.notifier)
-                  .setContactInfo(val, _emailController.text, _messageController.text),
+                  .setContactInfo(
+                      val, _emailController.text, _messageController.text),
             ),
             const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
             EmailFormField(
               controller: _emailController,
               onChanged: (val) => ref
                   .read(appointmentProvider.notifier)
-                  .setContactInfo(_nameController.text, val, _messageController.text),
+                  .setContactInfo(
+                      _nameController.text, val, _messageController.text),
             ),
             const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
             MessageFormField(
               controller: _messageController,
               onChanged: (val) => ref
                   .read(appointmentProvider.notifier)
-                  .setContactInfo(_nameController.text, _emailController.text, val),
+                  .setContactInfo(
+                      _nameController.text, _emailController.text, val),
             ),
           ],
         ),
@@ -296,7 +301,9 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
             ),
             _buildReviewItem(
               theme,
-              state.type == AppointmentType.virtual ? Icons.videocam : Icons.place,
+              state.type == AppointmentType.virtual
+                  ? Icons.videocam
+                  : Icons.place,
               'Type',
               state.type == AppointmentType.virtual
                   ? 'Virtuel (Visio)'
@@ -312,7 +319,8 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
     );
   }
 
-  Widget _buildReviewItem(ThemeData theme, IconData icon, String label, String value) {
+  Widget _buildReviewItem(
+      ThemeData theme, IconData icon, String label, String value) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Row(
@@ -324,9 +332,11 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ResponsiveText.bodySmall(label, style: const TextStyle(color: Colors.white70)),
+                ResponsiveText.bodySmall(label,
+                    style: const TextStyle(color: Colors.white70)),
                 ResponsiveText.bodyMedium(value,
-                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                    style: const TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold)),
               ],
             ),
           ),
@@ -359,7 +369,8 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
                   foregroundColor: Colors.white,
                   side: const BorderSide(color: Colors.white24),
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
                 ),
                 child: const Text('Précédent'),
               ),
@@ -374,13 +385,15 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
               style: FilledButton.styleFrom(
                 backgroundColor: theme.colorScheme.primary,
                 padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
               ),
               child: state.status == AppointmentStatus.loading
                   ? const SizedBox(
                       width: 20,
                       height: 20,
-                      child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                      child: CircularProgressIndicator(
+                          color: Colors.white, strokeWidth: 2),
                     )
                   : Text(isLastStep ? 'Confirmer' : 'Suivant'),
             ),
@@ -418,7 +431,8 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
   Widget _buildCalendar(ThemeData theme) {
     final appointmentState = ref.watch(appointmentProvider);
     final daysInMonth = _getDaysInMonth(_focusedMonth);
-    final firstDayOfMonth = DateTime(_focusedMonth.year, _focusedMonth.month, 1);
+    final firstDayOfMonth =
+        DateTime(_focusedMonth.year, _focusedMonth.month, 1);
     final startingWeekday = firstDayOfMonth.weekday;
 
     return Column(
@@ -430,7 +444,8 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
               icon: const Icon(Icons.chevron_left, color: Colors.white),
               onPressed: () {
                 setState(() {
-                  _focusedMonth = DateTime(_focusedMonth.year, _focusedMonth.month - 1);
+                  _focusedMonth =
+                      DateTime(_focusedMonth.year, _focusedMonth.month - 1);
                 });
               },
             ),
@@ -446,7 +461,8 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
               icon: const Icon(Icons.chevron_right, color: Colors.white),
               onPressed: () {
                 setState(() {
-                  _focusedMonth = DateTime(_focusedMonth.year, _focusedMonth.month + 1);
+                  _focusedMonth =
+                      DateTime(_focusedMonth.year, _focusedMonth.month + 1);
                 });
               },
             ),
@@ -460,7 +476,8 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
               child: Center(
                 child: ResponsiveText.bodySmall(
                   day,
-                  style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white54),
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.white54),
                 ),
               ),
             );
@@ -480,19 +497,24 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
                 return const SizedBox.shrink();
               }
 
-              final day = DateTime(_focusedMonth.year, _focusedMonth.month, dayNumber);
+              final day =
+                  DateTime(_focusedMonth.year, _focusedMonth.month, dayNumber);
               final isToday = _isSameDay(day, DateTime.now());
               final isSelected = appointmentState.selectedDate != null &&
                   _isSameDay(day, appointmentState.selectedDate!);
-              final isWeekend = day.weekday == DateTime.saturday || day.weekday == DateTime.sunday;
-              final isPast = day.isBefore(DateTime.now().subtract(const Duration(days: 1)));
+              final isWeekend = day.weekday == DateTime.saturday ||
+                  day.weekday == DateTime.sunday;
+              final isPast = day
+                  .isBefore(DateTime.now().subtract(const Duration(days: 1)));
               final isDisabled = isWeekend || isPast;
 
               return InkWell(
                 onTap: isDisabled
                     ? null
                     : () {
-                        ref.read(appointmentProvider.notifier).setSelectedDate(day);
+                        ref
+                            .read(appointmentProvider.notifier)
+                            .setSelectedDate(day);
                       },
                 borderRadius: BorderRadius.circular(8),
                 child: Container(
@@ -519,7 +541,9 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
                                 : isWeekend
                                     ? theme.colorScheme.error
                                     : Colors.white,
-                        fontWeight: isSelected || isToday ? FontWeight.bold : FontWeight.normal,
+                        fontWeight: isSelected || isToday
+                            ? FontWeight.bold
+                            : FontWeight.normal,
                       ),
                     ),
                   ),
@@ -534,10 +558,13 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
 
   Widget _buildTimeSlots(ThemeData theme, AppointmentState appointmentState) {
     if (appointmentState.selectedDate == null) {
-      return const Center(child: Text('Erreur: Pas de date choisie', style: TextStyle(color: Colors.white70)));
+      return const Center(
+          child: Text('Erreur: Pas de date choisie',
+              style: TextStyle(color: Colors.white70)));
     }
 
-    final availableSlotsAsync = ref.watch(availableTimeSlotsProvider(appointmentState.selectedDate!));
+    final availableSlotsAsync =
+        ref.watch(availableTimeSlotsProvider(appointmentState.selectedDate!));
 
     return availableSlotsAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
@@ -547,13 +574,17 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.error_outline, color: Colors.redAccent, size: 40),
+              const Icon(Icons.error_outline,
+                  color: Colors.redAccent, size: 40),
               const SizedBox(height: 12),
               const Text('Erreur de chargement des créneaux',
-                  textAlign: TextAlign.center, style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: Colors.redAccent, fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
               Text(err.toString(),
-                  textAlign: TextAlign.center, style: const TextStyle(color: Colors.white54, fontSize: 12)),
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: Colors.white54, fontSize: 12)),
             ],
           ),
         ),
@@ -562,7 +593,8 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
         if (availableSlots.isEmpty) {
           return const Center(
             child: Text('Aucun créneau disponible pour cette date',
-                textAlign: TextAlign.center, style: TextStyle(color: Colors.white70)),
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.white70)),
           );
         }
 
@@ -575,31 +607,43 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
             return Padding(
               padding: const EdgeInsets.only(bottom: 8),
               child: InkWell(
-                onTap: () => ref.read(appointmentProvider.notifier).setSelectedTime(slot),
+                onTap: () => ref
+                    .read(appointmentProvider.notifier)
+                    .setSelectedTime(slot),
                 borderRadius: BorderRadius.circular(12),
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: isSelected ? theme.colorScheme.primary.withValues(alpha: 0.2) : Colors.white.withValues(alpha: 0.05),
+                    color: isSelected
+                        ? theme.colorScheme.primary.withValues(alpha: 0.2)
+                        : Colors.white.withValues(alpha: 0.05),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: isSelected ? theme.colorScheme.primary : Colors.white10,
+                      color: isSelected
+                          ? theme.colorScheme.primary
+                          : Colors.white10,
                       width: isSelected ? 2 : 1,
                     ),
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.access_time, color: isSelected ? theme.colorScheme.primary : Colors.white54),
+                      Icon(Icons.access_time,
+                          color: isSelected
+                              ? theme.colorScheme.primary
+                              : Colors.white54),
                       const SizedBox(width: 16),
                       ResponsiveText.bodyMedium(
                         slot.toString(),
                         style: TextStyle(
-                          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                          fontWeight:
+                              isSelected ? FontWeight.bold : FontWeight.normal,
                           color: isSelected ? Colors.white : Colors.white70,
                         ),
                       ),
                       const Spacer(),
-                      if (isSelected) Icon(Icons.check_circle, color: theme.colorScheme.primary),
+                      if (isSelected)
+                        Icon(Icons.check_circle,
+                            color: theme.colorScheme.primary),
                     ],
                   ),
                 ),
@@ -637,14 +681,18 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
     );
   }
 
-  Widget _buildTypeChip(ThemeData theme, String label, IconData icon, AppointmentType type, bool isSelected) {
+  Widget _buildTypeChip(ThemeData theme, String label, IconData icon,
+      AppointmentType type, bool isSelected) {
     return InkWell(
-      onTap: () => ref.read(appointmentProvider.notifier).setAppointmentType(type),
+      onTap: () =>
+          ref.read(appointmentProvider.notifier).setAppointmentType(type),
       borderRadius: BorderRadius.circular(12),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 8),
         decoration: BoxDecoration(
-          color: isSelected ? theme.colorScheme.primary.withValues(alpha: 0.2) : Colors.white.withValues(alpha: 0.05),
+          color: isSelected
+              ? theme.colorScheme.primary.withValues(alpha: 0.2)
+              : Colors.white.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected ? theme.colorScheme.primary : Colors.white10,
@@ -653,7 +701,9 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
         ),
         child: Column(
           children: [
-            Icon(icon, color: isSelected ? theme.colorScheme.primary : Colors.white54, size: 32),
+            Icon(icon,
+                color: isSelected ? theme.colorScheme.primary : Colors.white54,
+                size: 32),
             const SizedBox(height: 12),
             ResponsiveText.bodySmall(
               label,
@@ -683,7 +733,8 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
           borderSide: BorderSide.none,
         ),
       ),
-      onChanged: (value) => ref.read(appointmentProvider.notifier).setPhysicalLocation(value),
+      onChanged: (value) =>
+          ref.read(appointmentProvider.notifier).setPhysicalLocation(value),
     );
   }
 
@@ -701,7 +752,8 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
     final calendarService = ref.read(calendarAvailabilityServiceProvider);
     final emailService = ref.read(emailJsProvider);
 
-    final success = await appointmentNotifier.confirmAppointment(calendarService, emailService);
+    final success = await appointmentNotifier.confirmAppointment(
+        calendarService, emailService);
 
     if (!mounted) return;
 
@@ -733,7 +785,20 @@ class _CalendarDialogState extends ConsumerState<CalendarDialog> {
   }
 
   String _getMonthName(DateTime date) {
-    const months = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+    const months = [
+      'Janvier',
+      'Février',
+      'Mars',
+      'Avril',
+      'Mai',
+      'Juin',
+      'Juillet',
+      'Août',
+      'Septembre',
+      'Octobre',
+      'Novembre',
+      'Décembre'
+    ];
     return '${months[date.month - 1]} ${date.year}';
   }
 
@@ -757,7 +822,8 @@ class _StepContainer extends StatelessWidget {
         children: [
           ResponsiveText.titleLarge(
             title,
-            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            style: const TextStyle(
+                color: Colors.white, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 24),
           Expanded(child: child),

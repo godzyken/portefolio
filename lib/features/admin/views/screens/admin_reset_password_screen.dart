@@ -13,7 +13,8 @@ class AdminResetPasswordScreen extends ConsumerStatefulWidget {
       _AdminResetPasswordScreenState();
 }
 
-class _AdminResetPasswordScreenState extends ConsumerState<AdminResetPasswordScreen> {
+class _AdminResetPasswordScreenState
+    extends ConsumerState<AdminResetPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   final _passwordCtrl = TextEditingController();
   final _confirmPasswordCtrl = TextEditingController();
@@ -55,8 +56,7 @@ class _AdminResetPasswordScreenState extends ConsumerState<AdminResetPasswordScr
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text('Erreur: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('Erreur: $e'), backgroundColor: Colors.red),
         );
       }
     } finally {
@@ -85,7 +85,8 @@ class _AdminResetPasswordScreenState extends ConsumerState<AdminResetPasswordScr
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const Icon(Icons.lock_reset, size: 48, color: Colors.blue),
+                      const Icon(Icons.lock_reset,
+                          size: 48, color: Colors.blue),
                       const SizedBox(height: 16),
                       Text(
                         'Réinitialisation',

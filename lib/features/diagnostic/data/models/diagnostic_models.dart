@@ -109,8 +109,7 @@ class DiagnosticConfig {
     );
   }
 
-  int get maxTotalScore =>
-      questions.fold(0, (sum, q) => sum + q.maxScore);
+  int get maxTotalScore => questions.fold(0, (sum, q) => sum + q.maxScore);
 
   DiagnosticLevel levelFor(int percent) {
     return levels.firstWhere(
@@ -157,6 +156,5 @@ class DiagnosticResult {
     required this.categoryScores,
   });
 
-  int get percent =>
-      maxScore == 0 ? 0 : ((score / maxScore) * 100).round();
+  int get percent => maxScore == 0 ? 0 : ((score / maxScore) * 100).round();
 }

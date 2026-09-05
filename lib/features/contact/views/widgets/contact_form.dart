@@ -24,7 +24,6 @@ class ContactForm extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
 
-
     return _buildContactForm(formState, info, theme, ref);
   }
 

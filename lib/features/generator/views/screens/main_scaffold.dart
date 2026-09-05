@@ -40,7 +40,8 @@ class MainScaffold extends ConsumerWidget {
             ))
         .toList();
 
-    final showFooter = currentTab != AppTab.projects && currentTab != AppTab.experiences;
+    final showFooter =
+        currentTab != AppTab.projects && currentTab != AppTab.experiences;
 
     return Scaffold(
       appBar: AppBar(

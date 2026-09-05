@@ -69,9 +69,7 @@ class GithubArtifactsService {
       ).then((content) => MapEntry('readme', content)),
 
       // 2. Chercher les autres artefacts dans .artefacts/{projectId}/
-      ..._candidateFilenames
-          .where((name) => name != 'readme')
-          .map(
+      ..._candidateFilenames.where((name) => name != 'readme').map(
             (name) => _fetchSingleFile(
               owner: repoInfo.owner,
               repo: repoInfo.repo,
@@ -82,12 +80,20 @@ class GithubArtifactsService {
               if (content == null) {
                 String? aiPath;
                 switch (name) {
-                  case 'presentation': aiPath = 'PROJECT.md'; break;
-                  case 'vision': aiPath = 'ARCHITECTURE.md'; break;
-                  case 'workthrough': aiPath = 'ROADMAP.md'; break;
-                  case 'implementation': aiPath = 'DECISIONS.md'; break;
+                  case 'presentation':
+                    aiPath = 'PROJECT.md';
+                    break;
+                  case 'vision':
+                    aiPath = 'ARCHITECTURE.md';
+                    break;
+                  case 'workthrough':
+                    aiPath = 'ROADMAP.md';
+                    break;
+                  case 'implementation':
+                    aiPath = 'DECISIONS.md';
+                    break;
                 }
-                
+
                 if (aiPath != null) {
                   final aiContent = await _fetchSingleFile(
                     owner: repoInfo.owner,
@@ -188,8 +194,7 @@ class GithubArtifactsService {
   static ({String owner, String repo})? _parseRepoUrl(String repoUrl) {
     try {
       final uri = Uri.parse(repoUrl);
-      final segments =
-          uri.pathSegments.where((s) => s.isNotEmpty).toList();
+      final segments = uri.pathSegments.where((s) => s.isNotEmpty).toList();
       if (segments.length < 2) return null;
       final repo = segments[1].replaceAll('.git', '');
       return (owner: segments[0], repo: repo);

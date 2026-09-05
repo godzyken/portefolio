@@ -14,13 +14,13 @@ class VoiceService extends Notifier<bool> {
 
   Future<void> _safeInit() async {
     if (_initialized) return;
-    
+
     try {
       final dynamic langResult = await _tts.getLanguages;
       if (langResult != null) {
         await _tts.setLanguage("fr-FR");
       }
-      
+
       await _tts.setSpeechRate(0.5);
       await _tts.setVolume(1.0);
       await _tts.setPitch(1.0);
@@ -31,7 +31,7 @@ class VoiceService extends Notifier<bool> {
         developer.log("TTS Error: $msg", name: 'VoiceService');
         state = false;
       });
-      
+
       _initialized = true;
     } catch (e) {
       developer.log("TTS Safe Init failed: $e", name: 'VoiceService');

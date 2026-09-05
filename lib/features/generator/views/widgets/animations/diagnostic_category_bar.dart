@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../../../../../core/ui/widgets/responsive_text.dart';
 
-
 class DiagnosticCategoryBar extends StatelessWidget {
   const DiagnosticCategoryBar({
     super.key,
