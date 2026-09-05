@@ -7,6 +7,7 @@ import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/ui/widgets/narrative_bubble.dart';
+import 'package:portefolio/features/experience/views/widgets/activity_metrics_chart.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../../core/provider/tracking_provider.dart';
 import '../../../../../core/service/tracking_service.dart';
@@ -275,6 +276,17 @@ class _ImpactScene extends StatelessWidget {
                 text: "L'impact final. Une solution prête pour la production avec des résultats concrets.",
               ),
             ),
+
+          // NOUVEAU : MÉTRIQUES DYNAMIQUES
+          SizedBox(
+            height: 350,
+            child: ActivityMetricsChart(
+              project: project,
+              info: info,
+            ),
+          ),
+          
+          const SizedBox(height: 24),
 
           Container(
             height: isCompact ? 200 : 280,
