@@ -238,7 +238,25 @@ class _ActivityMetricsChartState extends ConsumerState<ActivityMetricsChart> {
     return analyticsAsync.when(
       data: (analytics) {
         if (analytics.isEmpty) {
-          return const Center(child: Text('Aucune donnée live disponible', style: TextStyle(color: Colors.white70)));
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.sensors_off, color: Colors.white24, size: 48),
+                const SizedBox(height: 16),
+                const ResponsiveText.bodyMedium(
+                  'En attente de flux live...',
+                  style: TextStyle(color: Colors.white38),
+                ),
+                const SizedBox(height: 8),
+                ResponsiveText.bodySmall(
+                  'L\'application ${widget.project.title} n\'a pas encore émis d\'événements.',
+                  style: const TextStyle(color: Colors.white24),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          );
         }
 
         // Grouper par heure (simulé ici pour le graphique)

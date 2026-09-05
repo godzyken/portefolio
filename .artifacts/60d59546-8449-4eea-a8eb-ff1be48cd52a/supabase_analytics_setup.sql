@@ -15,6 +15,14 @@ CREATE INDEX IF NOT EXISTS idx_app_analytics_created_at ON public.app_analytics(
 -- Activer Row Level Security (RLS)
 ALTER TABLE public.app_analytics ENABLE ROW LEVEL SECURITY;
 
+-- ACTIVER REALTIME pour cette table (Crucial pour le Live Stream)
+BEGIN;
+  DROP PUBLICATION IF EXISTS supabase_realtime;
+  CREATE PUBLICATION supabase_realtime FOR TABLE app_analytics;
+COMMIT;
+-- Si la publication existe déjà, utilisez plutôt :
+-- ALTER PUBLICATION supabase_realtime ADD TABLE app_analytics;
+
 -- Politique pour permettre la lecture seule publique (anonyme) pour le portfolio
 -- Cela permet d'afficher les statistiques agrégées sans authentification
 CREATE POLICY "Allow anonymous read access"
