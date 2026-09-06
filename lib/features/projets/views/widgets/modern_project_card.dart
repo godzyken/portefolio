@@ -82,7 +82,7 @@ class ModernProjectCard extends StatelessWidget {
                                 ? SmartImage(
                                     path: images.first,
                                     fit: BoxFit.cover,
-                                    enableFullScreenOnTap: true,
+                                    enableFullScreenOnTap: false,
                                   )
                                 : Center(
                                     child: Icon(
