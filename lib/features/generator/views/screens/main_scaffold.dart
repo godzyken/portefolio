@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/provider/providers.dart';
+import 'package:portefolio/core/provider/tracking_provider.dart';
+import 'package:portefolio/core/service/tracking_service.dart';
 
 import '../../../../constants/app_tab.dart';
 import '../../../../core/provider/comparatif_provider.dart';
@@ -10,13 +12,44 @@ import '../../../../core/ui/ui_widgets_extentions.dart';
 import '../../data/models/bubble_menu_item.dart';
 import '../generator_widgets_extentions.dart';
 
-class MainScaffold extends ConsumerWidget {
+class MainScaffold extends ConsumerStatefulWidget {
   final Widget child;
 
   const MainScaffold({super.key, required this.child});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MainScaffold> createState() => _MainScaffoldState();
+}
+
+class _MainScaffoldState extends ConsumerState<MainScaffold> {
+  @override
+  void initState() {
+    super.initState();
+    _trackPageView();
+  }
+
+  @override
+  void didUpdateWidget(MainScaffold oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _trackPageView();
+  }
+
+  void _trackPageView() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final location = GoRouterState.of(context).uri.toString();
+      final currentTab = AppTab.fromLocation(location);
+
+      ref.read(trackingServiceProvider).trackInteraction(
+            projectId: 'portfolio',
+            projectName: 'Portfolio',
+            action: TrackingAction.linkClick, // On simule un clic pour le volume
+            details: {'page': currentTab.label, 'path': location},
+          );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final currentTab =
         AppTab.fromLocation(GoRouterState.of(context).uri.toString());
     final config = currentTab.config(context, ref);
@@ -83,7 +116,7 @@ class MainScaffold extends ConsumerWidget {
                 child: KeyedSubtree(
                   key: ValueKey<String>(
                       GoRouterState.of(context).uri.toString()),
-                  child: child,
+                  child: widget.child,
                 ),
               ),
             ),

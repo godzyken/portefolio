@@ -55,6 +55,7 @@ class ProjectInfo {
     final t = title.toLowerCase();
     if (t.contains('emap')) return 'emap_services';
     if (t.contains('e-foot')) return 'e-foot_amateur';
+    if (t.contains('portefolio') || t.contains('portfolio')) return 'portfolio';
 
     // Si l'ID est explicite (pas un projet_123), on le garde
     if (!id.startsWith('projet_')) return id;
