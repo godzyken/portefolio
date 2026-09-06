@@ -41,13 +41,13 @@ class GithubArtifactsService {
     'vision',
     'readme',
     'securite',
+    'implementation_plan.artifact',
+    'analysis_results.artifact',
   ];
 
-  /// [repoUrl] doit être de la forme https://github.com/{owner}/{repo}
-  /// [projectId] est l'id utilisé pour le sous-dossier .artefacts/{projectId}/
-  /// [token] optionnel : un token GitHub (PAT, scope public_repo suffit)
-  /// fait passer la limite de 60 req/h (non-auth) à 5000 req/h.
-  /// [alternativeId] optionnel : un ID alternatif à tenter si le premier ne donne rien.
+  /// Va chercher les fichiers .md d'artefacts d'un projet sur GitHub.
+  ///
+  /// Supporte les dossiers UUID temporaires et le format .artifact.md
   static Future<Map<String, String>> fetchArtifacts({
     required String repoUrl,
     required String projectId,
@@ -61,85 +61,79 @@ class GithubArtifactsService {
       return {};
     }
 
-    final mainResults = await _fetchArtifactsForId(
-        repoInfo: repoInfo, projectId: projectId, token: token);
+    // On tente avec les deux orthographes de dossier et les deux IDs
+    final folderNames = ['.artifacts', '.artefacts'];
+    final ids = [projectId, if (alternativeId != null) alternativeId];
 
-    // Si on n'a trouvé que le README (ou rien), et qu'on a un ID alternatif, on tente
-    if (mainResults.length <= 1 &&
-        alternativeId != null &&
-        alternativeId != projectId) {
-      final altResults = await _fetchArtifactsForId(
-          repoInfo: repoInfo, projectId: alternativeId, token: token);
+    final artifacts = <String, String>{};
 
-      if (altResults.length > mainResults.length) {
-        developer.log('✅ Utilisation de l\'ID alternatif: $alternativeId',
-            name: 'GithubArtifactsService');
-        return altResults;
+    // 1. D'abord le README (toujours à la racine)
+    final readme = await _fetchSingleFile(
+      owner: repoInfo.owner,
+      repo: repoInfo.repo,
+      path: 'README.md',
+      token: token,
+    );
+    if (readme != null) artifacts['readme'] = readme;
+
+    // 2. Recherche itérative des fichiers
+    for (final folder in folderNames) {
+      for (final id in ids) {
+        if (artifacts.length > 1) break;
+
+        final results = await Future.wait(
+          _candidateFilenames.where((name) => name != 'readme').map(
+            (name) async {
+              // On tente plusieurs extensions pour chaque nom
+              for (final ext in ['.artifact.md', '.md']) {
+                final content = await _fetchSingleFile(
+                  owner: repoInfo.owner,
+                  repo: repoInfo.repo,
+                  path: '$folder/$id/$name$ext',
+                  token: token,
+                );
+                if (content != null) return MapEntry(name, content);
+              }
+
+              // Fallback : tenter sans le sous-dossier ID
+              for (final ext in ['.artifact.md', '.md']) {
+                final rootContent = await _fetchSingleFile(
+                  owner: repoInfo.owner,
+                  repo: repoInfo.repo,
+                  path: '$folder/$name$ext',
+                  token: token,
+                );
+                if (rootContent != null) return MapEntry(name, rootContent);
+              }
+
+              // Fallback spécial convention .ai/
+              String? aiPath;
+              switch (name) {
+                case 'presentation': aiPath = 'PROJECT.md'; break;
+                case 'vision': aiPath = 'ARCHITECTURE.md'; break;
+                case 'workthrough': aiPath = 'ROADMAP.md'; break;
+                case 'implementation': aiPath = 'DECISIONS.md'; break;
+              }
+
+              if (aiPath != null) {
+                final aiContent = await _fetchSingleFile(
+                  owner: repoInfo.owner,
+                  repo: repoInfo.repo,
+                  path: '.ai/$aiPath',
+                  token: token,
+                );
+                if (aiContent != null) return MapEntry(name, aiContent);
+              }
+              return null;
+            },
+          ),
+        );
+
+        for (final entry in results) {
+          if (entry != null) artifacts[entry.key] = entry.value;
+        }
       }
     }
-
-    return mainResults;
-  }
-
-  static Future<Map<String, String>> _fetchArtifactsForId({
-    required ({String owner, String repo}) repoInfo,
-    required String projectId,
-    String? token,
-  }) async {
-    final results = await Future.wait([
-      // 1. Chercher le README à la racine
-      _fetchSingleFile(
-        owner: repoInfo.owner,
-        repo: repoInfo.repo,
-        path: 'README.md',
-        token: token,
-      ).then((content) => MapEntry('readme', content)),
-
-      // 2. Chercher les autres artefacts dans .artefacts/{projectId}/
-      ..._candidateFilenames.where((name) => name != 'readme').map(
-            (name) => _fetchSingleFile(
-              owner: repoInfo.owner,
-              repo: repoInfo.repo,
-              path: '.artefacts/$projectId/$name.md',
-              token: token,
-            ).then((content) async {
-              // Fallback : chercher dans .ai/ si absent de .artefacts/ (Convention Godzyken)
-              if (content == null) {
-                String? aiPath;
-                switch (name) {
-                  case 'presentation':
-                    aiPath = 'PROJECT.md';
-                    break;
-                  case 'vision':
-                    aiPath = 'ARCHITECTURE.md';
-                    break;
-                  case 'workthrough':
-                    aiPath = 'ROADMAP.md';
-                    break;
-                  case 'implementation':
-                    aiPath = 'DECISIONS.md';
-                    break;
-                }
-
-                if (aiPath != null) {
-                  final aiContent = await _fetchSingleFile(
-                    owner: repoInfo.owner,
-                    repo: repoInfo.repo,
-                    path: '.ai/$aiPath',
-                    token: token,
-                  );
-                  return MapEntry(name, aiContent);
-                }
-              }
-              return MapEntry(name, content);
-            }),
-          ),
-    ]);
-
-    final artifacts = <String, String>{
-      for (final entry in results)
-        if (entry.value != null) entry.key: entry.value!,
-    };
 
     return artifacts;
   }
