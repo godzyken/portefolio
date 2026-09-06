@@ -47,10 +47,12 @@ class GithubArtifactsService {
   /// [projectId] est l'id utilisé pour le sous-dossier .artefacts/{projectId}/
   /// [token] optionnel : un token GitHub (PAT, scope public_repo suffit)
   /// fait passer la limite de 60 req/h (non-auth) à 5000 req/h.
+  /// [alternativeId] optionnel : un ID alternatif à tenter si le premier ne donne rien.
   static Future<Map<String, String>> fetchArtifacts({
     required String repoUrl,
     required String projectId,
     String? token,
+    String? alternativeId,
   }) async {
     final repoInfo = _parseRepoUrl(repoUrl);
     if (repoInfo == null) {
@@ -59,6 +61,31 @@ class GithubArtifactsService {
       return {};
     }
 
+    final mainResults = await _fetchArtifactsForId(
+        repoInfo: repoInfo, projectId: projectId, token: token);
+
+    // Si on n'a trouvé que le README (ou rien), et qu'on a un ID alternatif, on tente
+    if (mainResults.length <= 1 &&
+        alternativeId != null &&
+        alternativeId != projectId) {
+      final altResults = await _fetchArtifactsForId(
+          repoInfo: repoInfo, projectId: alternativeId, token: token);
+
+      if (altResults.length > mainResults.length) {
+        developer.log('✅ Utilisation de l\'ID alternatif: $alternativeId',
+            name: 'GithubArtifactsService');
+        return altResults;
+      }
+    }
+
+    return mainResults;
+  }
+
+  static Future<Map<String, String>> _fetchArtifactsForId({
+    required ({String owner, String repo}) repoInfo,
+    required String projectId,
+    String? token,
+  }) async {
     final results = await Future.wait([
       // 1. Chercher le README à la racine
       _fetchSingleFile(
@@ -113,13 +140,6 @@ class GithubArtifactsService {
       for (final entry in results)
         if (entry.value != null) entry.key: entry.value!,
     };
-
-    developer.log(
-      artifacts.isEmpty
-          ? 'ℹ️ Aucun artefact trouvé pour $projectId dans ${repoInfo.owner}/${repoInfo.repo}'
-          : '✅ ${artifacts.length} artefact(s) trouvé(s) pour $projectId: ${artifacts.keys.join(", ")}',
-      name: 'GithubArtifactsService',
-    );
 
     return artifacts;
   }

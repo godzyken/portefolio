@@ -8,8 +8,12 @@ import '../data/github_project_ai_analyzer.dart';
 import '../data/project_data.dart';
 import '../notifiers/projet_notifiers.dart';
 
-/// Clé du provider d'artefacts : repo + id du projet.
-typedef ProjectArtifactsKey = ({String repoUrl, String projectId});
+/// Clé du provider d'artefacts : repo + id du projet + id alternatif.
+typedef ProjectArtifactsKey = ({
+  String repoUrl,
+  String projectId,
+  String? alternativeId
+});
 
 /// Provider pour stocker les positions des bulles
 final projectPositionsProvider =
@@ -39,6 +43,7 @@ final projectArtifactsProvider = FutureProvider.family
   return await GithubArtifactsService.fetchArtifacts(
     repoUrl: key.repoUrl,
     projectId: key.projectId,
+    alternativeId: key.alternativeId,
     token: token,
   );
 });

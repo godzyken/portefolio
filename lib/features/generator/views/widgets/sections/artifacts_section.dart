@@ -63,7 +63,8 @@ class _ArtifactsSectionState extends ConsumerState<ArtifactsSection>
       projectArtifactsProvider(
         (
           repoUrl: widget.project.githubRepoUrl!,
-          projectId: widget.project.analyticsId
+          projectId: widget.project.id,
+          alternativeId: widget.project.analyticsId,
         ),
       ),
     );

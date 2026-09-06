@@ -66,8 +66,13 @@ class _ActivityMetricsChartState extends ConsumerState<ActivityMetricsChart> {
   }
 
   Widget _buildHeader() {
-    return Row(
+    final isMobile = widget.info.isMobile;
+
+    return Flex(
+      direction: isMobile ? Axis.vertical : Axis.horizontal,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment:
+          isMobile ? CrossAxisAlignment.start : CrossAxisAlignment.center,
       children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -87,32 +92,35 @@ class _ActivityMetricsChartState extends ConsumerState<ActivityMetricsChart> {
             ),
           ],
         ),
-        SegmentedButton<ChartViewMode>(
-          segments: const [
-            ButtonSegment(
-              value: ChartViewMode.recruteur,
-              icon: Icon(Icons.badge_outlined),
-              label: Text('Recruteur'),
+        if (isMobile) const SizedBox(height: 16),
+        FittedBox(
+          child: SegmentedButton<ChartViewMode>(
+            segments: const [
+              ButtonSegment(
+                value: ChartViewMode.recruteur,
+                icon: Icon(Icons.badge_outlined),
+                label: Text('Recruteur'),
+              ),
+              ButtonSegment(
+                value: ChartViewMode.artisan,
+                icon: Icon(Icons.precision_manufacturing_outlined),
+                label: Text('Artisan'),
+              ),
+            ],
+            selected: {_viewMode},
+            onSelectionChanged: (Set<ChartViewMode> newSelection) {
+              setState(() {
+                _viewMode = newSelection.first;
+              });
+            },
+            style: ButtonStyle(
+              backgroundColor: WidgetStateProperty.resolveWith<Color?>((states) {
+                if (states.contains(WidgetState.selected)) {
+                  return Colors.blue.withValues(alpha: 0.3);
+                }
+                return Colors.white.withValues(alpha: 0.05);
+              }),
             ),
-            ButtonSegment(
-              value: ChartViewMode.artisan,
-              icon: Icon(Icons.precision_manufacturing_outlined),
-              label: Text('Artisan'),
-            ),
-          ],
-          selected: {_viewMode},
-          onSelectionChanged: (Set<ChartViewMode> newSelection) {
-            setState(() {
-              _viewMode = newSelection.first;
-            });
-          },
-          style: ButtonStyle(
-            backgroundColor: WidgetStateProperty.resolveWith<Color?>((states) {
-              if (states.contains(WidgetState.selected)) {
-                return Colors.blue.withValues(alpha: 0.3);
-              }
-              return Colors.white.withValues(alpha: 0.05);
-            }),
           ),
         ),
       ],
@@ -241,6 +249,8 @@ class _ActivityMetricsChartState extends ConsumerState<ActivityMetricsChart> {
   Widget _buildArtisanView() {
     final analyticsAsync =
         ref.watch(liveAnalyticsStreamProvider(widget.project.analyticsId));
+    final kpi24hAsync =
+        ref.watch(liveKpiProvider(widget.project.analyticsId));
 
     return analyticsAsync.when(
       data: (analytics) {
@@ -269,77 +279,139 @@ class _ActivityMetricsChartState extends ConsumerState<ActivityMetricsChart> {
         // Grouper par heure (simulé ici pour le graphique)
         final spots = _generateSpotsFromAnalytics(analytics);
 
-        return LineChart(
-          LineChartData(
-            lineTouchData: LineTouchData(
-              handleBuiltInTouches: true,
-              touchTooltipData: LineTouchTooltipData(
-                getTooltipColor: (_) => Colors.blueGrey.shade900,
-              ),
-            ),
-            gridData: FlGridData(
-              show: true,
-              drawVerticalLine: false,
-              getDrawingHorizontalLine: (value) => FlLine(
-                color: Colors.white.withValues(alpha: 0.1),
-                strokeWidth: 1,
-              ),
-            ),
-            titlesData: FlTitlesData(
-              bottomTitles: AxisTitles(
-                sideTitles: SideTitles(
-                  showTitles: true,
-                  reservedSize: 32,
-                  interval: 1,
-                  getTitlesWidget: (value, meta) {
-                    final date =
-                        DateTime.fromMillisecondsSinceEpoch(value.toInt());
-                    return Padding(
-                      padding: const EdgeInsets.only(top: 8),
-                      child: Text(
-                        '${date.hour}h',
-                        style: const TextStyle(
-                            color: Colors.white60, fontSize: 10),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              leftTitles: AxisTitles(
-                sideTitles: SideTitles(
-                  showTitles: true,
-                  getTitlesWidget: (value, meta) => Text(
-                    value.toInt().toString(),
-                    style: const TextStyle(color: Colors.white60, fontSize: 10),
+        return Column(
+          children: [
+            // KPI Summary
+            Row(
+              children: [
+                _buildKpiCard(
+                  'Volume 24h',
+                  kpi24hAsync.maybeWhen(
+                    data: (v) => v.toStringAsFixed(0),
+                    orElse: () => '...',
                   ),
-                  reservedSize: 40,
+                  Icons.show_chart,
                 ),
-              ),
-              topTitles:
-                  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-              rightTitles:
-                  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                const SizedBox(width: 12),
+                _buildKpiCard(
+                  'Événements',
+                  analytics.length.toString(),
+                  Icons.list_alt,
+                ),
+              ],
             ),
-            borderData: FlBorderData(show: false),
-            lineBarsData: [
-              LineChartBarData(
-                isCurved: true,
-                color: Colors.cyanAccent,
-                barWidth: 4,
-                isStrokeCapRound: true,
-                dotData: const FlDotData(show: false),
-                belowBarData: BarAreaData(
-                  show: true,
-                  color: Colors.cyanAccent.withValues(alpha: 0.2),
+            const SizedBox(height: 20),
+            Expanded(
+              child: LineChart(
+                LineChartData(
+                  lineTouchData: LineTouchData(
+                    handleBuiltInTouches: true,
+                    touchTooltipData: LineTouchTooltipData(
+                      getTooltipColor: (_) => Colors.blueGrey.shade900,
+                    ),
+                  ),
+                  gridData: FlGridData(
+                    show: true,
+                    drawVerticalLine: false,
+                    getDrawingHorizontalLine: (value) => FlLine(
+                      color: Colors.white.withValues(alpha: 0.1),
+                      strokeWidth: 1,
+                    ),
+                  ),
+                  titlesData: FlTitlesData(
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 32,
+                        interval: 1,
+                        getTitlesWidget: (value, meta) {
+                          final date = DateTime.now().subtract(
+                              Duration(hours: 23 - value.toInt()));
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 8),
+                            child: Text(
+                              '${date.hour}h',
+                              style: const TextStyle(
+                                  color: Colors.white60, fontSize: 10),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    leftTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        getTitlesWidget: (value, meta) => Text(
+                          value.toInt().toString(),
+                          style: const TextStyle(
+                              color: Colors.white60, fontSize: 10),
+                        ),
+                        reservedSize: 40,
+                      ),
+                    ),
+                    topTitles: const AxisTitles(
+                        sideTitles: SideTitles(showTitles: false)),
+                    rightTitles: const AxisTitles(
+                        sideTitles: SideTitles(showTitles: false)),
+                  ),
+                  borderData: FlBorderData(show: false),
+                  lineBarsData: [
+                    LineChartBarData(
+                      isCurved: true,
+                      color: Colors.cyanAccent,
+                      barWidth: 4,
+                      isStrokeCapRound: true,
+                      dotData: const FlDotData(show: false),
+                      belowBarData: BarAreaData(
+                        show: true,
+                        color: Colors.cyanAccent.withValues(alpha: 0.2),
+                      ),
+                      spots: spots,
+                    ),
+                  ],
                 ),
-                spots: spots,
               ),
-            ],
-          ),
+            ),
+          ],
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (e, _) => Center(child: Text('Erreur: $e')),
+    );
+  }
+
+  Widget _buildKpiCard(String label, String value, IconData icon) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.05),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: Colors.cyanAccent, size: 20),
+            const SizedBox(width: 10),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: const TextStyle(color: Colors.white38, fontSize: 10),
+                ),
+                Text(
+                  value,
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 
