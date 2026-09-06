@@ -162,12 +162,32 @@ class GithubArtifactsService {
     required String path,
     String? token,
   }) async {
-    final uri =
+    // 1. MÉTHODE PRIORITAIRE : GitHub Raw (Bypasse le rate-limit de l'API REST)
+    // On tente 'main' puis 'master'
+    for (final branch in ['main', 'master']) {
+      final rawUri = Uri.parse(
+          'https://raw.githubusercontent.com/$owner/$repo/$branch/$path');
+
+      try {
+        final response = await http.get(rawUri);
+        if (response.statusCode == 200) {
+          return response.body;
+        }
+        // Si c'est un 404, on continue la boucle (peut-être sur l'autre branche)
+      } catch (e) {
+        developer.log('⚠️ Erreur Raw fetch ($branch): $e',
+            name: 'GithubArtifactsService');
+      }
+    }
+
+    // 2. MÉTHODE FALLBACK : API REST (Uniquement si Token présent ou petit volume)
+    // Si on a un token, l'API REST est fiable et permet des fichiers plus gros
+    final apiUri =
         Uri.parse('https://api.github.com/repos/$owner/$repo/contents/$path');
 
     try {
       final response = await http.get(
-        uri,
+        apiUri,
         headers: {
           'Accept': 'application/vnd.github.v3+json',
           if (token != null && token.isNotEmpty)
@@ -175,38 +195,26 @@ class GithubArtifactsService {
         },
       );
 
-      if (response.statusCode == 404) return null; // fichier absent, normal
+      if (response.statusCode == 404) return null;
 
       if (response.statusCode == 403 || response.statusCode == 429) {
         developer.log(
-          '⚠️ GitHub API rate-limit atteint pour $path'
-          '${token == null ? ' (pense à définir GITHUB_TOKEN)' : ''}',
+          '❌ GitHub API rate-limit atteint et Raw fallback a échoué.',
           name: 'GithubArtifactsService',
         );
         return null;
       }
 
-      if (response.statusCode != 200) {
-        developer.log(
-          '⚠️ GitHub API ${response.statusCode} pour $path',
-          name: 'GithubArtifactsService',
-        );
-        return null;
-      }
+      if (response.statusCode != 200) return null;
 
       final body = jsonDecode(response.body) as Map<String, dynamic>;
       final content = body['content'] as String?;
       if (content == null) return null;
 
-      // Le contenu base64 renvoyé par GitHub est découpé en lignes de 60
-      // caractères séparées par \n : on les retire avant de décoder.
       final cleaned = content.replaceAll('\n', '');
       return utf8.decode(base64.decode(cleaned));
     } catch (e) {
-      developer.log(
-        '❌ Erreur fetch $path: $e',
-        name: 'GithubArtifactsService',
-      );
+      developer.log('❌ Erreur API fetch: $e', name: 'GithubArtifactsService');
       return null;
     }
   }
