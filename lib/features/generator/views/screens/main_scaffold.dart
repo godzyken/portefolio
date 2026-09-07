@@ -40,11 +40,11 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
       final currentTab = AppTab.fromLocation(location);
 
       ref.read(trackingServiceProvider).trackInteraction(
-            projectId: 'portfolio',
-            projectName: 'Portfolio',
-            action: TrackingAction.linkClick, // On simule un clic pour le volume
-            details: {'page': currentTab.label, 'path': location},
-          );
+        projectId: 'portfolio',
+        projectName: 'Portfolio',
+        action: TrackingAction.linkClick, // On simule un clic pour le volume
+        details: {'page': currentTab.label, 'path': location},
+      );
     });
   }
 

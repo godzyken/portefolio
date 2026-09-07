@@ -9,6 +9,7 @@ import 'package:portefolio/core/ui/sections/section_system.dart';
 import 'package:portefolio/features/projets/data/project_data.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'project_video_player.dart';
 import 'live_preview_frame_stub.dart'
     if (dart.library.js_util) 'live_preview_frame_web.dart' as frame_impl;
 
@@ -46,43 +47,86 @@ class LivePreviewSection extends ConsumerWidget {
     // son contenu, donc une hauteur non bornée y arriverait potentiellement
 
     final previewHeight = (info.size.height * 0.6).clamp(360.0, 720.0);
+    final hasVideo = project.videoAsset != null;
+    final useRow = info.size.width > 1200 && hasVideo;
 
     return SectionBuilder.simple(
-      title: 'Aperçu en direct',
+      title: 'Aperçu et Présentation',
       icon: Icons.public,
       accentColor: ColorHelpers.chartColors[4],
       child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-                padding: const EdgeInsets.only(bottom: 16),
-                child: Row(children: [
-                  Expanded(
-                    child: Text(url,
-                        style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.7),
-                          fontSize: 13,
-                        ),
-                        overflow: TextOverflow.ellipsis),
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    url,
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.7),
+                      fontSize: 13,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(width: 12),
-                  OutlinedButton.icon(
-                    onPressed: () => _openExternally(ref),
-                    icon: const Icon(Icons.open_in_new, size: 16),
-                    label: const Text('Nouvel onglet'),
-                  )
-                ])),
-            SizedBox(
-              height: previewHeight,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: kIsWeb
-                    ? _buildIframe()
-                    : _buildNativeFallback(context, ref),
-              ),
+                ),
+                const SizedBox(width: 12),
+                OutlinedButton.icon(
+                  onPressed: () => _openExternally(ref),
+                  icon: const Icon(Icons.open_in_new, size: 16),
+                  label: const Text('Nouvel onglet'),
+                )
+              ],
             ),
-          ]),
+          ),
+          if (useRow)
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  flex: 4,
+                  child: ProjectVideoPlayer(
+                    videoPath: project.videoAsset!,
+                    label: 'Présentation Vidéo',
+                  ),
+                ),
+                const SizedBox(width: 24),
+                Expanded(
+                  flex: 6,
+                  child: SizedBox(
+                    height: previewHeight,
+                    child: _buildPreviewFrame(context, ref),
+                  ),
+                ),
+              ],
+            )
+          else
+            Column(
+              children: [
+                if (hasVideo) ...[
+                  ProjectVideoPlayer(
+                    videoPath: project.videoAsset!,
+                    label: 'Présentation Vidéo',
+                  ),
+                  const SizedBox(height: 24),
+                ],
+                SizedBox(
+                  height: previewHeight,
+                  child: _buildPreviewFrame(context, ref),
+                ),
+              ],
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPreviewFrame(BuildContext context, WidgetRef ref) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: kIsWeb ? _buildIframe() : _buildNativeFallback(context, ref),
     );
   }
 

@@ -6,6 +6,7 @@ class ProjectInfo {
   final List<String> points;
   final List<String>? image;
   final String? youtubeVideoId;
+  final String? videoAsset;
   final String? lienProjet;
 
   /// Accroche narrative du projet pour le mode Storytelling
@@ -35,6 +36,7 @@ class ProjectInfo {
     required this.points,
     this.image,
     this.youtubeVideoId,
+    this.videoAsset,
     this.lienProjet,
     this.storyline,
     this.githubRepoUrl,
@@ -93,6 +95,7 @@ class ProjectInfo {
     List<String>? points,
     List<String>? image,
     String? youtubeVideoId,
+    String? videoAsset,
     String? lienProjet,
     String? storyline,
     String? githubRepoUrl,
@@ -110,6 +113,7 @@ class ProjectInfo {
       points: points ?? this.points,
       image: image ?? this.image,
       youtubeVideoId: youtubeVideoId ?? this.youtubeVideoId,
+      videoAsset: videoAsset ?? this.videoAsset,
       lienProjet: lienProjet ?? this.lienProjet,
       storyline: storyline ?? this.storyline,
       githubRepoUrl: githubRepoUrl ?? this.githubRepoUrl,
@@ -130,6 +134,7 @@ class ProjectInfo {
       points: List<String>.from(json['points']),
       image: json['image'] != null ? List<String>.from(json['image']) : null,
       youtubeVideoId: json['youtubeVideoId'],
+      videoAsset: json['videoAsset'],
       lienProjet: json['lienProjet'],
       storyline: json['storyline'],
       githubRepoUrl: json['githubRepoUrl'],

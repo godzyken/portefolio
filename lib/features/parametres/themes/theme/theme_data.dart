@@ -60,9 +60,12 @@ class BasicTheme {
       surface: neutralColor,
       tertiary: tertiaryColor,
       // Couleurs de surface additionnelles
-      surfaceContainerHighest: isDark ? const Color(0xFF2A2A2A) : const Color(0xFFF0F0F0),
-      surfaceContainer: isDark ? const Color(0xFF1E1E1E) : const Color(0xFFF5F5F5),
-      surfaceContainerLow: isDark ? const Color(0xFF151515) : const Color(0xFFFAFAFA),
+      surfaceContainerHighest:
+          isDark ? const Color(0xFF2A2A2A) : const Color(0xFFF0F0F0),
+      surfaceContainer:
+          isDark ? const Color(0xFF1E1E1E) : const Color(0xFFF5F5F5),
+      surfaceContainerLow:
+          isDark ? const Color(0xFF151515) : const Color(0xFFFAFAFA),
     );
 
     return ThemeData(

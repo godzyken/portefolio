@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
-/// Promotional video used exclusively by the EMAP Services project showcase.
+/// A generic promotional video player for project showcases.
 ///
 /// The video starts muted, loops continuously and exposes a compact sound
-/// toggle. It initializes only when this widget is built, keeping the rest of
-/// the portfolio free from unnecessary video loading.
-class EmapVideoPlayer extends StatefulWidget {
-  static const assetPath =
-      'assets/media/projects/emap_services/emap_services.mp4';
+/// toggle. It initializes only when this widget is built.
+class ProjectVideoPlayer extends StatefulWidget {
+  final String videoPath;
+  final String? label;
 
-  const EmapVideoPlayer({super.key});
+  const ProjectVideoPlayer({
+    super.key,
+    required this.videoPath,
+    this.label,
+  });
 
   @override
-  State<EmapVideoPlayer> createState() => _EmapVideoPlayerState();
+  State<ProjectVideoPlayer> createState() => _ProjectVideoPlayerState();
 }
 
-class _EmapVideoPlayerState extends State<EmapVideoPlayer> {
+class _ProjectVideoPlayerState extends State<ProjectVideoPlayer> {
   late final VideoPlayerController _controller;
   bool _initialized = false;
   bool _muted = true;
@@ -24,7 +27,7 @@ class _EmapVideoPlayerState extends State<EmapVideoPlayer> {
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.asset(EmapVideoPlayer.assetPath)
+    _controller = VideoPlayerController.asset(widget.videoPath)
       ..setLooping(true)
       ..setVolume(0)
       ..initialize().then((_) {
@@ -95,13 +98,15 @@ class _EmapVideoPlayerState extends State<EmapVideoPlayer> {
                     tooltip: _muted ? 'Activer le son' : 'Couper le son',
                     onPressed: _initialized ? _toggleMute : null,
                     icon: Icon(
-                      _muted ? Icons.volume_off_rounded : Icons.volume_up_rounded,
+                      _muted
+                          ? Icons.volume_off_rounded
+                          : Icons.volume_up_rounded,
                       color: Colors.white,
                     ),
                   ),
                 ),
               ),
-              if (_initialized)
+              if (_initialized && widget.label != null)
                 Positioned(
                   left: 12,
                   bottom: 18,
@@ -111,14 +116,14 @@ class _EmapVideoPlayerState extends State<EmapVideoPlayer> {
                         color: Colors.black.withValues(alpha: 0.5),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: const Padding(
-                        padding: EdgeInsets.symmetric(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
                           horizontal: 10,
                           vertical: 5,
                         ),
                         child: Text(
-                          'EMAP SERVICES',
-                          style: TextStyle(
+                          widget.label!.toUpperCase(),
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 11,
                             fontWeight: FontWeight.w700,

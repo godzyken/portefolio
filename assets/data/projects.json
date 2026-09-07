@@ -556,6 +556,7 @@
     "title": "emap_services",
     "githubRepoUrl": "https://github.com/godzyken/emap_services",
     "storyline": "Transformation digitale d'un service de proximité. L'enjeu était d'allier performance technique et simplicité d'usage pour des clients en situation d'urgence.",
+    "videoAsset": "assets/media/projects/emap_services/emap_services.mp4",
     "techDetails": {
       "architecture": "Clean Architecture / Domain Driven",
       "stateManagement": "Riverpod 3 (Typed Providers)",
