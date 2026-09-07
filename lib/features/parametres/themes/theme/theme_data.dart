@@ -59,10 +59,10 @@ class BasicTheme {
       brightness: brightness,
       surface: neutralColor,
       tertiary: tertiaryColor,
-      // Couleurs de surface additionnelles pour dark mode
-      surfaceContainerHighest: isDark ? const Color(0xFF2A2A2A) : null,
-      surfaceContainer: isDark ? const Color(0xFF1E1E1E) : null,
-      surfaceContainerLow: isDark ? const Color(0xFF151515) : null,
+      // Couleurs de surface additionnelles
+      surfaceContainerHighest: isDark ? const Color(0xFF2A2A2A) : const Color(0xFFF0F0F0),
+      surfaceContainer: isDark ? const Color(0xFF1E1E1E) : const Color(0xFFF5F5F5),
+      surfaceContainerLow: isDark ? const Color(0xFF151515) : const Color(0xFFFAFAFA),
     );
 
     return ThemeData(
@@ -75,7 +75,7 @@ class BasicTheme {
         centerTitle: false,
         elevation: 0,
         scrolledUnderElevation: 2,
-        backgroundColor: isDark ? const Color(0xFF0A0A0A) : colorScheme.surface,
+        backgroundColor: isDark ? const Color(0xFF0A0A0A) : neutralColor,
         foregroundColor: colorScheme.onSurface,
         titleTextStyle: TextStyle(
           fontSize: 20,
@@ -309,7 +309,41 @@ class BasicTheme {
 }
 
 final availableThemes = [
-  // Thème Ultra Dark (OLED Black)
+  // --- THÈMES CLAIRS ---
+  const BasicTheme(
+    name: 'Pure White',
+    emoji: '⚪',
+    mode: AppThemeMode.light,
+    primaryColorValue: 0xFF2196F3, // Bleu Material
+    tertiaryColorValue: 0xFFE3F2FD,
+    neutralColorValue: 0xFFFFFFFF, // Blanc pur
+  ),
+  const BasicTheme(
+    name: 'Soft Light',
+    emoji: '☁️',
+    mode: AppThemeMode.light,
+    primaryColorValue: 0xFF009688, // Teal
+    tertiaryColorValue: 0xFFF1F8E9,
+    neutralColorValue: 0xFFF8F9FA, // Gris très clair
+  ),
+  const BasicTheme(
+    name: 'Solarized Light',
+    emoji: '☀️',
+    mode: AppThemeMode.light,
+    primaryColorValue: 0xFFE65100, // Orange profond
+    tertiaryColorValue: 0xFFEEE8D5,
+    neutralColorValue: 0xFFFDF6E3, // Crème Solarized
+  ),
+  const BasicTheme(
+    name: 'Arctic',
+    emoji: '❄️',
+    mode: AppThemeMode.light,
+    primaryColorValue: 0xFF3F51B5, // Indigo
+    tertiaryColorValue: 0xFFE1F5FE,
+    neutralColorValue: 0xFFF0F7FF, // Bleu arctique
+  ),
+
+  // --- THÈMES SOMBRES ---
   const BasicTheme(
     name: 'Professional Dark',
     emoji: '💼',

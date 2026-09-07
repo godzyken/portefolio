@@ -51,7 +51,7 @@ class _ThemeSelectorState extends ConsumerState<ThemeSelector>
                 alpha: 0.3)),
         child: Column(
           children: [
-            _buildHeader(current),
+            _buildHeader(_previewTheme ?? current),
 
             // Tabs
             TabBar(
@@ -198,8 +198,8 @@ class _ThemeSelectorState extends ConsumerState<ThemeSelector>
       itemCount: themes.length,
       itemBuilder: (context, index) {
         final theme = themes[index];
-        final isSelected = theme.primaryColor == current.primaryColor &&
-            theme.name == current.name;
+        final isSelected = _previewTheme?.name == theme.name &&
+            _previewTheme?.primaryColorValue == theme.primaryColorValue;
 
         return _buildThemeCard(theme, isSelected, controller);
       },
@@ -268,9 +268,9 @@ class _ThemeSelectorState extends ConsumerState<ThemeSelector>
                   itemCount: themes.length,
                   itemBuilder: (context, index) {
                     final theme = themes[index];
-                    final isSelected =
-                        theme.primaryColor == current.primaryColor &&
-                            theme.name == current.name;
+                    final isSelected = _previewTheme?.name == theme.name &&
+                        _previewTheme?.primaryColorValue ==
+                            theme.primaryColorValue;
 
                     return _buildThemeCard(
                       theme,
@@ -306,10 +306,7 @@ class _ThemeSelectorState extends ConsumerState<ThemeSelector>
             setState(() {
               _previewTheme = theme;
             });
-          },
-          onDoubleTap: () {
             controller.applyTheme(theme);
-            Navigator.of(context).pop();
           },
           borderRadius: BorderRadius.circular(16),
           child: ResponsiveBox(
