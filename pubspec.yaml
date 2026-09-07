@@ -38,7 +38,7 @@ dependencies:
   geolocator: ^14.0.2
 
   # Google outils
-  google_fonts: ^8.0.0
+  google_fonts: ^8.0.2
   googleapis: ^17.0.0
   google_sign_in: ^7.2.0
 
@@ -139,14 +139,14 @@ flutter_launcher_icons:
   windows:
     generate: true
     image_path: "assets/images/logos/godzyken_icon.png"
-    # icon_size: 48 # Optionnel : Spécifie la taille de l'icône Windows
+    # icon_size: 48 # Optionnel : Spécifie une icône adaptative sur Windows
 
   # OPTIONNEL : Pour garantir une icône adaptative sur Android (recommandé)
   # Si vous avez deux fichiers (avant-plan et arrière-plan)
   # adaptive_icon_foreground: "assets/images/logos/godzyken_icon_foreground.png"
   # adaptive_icon_background: "#FFFFFF" # ou un chemin vers l'image de fond
 
-# 🔍 COMMANDES DE VÉRIFICATION (avec fvm):
+# 🔍 COMMANDES DE VÉRIFICATION (avec fvm) :
 # flutter pub get
 # flutter pub deps
 # flutter analyze
@@ -164,7 +164,7 @@ spider:
   no_comments: true
   # Exports all the generated asset references as one library
   export: true
-  # Use part_of instead of imports
+  # Generates files with all asset values
   use_part_of: true
   # Generates a list of all asset values
   use_references_list: false
