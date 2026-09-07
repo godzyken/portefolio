@@ -8,7 +8,7 @@ import '../../../../../core/affichage/tech_maturity_framework.dart';
 import '../../../../wakatime/views/widgets/wakatime_badge.dart';
 import '../../../data/extention_models.dart';
 import '../../../services/section_manager.dart';
-import 'emap_video_player.dart';
+import 'project_video_player.dart';
 
 /// Section Hero (présentation principale du projet)
 ///
@@ -42,7 +42,7 @@ class HeroSection extends ConsumerWidget {
 
     final images = _getImages();
     final useRowLayout = info.size.width > 900;
-    final isEmap = project.analyticsId == 'emap_services';
+    final hasVideo = project.videoAsset != null;
 
     return SingleChildScrollView(
       child: Column(
@@ -62,16 +62,22 @@ class HeroSection extends ConsumerWidget {
           // Contenu principal (adaptatif)
           if (useRowLayout)
             _DesktopLayout(
-              media: isEmap
-                  ? const EmapVideoPlayer()
+              media: hasVideo
+                  ? ProjectVideoPlayer(
+                      videoPath: project.videoAsset!,
+                      label: project.title,
+                    )
                   : _ImageCarousel(images: images, info: info),
               description: project.points,
               info: info,
             )
           else
             _MobileLayout(
-              media: isEmap
-                  ? const EmapVideoPlayer()
+              media: hasVideo
+                  ? ProjectVideoPlayer(
+                      videoPath: project.videoAsset!,
+                      label: project.title,
+                    )
                   : _ImageCarousel(images: images, info: info),
               description: project.points,
               info: info,

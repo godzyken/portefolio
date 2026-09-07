@@ -109,10 +109,18 @@ class GithubArtifactsService {
               // Fallback spécial convention .ai/
               String? aiPath;
               switch (name) {
-                case 'presentation': aiPath = 'PROJECT.md'; break;
-                case 'vision': aiPath = 'ARCHITECTURE.md'; break;
-                case 'workthrough': aiPath = 'ROADMAP.md'; break;
-                case 'implementation': aiPath = 'DECISIONS.md'; break;
+                case 'presentation':
+                  aiPath = 'PROJECT.md';
+                  break;
+                case 'vision':
+                  aiPath = 'ARCHITECTURE.md';
+                  break;
+                case 'workthrough':
+                  aiPath = 'ROADMAP.md';
+                  break;
+                case 'implementation':
+                  aiPath = 'DECISIONS.md';
+                  break;
               }
 
               if (aiPath != null) {

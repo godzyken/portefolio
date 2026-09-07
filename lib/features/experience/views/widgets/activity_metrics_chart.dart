@@ -114,7 +114,8 @@ class _ActivityMetricsChartState extends ConsumerState<ActivityMetricsChart> {
               });
             },
             style: ButtonStyle(
-              backgroundColor: WidgetStateProperty.resolveWith<Color?>((states) {
+              backgroundColor:
+                  WidgetStateProperty.resolveWith<Color?>((states) {
                 if (states.contains(WidgetState.selected)) {
                   return Colors.blue.withValues(alpha: 0.3);
                 }
@@ -249,8 +250,7 @@ class _ActivityMetricsChartState extends ConsumerState<ActivityMetricsChart> {
   Widget _buildArtisanView() {
     final analyticsAsync =
         ref.watch(liveAnalyticsStreamProvider(widget.project.analyticsId));
-    final kpi24hAsync =
-        ref.watch(liveKpiProvider(widget.project.analyticsId));
+    final kpi24hAsync = ref.watch(liveKpiProvider(widget.project.analyticsId));
 
     return analyticsAsync.when(
       data: (analytics) {
@@ -325,8 +325,8 @@ class _ActivityMetricsChartState extends ConsumerState<ActivityMetricsChart> {
                         reservedSize: 32,
                         interval: 1,
                         getTitlesWidget: (value, meta) {
-                          final date = DateTime.now().subtract(
-                              Duration(hours: 23 - value.toInt()));
+                          final date = DateTime.now()
+                              .subtract(Duration(hours: 23 - value.toInt()));
                           return Padding(
                             padding: const EdgeInsets.only(top: 8),
                             child: Text(
