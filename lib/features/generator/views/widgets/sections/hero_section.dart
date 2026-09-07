@@ -8,17 +8,18 @@ import '../../../../../core/affichage/tech_maturity_framework.dart';
 import '../../../../wakatime/views/widgets/wakatime_badge.dart';
 import '../../../data/extention_models.dart';
 import '../../../services/section_manager.dart';
+import 'emap_video_player.dart';
 
 /// Section Hero (présentation principale du projet)
 ///
 /// Affiche:
 /// - Titre du projet avec badge WakaTime
-/// - Carousel d'images
+/// - Média principal (vidéo promotionnelle pour EMAP, carousel sinon)
 /// - Description avec bullet points
 ///
 /// Layout adaptatif:
-/// - Desktop: Row (description + carousel)
-/// - Mobile: Column (carousel + description)
+/// - Desktop: Row (description + média)
+/// - Mobile: Column (média + description)
 class HeroSection extends ConsumerWidget {
   final ProjectInfo project;
   final ResponsiveInfo info;
@@ -41,6 +42,7 @@ class HeroSection extends ConsumerWidget {
 
     final images = _getImages();
     final useRowLayout = info.size.width > 900;
+    final isEmap = project.analyticsId == 'emap_services';
 
     return SingleChildScrollView(
       child: Column(
@@ -60,13 +62,17 @@ class HeroSection extends ConsumerWidget {
           // Contenu principal (adaptatif)
           if (useRowLayout)
             _DesktopLayout(
-              images: images,
+              media: isEmap
+                  ? const EmapVideoPlayer()
+                  : _ImageCarousel(images: images, info: info),
               description: project.points,
               info: info,
             )
           else
             _MobileLayout(
-              images: images,
+              media: isEmap
+                  ? const EmapVideoPlayer()
+                  : _ImageCarousel(images: images, info: info),
               description: project.points,
               info: info,
             ),
@@ -135,14 +141,14 @@ class _CompactHeader extends StatelessWidget {
   }
 }
 
-/// Layout desktop (description à gauche, carousel à droite)
+/// Layout desktop (description à gauche, média à droite)
 class _DesktopLayout extends StatelessWidget {
-  final List<String> images;
+  final Widget media;
   final List<String> description;
   final ResponsiveInfo info;
 
   const _DesktopLayout({
-    required this.images,
+    required this.media,
     required this.description,
     required this.info,
   });
@@ -164,29 +170,25 @@ class _DesktopLayout extends StatelessWidget {
 
           const SizedBox(width: 24),
 
-          // Carousel (60%)
-          if (images.isNotEmpty)
-            Expanded(
-              flex: 6,
-              child: _ImageCarousel(
-                images: images,
-                info: info,
-              ),
-            ),
+          // Média (60%)
+          Expanded(
+            flex: 6,
+            child: media,
+          ),
         ],
       ),
     );
   }
 }
 
-/// Layout mobile (carousel en haut, description en bas)
+/// Layout mobile (média en haut, description en bas)
 class _MobileLayout extends StatelessWidget {
-  final List<String> images;
+  final Widget media;
   final List<String> description;
   final ResponsiveInfo info;
 
   const _MobileLayout({
-    required this.images,
+    required this.media,
     required this.description,
     required this.info,
   });
@@ -195,7 +197,7 @@ class _MobileLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        if (images.isNotEmpty) _ImageCarousel(images: images, info: info),
+        media,
         const SizedBox(height: 24),
         _DescriptionCard(points: description, info: info),
       ],
