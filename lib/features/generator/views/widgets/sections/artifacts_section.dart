@@ -16,12 +16,29 @@ import '../../../services/section_manager.dart';
 
 /// Builder pour le support Mermaid dans le Markdown
 class MermaidMarkdownBuilder extends MarkdownElementBuilder {
+  final BuildContext context;
+  MermaidMarkdownBuilder(this.context);
+
   @override
   Widget visitElementAfter(md.Element element, TextStyle? preferredStyle) {
     final String text = element.textContent;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16),
-      child: MermaidDiagram(code: text),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          height: 300, // Hauteur fixe pour le diagramme dans le Markdown
+          color: isDark ? Colors.black26 : Colors.white10,
+          child: InteractiveMermaidDiagram(
+            code: text,
+            style: isDark
+                ? MermaidStyle.dark().copyWith(backgroundColor: 0x00000000)
+                : const MermaidStyle().copyWith(backgroundColor: 0x00000000),
+          ),
+        ),
+      ),
     );
   }
 }
@@ -289,7 +306,7 @@ class _MarkdownContentCard extends StatelessWidget {
             selectable: true,
             shrinkWrap: false,
             builders: {
-              'mermaid': MermaidMarkdownBuilder(),
+              'mermaid': MermaidMarkdownBuilder(context),
             },
             styleSheet: MarkdownStyleSheet.fromTheme(
               Theme.of(context),
@@ -344,6 +361,11 @@ class _TechnicalDiagramGalleryState extends State<_TechnicalDiagramGallery> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final mermaidStyle = isDark
+        ? MermaidStyle.dark().copyWith(backgroundColor: 0x00000000)
+        : const MermaidStyle().copyWith(backgroundColor: 0x00000000);
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.black26,
@@ -396,10 +418,11 @@ class _TechnicalDiagramGalleryState extends State<_TechnicalDiagramGallery> {
                             enableFullScreenOnTap: true,
                           )
                         : Container(
-                            color: Colors.black12,
+                            color: isDark ? Colors.black12 : Colors.white24,
                             padding: const EdgeInsets.all(8),
-                            child: MermaidDiagram(
+                            child: InteractiveMermaidDiagram(
                               code: pillar.mermaidDefinition,
+                              style: mermaidStyle,
                             ),
                           ),
                   ),
