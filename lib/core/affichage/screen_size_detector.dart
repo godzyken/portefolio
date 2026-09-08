@@ -10,7 +10,7 @@ class Breakpoints {
   static const double mobile = 600;
   static const double smallTablet = 800;
   static const double tablet = 1024;
-  static const double desktop = 1440;
+  static const double desktop = 1280; // Réduit à 1280 pour inclure les laptops standards
   static const double largeDesktop = 1920;
 }
 

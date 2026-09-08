@@ -43,7 +43,7 @@ class _TabletLayoutState extends ConsumerState<TabletLayout> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-              flex: 5,
+              flex: 6, // Un peu plus de place pour le texte sur tablette
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -55,7 +55,7 @@ class _TabletLayoutState extends ConsumerState<TabletLayout> {
                 ],
               ),
             ),
-            const SizedBox(width: 24),
+            const SizedBox(width: 20),
             Expanded(
               flex: 4,
               child: ExpImage(

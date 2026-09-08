@@ -95,7 +95,7 @@ class Experience {
   factory Experience.fromJson(Map<String, dynamic> json) {
     return Experience(
       // ✅ Protection contre null avec valeurs par défaut
-      id: json['exp_id']?.toString() ?? '',
+      id: json['id']?.toString() ?? '',
       entreprise: json['entreprise']?.toString() ?? '',
       logo: json['logo']?.toString() ?? '',
       image: json['image']?.toString() ?? '',

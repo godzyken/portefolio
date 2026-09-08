@@ -257,39 +257,42 @@ class _ImmersiveExperienceDetailState
       child: Stack(
         children: [
           Positioned.fill(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 900),
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 280),
-                transitionBuilder: (child, anim) {
-                  final isEntering = anim.status == AnimationStatus.forward ||
-                      anim.status == AnimationStatus.completed;
-                  return IgnorePointer(
-                    ignoring: !isEntering,
-                    child: FadeTransition(
-                      opacity: anim,
-                      child: SlideTransition(
-                        position: Tween<Offset>(
-                          begin: const Offset(0.04, 0),
-                          end: Offset.zero,
-                        ).animate(anim),
-                        child: child,
+            child: Align(
+              alignment: Alignment.center,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 850),
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 280),
+                  transitionBuilder: (child, anim) {
+                    final isEntering = anim.status == AnimationStatus.forward ||
+                        anim.status == AnimationStatus.completed;
+                    return IgnorePointer(
+                      ignoring: !isEntering,
+                      child: FadeTransition(
+                        opacity: anim,
+                        child: SlideTransition(
+                          position: Tween<Offset>(
+                            begin: const Offset(0.04, 0),
+                            end: Offset.zero,
+                          ).animate(anim),
+                          child: child,
+                        ),
                       ),
+                    );
+                  },
+                  child: KeyedSubtree(
+                    key: ValueKey(activeSection),
+                    // Chaque section gère son propre scroll (SingleChildScrollView),
+                    // on ajoute juste le padding horizontal + bottom (nav mobile).
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(
+                        info.isMobile ? 20 : (info.isDesktop ? 60 : 48),
+                        info.isMobile ? 20 : 40,
+                        info.isMobile ? 20 : (info.isDesktop ? 60 : 48),
+                        !showSidebar && sections.length > 1 ? 88 : 40,
+                      ),
+                      child: section.builder(context, info),
                     ),
-                  );
-                },
-                child: KeyedSubtree(
-                  key: ValueKey(activeSection),
-                  // Chaque section gère son propre scroll (SingleChildScrollView),
-                  // on ajoute juste le padding horizontal + bottom (nav mobile).
-                  child: Padding(
-                    padding: EdgeInsets.fromLTRB(
-                      info.isMobile ? 20 : 48,
-                      info.isMobile ? 20 : 40,
-                      info.isMobile ? 20 : 48,
-                      !showSidebar && sections.length > 1 ? 88 : 40,
-                    ),
-                    child: section.builder(context, info),
                   ),
                 ),
               ),

@@ -33,7 +33,10 @@ class _ExperienceSlideScreenState extends ConsumerState<ExperienceSlideScreen>
   void initState() {
     super.initState();
 
-    _pageController = PageController(viewportFraction: 0.85);
+    final info = ref.read(responsiveInfoProvider);
+    final fraction = info.isDesktop || info.isLargeDesktop ? 0.7 : 0.85;
+
+    _pageController = PageController(viewportFraction: fraction);
     _pageController.addListener(_handlePageChange);
 
     _entryController = AnimationController(
@@ -100,6 +103,15 @@ class _ExperienceSlideScreenState extends ConsumerState<ExperienceSlideScreen>
   Widget build(BuildContext context) {
     final info = ref.watch(responsiveInfoProvider);
 
+    // Mise à jour dynamique du fraction : 0.65 pour Desktop laisse voir les voisins
+    final targetFraction = info.isDesktop || info.isLargeDesktop ? 0.65 : 0.85;
+    if (_pageController.viewportFraction != targetFraction) {
+      _pageController = PageController(
+        initialPage: _currentPage,
+        viewportFraction: targetFraction,
+      );
+    }
+
     if (widget.experiences.isEmpty) {
       return const Center(
         child: ResponsiveText('Aucune expérience.',
@@ -155,13 +167,13 @@ class _ExperienceSlideScreenState extends ConsumerState<ExperienceSlideScreen>
                     },
                     child: Padding(
                       padding: EdgeInsets.symmetric(
-                        horizontal: info.isMobile ? 8 : 16,
-                        vertical: 8,
+                        horizontal: info.isDesktop ? 32 : (info.isMobile ? 8 : 16),
+                        vertical: info.isDesktop ? 16 : 8,
                       ),
                       child: Center(
                         child: ConstrainedBox(
                           constraints: BoxConstraints(
-                            maxWidth: info.isDesktop ? 1100 : 800,
+                            maxWidth: info.isDesktop ? 950 : 800,
                           ),
                           child: GestureDetector(
                             onTap: () => Navigator.of(context).push(

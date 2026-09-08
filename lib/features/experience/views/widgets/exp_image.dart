@@ -27,14 +27,11 @@ class ExpImage extends ConsumerWidget {
             children: [
               SmartImage(
                 path: exp.image,
-                responsiveSize: ResponsiveImageSize.xlarge,
-                fit: BoxFit.contain,
+                fit: BoxFit.cover,
                 width: double.infinity,
                 height: double.infinity,
                 enableShimmer: true,
                 autoPreload: true,
-                color: Colors.white.withValues(alpha: 0.9),
-                colorBlendMode: BlendMode.modulate,
               ),
               Container(
                 decoration: BoxDecoration(

@@ -38,38 +38,28 @@ class _DesktopLayoutState extends ConsumerState<DesktopLayout> {
         ExpPeriode(exp: pO),
         const SizedBox(height: 24),
         Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxHeight: 1400),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Flexible(
-                  flex: 5,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Contexte(exp: pO, maxLines: 8),
-                      const SizedBox(height: 24),
-                      ExpTags(exp: pO),
-                      const SizedBox(height: 24),
-                      ExpResultats(exp: pO),
-                    ],
-                  ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Flexible(
+                flex: 5,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Contexte(exp: pO, maxLines: 8),
+                    const SizedBox(height: 24),
+                    ExpTags(exp: pO),
+                    const SizedBox(height: 24),
+                    ExpResultats(exp: pO),
+                  ],
                 ),
-                const SizedBox(width: 40),
-                Flexible(
-                  flex: 4,
-                  child: Center(
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(
-                        maxWidth: 420,
-                      ),
-                      child: ExpImage(exp: pO),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+              ),
+              const SizedBox(width: 40),
+              Flexible(
+                flex: 4,
+                child: ExpImage(exp: pO),
+              ),
+            ],
           ),
         ),
         const SizedBox(height: 24),
