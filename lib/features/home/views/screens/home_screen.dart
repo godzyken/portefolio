@@ -207,21 +207,28 @@ class HomeScreen extends ConsumerWidget {
   // ---------- Presentation Text ----------
   Widget _buildPresentationText(
       BuildContext context, ThemeData theme, bool isMobile) {
-    return const Column(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         ResponsiveText.titleLarge(
           'Emryck Doré',
-          style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 2),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            letterSpacing: 2,
+            color: theme.textTheme.titleLarge?.color,
+          ),
         ),
-        SizedBox(height: 12),
+        const SizedBox(height: 12),
         ResponsiveText.headlineSmall(
           'Développeur Flutter & Architecte Logiciel',
-          style: TextStyle(fontWeight: FontWeight.w600),
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            color: theme.textTheme.headlineSmall?.color,
+          ),
           textAlign: TextAlign.center,
         ),
-        SizedBox(height: 16),
-        _HeroDescription(),
+        const SizedBox(height: 16),
+        const _HeroDescription(),
       ],
     );
   }

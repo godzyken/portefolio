@@ -28,10 +28,10 @@ jobs:
       - name: Prepare image assets
         run: |
           echo "Setting up Python environment..."
-          pip install Pillow tqdm
+          python3 -m pip install Pillow tqdm
           
           echo "Generating image assets from source..."
-          python generate_all_assets_variants.py
+          python3 generate_all_assets_variants.py
           echo "✅ Image assets generated."
 
       - name: Setup Flutter
@@ -88,9 +88,14 @@ jobs:
       - name: Append build version (cache busting)
         run: |
           BUILD_VERSION=$(date +%s)
-          sed -i "s/flutter_bootstrap.js/flutter_bootstrap.js?v=${BUILD_VERSION}/" build/web/index.html
-          sed -i "s/main.dart.js/main.dart.js?v=${BUILD_VERSION}/" build/web/index.html
+          # Gérer à la fois l'ancien et le nouveau format de chargement
+          sed -i "s/flutter_bootstrap.js/flutter_bootstrap.js?v=${BUILD_VERSION}/g" build/web/index.html || true
+          sed -i "s/main.dart.js/main.dart.js?v=${BUILD_VERSION}/g" build/web/index.html || true
           echo "Build version: ${BUILD_VERSION}"
+
+      # ✅ Support SPA (copie index.html vers 404.html pour GitHub Pages)
+      - name: Support SPA Routing
+        run: cp build/web/index.html build/web/404.html
 
       # Optimisation : compression des assets
       - name: Compress assets (optional)

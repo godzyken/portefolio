@@ -2,21 +2,36 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_mermaid/flutter_mermaid.dart';
 import 'package:portefolio/core/affichage/colors_spec.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/affichage/tech_maturity_framework.dart';
 import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
+import 'package:markdown/markdown.dart' as md;
 
 import '../../../../projets/data/github_artifacts_service.dart';
 import '../../../../projets/data/project_data.dart';
 import '../../../../projets/providers/projet_providers.dart';
 import '../../../services/section_manager.dart';
 
+/// Builder pour le support Mermaid dans le Markdown
+class MermaidMarkdownBuilder extends MarkdownElementBuilder {
+  @override
+  Widget visitElementAfter(md.Element element, TextStyle? preferredStyle) {
+    final String text = element.textContent;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      child: MermaidDiagram(code: text),
+    );
+  }
+}
+
 /// Section Artefacts - Affiche les fichiers .md (présentation, vision,
 /// workthrough, valuation, implementation...) trouvés dans le repo GitHub
 /// du projet, sous `.artefacts/{id}/`.
 ///
-/// Refondue pour être immersive (Glassmorphism) et inclure l'analyse de maturité.
+/// Refondue pour être immersive (Glassmorphism), inclure l'analyse de maturité
+/// et des diagrammes Mermaid pour remplacer les images LinkedIn floues.
 class ArtifactsSection extends ConsumerStatefulWidget {
   final ProjectInfo project;
   final ResponsiveInfo info;
@@ -70,58 +85,55 @@ class _ArtifactsSectionState extends ConsumerState<ArtifactsSection>
     );
 
     final isLandscape = widget.info.orientation == Orientation.landscape;
+    final manager = SectionManager(widget.project);
+    final maturityScores = manager.analyzeMaturity();
 
     return asyncArtifacts.when(
-      loading: () => const Center(
-        child: Padding(
-          padding: EdgeInsets.all(40),
-          child: CircularProgressIndicator(color: ColorHelpers.cyan),
+      loading: () => _buildLayout(
+        context,
+        maturityScores,
+        const Center(
+          child: Padding(
+            padding: EdgeInsets.all(40),
+            child: CircularProgressIndicator(color: ColorHelpers.cyan),
+          ),
         ),
       ),
-      error: (err, _) => const SizedBox.shrink(),
+      error: (err, _) => _buildLayout(
+        context,
+        maturityScores,
+        _buildEmptyState(
+            "Impossible de charger la documentation. Vérifiez votre connexion."),
+      ),
       data: (artifacts) {
-        if (artifacts.isEmpty) return const SizedBox.shrink();
-
         final keys = GithubArtifactsService.sortedKeys(artifacts);
-
-        final manager = SectionManager(widget.project);
-        final maturityScores = manager.analyzeMaturity();
-
-        final technicalImages = maturityScores.entries
+        final pillars = maturityScores.entries
             .where((e) => e.value > 0.5)
-            .map((e) => e.key.skillImage)
+            .map((e) => e.key)
             .toSet()
             .toList();
 
         final allTabs = [...keys];
-        if (technicalImages.isNotEmpty) {
+        if (pillars.isNotEmpty) {
           allTabs.add('proofs');
+        }
+
+        if (allTabs.isEmpty) {
+          return _buildLayout(
+            context,
+            maturityScores,
+            _buildEmptyState(
+                "Aucun artefact trouvé pour ce projet. La documentation est peut-être en cours de rédaction."),
+          );
         }
 
         _syncTabController(allTabs);
 
-        return SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        return _buildLayout(
+          context,
+          maturityScores,
+          Column(
             children: [
-              const FittedBox(
-                fit: BoxFit.scaleDown,
-                alignment: Alignment.centerLeft,
-                child: ResponsiveText.titleMedium(
-                  '📖 Immersion Projet (IA Solution)',
-                  style: TextStyle(
-                    color: ColorHelpers.cyan,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.0,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              IAMaturityAnalysisCard(scores: maturityScores),
-
-              const SizedBox(height: 24),
-
               Container(
                 decoration: BoxDecoration(
                   border: Border(
@@ -149,7 +161,7 @@ class _ArtifactsSectionState extends ConsumerState<ArtifactsSection>
                                 fit: BoxFit.scaleDown,
                                 child: Text(
                                   (k == 'proofs'
-                                          ? '💡 Preuves Techniques'
+                                          ? '💡 Architecture & Concepts'
                                           : GithubArtifactsService.labelFor(k))
                                       .toUpperCase(),
                                   style: const TextStyle(
@@ -163,41 +175,84 @@ class _ArtifactsSectionState extends ConsumerState<ArtifactsSection>
                       .toList(),
                 ),
               ),
-
               const SizedBox(height: 16),
-
               SizedBox(
                 height: isLandscape ? 300 : (widget.info.isMobile ? 450 : 550),
                 child: TabBarView(
                   controller: _tabController,
                   children: allTabs.map((k) {
                     if (k == 'proofs') {
-                      return _TechnicalProofsGallery(images: technicalImages);
+                      return _TechnicalDiagramGallery(pillars: pillars);
                     }
-
                     return _MarkdownContentCard(content: artifacts[k]!);
                   }).toList(),
                 ),
               ),
-
-              const SizedBox(height: 20),
-              Center(
-                child: Text(
-                  "Framework d'expertise basé sur Flutter Production Readiness & LinkedIn Insights",
-                  style: TextStyle(
-                    color: ColorHelpers.textMuted.withValues(alpha: 0.5),
-                    fontSize: 10,
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
-              ),
-              const SizedBox(
-                  height:
-                      40), // Padding pour éviter que le menu mobile cache le texte
             ],
           ),
         );
       },
+    );
+  }
+
+  Widget _buildLayout(BuildContext context,
+      Map<TechPillar, double> maturityScores, Widget content) {
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: ResponsiveText.titleMedium(
+              '📖 Immersion Projet (IA Solution)',
+              style: TextStyle(
+                color: ColorHelpers.cyan,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.0,
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+          IAMaturityAnalysisCard(scores: maturityScores),
+          const SizedBox(height: 24),
+          content,
+          const SizedBox(height: 20),
+          Center(
+            child: Text(
+              "Framework d'expertise basé sur Flutter Production Readiness & LinkedIn Insights",
+              style: TextStyle(
+                color: ColorHelpers.textMuted.withValues(alpha: 0.5),
+                fontSize: 10,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          ),
+          const SizedBox(height: 40),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyState(String message) {
+    return Container(
+      padding: const EdgeInsets.all(32),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: ColorHelpers.border),
+      ),
+      child: Column(
+        children: [
+          const Icon(Icons.info_outline, color: ColorHelpers.textMuted, size: 48),
+          const SizedBox(height: 16),
+          Text(
+            message,
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: ColorHelpers.textSecondary),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -232,8 +287,10 @@ class _MarkdownContentCard extends StatelessWidget {
           child: Markdown(
             data: content,
             selectable: true,
-            shrinkWrap:
-                false, // On veut que le Markdown gère son propre scroll à l'intérieur de la TabBarView
+            shrinkWrap: false,
+            builders: {
+              'mermaid': MermaidMarkdownBuilder(),
+            },
             styleSheet: MarkdownStyleSheet.fromTheme(
               Theme.of(context),
             ).copyWith(
@@ -271,11 +328,19 @@ class _MarkdownContentCard extends StatelessWidget {
   }
 }
 
-/// Galerie de preuves techniques basées sur les screenshots LinkedIn
-class _TechnicalProofsGallery extends StatelessWidget {
-  final List<String> images;
+/// Galerie de diagrammes techniques (remplace les images LinkedIn floues)
+class _TechnicalDiagramGallery extends StatefulWidget {
+  final List<TechPillar> pillars;
 
-  const _TechnicalProofsGallery({required this.images});
+  const _TechnicalDiagramGallery({required this.pillars});
+
+  @override
+  State<_TechnicalDiagramGallery> createState() =>
+      _TechnicalDiagramGalleryState();
+}
+
+class _TechnicalDiagramGalleryState extends State<_TechnicalDiagramGallery> {
+  bool _showOriginalImage = false;
 
   @override
   Widget build(BuildContext context) {
@@ -286,26 +351,66 @@ class _TechnicalProofsGallery extends StatelessWidget {
         border: Border.all(color: ColorHelpers.border),
       ),
       child: PageView.builder(
-        itemCount: images.length,
+        itemCount: widget.pillars.length,
         itemBuilder: (context, index) {
+          final pillar = widget.pillars[index];
           return Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      pillar.label,
+                      style: const TextStyle(
+                        color: ColorHelpers.cyan,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    TextButton.icon(
+                      onPressed: () =>
+                          setState(() => _showOriginalImage = !_showOriginalImage),
+                      icon: Icon(
+                        _showOriginalImage ? Icons.auto_awesome : Icons.image,
+                        size: 16,
+                        color: ColorHelpers.textMuted,
+                      ),
+                      label: Text(
+                        _showOriginalImage ? "Voir Schéma" : "Voir Original",
+                        style: const TextStyle(
+                            color: ColorHelpers.textMuted, fontSize: 10),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
                 Expanded(
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(12),
-                    child: SmartImage(
-                      path: images[index],
-                      fit: BoxFit.contain,
-                      enableFullScreenOnTap: true,
-                    ),
+                    child: _showOriginalImage
+                        ? SmartImage(
+                            path: pillar.skillImage,
+                            fit: BoxFit.contain,
+                            enableFullScreenOnTap: true,
+                          )
+                        : Container(
+                            color: Colors.black12,
+                            padding: const EdgeInsets.all(8),
+                            child: MermaidDiagram(
+                              code: pillar.mermaidDefinition,
+                            ),
+                          ),
                   ),
                 ),
                 const SizedBox(height: 12),
-                const Text(
-                  "Concept technique appliqué dans ce projet (Source: FlutterSkills)",
-                  style: TextStyle(
+                Text(
+                  _showOriginalImage
+                      ? "Capture originale LinkedIn (Source: FlutterSkills)"
+                      : pillar.description,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
                     color: ColorHelpers.textSecondary,
                     fontSize: 12,
                     fontStyle: FontStyle.italic,

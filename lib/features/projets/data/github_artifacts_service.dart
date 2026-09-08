@@ -79,11 +79,12 @@ class GithubArtifactsService {
     // 2. Recherche itérative des fichiers
     for (final folder in folderNames) {
       for (final id in ids) {
-        if (artifacts.length > 1) break;
-
         final results = await Future.wait(
           _candidateFilenames.where((name) => name != 'readme').map(
             (name) async {
+              // Si déjà trouvé pour un autre folder/id, on ne cherche plus
+              if (artifacts.containsKey(name)) return null;
+
               // On tente plusieurs extensions pour chaque nom
               for (final ext in ['.artifact.md', '.md']) {
                 final content = await _fetchSingleFile(
@@ -95,7 +96,7 @@ class GithubArtifactsService {
                 if (content != null) return MapEntry(name, content);
               }
 
-              // Fallback : tenter sans le sous-dossier ID
+              // Fallback : tenter sans le sous-dossier ID (à la racine du dossier .artifacts)
               for (final ext in ['.artifact.md', '.md']) {
                 final rootContent = await _fetchSingleFile(
                   owner: repoInfo.owner,
@@ -106,7 +107,7 @@ class GithubArtifactsService {
                 if (rootContent != null) return MapEntry(name, rootContent);
               }
 
-              // Fallback spécial convention .ai/
+              // Fallback spécial convention .ai/ (uniquement si rien trouvé avant)
               String? aiPath;
               switch (name) {
                 case 'presentation':
@@ -141,6 +142,17 @@ class GithubArtifactsService {
           if (entry != null) artifacts[entry.key] = entry.value;
         }
       }
+    }
+
+    // 3. Fallback ultime : si vraiment vide, on essaye de trouver PROJECT.md à la racine
+    if (artifacts.isEmpty || (artifacts.length == 1 && artifacts.containsKey('readme'))) {
+       final projectMd = await _fetchSingleFile(
+        owner: repoInfo.owner,
+        repo: repoInfo.repo,
+        path: 'PROJECT.md',
+        token: token,
+      );
+      if (projectMd != null) artifacts['presentation'] = projectMd;
     }
 
     return artifacts;

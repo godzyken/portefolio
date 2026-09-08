@@ -54,14 +54,14 @@ Ne jamais sauter directement à l'implémentation sur une tâche non triviale sa
 
 ## Validation avant de considérer une tâche terminée
 
-```
+```bash
 flutter analyze
 flutter test
 ```
 
 Si pertinent :
 
-```
+```bash
 flutter build apk --debug
 ```
 

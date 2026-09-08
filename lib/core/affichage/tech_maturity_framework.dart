@@ -10,6 +10,13 @@ enum TechPillar {
     Icons.architecture_rounded,
     ColorHelpers.purple,
     'assets/images/FlutterSkills/Screenshot_2026-07-18-09-30-28-187_com.linkedin.android.jpg',
+    '''
+graph TD
+    UI[Layer UI] --> Riverpod[State Management]
+    Riverpod --> Business[Domain Logic]
+    Business --> Data[Data Sources]
+    Data --> DB[(Storage)]
+''',
   ),
   stateManagement(
     'State Management',
@@ -17,6 +24,13 @@ enum TechPillar {
     Icons.account_tree_rounded,
     ColorHelpers.blue,
     'assets/images/FlutterSkills/Screenshot_2026-07-18-09-26-52-191_com.linkedin.android.jpg',
+    '''
+graph LR
+    User(Utilisateur) --> Action[Action / UI Event]
+    Action --> Provider[Riverpod Provider]
+    Provider --> State[Immutable State]
+    State --> UI[UI Rebuild]
+''',
   ),
   testing(
     'Testing',
@@ -24,6 +38,12 @@ enum TechPillar {
     Icons.biotech_rounded,
     ColorHelpers.green,
     'assets/images/FlutterSkills/Screenshot_2026-08-13-15-30-07-864_com.linkedin.android.jpg',
+    '''
+graph TD
+    Unit[Unit Tests] --> Logic[Business Logic]
+    Widget[Widget Tests] --> UI[Components]
+    Integration[Integration] --> Flow[User Scenarios]
+''',
   ),
   security(
     'Sécurité',
@@ -31,6 +51,13 @@ enum TechPillar {
     Icons.security_rounded,
     ColorHelpers.magenta,
     'assets/images/FlutterSkills/Screenshot_2026-08-13-15-30-07-864_com.linkedin.android.jpg',
+    '''
+graph LR
+    Request[Request] --> SSL[SSL/TLS]
+    SSL --> Auth[JWT Auth]
+    Auth --> RLS[Postgres RLS]
+    RLS --> Data[(Secure Data)]
+''',
   ),
   performance(
     'Performance',
@@ -38,6 +65,13 @@ enum TechPillar {
     Icons.speed_rounded,
     ColorHelpers.cyan,
     'assets/images/FlutterSkills/Screenshot_2026-07-18-09-39-41-969_com.linkedin.android.jpg',
+    '''
+graph TD
+    Asset[Assets] --> Optim[Optimization]
+    Optim --> Cache[Local Cache]
+    Cache --> Render[Smooth Rendering]
+    Render --> FPS[60 FPS]
+''',
   ),
   cicd(
     'CI/CD',
@@ -45,6 +79,13 @@ enum TechPillar {
     Icons.loop_rounded,
     ColorHelpers.pink,
     'assets/images/FlutterSkills/Screenshot_2026-08-13-15-30-07-864_com.linkedin.android.jpg',
+    '''
+graph LR
+    Push[Git Push] --> Lint[Analyze/Lint]
+    Lint --> Test[Unit Tests]
+    Test --> Build[Build APK/Web]
+    Build --> Deploy[Auto Deploy]
+''',
   ),
   monitoring(
     'Monitoring',
@@ -52,6 +93,13 @@ enum TechPillar {
     Icons.insights_rounded,
     ColorHelpers.orange,
     'assets/images/FlutterSkills/Screenshot_2026-08-13-15-30-07-864_com.linkedin.android.jpg',
+    '''
+graph TD
+    App[App Usage] --> Logs[Error Tracking]
+    Logs --> Sentry[Analytics]
+    Sentry --> Alert[Real-time Alerts]
+    Alert --> Fix[Improvement]
+''',
   ),
   aiSmart(
     'AI & Smart Features',
@@ -59,6 +107,12 @@ enum TechPillar {
     Icons.psychology_rounded,
     ColorHelpers.yellow,
     'assets/images/FlutterSkills/Screenshot_2026-07-18-10-21-39-951_com.linkedin.android.jpg',
+    '''
+graph TD
+    Input[Data Input] --> LLM[LLM / Agent]
+    LLM --> Decision[Smart Logic]
+    Decision --> Output[Personalized UI]
+''',
   );
 
   final String label;
@@ -66,9 +120,16 @@ enum TechPillar {
   final IconData icon;
   final Color color;
   final String skillImage;
+  final String mermaidDefinition;
 
   const TechPillar(
-      this.label, this.description, this.icon, this.color, this.skillImage);
+    this.label,
+    this.description,
+    this.icon,
+    this.color,
+    this.skillImage,
+    this.mermaidDefinition,
+  );
 
   static TechPillar? fromString(String value) {
     final lower = value.toLowerCase();

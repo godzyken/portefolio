@@ -46,29 +46,13 @@
     };
   </script>
 
-  <!-- Le bootloader Flutter -->
-  <script src="./flutter.js" defer></script>
+  <!-- Le nouveau bootloader Flutter 3.22+ -->
+  <script src="flutter_bootstrap.js" async></script>
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
-
-  <!-- ✅ Service Worker pour PWA (optionnel mais recommandé) -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function() {
-        navigator.serviceWorker.register('./flutter_service_worker.js').then(function(registration) {
-          console.log('✅ Service Worker enregistré avec succès');
-        }).catch(function(error) {
-          console.log('⚠️ Erreur lors de l\'enregistrement du Service Worker:', error);
-        });
-      });
-    }
-  </script>
 
 </head>
 
 <body>
-<!-- Le code compilé -->
-  <script src="./main.dart.js" type="application/javascript" defer></script>
-
   <model-viewer
           src="https://raw.githubusercontent.com/godzyken/portefolio/master/assets_source/models/perso_samurail.glb"
           camera-controls

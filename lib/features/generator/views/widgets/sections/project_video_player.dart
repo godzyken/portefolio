@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
@@ -27,7 +28,15 @@ class _ProjectVideoPlayerState extends State<ProjectVideoPlayer> {
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.asset(widget.videoPath)
+
+    String path = widget.videoPath;
+    // Sur le Web, le plugin video_player ajoute automatiquement 'assets/'.
+    // Si notre chemin commence déjà par 'assets/', on se retrouve avec 'assets/assets/'.
+    if (kIsWeb && path.startsWith('assets/')) {
+      path = path.replaceFirst('assets/', '');
+    }
+
+    _controller = VideoPlayerController.asset(path)
       ..setLooping(true)
       ..setVolume(0)
       ..initialize().then((_) {
