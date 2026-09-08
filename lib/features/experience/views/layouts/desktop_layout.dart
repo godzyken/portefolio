@@ -12,8 +12,9 @@ import '../widgets/exp_tags.dart';
 import '../widgets/exp_top_row.dart';
 
 class DesktopLayout extends ConsumerStatefulWidget {
-  const DesktopLayout({super.key, required this.experience});
+  const DesktopLayout({super.key, required this.experience, this.isScrollable = true});
   final Experience experience;
+  final bool isScrollable;
   @override
   ConsumerState<DesktopLayout> createState() => _DesktopLayoutState();
 }
@@ -23,65 +24,69 @@ class _DesktopLayoutState extends ConsumerState<DesktopLayout> {
   Widget build(BuildContext context) {
     final pO = widget.experience;
 
+    final content = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ExpTopRow(
+          exp: pO,
+        ),
+        const SizedBox(height: 18),
+        ExpPosteEntreprise(
+          exp: pO,
+        ),
+        const SizedBox(height: 12),
+        ExpPeriode(exp: pO),
+        const SizedBox(height: 24),
+        Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxHeight: 1400),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Flexible(
+                  flex: 5,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Contexte(exp: pO, maxLines: 8),
+                      const SizedBox(height: 24),
+                      ExpTags(exp: pO),
+                      const SizedBox(height: 24),
+                      ExpResultats(exp: pO),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 40),
+                Flexible(
+                  flex: 4,
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(
+                        maxWidth: 420,
+                      ),
+                      child: ExpImage(exp: pO),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 24),
+        const ExpFooterCta(),
+      ],
+    );
+
+    if (!widget.isScrollable) return content;
+
     return Scrollbar(
       thumbVisibility: true,
       child: SingleChildScrollView(
         physics: const BouncingScrollPhysics(
           parent: AlwaysScrollableScrollPhysics(),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ExpTopRow(
-            exp: pO,
-          ),
-          const SizedBox(height: 18),
-          ExpPosteEntreprise(
-            exp: pO,
-          ),
-          const SizedBox(height: 12),
-          ExpPeriode(exp: pO),
-          const SizedBox(height: 24),
-          Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxHeight: 1400),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Flexible(
-                    flex: 5,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Contexte(exp: pO, maxLines: 8),
-                        const SizedBox(height: 24),
-                        ExpTags(exp: pO),
-                        const SizedBox(height: 24),
-                        ExpResultats(exp: pO),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 40),
-                  Flexible(
-                    flex: 4,
-                    child: Center(
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(
-                          maxWidth: 420,
-                        ),
-                        child: ExpImage(exp: pO),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 24),
-          const ExpFooterCta(),
-        ],
+        child: content,
       ),
-    ),
-  );
-}
+    );
+  }
 }

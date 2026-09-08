@@ -22,6 +22,7 @@ class ExperienceTheatreSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final maturity = experience.analyzeMaturity();
+    final isCompact = info.size.height < 800;
 
     return Scrollbar(
       thumbVisibility: true,
@@ -36,17 +37,17 @@ class ExperienceTheatreSection extends StatelessWidget {
             _ExperienceHeader(
                 experience: experience, maturity: maturity, info: info),
 
-          const SizedBox(height: 32),
+            SizedBox(height: isCompact ? 16 : 32),
 
-          // TITRE DE LA SCÈNE ACTIVE
-          _SceneTitle(
-            title: experience.tags.contains('Flutter')
-                ? 'DÉVELOPPEMENT & PERFORMANCE'
-                : 'STRATÉGIE & RÉALISATION',
-            info: info,
-          ),
+            // TITRE DE LA SCÈNE ACTIVE
+            _SceneTitle(
+              title: experience.tags.contains('Flutter')
+                  ? 'DÉVELOPPEMENT & PERFORMANCE'
+                  : 'STRATÉGIE & RÉALISATION',
+              info: info,
+            ),
 
-          const SizedBox(height: 24),
+            SizedBox(height: isCompact ? 12 : 24),
 
           // BULLE IA (MOBILE)
           if (info.isMobile)
@@ -104,7 +105,7 @@ class ExperienceTheatreSection extends StatelessWidget {
                     const SizedBox(height: 16),
                     if (experience.missions.isNotEmpty)
                       _MissionsCard(missions: experience.missions),
-                    const SizedBox(height: 60), // Padding pour le scroll mobile
+                    SizedBox(height: isCompact ? 30 : 60), // Padding pour le scroll mobile
                   ],
                 ),
               ),

@@ -12,8 +12,9 @@ import '../widgets/exp_tags.dart';
 import '../widgets/exp_top_row.dart';
 
 class TabletLayout extends ConsumerStatefulWidget {
-  const TabletLayout({super.key, required this.experience});
+  const TabletLayout({super.key, required this.experience, this.isScrollable = true});
   final Experience experience;
+  final bool isScrollable;
   @override
   ConsumerState<TabletLayout> createState() => _TabletLayoutState();
 }
@@ -23,61 +24,65 @@ class _TabletLayoutState extends ConsumerState<TabletLayout> {
   Widget build(BuildContext context) {
     final pO = widget.experience;
 
+    final content = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ExpTopRow(
+          exp: pO,
+        ),
+        const SizedBox(height: 16),
+        ExpPosteEntreprise(
+          exp: pO,
+        ),
+        const SizedBox(height: 12),
+        ExpPeriode(
+          exp: pO,
+        ),
+        const SizedBox(height: 20),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              flex: 5,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Contexte(exp: pO, maxLines: 5),
+                  const SizedBox(height: 20),
+                  ExpTags(
+                    exp: pO,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 24),
+            Expanded(
+              flex: 4,
+              child: ExpImage(
+                exp: pO,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 20),
+        ExpResultats(
+          exp: pO,
+        ),
+        const SizedBox(height: 16),
+        const ExpFooterCta(),
+      ],
+    );
+
+    if (!widget.isScrollable) return content;
+
     return Scrollbar(
       thumbVisibility: true,
       child: SingleChildScrollView(
         physics: const BouncingScrollPhysics(
           parent: AlwaysScrollableScrollPhysics(),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ExpTopRow(
-            exp: pO,
-          ),
-          const SizedBox(height: 16),
-          ExpPosteEntreprise(
-            exp: pO,
-          ),
-          const SizedBox(height: 12),
-          ExpPeriode(
-            exp: pO,
-          ),
-          const SizedBox(height: 20),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                flex: 5,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Contexte(exp: pO, maxLines: 5),
-                    const SizedBox(height: 20),
-                    ExpTags(
-                      exp: pO,
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 24),
-              Expanded(
-                flex: 4,
-                child: ExpImage(
-                  exp: pO,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          ExpResultats(
-            exp: pO,
-          ),
-          const SizedBox(height: 16),
-          const ExpFooterCta(),
-        ],
+        child: content,
       ),
-    ),
-  );
-}
+    );
+  }
 }

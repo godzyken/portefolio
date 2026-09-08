@@ -12,8 +12,9 @@ import '../widgets/exp_tags.dart';
 import '../widgets/exp_top_row.dart';
 
 class MobileLayout extends ConsumerStatefulWidget {
-  const MobileLayout({super.key, required this.experience});
+  const MobileLayout({super.key, required this.experience, this.isScrollable = true});
   final Experience experience;
+  final bool isScrollable;
   @override
   ConsumerState<MobileLayout> createState() => _MobileLayoutState();
 }
@@ -21,39 +22,43 @@ class MobileLayout extends ConsumerStatefulWidget {
 class _MobileLayoutState extends ConsumerState<MobileLayout> {
   @override
   Widget build(BuildContext context) {
+    final content = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ExpTopRow(exp: widget.experience),
+        const SizedBox(height: 14),
+        ExpPosteEntreprise(exp: widget.experience),
+        const SizedBox(height: 12),
+        ExpPeriode(
+          exp: widget.experience,
+        ),
+        const SizedBox(height: 16),
+        Contexte(exp: widget.experience, maxLines: 3),
+        const SizedBox(height: 14),
+        ExpImage(exp: widget.experience),
+        const SizedBox(height: 16),
+        ExpTags(
+          exp: widget.experience,
+        ),
+        const SizedBox(height: 16),
+        ExpResultats(
+          exp: widget.experience,
+        ),
+        const SizedBox(height: 12),
+        const ExpFooterCta(),
+      ],
+    );
+
+    if (!widget.isScrollable) return content;
+
     return Scrollbar(
       thumbVisibility: true,
       child: SingleChildScrollView(
         physics: const BouncingScrollPhysics(
           parent: AlwaysScrollableScrollPhysics(),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ExpTopRow(exp: widget.experience),
-          const SizedBox(height: 14),
-          ExpPosteEntreprise(exp: widget.experience),
-          const SizedBox(height: 12),
-          ExpPeriode(
-            exp: widget.experience,
-          ),
-          const SizedBox(height: 16),
-          Contexte(exp: widget.experience, maxLines: 3),
-          const SizedBox(height: 14),
-          ExpImage(exp: widget.experience),
-          const SizedBox(height: 16),
-          ExpTags(
-            exp: widget.experience,
-          ),
-          const SizedBox(height: 16),
-          ExpResultats(
-            exp: widget.experience,
-          ),
-          const SizedBox(height: 12),
-          const ExpFooterCta(),
-        ],
+        child: content,
       ),
-    ),
-  );
-}
+    );
+  }
 }

@@ -53,7 +53,15 @@ class _ImmersiveExperienceDetailState
     _entryCtrl = AnimationController(
       duration: const Duration(milliseconds: 700),
       vsync: this,
-    )..forward();
+    )..forward().then((_) {
+        // HACK : Forcer un recalcul de layout une fois l'animation finie
+        // pour activer le scroll sur Web sans F11.
+        if (mounted) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) setState(() {});
+          });
+        }
+      });
 
     _fadeAnim = CurvedAnimation(parent: _entryCtrl, curve: Curves.easeInOut);
     _slideAnim = Tween<Offset>(
@@ -77,7 +85,13 @@ class _ImmersiveExperienceDetailState
   }
 
   void _navigateToSection(String id) {
-    if (mounted) setState(() => _activeSection = id);
+    if (mounted) {
+      setState(() => _activeSection = id);
+      // Forcer le recalcul du layout après le changement de section
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) setState(() {});
+      });
+    }
   }
 
   // ── Couleur thématique ─────────────────────────────────────────────────────

@@ -97,8 +97,9 @@ final responsiveInfoProvider = Provider<ResponsiveInfo>((ref) {
     DeviceType.largeDesktop => orientation == Orientation.portrait ? 0.6 : 0.35,
   };
 
-  // Correction si la hauteur est limitée (éviter les overflows)
-  final cardHeightRatio = (height < 600 && type != DeviceType.mobile) ? baseRatio * 1.2 : baseRatio;
+  // Correction si la hauteur est limitée (Laptop typique : 1366x768 ou 1440x900)
+  // On réduit le ratio pour que la carte prenne moins de place verticale
+  final cardHeightRatio = (height < 750 && type == DeviceType.desktop) ? baseRatio * 0.8 : baseRatio;
 
   return ResponsiveInfo(
     size: size,

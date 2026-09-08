@@ -56,11 +56,18 @@ class _CyberpunkExperienceCardState
     if (info.isDesktop || info.isLargeDesktop) {
       layout = DesktopLayout(
         experience: exp,
+        isScrollable: false,
       );
     } else if (info.isTablet || info.isSmallTablet) {
-      layout = TabletLayout(experience: exp);
+      layout = TabletLayout(
+        experience: exp,
+        isScrollable: false,
+      );
     } else {
-      layout = MobileLayout(experience: exp);
+      layout = MobileLayout(
+        experience: exp,
+        isScrollable: false,
+      );
     }
 
     return MouseRegion(
