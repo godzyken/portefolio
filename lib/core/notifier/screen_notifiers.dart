@@ -1,3 +1,4 @@
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -27,8 +28,12 @@ class AppBarDrawerNotifier extends Notifier<Widget?> {
 class ScreenSizeNotifier extends Notifier<Size> {
   @override
   Size build() {
-    // Taille initiale (avant qu'on ne mesure l'écran)
-    return Size.zero;
+    // Tente de récupérer la taille réelle de la fenêtre dès le départ
+    final view = ui.PlatformDispatcher.instance.implicitView;
+    if (view == null) return const Size(1280, 800);
+    
+    final size = view.physicalSize / view.devicePixelRatio;
+    return size == Size.zero ? const Size(1280, 800) : size;
   }
 
   /// Mettre à jour la taille

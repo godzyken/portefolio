@@ -21,11 +21,16 @@ class MobileLayout extends ConsumerStatefulWidget {
 class _MobileLayoutState extends ConsumerState<MobileLayout> {
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ExpTopRow(exp: widget.experience),
+    return Scrollbar(
+      thumbVisibility: true,
+      child: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(
+          parent: AlwaysScrollableScrollPhysics(),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ExpTopRow(exp: widget.experience),
           const SizedBox(height: 14),
           ExpPosteEntreprise(exp: widget.experience),
           const SizedBox(height: 12),
@@ -48,6 +53,7 @@ class _MobileLayoutState extends ConsumerState<MobileLayout> {
           const ExpFooterCta(),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 }

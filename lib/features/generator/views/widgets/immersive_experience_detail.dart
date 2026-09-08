@@ -131,11 +131,14 @@ class _ImmersiveExperienceDetailState
                         ignoring: _isExiting,
                         child: SlideTransition(
                           position: _slideAnim,
-                          child: _buildMainContent(
-                            sections,
-                            activeSection,
-                            info,
-                            showSidebar,
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: _buildMainContent(
+                              sections,
+                              activeSection,
+                              info,
+                              showSidebar,
+                            ),
                           ),
                         ),
                       ),
@@ -145,25 +148,35 @@ class _ImmersiveExperienceDetailState
               ),
             ),
 
-            // ── PERSONNAGE 3D ET NARRATION (Comme dans l'image de référence) ──
-            if (!info.isMobile)
+            // ── PERSONNAGE 3D ET NARRATION ──
+            if (!info.isMobile && info.size.height > 600)
               Positioned(
                 right: 20,
                 bottom: 20,
-                child: SizedBox(
-                  width: 300,
-                  height: 450,
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      // Circuit lines / Connectivity background effect
-                      Positioned.fill(
-                        child: CustomPaint(
-                          painter: _CircuitPainter(),
+                child: TweenAnimationBuilder<double>(
+                  duration: const Duration(milliseconds: 800),
+                  tween: Tween(begin: 0.0, end: 1.0),
+                  builder: (context, value, child) => Opacity(
+                    opacity: value,
+                    child: Transform.translate(
+                      offset: Offset(0, 20 * (1 - value)),
+                      child: child,
+                    ),
+                  ),
+                  child: SizedBox(
+                    width: info.size.height > 800 ? 300 : 220,
+                    height: info.size.height > 800 ? 450 : 320,
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        Positioned.fill(
+                          child: CustomPaint(
+                            painter: _CircuitPainter(),
+                          ),
                         ),
-                      ),
-                      const CharacterViewer(),
-                    ],
+                        const CharacterViewer(),
+                      ],
+                    ),
                   ),
                 ),
               ),

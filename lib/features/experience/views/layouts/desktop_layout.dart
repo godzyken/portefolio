@@ -23,11 +23,16 @@ class _DesktopLayoutState extends ConsumerState<DesktopLayout> {
   Widget build(BuildContext context) {
     final pO = widget.experience;
 
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ExpTopRow(
+    return Scrollbar(
+      thumbVisibility: true,
+      child: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(
+          parent: AlwaysScrollableScrollPhysics(),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ExpTopRow(
             exp: pO,
           ),
           const SizedBox(height: 18),
@@ -76,6 +81,7 @@ class _DesktopLayoutState extends ConsumerState<DesktopLayout> {
           const ExpFooterCta(),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 }

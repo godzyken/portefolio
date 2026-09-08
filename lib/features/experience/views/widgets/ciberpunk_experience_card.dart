@@ -53,11 +53,11 @@ class _CyberpunkExperienceCardState
 
     Widget layout;
 
-    if (info.isDesktop) {
+    if (info.isDesktop || info.isLargeDesktop) {
       layout = DesktopLayout(
         experience: exp,
       );
-    } else if (info.isTablet) {
+    } else if (info.isTablet || info.isSmallTablet) {
       layout = TabletLayout(experience: exp);
     } else {
       layout = MobileLayout(experience: exp);

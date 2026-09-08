@@ -23,11 +23,16 @@ class _TabletLayoutState extends ConsumerState<TabletLayout> {
   Widget build(BuildContext context) {
     final pO = widget.experience;
 
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ExpTopRow(
+    return Scrollbar(
+      thumbVisibility: true,
+      child: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(
+          parent: AlwaysScrollableScrollPhysics(),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ExpTopRow(
             exp: pO,
           ),
           const SizedBox(height: 16),
@@ -72,6 +77,7 @@ class _TabletLayoutState extends ConsumerState<TabletLayout> {
           const ExpFooterCta(),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 }

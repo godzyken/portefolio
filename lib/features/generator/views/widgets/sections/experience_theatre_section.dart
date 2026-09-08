@@ -23,13 +23,18 @@ class ExperienceTheatreSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final maturity = experience.analyzeMaturity();
 
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // HEADER IMMERSIF
-          _ExperienceHeader(
-              experience: experience, maturity: maturity, info: info),
+    return Scrollbar(
+      thumbVisibility: true,
+      child: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(
+          parent: AlwaysScrollableScrollPhysics(),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // HEADER IMMERSIF
+            _ExperienceHeader(
+                experience: experience, maturity: maturity, info: info),
 
           const SizedBox(height: 32),
 
@@ -141,8 +146,9 @@ class ExperienceTheatreSection extends StatelessWidget {
           ],
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 }
 
 class _ImpactMiniCard extends StatelessWidget {

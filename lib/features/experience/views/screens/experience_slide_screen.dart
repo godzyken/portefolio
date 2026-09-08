@@ -33,11 +33,8 @@ class _ExperienceSlideScreenState extends ConsumerState<ExperienceSlideScreen>
   void initState() {
     super.initState();
 
-    _pageController = PageController(viewportFraction: 0.82)
-      ..addListener(() {
-        final page = _pageController.page?.round() ?? 0;
-        if (page != _currentPage) setState(() => _currentPage = page);
-      });
+    _pageController = PageController(viewportFraction: 0.85);
+    _pageController.addListener(_handlePageChange);
 
     _entryController = AnimationController(
       vsync: this,
@@ -55,6 +52,14 @@ class _ExperienceSlideScreenState extends ConsumerState<ExperienceSlideScreen>
       });
 
     _autoSlideController.forward();
+  }
+
+  void _handlePageChange() {
+    if (!mounted || !_pageController.hasClients) return;
+    final page = _pageController.page?.round() ?? 0;
+    if (page != _currentPage) {
+      setState(() => _currentPage = page);
+    }
   }
 
   void _nextPage() {
@@ -153,23 +158,30 @@ class _ExperienceSlideScreenState extends ConsumerState<ExperienceSlideScreen>
                         horizontal: info.isMobile ? 8 : 16,
                         vertical: 8,
                       ),
-                      child: GestureDetector(
-                        onTap: () => Navigator.of(context).push(
-                          PageRouteBuilder(
-                            pageBuilder: (_, a, __) => FadeTransition(
-                              opacity: a,
-                              child: ImmersiveExperienceDetail(
-                                experience: widget.experiences[index],
+                      child: Center(
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxWidth: info.isDesktop ? 1100 : 800,
+                          ),
+                          child: GestureDetector(
+                            onTap: () => Navigator.of(context).push(
+                              PageRouteBuilder(
+                                pageBuilder: (_, a, __) => FadeTransition(
+                                  opacity: a,
+                                  child: ImmersiveExperienceDetail(
+                                    experience: widget.experiences[index],
+                                  ),
+                                ),
+                                transitionDuration:
+                                    const Duration(milliseconds: 400),
+                                fullscreenDialog: true,
                               ),
                             ),
-                            transitionDuration:
-                                const Duration(milliseconds: 400),
-                            fullscreenDialog: true,
+                            child: CyberpunkExperienceCard(
+                              experience: widget.experiences[index],
+                              isActive: index == _currentPage,
+                            ),
                           ),
-                        ),
-                        child: CyberpunkExperienceCard(
-                          experience: widget.experiences[index],
-                          isActive: index == _currentPage,
                         ),
                       ),
                     ),

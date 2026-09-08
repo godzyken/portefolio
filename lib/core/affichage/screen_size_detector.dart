@@ -56,48 +56,49 @@ final responsiveInfoProvider = Provider<ResponsiveInfo>((ref) {
   final orientation =
       size.width >= size.height ? Orientation.landscape : Orientation.portrait;
 
-  final shortestSide = size.shortestSide;
+  final width = size.width;
+  final height = size.height;
 
   late DeviceType type;
   late GridConfig grid;
 
-  // Logique corrigée pour le DeviceType
-  if (shortestSide < Breakpoints.watch) {
+  // Utilisation de la largeur pour les breakpoints (plus fiable sur Web/Desktop)
+  if (width < Breakpoints.watch) {
     type = DeviceType.watch;
     grid = const GridConfig(1, 1.6);
-  } else if (shortestSide < Breakpoints.mobile) {
-    // Mobile (jusqu'à 600)
+  } else if (width < Breakpoints.mobile) {
     type = DeviceType.mobile;
     grid = GridConfig(1, orientation == Orientation.portrait ? 1.4 : 1.1);
-  } else if (shortestSide < Breakpoints.smallTablet) {
-    // Petite Tablette (600 à 800)
-    type = DeviceType.smallTablet; // NOUVEAU TYPE AJOUTÉ
+  } else if (width < Breakpoints.smallTablet) {
+    type = DeviceType.smallTablet;
     grid = GridConfig(2, orientation == Orientation.portrait ? 1.2 : 1.0);
-  } else if (shortestSide < Breakpoints.tablet) {
-    // Tablette (800 à 1024)
+  } else if (width < Breakpoints.tablet) {
     type = DeviceType.tablet;
     grid = GridConfig(orientation == Orientation.portrait ? 2 : 3, 0.7);
-  } else if (shortestSide < Breakpoints.desktop) {
-    // Desktop (1024 à 1440)
+  } else if (width < Breakpoints.desktop) {
     type = DeviceType.desktop;
     grid = GridConfig(orientation == Orientation.portrait ? 3 : 4, 0.5);
   } else {
-    // Large Desktop (1440+)
     type = DeviceType.largeDesktop;
     grid = GridConfig(orientation == Orientation.portrait ? 4 : 6, 0.45);
   }
 
-  final cardWidth = size.width / grid.columns - 16; // padding/marge
-  final cardHeightRatio = switch (type) {
+  // Ajustement dynamique du ratio de hauteur des cartes selon la hauteur dispo
+  // Évite que les cartes soient trop hautes sur des écrans "Wide" mais peu profonds
+  final cardWidth = size.width / grid.columns - 16;
+  
+  // Ratio adaptatif : si l'écran est très large mais peu haut (Laptop), on réduit le ratio
+  final baseRatio = switch (type) {
     DeviceType.watch => 1.6,
     DeviceType.mobile => orientation == Orientation.portrait ? 0.85 : 0.6,
-    DeviceType.smallTablet => orientation == Orientation.portrait
-        ? 0.75
-        : 0.55, // RATIO POUR SMALL TABLETTE
+    DeviceType.smallTablet => orientation == Orientation.portrait ? 0.75 : 0.55,
     DeviceType.tablet => orientation == Orientation.portrait ? 0.7 : 0.5,
     DeviceType.desktop => orientation == Orientation.portrait ? 0.5 : 0.4,
     DeviceType.largeDesktop => orientation == Orientation.portrait ? 0.6 : 0.35,
   };
+
+  // Correction si la hauteur est limitée (éviter les overflows)
+  final cardHeightRatio = (height < 600 && type != DeviceType.mobile) ? baseRatio * 1.2 : baseRatio;
 
   return ResponsiveInfo(
     size: size,

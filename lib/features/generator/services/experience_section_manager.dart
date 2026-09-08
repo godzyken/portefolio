@@ -245,11 +245,16 @@ class ExperiencePresentationSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Logo + infos
+    return Scrollbar(
+      thumbVisibility: true,
+      child: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(
+          parent: AlwaysScrollableScrollPhysics(),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Logo + infos
           Row(
             children: [
               if (experience.logo.isNotEmpty)
@@ -462,7 +467,8 @@ class ExperiencePresentationSection extends StatelessWidget {
             ),
           ],
           const SizedBox(height: 60),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -486,11 +492,16 @@ class _SimpleListSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+    return Scrollbar(
+      thumbVisibility: true,
+      child: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(
+          parent: AlwaysScrollableScrollPhysics(),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
             children: [
               Container(
                 padding: const EdgeInsets.all(10),
@@ -555,7 +566,8 @@ class _SimpleListSection extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 40),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -573,11 +585,16 @@ class _CodeSnippetSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+    return Scrollbar(
+      thumbVisibility: true,
+      child: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(
+          parent: AlwaysScrollableScrollPhysics(),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
             children: [
               Container(
                 padding: const EdgeInsets.all(10),
@@ -658,7 +675,8 @@ class _CodeSnippetSection extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 40),
-        ],
+          ],
+        ),
       ),
     );
   }
