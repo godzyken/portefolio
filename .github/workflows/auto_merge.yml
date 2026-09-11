@@ -1,0 +1,53 @@
+name: Auto Merge Master to Main
+
+on:
+  schedule:
+    - cron: '0 3 * * *' # 3:00 AM UTC
+  workflow_dispatch: # Permet de lancer manuellement pour tester
+
+jobs:
+  validate-and-merge:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Nécessaire pour avoir tout l'historique et fusionner
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.1'
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Static Analysis
+        run: flutter analyze
+
+      - name: Run Tests
+        run: flutter test
+
+      - name: Merge master into main
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          
+          # S'assurer que les branches locales sont à jour
+          git fetch origin master:master
+          git fetch origin main:main
+          
+          # Basculer sur main
+          git checkout main
+          
+          # Fusionner master dans main
+          # --no-ff pour garder une trace de la fusion automatique
+          git merge master --no-ff -m "🚀 chore: Automatic daily merge from master to main"
+          
+          # Pousser les changements
+          git push origin main
