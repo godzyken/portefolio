@@ -68,6 +68,7 @@ jobs:
         run: |
           flutter build web \
             --release \
+            --no-wasm-dry-run \
             --base-href="/portefolio/" \
             --dart-define=EMAILJS_SERVICE_ID="${{ secrets.EMAILJS_SERVICE_ID }}" \
             --dart-define=EMAILJS_TEMPLATE_ID="${{ secrets.EMAILJS_TEMPLATE_ID }}" \

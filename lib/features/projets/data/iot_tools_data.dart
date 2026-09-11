@@ -76,7 +76,7 @@ const List<IoTToolCategory> kIoTToolCategories = [
     title: 'Surveillance structurelle (structural health)',
     description:
         'Capteurs d\'efforts, jauges de contrainte, inclinomètres et accéléromètres pour ponts, coffrages, excavations.',
-    icon: LucideIcons.building_2,
+    icon: LucideIcons.building,
     color: Colors.amberAccent,
   ),
   IoTToolCategory(

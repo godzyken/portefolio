@@ -66,7 +66,7 @@ dependencies:
   lottie: ^3.3.2
   flutter_native_splash: ^2.4.7
   model_viewer_plus: ^1.9.3
-  flutter_lucide: ^1.7.0
+  flutter_lucide: ^1.38.0
   flutter_map_tile_caching: ^10.1.1
   objectbox_flutter_libs: ^4.3.1
   cloudflare_turnstile: ^3.7.2
