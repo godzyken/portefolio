@@ -98,7 +98,18 @@ flutter:
 
   assets:
     - assets/images/
+    - assets/images/logos/
+    - assets/images/animations/
+    - assets/images/backgrounds/
+    - assets/images/entreprises/
+    - assets/images/realisations/
+    - assets/images/services/
+    - assets/images/Emap/
+    - assets/images/WorkShop/
+    - assets/images/models/
+    - assets/images/FlutterSkills/
     - assets/data/
+    - assets/media/projects/emap_services/
     - assets/fonts/Noto_Sans/
     - assets/fonts/Noto_Sans/static/
 
