@@ -134,8 +134,9 @@ class _PackFormDialogState extends ConsumerState<_PackFormDialog> {
                         decoration: const InputDecoration(labelText: 'Prix'),
                         validator: (v) {
                           if (v == null || v.trim().isEmpty) return 'Requis';
-                          if (double.tryParse(v.trim()) == null)
+                          if (double.tryParse(v.trim()) == null) {
                             return 'Nombre invalide';
+                          }
                           return null;
                         },
                       ),

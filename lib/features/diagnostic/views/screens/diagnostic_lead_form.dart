@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/ui/widgets/common_form_fields.dart';
 import '../../../../core/ui/widgets/responsive_text.dart';
-
 import '../../data/models/diagnostic_models.dart';
 import '../../data/state/diagnostic_state.dart';
 import '../../providers/diagnostic_provider.dart';
@@ -114,8 +113,9 @@ class _DiagnosticLeadFormState extends ConsumerState<DiagnosticLeadForm> {
                 onPressed: isLoading
                     ? null
                     : () async {
-                        if (!(_formKey.currentState?.validate() ?? false))
+                        if (!(_formKey.currentState?.validate() ?? false)) {
                           return;
+                        }
                         await notifier.submitLead(widget.result);
                       },
                 icon: isLoading

@@ -55,10 +55,12 @@ class Experience {
           if (allText.contains('ddd') || allText.contains('mvvm')) score += 0.3;
           break;
         case TechPillar.stateManagement:
-          if (allText.contains('riverpod') || allText.contains('bloc'))
+          if (allText.contains('riverpod') || allText.contains('bloc')) {
             score += 0.5;
-          if (allText.contains('provider') || allText.contains('getit'))
+          }
+          if (allText.contains('provider') || allText.contains('getit')) {
             score += 0.3;
+          }
           break;
         case TechPillar.testing:
           if (allText.contains('test')) score += 0.4;
@@ -69,22 +71,27 @@ class Experience {
           if (allText.contains('chiffr')) score += 0.4;
           break;
         case TechPillar.performance:
-          if (allText.contains('perf') || allText.contains('optim'))
+          if (allText.contains('perf') || allText.contains('optim')) {
             score += 0.4;
+          }
           if (allText.contains('async')) score += 0.3;
           break;
         case TechPillar.cicd:
-          if (allText.contains('ci') || allText.contains('deploy'))
+          if (allText.contains('ci') || allText.contains('deploy')) {
             score += 0.5;
+          }
           break;
         case TechPillar.monitoring:
-          if (allText.contains('analytic') || allText.contains('suivi'))
+          if (allText.contains('analytic') || allText.contains('suivi')) {
             score += 0.4;
+          }
           break;
         case TechPillar.aiSmart:
           if (allText.contains('ia ') ||
               allText.contains('ai ') ||
-              allText.contains('intel')) score += 0.5;
+              allText.contains('intel')) {
+            score += 0.5;
+          }
           break;
       }
       if (score > 0) scores[pillar] = score.clamp(0.0, 1.0);
