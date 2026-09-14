@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/affichage/tech_maturity_framework.dart';
 import '../../../core/ui/ui_widgets_extentions.dart';
 import '../../projets/data/project_data.dart';
 import '../../projets/data/project_section.dart';
+import '../../projets/views/widgets/sections/analytics_section.dart';
 import '../views/generator_widgets_extentions.dart';
 import '../views/widgets/sections/artifacts_section.dart';
 import '../views/widgets/sections/project_theatre_section.dart';
-import '../../../core/affichage/tech_maturity_framework.dart';
 
 /// Gestionnaire centralisé pour la configuration des sections d'un projet
 ///
@@ -25,6 +27,11 @@ class SectionManager {
       // Théâtre Narratif (Remplaçant du Hero pour plus d'immersion)
       _buildTheatreSection(),
     ];
+
+    // Section Analytics (Performance & ROI)
+    if (hasAnalytics(context)) {
+      sections.add(_buildAnalyticsSection());
+    }
 
     // SectionAperçu
     if (hasLivePreview()) {
@@ -76,6 +83,18 @@ class SectionManager {
       title: 'Storytelling',
       icon: Icons.auto_stories_outlined,
       builder: (context, info) => ProjectTheatreSection(
+        project: project,
+        info: info,
+      ),
+    );
+  }
+
+  ProjectSection _buildAnalyticsSection() {
+    return ProjectSection(
+      id: 'analytics',
+      title: 'Performance',
+      icon: Icons.analytics_outlined,
+      builder: (context, info) => AnalyticsSection(
         project: project,
         info: info,
       ),
@@ -173,6 +192,19 @@ class SectionManager {
         info: info,
       ),
     );
+  }
+
+  /// Vérifie si le projet a des analytics activées
+  bool hasAnalytics(BuildContext context) {
+    if (context is! WidgetRef) {
+      // Si on n'a pas accès à ref, on fait une détection basique
+      return project.analyticsId == 'emap_services' ||
+          (project.resultsMap?.isNotEmpty ?? false);
+    }
+    // Idéalement on utiliserait ProviderScope.containerOf(context).read(isAnalyticsEnabledProvider(project.analyticsId))
+    // Mais pour rester simple et compatible avec l'architecture actuelle :
+    return project.analyticsId == 'emap_services' ||
+        (project.resultsMap?.isNotEmpty ?? false);
   }
 
   /// Détecte si le projet a des tags de programmation
