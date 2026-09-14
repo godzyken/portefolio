@@ -350,55 +350,73 @@ class SectionManager {
       double score = 0.1; // SCORE MINIMAL FORCÉ POUR VISIBILITÉ
       switch (pillar) {
         case TechPillar.architecture:
-          if (allText.contains('arch') || allText.contains('clean'))
+          if (allText.contains('arch') || allText.contains('clean')) {
             score += 0.4;
+          }
           if (allText.contains('modul')) score += 0.3;
           if (allText.contains('ddd') || allText.contains('mvvm')) score += 0.3;
           break;
         case TechPillar.stateManagement:
-          if (allText.contains('riverpod') || allText.contains('bloc'))
+          if (allText.contains('riverpod') || allText.contains('bloc')) {
             score += 0.5;
+          }
           if (allText.contains('prov') ||
               allText.contains('getit') ||
-              allText.contains('state')) score += 0.3;
+              allText.contains('state')) {
+            score += 0.3;
+          }
           break;
         case TechPillar.testing:
           if (allText.contains('test')) score += 0.4;
-          if (allText.contains('qualité') || allText.contains('ready'))
+          if (allText.contains('qualité') || allText.contains('ready')) {
             score += 0.3;
+          }
           break;
         case TechPillar.security:
-          if (allText.contains('auth') || allText.contains('secu'))
+          if (allText.contains('auth') || allText.contains('secu')) {
             score += 0.3;
+          }
           if (allText.contains('chiffr') ||
               allText.contains('crypt') ||
-              allText.contains('ssl')) score += 0.4;
+              allText.contains('ssl')) {
+            score += 0.4;
+          }
           break;
         case TechPillar.performance:
           if (allText.contains('fps') ||
               allText.contains('fluide') ||
-              allText.contains('perf')) score += 0.3;
+              allText.contains('perf')) {
+            score += 0.3;
+          }
           if (allText.contains('optim')) score += 0.3;
-          if (allText.contains('async') || allText.contains('future'))
+          if (allText.contains('async') || allText.contains('future')) {
             score += 0.4;
+          }
           break;
         case TechPillar.cicd:
           if (allText.contains('github') ||
               allText.contains('git') ||
-              allText.contains('deploy')) score += 0.5;
+              allText.contains('deploy')) {
+            score += 0.5;
+          }
           break;
         case TechPillar.monitoring:
           if (allText.contains('sentry') ||
               allText.contains('fireb') ||
-              allText.contains('log')) score += 0.4;
-          if (allText.contains('analytic') || allText.contains('suivi'))
+              allText.contains('log')) {
+            score += 0.4;
+          }
+          if (allText.contains('analytic') || allText.contains('suivi')) {
             score += 0.3;
+          }
           break;
         case TechPillar.aiSmart:
           if (allText.contains('ia ') ||
               allText.contains('ai ') ||
               allText.contains('gpt') ||
-              allText.contains('intel')) score += 0.5;
+              allText.contains('intel')) {
+            score += 0.5;
+          }
           if (allText.contains('smart')) score += 0.5;
           break;
       }

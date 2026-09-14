@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'colors_spec.dart';
 
 /// Framework de Maturité Technique basé sur les infographies FlutterSkills.
@@ -134,17 +135,25 @@ graph TD
   static TechPillar? fromString(String value) {
     final lower = value.toLowerCase();
     if (lower.contains('arch')) return TechPillar.architecture;
-    if (lower.contains('state') || lower.contains('flux'))
+    if (lower.contains('state') || lower.contains('flux')) {
       return TechPillar.stateManagement;
+    }
     if (lower.contains('test')) return TechPillar.testing;
     if (lower.contains('secu')) return TechPillar.security;
     if (lower.contains('perf')) return TechPillar.performance;
-    if (lower.contains('ci') || lower.contains('cd') || lower.contains('auto'))
+    if (lower.contains('ci') ||
+        lower.contains('cd') ||
+        lower.contains('auto')) {
       return TechPillar.cicd;
-    if (lower.contains('monitor') || lower.contains('analytic'))
+    }
+    if (lower.contains('monitor') || lower.contains('analytic')) {
       return TechPillar.monitoring;
-    if (lower.contains('ai') || lower.contains('ia') || lower.contains('intel'))
+    }
+    if (lower.contains('ai') ||
+        lower.contains('ia') ||
+        lower.contains('intel')) {
       return TechPillar.aiSmart;
+    }
     return null;
   }
 }
@@ -298,8 +307,9 @@ class IAMaturityAnalysisCard extends StatelessWidget {
   }
 
   String _generateAISummary() {
-    if (scores.isEmpty)
+    if (scores.isEmpty) {
       return "Analyse de structure en cours... Alignement optimal avec le framework FlutterSkills détecté.";
+    }
 
     final topPillar =
         scores.entries.reduce((a, b) => a.value > b.value ? a : b).key;
