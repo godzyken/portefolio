@@ -284,28 +284,37 @@ class UnifiedImageManager with ChangeNotifier {
   String normalizePath(String path) {
     if (path.startsWith('http')) return path.trim();
 
+    // 1. Remplacement des antislashes et nettoyage des espaces
     var p = path.trim().replaceAll('\\', '/');
 
-    // 1. Supprime les doubles slashs
+    // 2. Nettoyage RECURSIF des préfixes 'assets/'
+    // Si on a 'assets/assets/images', cela devient 'assets/images'
+    // Si on a '/assets/images', cela devient 'assets/images'
+    while (p.startsWith('assets/')) {
+      p = p.replaceFirst('assets/', '');
+    }
+    while (p.startsWith('/')) {
+      p = p.substring(1);
+    }
+
+    // On remet UN SEUL préfixe propre pour le bundle Flutter
+    p = 'assets/$p';
+
+    // 3. Suppression des doubles slashs internes
     while (p.contains('//')) {
       p = p.replaceAll('//', '/');
     }
 
-    // 2. Nettoyage agressif des préfixes redondants
-    p = p.replaceAll('assets/assets/', 'assets/');
-    if (p.startsWith('/')) p = p.substring(1);
-
-    // 3. Correction des chemins pour les images de services
-    p = p.replaceAll('images/assets/', 'images/');
-
     // 4. MIGRATION WEBP GLOBALE : On force l'extension .webp pour tous les assets raster
+    // On ignore les SVG et les JSON (Lottie)
     final lower = p.toLowerCase();
-    if (lower.endsWith('.avif') ||
-        lower.endsWith('.png') ||
-        lower.endsWith('.jpg') ||
-        lower.endsWith('.jpeg')) {
-      final lastDot = p.lastIndexOf('.');
-      p = '${p.substring(0, lastDot)}.webp';
+    if (!lower.endsWith('.svg') &&
+        !lower.endsWith('.json') &&
+        !lower.endsWith('.riv')) {
+      if (lower.contains('.')) {
+        final lastDot = p.lastIndexOf('.');
+        p = '${p.substring(0, lastDot)}.webp';
+      }
     }
 
     return p;

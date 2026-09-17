@@ -177,10 +177,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
         ),
         child: ClipOval(
           child: widget.logo ??
-              Image.asset(
-                'assets/images/entreprises/logo_godzyken.avif',
+              CachedImage(
+                path: 'assets/images/entreprises/logo_godzyken.webp',
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) =>
+                errorWidget:
                     const Icon(Icons.person, size: 50, color: Colors.white),
               ),
         ),
