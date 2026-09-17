@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:portefolio/core/provider/unified_image_provider.dart';
 import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
 import 'package:timelines_plus/timelines_plus.dart';
 import 'package:portefolio/features/generator/views/widgets/immersive_experience_detail.dart';
@@ -30,17 +31,22 @@ class ExperienceTimeline extends ConsumerWidget {
       height: isWide ? 220 : null,
       width: isWide ? null : double.infinity,
       decoration: BoxDecoration(
-        // ── Background original conservé ──
-        image: const DecorationImage(
-          opacity: 0.35,
-          image: AssetImage('assets/images/backgrounds/frise_mur.avif'),
-          fit: BoxFit.cover,
-        ),
         // ── Overlay sombre pour faire ressortir les éléments ──
         color: ColorHelpers.surface.withValues(alpha: 0.55),
       ),
       child: Stack(
         children: [
+          // ── Background original sécurisé avec CachedImage ──
+          Positioned.fill(
+            child: Opacity(
+              opacity: 0.35,
+              child: const CachedImage(
+                path: 'assets/images/backgrounds/frise_mur.avif',
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+
           // ── Lignes de scan horizontales (ambiance HUD) ──
           Positioned.fill(child: CustomPaint(painter: _ScanlinePainter())),
 

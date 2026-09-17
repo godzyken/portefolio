@@ -282,6 +282,8 @@ class UnifiedImageManager with ChangeNotifier {
 
   /// Corrige les chemins mal formés ou doublement préfixés
   String _normalizePath(String path) {
+    if (path.startsWith('http')) return path.trim();
+
     var p = path.trim().replaceAll('\\', '/');
 
     // 1. Supprime les doubles slashs
@@ -289,9 +291,15 @@ class UnifiedImageManager with ChangeNotifier {
       p = p.replaceAll('//', '/');
     }
 
-    // 2. Supprime les préfixes redondants comme "assets/assets/" ou "/assets/"
+    // 2. Nettoyage agressif des préfixes redondants
+    // Gère "assets/assets/", "/assets/", etc.
     p = p.replaceAll('assets/assets/', 'assets/');
+
     if (p.startsWith('/')) p = p.substring(1);
+
+    // 3. Cas particulier : si le chemin commence par "assets/images/assets/"
+    // (vu parfois lors de mauvaises concaténations)
+    p = p.replaceAll('images/assets/', 'images/');
 
     return p;
   }

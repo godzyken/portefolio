@@ -228,7 +228,8 @@ class _ServicesSliderState extends ConsumerState<ServicesSlider> {
                                 child: Opacity(
                                   opacity: 0.4,
                                   child: CachedImage(
-                                    path: service.imageUrl!,
+                                    path: service.cleanedImageUrl ??
+                                        service.imageUrl!,
                                     fit: BoxFit.cover,
                                   ),
                                 ),
