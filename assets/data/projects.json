@@ -164,7 +164,7 @@
       "🔐 Conformité avec les normes RGPD (protection des données utilisateurs)"
     ],
     "image": [
-      "assets/images/services/flutter_image.png",
+      "assets/images/flutter_image.webp",
       "assets/images/flutter_mascotte.png",
       "assets/images/agile.png",
       "assets/images/realisations/screenshot_login.jpg",
@@ -371,7 +371,7 @@
       "💬 Analyse UX, optimisation des parcours utilisateurs (User Flow) et ergonomie"
     ],
     "image": [
-      "assets/images/services/ui_ux_mobile.png",
+      "assets/images/ui_ux_mobile.webp",
       "assets/images/realisations/medical_app.png",
       "assets/images/realisations/business_app.svg"
     ],
@@ -391,7 +391,7 @@
     ],
     "image": [
       "assets/images/getty_images.jpg",
-      "assets/images/services/gestion_portefeuilles_projets_banniere.jpg",
+      "assets/images/gestion_portefeuilles_projets_banniere.webp",
       "assets/images/transformation_digitale.jpg",
       "assets/images/realisations/sketchup_image.webp",
       "assets/images/realisations/scan_pokemon_card_struct.png"

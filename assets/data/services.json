@@ -10,7 +10,7 @@
       "🎨 Design personnalisé selon vos besoins"
     ],
     "icon": "phone",
-    "imageUrl": "assets/images/services/flutter_image.png",
+    "imageUrl": "assets/images/flutter_image.webp",
     "category": "mobile",
     "priority": 1
   },
@@ -25,7 +25,7 @@
       "📊 Analytics et suivi des performances"
     ],
     "icon": "web",
-    "imageUrl": "assets/images/services/ui_ux_design_service.png",
+    "imageUrl": "assets/images/ui_ux_design_service.webp",
     "category": "web",
     "priority": 2
   },
@@ -40,7 +40,7 @@
       "💾 Sauvegarde automatique"
     ],
     "icon": "cloud",
-    "imageUrl": "assets/images/services/api_img.png",
+    "imageUrl": "assets/images/api_img.webp",
     "category": "cloud",
     "priority": 3
   },
@@ -55,7 +55,7 @@
       "📊 Rapports de performance"
     ],
     "icon": "design",
-    "imageUrl": "assets/images/services/technical_support_maintenance.png",
+    "imageUrl": "assets/images/technical_support_maintenance.webp",
     "category": "support",
     "priority": 4
   }

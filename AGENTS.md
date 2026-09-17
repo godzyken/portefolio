@@ -23,6 +23,7 @@ Tu dois privilégier, dans cet ordre :
 - Préférer les packages officiellement maintenus.
 - Ne jamais introduire de code mort.
 - Ne jamais ignorer une erreur d'analyse sans justification.
+- Toujours utiliser Squoosh pour convertir et compresser les images au format le plus léger (ex: WebP/AVIF) avant d'ajouter des assets.
 - Toujours documenter une décision d'architecture significative dans `.ai/DECISIONS.md`.
 
 ## Contexte du projet
