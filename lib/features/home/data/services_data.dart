@@ -99,7 +99,7 @@ class Service {
 
     String cleaned = imageUrl!;
 
-    // Nettoyer "assets/http..." -> "http..."
+    // 1. Nettoyer "assets/http..." -> "http..."
     if (cleaned.contains('assets/http')) {
       final httpIndex = cleaned.indexOf('http');
       if (httpIndex != -1) {
@@ -107,12 +107,52 @@ class Service {
       }
     }
 
-    // Décoder les URLs encodées
+    // 2. Décoder les URLs encodées
     if (cleaned.contains('%')) {
       try {
         cleaned = Uri.decodeFull(cleaned);
       } catch (e) {
         developer.log('⚠️ Erreur décodage URL: $cleaned', error: e);
+      }
+    }
+
+    // 3. Migration automatique vers AVIF pour les assets locaux
+    if (!cleaned.startsWith('http')) {
+      // Forcer l'extension .avif pour tous les assets raster
+      final rasterExtensions = ['.png', '.jpg', '.jpeg', '.webp'];
+      for (final ext in rasterExtensions) {
+        if (cleaned.toLowerCase().endsWith(ext)) {
+          cleaned = '${cleaned.substring(0, cleaned.length - ext.length)}.avif';
+          break;
+        }
+      }
+
+      // 4. Correction des chemins pour les images de services
+      // Si l'image est à la racine de assets/images/ mais devrait être dans /services/
+      if (cleaned.startsWith('assets/images/') &&
+          !cleaned.contains('/services/') &&
+          !cleaned.contains('/logos/') &&
+          !cleaned.contains('/entreprises/') &&
+          !cleaned.contains('/realisations/')) {
+        // Liste de fichiers connus pour être dans /services/
+        const serviceImages = [
+          'flutter_image.avif',
+          'ui_ux_design_service.avif',
+          'api_img.avif',
+          'technical_support_maintenance.avif',
+          'ui_ux_mobile.avif',
+          'btp_workflow_blueprint.avif',
+          'fabrication_flutter_construction_4_0.avif',
+          'to_solution_impact_banner.avif',
+          'gestion_portefeuilles_projets_banniere.avif',
+          'godzyken_amoa_ecoute_terrain_flowchart_banner.avif',
+          'linkedin_cover_banner.avif',
+        ];
+
+        final fileName = cleaned.split('/').last;
+        if (serviceImages.contains(fileName)) {
+          cleaned = 'assets/images/services/$fileName';
+        }
       }
     }
 
@@ -200,14 +240,7 @@ class Service {
 }
 
 /// Catégories de services
-enum ServiceCategory {
-  mobile,
-  web,
-  cloud,
-  design,
-  support,
-  development,
-}
+enum ServiceCategory { mobile, web, cloud, design, support, development }
 
 extension ServiceCategoryExtension on ServiceCategory {
   String get displayName {

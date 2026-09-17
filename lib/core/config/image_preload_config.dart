@@ -86,12 +86,18 @@ class ImagePreloadConfig {
 
   static ImagePriority _priorityFor(String path) {
     if (path.contains('logo_godzyken')) {
-      return ImagePriority(path,
-          strategy: PreloadStrategy.critical, priority: 0);
+      return ImagePriority(
+        path,
+        strategy: PreloadStrategy.critical,
+        priority: 0,
+      );
     }
     if (path.contains('/entreprises/') || path.contains('/logos/')) {
-      return ImagePriority(path,
-          strategy: PreloadStrategy.critical, priority: 1);
+      return ImagePriority(
+        path,
+        strategy: PreloadStrategy.critical,
+        priority: 1,
+      );
     }
     if (path.contains('/services/')) {
       return ImagePriority(path, strategy: PreloadStrategy.lazy, priority: 2);
@@ -102,9 +108,21 @@ class ImagePreloadConfig {
     if (path.contains('/animations/')) {
       return ImagePriority(path, strategy: PreloadStrategy.lazy, priority: 4);
     }
-    // backgrounds, WorkShop, Emap, models, etc.
-    return ImagePriority(path,
-        strategy: PreloadStrategy.background, priority: 10);
+    if (path.contains('/WorkShop/') ||
+        path.contains('/Emap/') ||
+        path.contains('/FlutterSkills/')) {
+      return ImagePriority(
+        path,
+        strategy: PreloadStrategy.background,
+        priority: 5,
+      );
+    }
+    // backgrounds, models, etc.
+    return ImagePriority(
+      path,
+      strategy: PreloadStrategy.background,
+      priority: 10,
+    );
   }
 
   // -------------------------------------------------------------------------
