@@ -293,11 +293,6 @@ class UnifiedImageManager with ChangeNotifier {
     p = p.replaceAll('assets/assets/', 'assets/');
     if (p.startsWith('/')) p = p.substring(1);
 
-    // 3. Assure que le chemin commence par assets/ s'il ne s'agit pas d'une URL
-    if (!p.startsWith('assets/') && !p.startsWith('http')) {
-      p = 'assets/$p';
-    }
-
     return p;
   }
 
