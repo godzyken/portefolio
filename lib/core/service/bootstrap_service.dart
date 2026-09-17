@@ -15,6 +15,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../features/parametres/themes/services/theme_repository.dart';
 import '../../features/parametres/themes/theme/theme_data.dart';
 import '../provider/image_providers.dart';
+import 'unified_image_manager.dart';
 import 'config_env_service.dart';
 
 class BootstrapService {
@@ -131,10 +132,13 @@ class BootstrapService {
   Future<void> prefetchAll(WidgetRef ref, BuildContext context) async {
     // 1. Précacher les images classiques
     final rasters = await ref.read(rasterImagesProvider.future);
+    final manager = UnifiedImageManager();
+
     for (var path in rasters) {
       if (context.mounted) {
-        precacheImage(AssetImage(path), context).catchError((e) {
-          developer.log('⚠️ Échec précache image: $path');
+        final cleanPath = manager.normalizePath(path);
+        precacheImage(AssetImage(cleanPath), context).catchError((e) {
+          developer.log('⚠️ Échec précache image: $cleanPath');
         });
       }
     }

@@ -279,11 +279,14 @@ class _SmartImageState extends ConsumerState<SmartImage> {
   }
 
   void _showFullScreen(BuildContext context) {
+    final manager = ref.read(unifiedImageManagerProvider);
+    final cleanPath = manager.normalizePath(widget.path);
+
     Navigator.of(context).push(
       PageRouteBuilder(
         opaque: false,
         barrierColor: Colors.black.withValues(alpha: 0.9),
-        pageBuilder: (context, _, __) => _FullScreenOverlay(path: widget.path),
+        pageBuilder: (context, _, __) => _FullScreenOverlay(path: cleanPath),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           return FadeTransition(opacity: animation, child: child);
         },
@@ -315,10 +318,12 @@ class _SmartImageState extends ConsumerState<SmartImage> {
     }
 
     final cached = manager.getCachedImage(widget.path);
+    final cleanPath = manager.normalizePath(widget.path);
+
     final provider = cached ??
-        (widget.path.startsWith('http')
-            ? NetworkImage(widget.path)
-            : AssetImage(widget.path) as ImageProvider);
+        (cleanPath.startsWith('http')
+            ? NetworkImage(cleanPath)
+            : AssetImage(cleanPath) as ImageProvider);
 
     return Image(
       image: provider,

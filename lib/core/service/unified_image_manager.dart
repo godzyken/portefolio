@@ -280,8 +280,8 @@ class UnifiedImageManager with ChangeNotifier {
 
   // ── Helpers ────────────────────────────────────────────────────────────────
 
-  /// Corrige les chemins mal formés ou doublement préfixés
-  String _normalizePath(String path) {
+  /// Corrige les chemins mal formés, doublement préfixés ou avec extension obsolète
+  String normalizePath(String path) {
     if (path.startsWith('http')) return path.trim();
 
     var p = path.trim().replaceAll('\\', '/');
@@ -292,17 +292,27 @@ class UnifiedImageManager with ChangeNotifier {
     }
 
     // 2. Nettoyage agressif des préfixes redondants
-    // Gère "assets/assets/", "/assets/", etc.
     p = p.replaceAll('assets/assets/', 'assets/');
-
     if (p.startsWith('/')) p = p.substring(1);
 
-    // 3. Cas particulier : si le chemin commence par "assets/images/assets/"
-    // (vu parfois lors de mauvaises concaténations)
+    // 3. Correction des chemins pour les images de services
     p = p.replaceAll('images/assets/', 'images/');
+
+    // 4. MIGRATION WEBP GLOBALE : On force l'extension .webp pour tous les assets raster
+    final lower = p.toLowerCase();
+    if (lower.endsWith('.avif') ||
+        lower.endsWith('.png') ||
+        lower.endsWith('.jpg') ||
+        lower.endsWith('.jpeg')) {
+      final lastDot = p.lastIndexOf('.');
+      p = '${p.substring(0, lastDot)}.webp';
+    }
 
     return p;
   }
+
+  // Ancien nom pour compatibilité interne
+  String _normalizePath(String path) => normalizePath(path);
 
   /// Vérifie si l'image est dans le cache Flutter natif
   bool _isInFlutterCache(String cleanPath) {

@@ -9,6 +9,7 @@ import 'package:rive/rive.dart';
 
 import '../config/assets_config.dart';
 import '../notifier/precache_notifier.dart';
+import '../service/unified_image_manager.dart';
 import 'json_data_provider.dart';
 
 /// Résumé du précache : total, succès, échecs.
@@ -33,9 +34,10 @@ Future<bool> precacheSingleImageWithConfig(
   Duration timeout,
 ) async {
   try {
-    final provider = (path.contains('http')
-        ? NetworkImage(path)
-        : AssetImage(path)) as ImageProvider;
+    final cleanPath = UnifiedImageManager().normalizePath(path);
+    final provider = (cleanPath.contains('http')
+        ? NetworkImage(cleanPath)
+        : AssetImage(cleanPath)) as ImageProvider;
 
     final completer = Completer<void>();
     final stream = provider.resolve(config);
@@ -224,8 +226,6 @@ Future<PrecacheReport> runOptimizedPrecache(Ref ref) async {
     }).toList();
 
     developer.log('📸 ${criticalImages.length} images critiques à précacher');
-
-    final List<Future<bool>> loaders = [];
 
     // Ajout du précache Rive (sécurisé)
     try {
