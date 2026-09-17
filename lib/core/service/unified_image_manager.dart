@@ -282,10 +282,22 @@ class UnifiedImageManager with ChangeNotifier {
 
   /// Corrige les chemins mal formés ou doublement préfixés
   String _normalizePath(String path) {
-    var p = path.trim();
-    // Supprime les préfixes redondants comme "assets/assets/" ou "/assets/"
+    var p = path.trim().replaceAll('\\', '/');
+
+    // 1. Supprime les doubles slashs
+    while (p.contains('//')) {
+      p = p.replaceAll('//', '/');
+    }
+
+    // 2. Supprime les préfixes redondants comme "assets/assets/" ou "/assets/"
     p = p.replaceAll('assets/assets/', 'assets/');
     if (p.startsWith('/')) p = p.substring(1);
+
+    // 3. Assure que le chemin commence par assets/ s'il ne s'agit pas d'une URL
+    if (!p.startsWith('assets/') && !p.startsWith('http')) {
+      p = 'assets/$p';
+    }
+
     return p;
   }
 

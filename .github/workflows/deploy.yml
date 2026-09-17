@@ -34,6 +34,17 @@ jobs:
           python3 generate_all_assets_variants.py
           echo "✅ Image assets generated."
 
+      - name: Verify AVIF assets
+        run: |
+          echo "Checking for AVIF assets in assets/images..."
+          find assets/images -name "*.avif" | head -n 10
+          AVIF_COUNT=$(find assets/images -name "*.avif" | wc -l)
+          echo "Total AVIF files found: $AVIF_COUNT"
+          if [ "$AVIF_COUNT" -eq "0" ]; then
+            echo "⚠️ WARNING: No AVIF assets found in assets/images."
+            echo "Make sure they are in assets_source and generate_all_assets_variants.py handles them."
+          fi
+
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
