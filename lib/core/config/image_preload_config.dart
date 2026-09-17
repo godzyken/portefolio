@@ -16,12 +16,12 @@ class ImagePreloadConfig {
 
   static const List<ImagePriority> _staticCritical = [
     ImagePriority(
-      'assets/images/entreprises/logo_godzyken.png',
+      'assets/images/entreprises/logo_godzyken.avif',
       strategy: PreloadStrategy.critical,
       priority: 0,
     ),
     ImagePriority(
-      'assets/images/pers_do_am.png',
+      'assets/images/pers_do_am.avif',
       strategy: PreloadStrategy.critical,
       priority: 1,
     ),

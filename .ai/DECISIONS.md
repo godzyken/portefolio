@@ -40,11 +40,11 @@ Accepted
 
 ### Decision
 
-Utilisation obligatoire de Squoosh pour l'optimisation des images du projet.
+Utilisation obligatoire de Squoosh pour l'optimisation des images du projet au format **AVIF**.
 
 ### Reason
 
-Garantir des temps de chargement ultra-rapides sur Netlify (SEO et performance) et limiter la taille du dépôt Git en convertissant les images dans les formats les plus légers et modernes (comme WebP/AVIF).
+Le format AVIF offre une compression supérieure au WebP et JPEG, garantissant des temps de chargement ultra-rapides sur Netlify (SEO et performance) et minimisant l'empreinte du dépôt Git.
 
 ### Date
 

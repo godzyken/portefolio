@@ -20,10 +20,10 @@
       "🧾 Catalogue, panier, suivi client et interface multilingue"
     ],
     "image": [
-      "assets/images/realisations/vitrine.png",
-      "assets/images/entreprises/2rouesvertes_original_logo.jpg",
-      "assets/images/prestashop.jpg",
-      "assets/images/etricks_bmx.png"
+      "assets/images/realisations/vitrine.avif",
+      "assets/images/entreprises/2rouesvertes_original_logo.avif",
+      "assets/images/prestashop.avif",
+      "assets/images/etricks_bmx.avif"
     ],
     "platform" : ["Web", "Desktop"],
     "tags": ["FileZila", "Web", "Php", "Magento", "Prestashop", "Boutique", "Stock"],
@@ -93,10 +93,10 @@
       "🔧 Formation du client à la gestion du CMS"
     ],
     "image": [
-      "assets/images/logos/wemoto_logo.jpg",
+      "assets/images/logos/wemoto_logo.avif",
       "assets/images/moto.svg",
-      "assets/images/piece_moto.jpg",
-      "https://assets.setmore.com/website/v2/images/integrations-listing/wordpress/wordpress-plugin-crop@2x.webp"
+      "assets/images/piece_moto.avif",
+      "https://assets.setmore.com/website/v2/images/integrations-listing/wordpress/wordpress-plugin-crop@2x.avif"
     ],
     "platform": ["Desktop", "Tablet"],
     "tags": ["E-commerce", "PrestaShop", "Facturation", "Moto", "Catalogue Dynamique"],
@@ -128,8 +128,8 @@
       "🔧 Formation du client à la gestion du CMS"
     ],
     "image": [
-      "assets/images/entreprises/coy.jpg",
-      "assets/images/vignette_clip_articles_1.jpg"
+      "assets/images/entreprises/coy.avif",
+      "assets/images/vignette_clip_articles_1.avif"
     ],
     "platform": ["Desktop", "Web"],
     "tags": ["E-commerce", "PrestaShop", "Facturation", "Accessoire du Ridder", "Catalogue Dynamique"],
@@ -164,11 +164,11 @@
       "🔐 Conformité avec les normes RGPD (protection des données utilisateurs)"
     ],
     "image": [
-      "assets/images/flutter_image.webp",
-      "assets/images/flutter_mascotte.png",
-      "assets/images/agile.png",
-      "assets/images/realisations/screenshot_login.jpg",
-      "assets/images/realisations/screenshot_inspector.jpg"
+      "assets/images/flutter_image.avif",
+      "assets/images/flutter_mascotte.avif",
+      "assets/images/agile.avif",
+      "assets/images/realisations/screenshot_login.avif",
+      "assets/images/realisations/screenshot_inspector.avif"
     ],
     "platform" : ["Smartphone", "tablet", "DeskTop", "LargeDesktop"],
     "tags": ["Flutter", "Firebase", "IoT", "VR", "Management", "UX/UI", "Digitalisation"],
@@ -303,11 +303,11 @@
       "🎨 Interface responsive Material 3 optimisée pour tablette, desktop et mobile"
     ],
     "image": [
-      "assets/images/realisations/bat_track_dashboard.png",
-      "assets/images/realisations/bat_track_vr_mode.png",
-      "assets/images/realisations/bat_track_form_intervention.png",
-      "assets/images/realisations/bat_track_pdf_preview.png",
-      "assets/images/realisations/bat_track_iot_mock.png"
+      "assets/images/realisations/bat_track_dashboard.avif",
+      "assets/images/realisations/bat_track_vr_mode.avif",
+      "assets/images/realisations/bat_track_form_intervention.avif",
+      "assets/images/realisations/bat_track_pdf_preview.avif",
+      "assets/images/realisations/bat_track_iot_mock.avif"
     ],
     "platform": ["Smartphone", "Tablet", "Desktop", "WebVR"],
     "tags": ["Flutter", "Firebase", "Hive", "IoT", "3D", "VR", "PDF", "Construction4.0"],
@@ -371,8 +371,8 @@
       "💬 Analyse UX, optimisation des parcours utilisateurs (User Flow) et ergonomie"
     ],
     "image": [
-      "assets/images/ui_ux_mobile.webp",
-      "assets/images/realisations/medical_app.png",
+      "assets/images/ui_ux_mobile.avif",
+      "assets/images/realisations/medical_app.avif",
       "assets/images/realisations/business_app.svg"
     ],
     "platform" : ["Smartphone", "tablet", "DeskTop", "LargeDesktop"],
@@ -390,11 +390,11 @@
       "🧪 Mise en œuvre de solutions numériques complètes : sites web, applications mobiles et stratégies de communication digitale."
     ],
     "image": [
-      "assets/images/getty_images.jpg",
-      "assets/images/gestion_portefeuilles_projets_banniere.webp",
-      "assets/images/transformation_digitale.jpg",
-      "assets/images/realisations/sketchup_image.webp",
-      "assets/images/realisations/scan_pokemon_card_struct.png"
+      "assets/images/getty_images.avif",
+      "assets/images/gestion_portefeuilles_projets_banniere.avif",
+      "assets/images/transformation_digitale.avif",
+      "assets/images/realisations/sketchup_image.avif",
+      "assets/images/realisations/scan_pokemon_card_struct.avif"
     ],
     "platform" : ["Smartphone", "tablet", "DeskTop", "LargeDesktop"],
     "tags": ["Flutter", "Firebase", "IoT", "VR", "Management", "UX/UI", "Digitalisation"]
@@ -411,19 +411,19 @@
       "📂 Hébergement local et/ou via GitHub Pages"
     ],
     "image": [
-      "assets/images/entreprises/logo_godzyken.png",
-      "assets/images/realisations/portefolio_ide.png",
-      "assets/images/realisations/pf_wp_1.png",
-      "assets/images/realisations/pf_wp_2.png",
-      "assets/images/realisations/pf_wp_3.png",
-      "assets/images/realisations/pf_wp_4.png",
-      "assets/images/realisations/pf_wp_5.png",
-      "assets/images/realisations/pf_wp_6.png",
-      "assets/images/realisations/pf_wp_7.png",
-      "assets/images/realisations/pf_wp_8.png",
-      "assets/images/realisations/pf_wp_9.png",
-      "assets/images/realisations/pf_wp_10.png",
-      "assets/images/realisations/pf_wp_11.png"
+      "assets/images/entreprises/logo_godzyken.avif",
+      "assets/images/realisations/portefolio_ide.avif",
+      "assets/images/realisations/pf_wp_1.avif",
+      "assets/images/realisations/pf_wp_2.avif",
+      "assets/images/realisations/pf_wp_3.avif",
+      "assets/images/realisations/pf_wp_4.avif",
+      "assets/images/realisations/pf_wp_5.avif",
+      "assets/images/realisations/pf_wp_6.avif",
+      "assets/images/realisations/pf_wp_7.avif",
+      "assets/images/realisations/pf_wp_8.avif",
+      "assets/images/realisations/pf_wp_9.avif",
+      "assets/images/realisations/pf_wp_10.avif",
+      "assets/images/realisations/pf_wp_11.avif"
     ],
     "platform": ["Web", "Desktop", "Mobile"],
     "tags": ["WordPress", "Github Octocat", "Github Actions", "Unity", "Flutter"]
@@ -451,16 +451,16 @@
       "matériel": ["Raspberry Pi 4", "ESP8266 NodeMCU", "Routeur Wi-Fi portable", "Smartphone Android/iOS"]
     },
     "image": [
-      "assets/images/WorkShop/ultron.webp",
-      "assets/images/WorkShop/1.png",
-      "assets/images/WorkShop/2.png",
-      "assets/images/WorkShop/3.png",
-      "assets/images/WorkShop/4.png",
-      "assets/images/WorkShop/5.png",
-      "assets/images/WorkShop/6.png",
-      "assets/images/WorkShop/esp_1.jpg",
-      "assets/images/WorkShop/esp_2.jpg",
-      "assets/images/WorkShop/fo_kanban.jpg"
+      "assets/images/WorkShop/ultron.avif",
+      "assets/images/WorkShop/1.avif",
+      "assets/images/WorkShop/2.avif",
+      "assets/images/WorkShop/3.avif",
+      "assets/images/WorkShop/4.avif",
+      "assets/images/WorkShop/5.avif",
+      "assets/images/WorkShop/6.avif",
+      "assets/images/WorkShop/esp_1.avif",
+      "assets/images/WorkShop/esp_2.avif",
+      "assets/images/WorkShop/fo_kanban.avif"
     ],
     "platform": ["Mobile", "Web", "IoT"],
     "tags": ["Flutter", "Raspberry Pi", "ESP8266", "LAN", "Offline Sync", "Education", "IoT"]
@@ -477,7 +477,7 @@
       "🎯 Objectif : valoriser l’artiste et renforcer sa présence numérique grâce à une stratégie de diffusion ciblée."
     ],
     "image": [
-      "assets/images/vignette_clip_artiste.jpg"
+      "assets/images/vignette_clip_artiste.avif"
     ],
     "youtubeVideoId": "7hjJeGOZEgI",
     "platform": ["Web", "Mobile", "Logic Pro"],
@@ -580,18 +580,18 @@
       "📊 Module de simulation financière intégré : analyse de rentabilité, projection de chiffre d’affaires et seuil de croissance"
     ],
     "image": [
-      "assets/images/logos/logo_emap.png",
-      "assets/images/Emap/1.png",
-      "assets/images/Emap/2.png",
-      "assets/images/Emap/3.png",
-      "assets/images/Emap/4.png",
-      "assets/images/Emap/5.png",
-      "assets/images/Emap/6.png",
-      "assets/images/Emap/7.png",
-      "assets/images/Emap/8.png",
-      "assets/images/Emap/9.png",
-      "assets/images/Emap/10.png",
-      "assets/images/realisations/audit_plan_emap.png"
+      "assets/images/logos/logo_emap.avif",
+      "assets/images/Emap/1.avif",
+      "assets/images/Emap/2.avif",
+      "assets/images/Emap/3.avif",
+      "assets/images/Emap/4.avif",
+      "assets/images/Emap/5.avif",
+      "assets/images/Emap/6.avif",
+      "assets/images/Emap/7.avif",
+      "assets/images/Emap/8.avif",
+      "assets/images/Emap/9.avif",
+      "assets/images/Emap/10.avif",
+      "assets/images/realisations/audit_plan_emap.avif"
     ],
     "platform": ["Smartphone", "Tablet", "Desktop", "Web"],
     "lienProjet": "https://emap-82.fr",
@@ -745,10 +745,10 @@
       "🪴 Construction d’un réseau de confiance basé sur la qualité, la réactivité et la responsabilité environnementale"
     ],
     "image": [
-      "assets/images/realisations/emap_partenariat_dashboard.png",
-      "assets/images/realisations/emap_collaboration_map.png",
-      "assets/images/realisations/emap_crm_integration.png",
-      "assets/images/realisations/emap_team_strategy.png",
+      "assets/images/realisations/emap_partenariat_dashboard.avif",
+      "assets/images/realisations/emap_collaboration_map.avif",
+      "assets/images/realisations/emap_crm_integration.avif",
+      "assets/images/realisations/emap_team_strategy.avif",
       "assets/images/realisations/boot_sequence_8_stpes.svg",
       "assets/images/realisations/pre_commit_testing_flow.svg"
     ],

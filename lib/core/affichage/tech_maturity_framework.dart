@@ -10,7 +10,7 @@ enum TechPillar {
     'Structure clean, modulaire et scalable.',
     Icons.architecture_rounded,
     ColorHelpers.purple,
-    'assets/images/FlutterSkills/Screenshot_2026-07-18-09-30-28-187_com.linkedin.android.jpg',
+    'assets/images/FlutterSkills/Screenshot_2026-07-18-09-30-28-187_com.linkedin.android.avif',
     '''
 graph TD
     UI[Layer UI] --> Riverpod[State Management]
@@ -24,7 +24,7 @@ graph TD
     'Gestion du flux de données prévisible et performante.',
     Icons.account_tree_rounded,
     ColorHelpers.blue,
-    'assets/images/FlutterSkills/Screenshot_2026-07-18-09-26-52-191_com.linkedin.android.jpg',
+    'assets/images/FlutterSkills/Screenshot_2026-07-18-09-26-52-191_com.linkedin.android.avif',
     '''
 graph LR
     User(Utilisateur) --> Action[Action / UI Event]
@@ -38,7 +38,7 @@ graph LR
     'Tests unitaires, widgets et intégration pour la fiabilité.',
     Icons.biotech_rounded,
     ColorHelpers.green,
-    'assets/images/FlutterSkills/Screenshot_2026-08-13-15-30-07-864_com.linkedin.android.jpg',
+    'assets/images/FlutterSkills/Screenshot_2026-08-13-15-30-07-864_com.linkedin.android.avif',
     '''
 graph TD
     Unit[Unit Tests] --> Logic[Business Logic]
@@ -51,7 +51,7 @@ graph TD
     'Protection des données et configurations sécurisées.',
     Icons.security_rounded,
     ColorHelpers.magenta,
-    'assets/images/FlutterSkills/Screenshot_2026-08-13-15-30-07-864_com.linkedin.android.jpg',
+    'assets/images/FlutterSkills/Screenshot_2026-08-13-15-30-07-864_com.linkedin.android.avif',
     '''
 graph LR
     Request[Request] --> SSL[SSL/TLS]
@@ -65,7 +65,7 @@ graph LR
     'Optimisation du rendu (60 FPS) et temps de chargement.',
     Icons.speed_rounded,
     ColorHelpers.cyan,
-    'assets/images/FlutterSkills/Screenshot_2026-07-18-09-39-41-969_com.linkedin.android.jpg',
+    'assets/images/FlutterSkills/Screenshot_2026-07-18-09-39-41-969_com.linkedin.android.avif',
     '''
 graph TD
     Asset[Assets] --> Optim[Optimization]
@@ -79,7 +79,7 @@ graph TD
     'Automatisation de l\'analyse, des tests et du déploiement.',
     Icons.loop_rounded,
     ColorHelpers.pink,
-    'assets/images/FlutterSkills/Screenshot_2026-08-13-15-30-07-864_com.linkedin.android.jpg',
+    'assets/images/FlutterSkills/Screenshot_2026-08-13-15-30-07-864_com.linkedin.android.avif',
     '''
 graph LR
     Push[Git Push] --> Lint[Analyze/Lint]
@@ -93,7 +93,7 @@ graph LR
     'Suivi des erreurs, analytics et observabilité en prod.',
     Icons.insights_rounded,
     ColorHelpers.orange,
-    'assets/images/FlutterSkills/Screenshot_2026-08-13-15-30-07-864_com.linkedin.android.jpg',
+    'assets/images/FlutterSkills/Screenshot_2026-08-13-15-30-07-864_com.linkedin.android.avif',
     '''
 graph TD
     App[App Usage] --> Logs[Error Tracking]
@@ -107,7 +107,7 @@ graph TD
     'Intégration d\'IA et fonctionnalités intelligentes.',
     Icons.psychology_rounded,
     ColorHelpers.yellow,
-    'assets/images/FlutterSkills/Screenshot_2026-07-18-10-21-39-951_com.linkedin.android.jpg',
+    'assets/images/FlutterSkills/Screenshot_2026-07-18-10-21-39-951_com.linkedin.android.avif',
     '''
 graph TD
     Input[Data Input] --> LLM[LLM / Agent]

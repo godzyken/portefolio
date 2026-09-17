@@ -33,7 +33,7 @@ class ExperienceTimeline extends ConsumerWidget {
         // ── Background original conservé ──
         image: const DecorationImage(
           opacity: 0.35,
-          image: AssetImage('assets/images/backgrounds/frise_mur.png'),
+          image: AssetImage('assets/images/backgrounds/frise_mur.avif'),
           fit: BoxFit.cover,
         ),
         // ── Overlay sombre pour faire ressortir les éléments ──

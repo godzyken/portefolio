@@ -88,6 +88,7 @@ dev_dependencies:
   riverpod_lint: ^3.1.8
   flutter_launcher_icons: ^0.14.4
   mocktail: ^1.0.4
+  image: ^4.10.1
 
 dependency_overrides:
   # youtube_player_iframe_web: ^3.1.2
@@ -168,4 +169,4 @@ spider:
   groups:
     - path: assets/images
       class_name: Images
-      types: [ .png, .jpg, .jpeg, .webp, .webm, .bmp ]
+      types: [ .avif, .png, .jpg, .jpeg, .webp, .webm, .bmp, .svg ]

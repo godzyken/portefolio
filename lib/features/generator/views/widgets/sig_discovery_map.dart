@@ -138,7 +138,7 @@ class _SigDiscoveryMapState extends ConsumerState<SigDiscoveryMap>
       options: options,
       children: [
         TileLayer(
-          urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+          urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.avif',
           userAgentPackageName: 'com.godzyken.portfolio',
           tileProvider: tileProvider,
         ),

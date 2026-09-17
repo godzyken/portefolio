@@ -313,10 +313,10 @@ class UnifiedImageManager with ChangeNotifier {
   }
 
   bool _isRasterExtension(String lower) =>
-      lower.endsWith('.png') ||
-      lower.endsWith('.jpg') ||
-      lower.endsWith('.jpeg') ||
-      lower.endsWith('.webp') ||
+      lower.endsWith('.avif') ||
+      lower.endsWith('.avif') ||
+      lower.endsWith('.avif') ||
+      lower.endsWith('.avif') ||
       lower.endsWith('.gif');
 }
 
