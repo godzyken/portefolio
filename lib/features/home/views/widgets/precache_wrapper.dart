@@ -18,7 +18,7 @@ class PrecacheWrapper extends ConsumerStatefulWidget {
   const PrecacheWrapper({
     super.key,
     required this.child,
-    this.maxWaitDuration = const Duration(seconds: 30),
+    this.maxWaitDuration = const Duration(seconds: 8),
   });
 
   @override

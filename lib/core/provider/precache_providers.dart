@@ -227,10 +227,17 @@ Future<PrecacheReport> runOptimizedPrecache(Ref ref) async {
 
     final List<Future<bool>> loaders = [];
 
-    // Ajout du précache Rive
-    loaders.add(_precacheRive(AssetsConfig.avatarRivePath));
+    // Ajout du précache Rive (sécurisé)
+    try {
+      await _precacheRive(AssetsConfig.avatarRivePath)
+          .timeout(const Duration(seconds: 2));
+      success++;
+    } catch (e) {
+      developer.log('⚠️ Timeout ou erreur Rive, on continue...');
+      failed++;
+    }
 
-    // Lancement en batch
+    // Lancement des images en batch
     final results = await _precacheImagesInBatches(
       criticalImages,
       config,
@@ -238,11 +245,8 @@ Future<PrecacheReport> runOptimizedPrecache(Ref ref) async {
       timeout: const Duration(seconds: 2),
     );
 
-    // On attend aussi le Rive loader
-    final riveResult = await loaders.first;
-
-    success = results.where((r) => r).length + (riveResult ? 1 : 0);
-    failed = results.where((r) => !r).length + (riveResult ? 0 : 1);
+    success += results.where((r) => r).length;
+    failed += results.where((r) => !r).length;
 
     // ── Étape 4 : Reste en background ─────────────────
     final remainingImages =
