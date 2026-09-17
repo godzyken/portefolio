@@ -28,7 +28,7 @@ jobs:
       - name: Prepare image assets
         run: |
           echo "Setting up Python environment..."
-          python3 -m pip install Pillow tqdm
+          python3 -m pip install Pillow tqdm pillow-avif-plugin
           
           echo "Generating image assets from source..."
           python3 generate_all_assets_variants.py

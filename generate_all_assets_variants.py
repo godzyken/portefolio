@@ -4,8 +4,7 @@ generate_asset_variants.py
 --------------------------
 Gère la génération des assets pour Flutter de manière optimisée.
 - Redimensionne les images bitmap (png, jpg, webp).
-- Convertit les sources AVIF en WEBP (Flutter ne décode pas l'AVIF nativement).
-- Copie les assets vectoriels (svg) et autres (json...).
+- Copie les assets vectoriels (svg), 3D et AVIF (supporté nativement par Flutter 3.47+).
 - Mode incrémental : ne traite que les fichiers modifiés.
 """
 from __future__ import annotations
@@ -26,13 +25,12 @@ except ImportError:
     print("   Installez-le avec : pip install pillow-avif-plugin")
 
 # --- CONFIGURATION DES FORMATS ---
-# .avif est maintenant traité comme une image bitmap à CONVERTIR (pas juste copier)
+# .avif est géré nativement par Flutter 3.47+
 RASTER_EXTS = {'.png', '.jpg', '.jpeg', '.webp', '.avif'}
 COPY_ONLY_EXTS = {'.svg', '.json', '.gltf', '.bin', '.glb', '.riv'}
 
-# Formats qui, une fois lus, doivent être ré-écrits dans UN AUTRE format
-# (Flutter ne sait pas décoder l'AVIF -> on sort systématiquement en WEBP)
-OUTPUT_EXT_OVERRIDE = {'.avif': '.webp'}
+# Plus de conversion forcée vers WEBP
+OUTPUT_EXT_OVERRIDE = {}
 
 # --- CONFIGURATION DES CHEMINS ET TAILLES ---
 DEFAULT_SOURCE_DIR = Path('assets_source')
@@ -137,7 +135,7 @@ def main():
     print("---------------------------------------------")
 
     generate_variants(args.src, args.dest, scales, args.base_width)
-    print("\n✅ Terminé ! Vos assets sont prêts (AVIF source -> WEBP compatible Flutter).")
+    print("\n✅ Terminé ! Vos assets sont prêts.")
 
 
 if __name__ == '__main__':
