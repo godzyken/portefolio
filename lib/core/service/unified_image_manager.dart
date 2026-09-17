@@ -280,12 +280,12 @@ class UnifiedImageManager with ChangeNotifier {
 
   // ── Helpers ────────────────────────────────────────────────────────────────
 
-  /// Corrige les chemins doublement préfixés (assets/assets/...)
+  /// Corrige les chemins mal formés ou doublement préfixés
   String _normalizePath(String path) {
     var p = path.trim();
-    while (p.startsWith('assets/assets/')) {
-      p = p.replaceFirst('assets/assets/', 'assets/');
-    }
+    // Supprime les préfixes redondants comme "assets/assets/" ou "/assets/"
+    p = p.replaceAll('assets/assets/', 'assets/');
+    if (p.startsWith('/')) p = p.substring(1);
     return p;
   }
 
@@ -295,7 +295,6 @@ class UnifiedImageManager with ChangeNotifier {
       final provider = cleanPath.startsWith('http')
           ? NetworkImage(cleanPath) as ImageProvider
           : AssetImage(cleanPath);
-      // Utilise le cache interne Flutter — pas de requête réseau
       final status = PaintingBinding.instance.imageCache.statusForKey(provider);
       return status.keepAlive || status.live;
     } catch (_) {
@@ -314,9 +313,10 @@ class UnifiedImageManager with ChangeNotifier {
 
   bool _isRasterExtension(String lower) =>
       lower.endsWith('.avif') ||
-      lower.endsWith('.avif') ||
-      lower.endsWith('.avif') ||
-      lower.endsWith('.avif') ||
+      lower.endsWith('.webp') ||
+      lower.endsWith('.png') ||
+      lower.endsWith('.jpg') ||
+      lower.endsWith('.jpeg') ||
       lower.endsWith('.gif');
 }
 

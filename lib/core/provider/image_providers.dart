@@ -48,9 +48,10 @@ final imageFilesProvider = FutureProvider<List<String>>((ref) async {
     final lower = path.toLowerCase();
     if (lower.contains('/2.0x/') || lower.contains('/3.0x/')) return false;
     return lower.endsWith('.avif') ||
-        lower.endsWith('.avif') ||
-        lower.endsWith('.avif') ||
-        lower.endsWith('.avif');
+        lower.endsWith('.webp') ||
+        lower.endsWith('.png') ||
+        lower.endsWith('.jpg') ||
+        lower.endsWith('.jpeg');
   }).toList();
 }, name: 'ImageFiles');
 
@@ -109,7 +110,11 @@ final rasterImagesProvider = FutureProvider<List<String>>((ref) async {
   final allAssets = await ref.watch(allImagesProvider.future);
   return allAssets.where((path) {
     final p = path.toLowerCase();
-    return (p.endsWith('.avif') || p.endsWith('.avif') || p.endsWith('.avif')) &&
+    return (p.endsWith('.avif') ||
+            p.endsWith('.webp') ||
+            p.endsWith('.png') ||
+            p.endsWith('.jpg') ||
+            p.endsWith('.jpeg')) &&
         !p.contains('/2.0x/') &&
         !p.contains('/3.0x/');
   }).toList();
