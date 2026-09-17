@@ -25,13 +25,17 @@ except ImportError:
     print("   Installez-le avec : pip install pillow-avif-plugin")
 
 # --- CONFIGURATION DES FORMATS ---
-# .avif est géré nativement par Flutter 3.47+
-# On le place dans COPY_ONLY pour éviter d'avoir besoin de pillow-avif-plugin en CI
-RASTER_EXTS = {'.png', '.jpg', '.jpeg', '.webp'}
-COPY_ONLY_EXTS = {'.svg', '.json', '.gltf', '.bin', '.glb', '.riv', '.avif'}
+# On convertit TOUT en WEBP pour une compatibilité maximale
+RASTER_EXTS = {'.png', '.jpg', '.jpeg', '.webp', '.avif'}
+COPY_ONLY_EXTS = {'.svg', '.json', '.gltf', '.bin', '.glb', '.riv'}
 
-# Plus de conversion forcée vers WEBP
-OUTPUT_EXT_OVERRIDE = {}
+# Formats qui doivent être ré-écrits en WEBP
+OUTPUT_EXT_OVERRIDE = {
+    '.avif': '.webp',
+    '.png': '.webp',
+    '.jpg': '.webp',
+    '.jpeg': '.webp'
+}
 
 # --- CONFIGURATION DES CHEMINS ET TAILLES ---
 DEFAULT_SOURCE_DIR = Path('assets_source')

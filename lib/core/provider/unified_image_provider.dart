@@ -38,12 +38,12 @@ class PreloadNotifier extends AsyncNotifier<PreloadResult?> {
     // Définir les images critiques avec priorités
     final criticalImages = [
       const ImagePriority(
-        'assets/images/entreprises/logo_godzyken.avif',
+        'assets/images/entreprises/logo_godzyken.webp',
         strategy: PreloadStrategy.critical,
         priority: 0,
       ),
       const ImagePriority(
-        'assets/images/pers_do_am.avif',
+        'assets/images/pers_do_am.webp',
         strategy: PreloadStrategy.critical,
         priority: 1,
       ),

@@ -116,13 +116,13 @@ class Service {
       }
     }
 
-    // 3. Migration automatique vers AVIF pour les assets locaux
+    // 3. Migration automatique vers WEBP pour les assets locaux
     if (!cleaned.startsWith('http')) {
-      // Forcer l'extension .avif pour tous les assets raster
-      final rasterExtensions = ['.png', '.jpg', '.jpeg', '.webp'];
+      // Forcer l'extension .webp pour tous les assets raster
+      final rasterExtensions = ['.png', '.jpg', '.jpeg', '.avif'];
       for (final ext in rasterExtensions) {
         if (cleaned.toLowerCase().endsWith(ext)) {
-          cleaned = '${cleaned.substring(0, cleaned.length - ext.length)}.avif';
+          cleaned = '${cleaned.substring(0, cleaned.length - ext.length)}.webp';
           break;
         }
       }
@@ -136,17 +136,17 @@ class Service {
           !cleaned.contains('/realisations/')) {
         // Liste de fichiers connus pour être dans /services/
         const serviceImages = [
-          'flutter_image.avif',
-          'ui_ux_design_service.avif',
-          'api_img.avif',
-          'technical_support_maintenance.avif',
-          'ui_ux_mobile.avif',
-          'btp_workflow_blueprint.avif',
-          'fabrication_flutter_construction_4_0.avif',
-          'to_solution_impact_banner.avif',
-          'gestion_portefeuilles_projets_banniere.avif',
-          'godzyken_amoa_ecoute_terrain_flowchart_banner.avif',
-          'linkedin_cover_banner.avif',
+          'flutter_image.webp',
+          'ui_ux_design_service.webp',
+          'api_img.webp',
+          'technical_support_maintenance.webp',
+          'ui_ux_mobile.webp',
+          'btp_workflow_blueprint.webp',
+          'fabrication_flutter_construction_4_0.webp',
+          'to_solution_impact_banner.webp',
+          'gestion_portefeuilles_projets_banniere.webp',
+          'godzyken_amoa_ecoute_terrain_flowchart_banner.webp',
+          'linkedin_cover_banner.webp'
         ];
 
         final fileName = cleaned.split('/').last;
