@@ -4,7 +4,7 @@ generate_asset_variants.py
 --------------------------
 Gère la génération des assets pour Flutter de manière optimisée.
 - Redimensionne les images bitmap (png, jpg, webp).
-- Copie les assets vectoriels (svg), 3D et AVIF (supporté nativement par Flutter 3.47+).
+- Copie les assets vectoriels (svg), 3D et AVIF.
 - Mode incrémental : ne traite que les fichiers modifiés.
 """
 from __future__ import annotations
@@ -26,8 +26,9 @@ except ImportError:
 
 # --- CONFIGURATION DES FORMATS ---
 # .avif est géré nativement par Flutter 3.47+
-RASTER_EXTS = {'.png', '.jpg', '.jpeg', '.webp', '.avif'}
-COPY_ONLY_EXTS = {'.svg', '.json', '.gltf', '.bin', '.glb', '.riv'}
+# On le place dans COPY_ONLY pour éviter d'avoir besoin de pillow-avif-plugin en CI
+RASTER_EXTS = {'.png', '.jpg', '.jpeg', '.webp'}
+COPY_ONLY_EXTS = {'.svg', '.json', '.gltf', '.bin', '.glb', '.riv', '.avif'}
 
 # Plus de conversion forcée vers WEBP
 OUTPUT_EXT_OVERRIDE = {}
