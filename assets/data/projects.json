@@ -164,7 +164,7 @@
       "🔐 Conformité avec les normes RGPD (protection des données utilisateurs)"
     ],
     "image": [
-      "assets/images/flutter_image.webp",
+      "assets/images/services/flutter_image.webp",
       "assets/images/flutter_mascotte.webp",
       "assets/images/agile.webp",
       "assets/images/realisations/screenshot_login.webp",
@@ -371,7 +371,7 @@
       "💬 Analyse UX, optimisation des parcours utilisateurs (User Flow) et ergonomie"
     ],
     "image": [
-      "assets/images/ui_ux_mobile.webp",
+      "assets/images/services/ui_ux_mobile.webp",
       "assets/images/realisations/medical_app.webp",
       "assets/images/realisations/business_app.svg"
     ],
@@ -391,7 +391,7 @@
     ],
     "image": [
       "assets/images/getty_images.webp",
-      "assets/images/gestion_portefeuilles_projets_banniere.webp",
+      "assets/images/services/gestion_portefeuilles_projets_banniere.webp",
       "assets/images/transformation_digitale.webp",
       "assets/images/realisations/sketchup_image.webp",
       "assets/images/realisations/scan_pokemon_card_struct.webp"
@@ -749,7 +749,7 @@
       "assets/images/realisations/emap_collaboration_map.webp",
       "assets/images/realisations/emap_crm_integration.webp",
       "assets/images/realisations/emap_team_strategy.webp",
-      "assets/images/realisations/boot_sequence_8_stpes.svg",
+      "assets/images/realisations/boot_sequence_8_steps.svg",
       "assets/images/realisations/pre_commit_testing_flow.svg"
     ],
     "platform": ["Web", "Tablet", "Desktop"],

@@ -1,4 +1,5 @@
 import 'dart:developer' as developer;
+
 import '../service/supabase_service.dart';
 
 enum TrackingAction {
@@ -27,14 +28,26 @@ class TrackingService {
 
     try {
       final actionStr = action.name.toUpperCase();
-
-      // 1. Log détaillé (Historique)
-      await SupabaseService.client.from('portfolio_interactions').insert({
+      final payload = {
         'project_id': projectId,
         'project_name': projectName,
         'action_type': actionStr,
         'details': details,
-      });
+      };
+
+      developer.log('📡 Tracking interaction: $payload',
+          name: 'TrackingService');
+
+      // 1. Log détaillé (Historique)
+      final res = await SupabaseService.client
+          .from('portfolio_interactions')
+          .insert(payload)
+          .select();
+
+      if (res.isEmpty) {
+        developer.log('⚠️ Interaction record returned empty',
+            name: 'TrackingService');
+      }
 
       // 2. Flux Live (Graphiques Artisan)
       // Si c'est une interaction sur le portfolio, on l'envoie aussi dans app_analytics
