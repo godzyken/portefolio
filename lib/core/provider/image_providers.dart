@@ -47,7 +47,7 @@ final imageFilesProvider = FutureProvider<List<String>>((ref) async {
   return allAssets.where((path) {
     final lower = path.toLowerCase();
     if (lower.contains('/2.0x/') || lower.contains('/3.0x/')) return false;
-    return lower.endsWith('.avif') ||
+    return lower.endsWith('.webp') ||
         lower.endsWith('.webp') ||
         lower.endsWith('.png') ||
         lower.endsWith('.jpg') ||
@@ -62,8 +62,8 @@ final techLogosAssetsProvider = FutureProvider<List<String>>((ref) async {
 final appImagesProvider = FutureProvider<AppImages>((ref) async {
   final localImages = await ref.watch(allImagesProvider.future);
   final networkImages = [
-    'https://storage.googleapis.com/cms-storage-bucket/build-more-with-flutter.f399274b364a6194c43d.avif',
-    'https://assets.setmore.com/website/v2/images/integrations-listing/wordpress/wordpress-plugin-crop@2x.avif',
+    'https://storage.googleapis.com/cms-storage-bucket/build-more-with-flutter.f399274b364a6194c43d.webp',
+    'https://assets.setmore.com/website/v2/images/integrations-listing/wordpress/wordpress-plugin-crop@2x.webp',
   ];
   return AppImages(local: localImages, network: networkImages);
 }, name: 'AppImages');
@@ -110,7 +110,7 @@ final rasterImagesProvider = FutureProvider<List<String>>((ref) async {
   final allAssets = await ref.watch(allImagesProvider.future);
   return allAssets.where((path) {
     final p = path.toLowerCase();
-    return (p.endsWith('.avif') ||
+    return (p.endsWith('.webp') ||
             p.endsWith('.webp') ||
             p.endsWith('.png') ||
             p.endsWith('.jpg') ||

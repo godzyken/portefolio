@@ -33,10 +33,10 @@ class _AssetsDebuggerState extends State<AssetsDebugger> {
         imageAssets = allAssets
             .where((path) =>
                 path.startsWith('assets/images/') &&
-                (path.endsWith('.avif') ||
-                    path.endsWith('.avif') ||
-                    path.endsWith('.avif') ||
-                    path.endsWith('.avif')))
+                (path.endsWith('.webp') ||
+                    path.endsWith('.webp') ||
+                    path.endsWith('.webp') ||
+                    path.endsWith('.webp')))
             .toList();
         dataAssets =
             allAssets.where((path) => path.startsWith('assets/data/')).toList();
@@ -186,10 +186,10 @@ class _AssetsDebuggerState extends State<AssetsDebugger> {
   }
 
   Widget _buildAssetTile(String path) {
-    final isImage = path.endsWith('.avif') ||
-        path.endsWith('.avif') ||
-        path.endsWith('.avif') ||
-        path.endsWith('.avif');
+    final isImage = path.endsWith('.webp') ||
+        path.endsWith('.png') ||
+        path.endsWith('.jpg') ||
+        path.endsWith('.jpeg');
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 4),

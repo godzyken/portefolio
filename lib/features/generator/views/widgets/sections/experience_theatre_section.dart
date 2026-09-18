@@ -5,6 +5,8 @@ import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/affichage/tech_maturity_framework.dart';
 import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
 import 'package:portefolio/core/ui/widgets/narrative_bubble.dart';
+import 'package:portefolio/core/ui/widgets/smart_image.dart';
+
 import '../../../../experience/data/experiences_data.dart';
 
 /// Version immersive et narrative pour une expérience professionnelle.
@@ -49,107 +51,110 @@ class ExperienceTheatreSection extends StatelessWidget {
 
             SizedBox(height: isCompact ? 12 : 24),
 
-          // BULLE IA (MOBILE)
-          if (info.isMobile)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 24),
-              child: NarrativeBubble(
-                text: experience.tags.contains('Flutter')
-                    ? "Cette expérience a été un pilier pour ma maîtrise de la Production Readiness."
-                    : "Une immersion riche en défis techniques et organisationnels.",
+            // BULLE IA (MOBILE)
+            if (info.isMobile)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 24),
+                child: NarrativeBubble(
+                  text: experience.tags.contains('Flutter')
+                      ? "Cette expérience a été un pilier pour ma maîtrise de la Production Readiness."
+                      : "Une immersion riche en défis techniques et organisationnels.",
+                ),
               ),
-            ),
 
-          // CONTENU NARRATIF + BULLES IA
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // BLOC TEXTE PRINCIPAL (GLASSMORPHISM)
-              Expanded(
-                flex: 7,
-                child: Column(
-                  children: [
-                    _MainDescriptionCard(
-                      text: experience.contexte,
-                      topPillar: maturity.isNotEmpty
-                          ? maturity.entries
-                              .reduce((a, b) => a.value > b.value ? a : b)
-                              .key
-                          : null,
-                    ),
+            // CONTENU NARRATIF + BULLES IA
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // BLOC TEXTE PRINCIPAL (GLASSMORPHISM)
+                Expanded(
+                  flex: 7,
+                  child: Column(
+                    children: [
+                      _MainDescriptionCard(
+                        text: experience.contexte,
+                        topPillar: maturity.isNotEmpty
+                            ? maturity.entries
+                                .reduce((a, b) => a.value > b.value ? a : b)
+                                .key
+                            : null,
+                      ),
 
-                    // NOUVEAU : IMAGE D'EXPÉRIENCE SI DISPONIBLE
-                    if (experience.image.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 16),
-                        child: Container(
-                          height: 180,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: Colors.white10),
-                            boxShadow: [
-                              BoxShadow(color: Colors.black45, blurRadius: 10)
-                            ],
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(19),
-                            child: SmartImage(
-                              path: experience.image,
-                              fit: BoxFit.cover,
+                      // NOUVEAU : IMAGE D'EXPÉRIENCE SI DISPONIBLE
+                      if (experience.image.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16),
+                          child: Container(
+                            height: 180,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(color: Colors.white10),
+                              boxShadow: [
+                                BoxShadow(color: Colors.black45, blurRadius: 10)
+                              ],
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(19),
+                              child: SmartImage(
+                                path: experience.image,
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
-                        ),
-                      ).animate().fadeIn(delay: 300.ms),
+                        ).animate().fadeIn(delay: 300.ms),
 
-                    const SizedBox(height: 16),
-                    if (experience.missions.isNotEmpty)
-                      _MissionsCard(missions: experience.missions),
-                    SizedBox(height: isCompact ? 30 : 60), // Padding pour le scroll mobile
-                  ],
-                ),
-              ),
-
-              // ZONE DES BULLES IA (COLONNE À DROITE)
-              if (!info.isMobile)
-                Expanded(
-                  flex: 3,
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 24),
-                    child: Column(
-                      children: [
-                        const NarrativeBubble(
-                          text:
-                              "Plongez dans les détails. J'ai documenté des tech specs spécifiques à cette expérience.",
-                        ),
-                        const SizedBox(height: 20),
-                        const NarrativeBubble(
-                          text:
-                              "L'approche 'Production Readiness' a permis de sécuriser le code et d'optimiser les performances de 40%.",
-                        )
-                            .animate()
-                            .fadeIn(delay: const Duration(milliseconds: 500)),
-                        const SizedBox(height: 32),
-                        // NOUVELLE CARTE VISUELLE POUR LES NON-TECHNIQUES
-                        _ImpactMiniCard(experience: experience),
-                      ],
-                    ),
+                      const SizedBox(height: 16),
+                      if (experience.missions.isNotEmpty)
+                        _MissionsCard(missions: experience.missions),
+                      SizedBox(
+                          height: isCompact
+                              ? 30
+                              : 60), // Padding pour le scroll mobile
+                    ],
                   ),
                 ),
-            ],
-          ),
 
-          // SUR MOBILE : IMPACT EN BAS
-          if (info.isMobile) ...[
-            const SizedBox(height: 32),
-            _ImpactMiniCard(experience: experience),
-            const SizedBox(height: 40),
+                // ZONE DES BULLES IA (COLONNE À DROITE)
+                if (!info.isMobile)
+                  Expanded(
+                    flex: 3,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 24),
+                      child: Column(
+                        children: [
+                          const NarrativeBubble(
+                            text:
+                                "Plongez dans les détails. J'ai documenté des tech specs spécifiques à cette expérience.",
+                          ),
+                          const SizedBox(height: 20),
+                          const NarrativeBubble(
+                            text:
+                                "L'approche 'Production Readiness' a permis de sécuriser le code et d'optimiser les performances de 40%.",
+                          )
+                              .animate()
+                              .fadeIn(delay: const Duration(milliseconds: 500)),
+                          const SizedBox(height: 32),
+                          // NOUVELLE CARTE VISUELLE POUR LES NON-TECHNIQUES
+                          _ImpactMiniCard(experience: experience),
+                        ],
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+
+            // SUR MOBILE : IMPACT EN BAS
+            if (info.isMobile) ...[
+              const SizedBox(height: 32),
+              _ImpactMiniCard(experience: experience),
+              const SizedBox(height: 40),
+            ],
           ],
-        ],
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 }
 
 class _ImpactMiniCard extends StatelessWidget {
@@ -385,8 +390,8 @@ class _MainDescriptionCard extends StatelessWidget {
               bottom: -50,
               child: Opacity(
                 opacity: 0.15,
-                child: Image.asset(
-                  topPillar!.skillImage,
+                child: SmartImage(
+                  path: topPillar!.skillImage,
                   width: 300,
                   height: 300,
                   fit: BoxFit.cover,

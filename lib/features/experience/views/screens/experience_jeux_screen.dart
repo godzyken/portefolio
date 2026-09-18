@@ -347,7 +347,7 @@ class _ExperienceJeuxScreenState extends ConsumerState<ExperienceJeuxScreen> {
         // Fond
         const Positioned.fill(
           child: SmartImage(
-            path: 'assets/images/backgrounds/tapis_poker.avif',
+            path: 'assets/images/backgrounds/tapis_poker.webp',
             responsiveSize: ResponsiveImageSize.xlarge,
             width: double.infinity,
             height: double.infinity,

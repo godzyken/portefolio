@@ -21,10 +21,10 @@ BY FLUTTER`,subtitle:"Du wireframe au chantier, en une codebase.",desc:"Une app 
 IMPACTANTE`,subtitle:"Moins d'admin. Plus de marge. Zéro papier perdu.",desc:"L'artisan redevient artisan. Godzyken livre l'outil qui change l'échelle.",accent:"IMPACT"}],X0=[{icon:Sr,title:"Devis instantané IA",detail:"Photo + vocal -> devis chiffré en 45s"},{icon:yn,title:"Suivi photo géo",detail:"Preuves chantier horodatées, offline"},{icon:Dr,title:"Planning équipes",detail:"Qui fait quoi, où, avec quoi"},{icon:Cr,title:"Stock matériaux",detail:"Alertes rupture, commande en 1 tap"},{icon:gn,title:"Signature client",detail:"PV réception, levée de réserves"}];function Ci(){let[e,t]=Ce.useState(0),[n,r]=Ce.useState(!0),[l,u]=Ce.useState(0),[isTeaser, setIsTeaser]=Ce.useState(true),[teaserStep, setTeaserStep]=Ce.useState(0),o=Ce.useRef(null),i=7000;
 
   const teaserBanners = [
-    { src: "../assets/images/btp_workflow_blueprint.webp", title: "1. LE BESOIN TERRAIN" },
-    { src: "../assets/images/godzyken_amoa_ecoute_terrain_flowchart_banner.webp", title: "2. L'ÉCOUTE TERRAIN" },
-    { src: "../assets/images/fabrication_flutter_construction_4_0.webp", title: "3. FABRICATION FLUTTER" },
-    { src: "../assets/images/to_solution_impact_banner.webp", title: "4. SOLUTION IMPACTANTE" }
+    { src: "../assets/images/services/btp_workflow_blueprint.webp", title: "1. LE BESOIN TERRAIN" },
+    { src: "../assets/images/services/godzyken_amoa_ecoute_terrain_flowchart_banner.webp", title: "2. L'ÉCOUTE TERRAIN" },
+    { src: "../assets/images/services/fabrication_flutter_construction_4_0.webp", title: "3. FABRICATION FLUTTER" },
+    { src: "../assets/images/services/to_solution_impact_banner.webp", title: "4. SOLUTION IMPACTANTE" }
   ];
 
   Ce.useEffect(() => {
@@ -38,42 +38,43 @@ IMPACTANTE`,subtitle:"Moins d'admin. Plus de marge. Zéro papier perdu.",desc:"L
   }, [isTeaser, teaserStep]);
 
   if (isTeaser) {
-    return y("div", { className: "fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center transition-all duration-700", children: [
+    return y("div", { className: "fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center transition-all duration-700 overflow-hidden", children: [
       y("div", { className: "absolute inset-0 transition-opacity duration-1000", style: { opacity: 1 }, children: [
         c("img", {
           src: teaserBanners[teaserStep].src,
-          className: "w-full h-full object-cover opacity-60",
+          className: "w-full h-full object-cover opacity-40",
           alt: teaserBanners[teaserStep].title
         }),
-        c("div", { className: "absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" })
+        c("div", { className: "absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" })
       ]}),
-      y("div", { className: "relative z-10 flex flex-col items-center text-center px-6 max-w-[600px]", children: [
-        c("div", { className: "mono text-[#FF6B2B] text-[14px] tracking-[0.3em] mb-4 animate-bounce", children: "STRATÉGIE AMOA" }),
-        c("h2", { className: "text-[32px] md:text-[48px] font-bold text-white mb-6 tracking-tight", children: teaserBanners[teaserStep].title }),
-        y("div", { className: "flex gap-2 justify-center mb-10", children: teaserBanners.map((_, idx) =>
-          c("div", { key: idx, className: `h-1 rounded-full transition-all duration-500 ${idx === teaserStep ? "w-12 bg-[#FF6B2B]" : "w-4 bg-white/20"}` })
+      y("div", { className: "relative z-10 flex flex-col items-center text-center px-6 w-full max-w-[800px]", children: [
+        c("div", { className: "mono text-[#FF6B2B] text-[14px] md:text-[16px] tracking-[0.3em] mb-8 animate-bounce font-bold", children: "STRATÉGIE AMOA" }),
+        c("h2", { className: "text-[32px] md:text-[56px] font-bold text-white mb-8 tracking-tight leading-tight min-h-[1.2em]", children: teaserBanners[teaserStep].title }),
+        y("div", { className: "flex gap-3 justify-center mb-12", children: teaserBanners.map((_, idx) =>
+          c("div", { key: idx, className: `h-1.5 rounded-full transition-all duration-500 ${idx === teaserStep ? "w-16 bg-[#FF6B2B]" : "w-6 bg-white/20"}` })
         )}),
-        y("div", { className: "flex gap-4 mt-2", children: [
+        y("div", { className: "flex flex-col md:flex-row gap-4 items-center justify-center w-full", children: [
           teaserStep < teaserBanners.length - 1 ?
             c("button", {
               onClick: () => setTeaserStep(s => s + 1),
-              className: "px-8 py-3 rounded-full border border-white/20 text-white mono text-[12px] hover:bg-white/5 transition",
+              className: "px-12 py-4 rounded-full border-2 border-white/20 text-white mono text-[14px] font-bold hover:bg-white/10 hover:border-white/40 transition-all",
               children: "SUIVANT"
             }) :
             c("button", {
               onClick: () => setIsTeaser(false),
-              className: "px-10 py-4 rounded-full bg-[#FF6B2B] text-black font-bold text-[14px] hover:scale-105 transition-transform shadow-[0_0_30px_rgba(255,107,43,0.4)]",
+              className: "px-12 py-5 rounded-full bg-[#FF6B2B] text-black font-black text-[16px] hover:scale-105 transition-transform shadow-[0_0_40px_rgba(255,107,43,0.5)] uppercase tracking-wider",
               children: "LANCER LA DÉMO INTERACTIVE"
             }),
           teaserStep < teaserBanners.length - 1 && c("button", {
             onClick: () => setIsTeaser(false),
-            className: "px-6 py-3 rounded-full text-white/40 mono text-[12px] hover:text-white transition",
-            children: "IGNORER"
+            className: "px-8 py-4 rounded-full text-white/50 mono text-[14px] hover:text-white transition-colors",
+            children: "IGNORER L'INTRO"
           })
         ]})
       ]}),
     ]});
   }
+
 
   Ce.useEffect(()=>{if(!n)return;let s=Date.now();return o.current=window.setInterval(()=>{let m=(Date.now()-s)/7000*100;if(m>=100)t((v)=>(v+1)%de.length),u(0);else u(m)},32),()=>{if(o.current)clearInterval(o.current)}},[e,n]),Ce.useEffect(()=>{u(0)},[e]),Ce.useEffect(()=>{let s=(h)=>{if(h.key==="ArrowRight")t((m)=>Math.min(de.length-1,m+1));if(h.key==="ArrowLeft")t((m)=>Math.max(0,m-1));if(h.key===" ")h.preventDefault(),r((m)=>!m)};return window.addEventListener("keydown",s),()=>window.removeEventListener("keydown",s)},[]);let a=Ce.useMemo(()=>(e+l/100)/de.length*100,[e,l]);return y("div",{className:"relative w-full min-h-screen bg-[#0C0F14] text-white overflow-hidden selection:bg-[#FF6B2B] selection:text-black",children:[c("style",{children:`
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');

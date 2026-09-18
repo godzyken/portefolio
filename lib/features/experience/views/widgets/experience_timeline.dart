@@ -41,7 +41,7 @@ class ExperienceTimeline extends ConsumerWidget {
             child: Opacity(
               opacity: 0.35,
               child: const CachedImage(
-                path: 'assets/images/backgrounds/frise_mur.avif',
+                path: 'assets/images/backgrounds/frise_mur.webp',
                 fit: BoxFit.cover,
               ),
             ),

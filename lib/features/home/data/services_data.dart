@@ -119,7 +119,7 @@ class Service {
     // 3. Migration automatique vers WEBP pour les assets locaux
     if (!cleaned.startsWith('http')) {
       // Forcer l'extension .webp pour tous les assets raster
-      final rasterExtensions = ['.png', '.jpg', '.jpeg', '.avif'];
+      final rasterExtensions = ['.png', '.jpg', '.jpeg', '.webp'];
       for (final ext in rasterExtensions) {
         if (cleaned.toLowerCase().endsWith(ext)) {
           cleaned = '${cleaned.substring(0, cleaned.length - ext.length)}.webp';

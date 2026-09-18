@@ -5,11 +5,13 @@ import 'package:portefolio/core/affichage/colors_spec.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/affichage/tech_maturity_framework.dart';
 import 'package:portefolio/core/ui/widgets/narrative_bubble.dart';
-import '../../services/voice_service.dart';
-import '../widgets/avatar_display.dart';
-import '../widgets/avatar_chat_panel.dart';
-import '../../notifiers/avatar_chat_notifier.dart';
+import 'package:portefolio/core/ui/widgets/smart_image.dart';
+
 import '../../data/avatar_message.dart';
+import '../../notifiers/avatar_chat_notifier.dart';
+import '../../services/voice_service.dart';
+import '../widgets/avatar_chat_panel.dart';
+import '../widgets/avatar_display.dart';
 
 class AvatarScreen extends ConsumerStatefulWidget {
   const AvatarScreen({super.key});
@@ -183,8 +185,10 @@ class _HUDSlide extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
-            child: Image.asset(pillar.skillImage,
-                height: info.isMobile ? 120 : 220, fit: BoxFit.cover),
+            child: SmartImage(
+                path: pillar.skillImage,
+                height: info.isMobile ? 120 : 220,
+                fit: BoxFit.cover),
           ),
           const SizedBox(height: 12),
           Row(
