@@ -47,31 +47,31 @@ IMPACTANTE`,subtitle:"Moins d'admin. Plus de marge. Zéro papier perdu.",desc:"L
         }),
         c("div", { className: "absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" })
       ]}),
-      y("div", { className: "relative z-10 text-center px-6", children: [
+      y("div", { className: "relative z-10 flex flex-col items-center text-center px-6 max-w-[600px]", children: [
         c("div", { className: "mono text-[#FF6B2B] text-[14px] tracking-[0.3em] mb-4 animate-bounce", children: "STRATÉGIE AMOA" }),
-        c("h2", { className: "text-[32px] md:text-[48px] font-bold text-white mb-8 tracking-tight", children: teaserBanners[teaserStep].title }),
-        y("div", { className: "flex gap-2 justify-center mb-12", children: teaserBanners.map((_, idx) =>
+        c("h2", { className: "text-[32px] md:text-[48px] font-bold text-white mb-6 tracking-tight", children: teaserBanners[teaserStep].title }),
+        y("div", { className: "flex gap-2 justify-center mb-10", children: teaserBanners.map((_, idx) =>
           c("div", { key: idx, className: `h-1 rounded-full transition-all duration-500 ${idx === teaserStep ? "w-12 bg-[#FF6B2B]" : "w-4 bg-white/20"}` })
-        )})
-      ]}),
-      y("div", { className: "absolute bottom-12 flex gap-4", children: [
-        teaserStep < teaserBanners.length - 1 ?
-          c("button", {
-            onClick: () => setTeaserStep(s => s + 1),
-            className: "px-8 py-3 rounded-full border border-white/20 text-white mono text-[12px] hover:bg-white/5 transition",
-            children: "SUIVANT"
-          }) :
-          c("button", {
+        )}),
+        y("div", { className: "flex gap-4 mt-2", children: [
+          teaserStep < teaserBanners.length - 1 ?
+            c("button", {
+              onClick: () => setTeaserStep(s => s + 1),
+              className: "px-8 py-3 rounded-full border border-white/20 text-white mono text-[12px] hover:bg-white/5 transition",
+              children: "SUIVANT"
+            }) :
+            c("button", {
+              onClick: () => setIsTeaser(false),
+              className: "px-10 py-4 rounded-full bg-[#FF6B2B] text-black font-bold text-[14px] hover:scale-105 transition-transform shadow-[0_0_30px_rgba(255,107,43,0.4)]",
+              children: "LANCER LA DÉMO INTERACTIVE"
+            }),
+          teaserStep < teaserBanners.length - 1 && c("button", {
             onClick: () => setIsTeaser(false),
-            className: "px-10 py-4 rounded-full bg-[#FF6B2B] text-black font-bold text-[14px] hover:scale-105 transition-transform shadow-[0_0_30px_rgba(255,107,43,0.4)]",
-            children: "LANCER LA DÉMO INTERACTIVE"
-          }),
-        teaserStep < teaserBanners.length - 1 && c("button", {
-          onClick: () => setIsTeaser(false),
-          className: "px-6 py-3 rounded-full text-white/40 mono text-[12px] hover:text-white transition",
-          children: "IGNORER"
-        })
-      ]})
+            className: "px-6 py-3 rounded-full text-white/40 mono text-[12px] hover:text-white transition",
+            children: "IGNORER"
+          })
+        ]})
+      ]}),
     ]});
   }
 
