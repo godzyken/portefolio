@@ -39,15 +39,9 @@ class TrackingService {
           name: 'TrackingService');
 
       // 1. Log détaillé (Historique)
-      final res = await SupabaseService.client
+      await SupabaseService.client
           .from('portfolio_interactions')
-          .insert(payload)
-          .select();
-
-      if (res.isEmpty) {
-        developer.log('⚠️ Interaction record returned empty',
-            name: 'TrackingService');
-      }
+          .insert(payload);
 
       // 2. Flux Live (Graphiques Artisan)
       // Si c'est une interaction sur le portfolio, on l'envoie aussi dans app_analytics
