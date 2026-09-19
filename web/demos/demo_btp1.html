@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Construction 4.0 - Démo Interactive</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+    *,:after,:before{box-sizing:border-box;border:0 solid #e5e7eb}
+    :host,html{line-height:1.5;-webkit-text-size-adjust:100%;tab-size:4;font-family: 'Space Grotesk', sans-serif;}
+    body{margin:0;background-color:#0C0F14;color:white;overflow-x:hidden}
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    .text-stroke { -webkit-text-stroke: 1px rgba(255,255,255,0.12); color: transparent; }
+    @keyframes bounce { 0%, 100% { transform: translateY(-25%); animation-timing-function: cubic-bezier(0.8, 0, 1, 1); } 50% { transform: translateY(0); animation-timing-function: cubic-bezier(0, 0, 0.2, 1); } }
+    .animate-bounce { animation: bounce 1s infinite; }
+  </style>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="module">
+    import React from 'https://esm.sh/react@18.3.1';
+    import ReactDOM from 'https://esm.sh/react-dom@18.3.1/client';
+
+    const c = React.createElement;
+
+    const de = [
+      { id: 0, num: "01", kicker: "LE CONSTAT", title: "LE BESOIN TERRAIN", subtitle: "L'artisan débordé.", desc: "Devis griffonnés à 22h, photos perdues dans WhatsApp, suivi chantier sur post-it. Le BTP mérite mieux qu'Excel.", accent: "CHAOS" },
+      { id: 1, num: "02", kicker: "L'INTERVENTION", title: "L'ARRIVÉE DE GODZYKEN", subtitle: "Consultant AMOA.", desc: "Godzyken cartographie vos processus réels. Pas de jargon. Du terrain au backlog, chaque friction devient une user story.", accent: "AMOA" },
+      { id: 2, num: "03", kicker: "CONCEPTION", title: "CONSTRUCTION 4.0", subtitle: "By Flutter.", desc: "Une app unique, iOS + Android + Tablette. Rapide, offline-first, pensée pour les gants et la poussière.", accent: "FLUTTER" },
+      { id: 3, num: "04", kicker: "EXÉCUTION", title: "FABRICATION AGILE", subtitle: "On code sur le chantier.", desc: "Sprints de 2 semaines. Livraison continue. Test utilisateur avec le casque sur la tête. Pas en salle de réunion.", accent: "AGILE" },
+      { id: 4, num: "05", kicker: "L'IMPACT", title: "SOLUTION IMPACTANTE", subtitle: "Moins d'admin.", desc: "L'artisan redevient artisan. Godzyken livre l'outil qui change l'échelle. Plus de marge. Zéro papier perdu.", accent: "IMPACT" }
+    ];
+
+    function Ci() {
+      const [step, setStep] = React.useState(0);
+      const [isPlaying, setIsPlaying] = React.useState(true);
+      const [progress, setProgress] = React.useState(0);
+      const [isTeaser, setIsTeaser] = React.useState(true);
+      const [teaserStep, setTeaserStep] = React.useState(0);
+      const [assetPath, setAssetPath] = React.useState('../assets');
+
+      const timerRef = React.useRef(null);
+
+      // --- LOGIQUE DE DÉTECTION DU CHEMIN DES ASSETS ---
+      React.useEffect(() => {
+        const checkImage = (path) => {
+          return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => resolve(true);
+            img.onerror = () => resolve(false);
+            img.src = path;
+          });
+        };
+
+        const resolvePaths = async () => {
+          // On teste les chemins possibles sur GitHub Pages
+          const tests = ['../assets', 'assets', './assets', '../portefolio/assets'];
+          for (const t of tests) {
+            const ok = await checkImage(`${t}/images/services/btp_workflow_blueprint.webp`);
+            if (ok) {
+              console.log("✅ Assets found at:", t);
+              setAssetPath(t);
+              return;
+            }
+          }
+          console.warn("⚠️ Could not find assets, using default fallback");
+        };
+        resolvePaths();
+      }, []);
+
+      const teaserBanners = [
+        { src: `${assetPath}/images/services/btp_workflow_blueprint.webp`, title: "1. LE BESOIN TERRAIN" },
+        { src: `${assetPath}/images/services/godzyken_amoa_ecoute_terrain_flowchart_banner.webp`, title: "2. L'ÉCOUTE TERRAIN" },
+        { src: `${assetPath}/images/services/fabrication_flutter_construction_4_0.webp`, title: "3. FABRICATION FLUTTER" },
+        { src: `${assetPath}/images/services/to_solution_impact_banner.webp`, title: "4. SOLUTION IMPACTANTE" }
+      ];
+
+      React.useEffect(() => {
+        if (!isTeaser) return;
+        const timer = setTimeout(() => {
+          if (teaserStep < teaserBanners.length - 1) {
+            setTeaserStep(s => s + 1);
+          }
+        }, 3500);
+        return () => clearTimeout(timer);
+      }, [isTeaser, teaserStep, assetPath]);
+
+      React.useEffect(() => {
+        if (isTeaser || !isPlaying) return;
+        let start = Date.now();
+        timerRef.current = setInterval(() => {
+          let delta = (Date.now() - start) / 7000 * 100;
+          if (delta >= 100) {
+            setStep(s => (s + 1) % de.length);
+            setProgress(0);
+            start = Date.now();
+          } else {
+            setProgress(delta);
+          }
+        }, 32);
+        return () => clearInterval(timerRef.current);
+      }, [isTeaser, isPlaying, step]);
+
+      if (isTeaser) {
+        return c("div", { className: "fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center transition-all duration-700" }, [
+          c("div", { className: "absolute inset-0 transition-opacity duration-1000", key: "bg" }, [
+            c("img", {
+              src: teaserBanners[teaserStep].src,
+              className: "w-full h-full object-cover opacity-40",
+              alt: "Banner",
+              key: `img-${teaserStep}`
+            }),
+            c("div", { className: "absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" })
+          ]),
+          c("div", { className: "relative z-10 flex flex-col items-center text-center px-6 w-full max-w-[800px]", key: "content" }, [
+            c("div", { className: "mono text-[#FF6B2B] text-[14px] md:text-[16px] tracking-[0.3em] mb-6 animate-bounce font-bold" }, "STRATÉGIE AMOA"),
+            c("h2", { className: "text-[32px] md:text-[56px] font-bold text-white mb-8 tracking-tight leading-tight min-h-[1.2em]" }, teaserBanners[teaserStep].title),
+            c("div", { className: "flex gap-3 justify-center mb-12" }, teaserBanners.map((_, idx) =>
+              c("div", { key: idx, className: `h-1.5 rounded-full transition-all duration-500 ${idx === teaserStep ? "w-16 bg-[#FF6B2B]" : "w-6 bg-white/20"}` })
+            )),
+            c("div", { className: "flex flex-col md:flex-row gap-4 items-center" }, [
+              teaserStep < teaserBanners.length - 1 ?
+                c("button", {
+                  onClick: () => setTeaserStep(s => s + 1),
+                  className: "px-12 py-4 rounded-full border-2 border-white/20 text-white font-bold hover:bg-white/10 transition-all"
+                }, "SUIVANT") :
+                c("button", {
+                  onClick: () => setIsTeaser(false),
+                  className: "px-12 py-5 rounded-full bg-[#FF6B2B] text-black font-black text-[16px] hover:scale-105 transition-transform shadow-[0_0_40px_rgba(255,107,43,0.5)] uppercase"
+                }, "LANCER LA DÉMO INTERACTIVE"),
+              c("button", {
+                onClick: () => setIsTeaser(false),
+                className: "px-8 py-4 rounded-full text-white/50 hover:text-white transition-colors"
+              }, "IGNORER")
+            ])
+          ])
+        ]);
+      }
+
+      // --- MAIN THEATRE UI ---
+      return c("div", { className: "relative w-full min-h-screen bg-[#0C0F14] text-white flex flex-col" }, [
+        // Progress Bar
+        c("div", { className: "fixed top-0 left-0 right-0 h-[2px] z-50 bg-white/10" },
+          c("div", { className: "h-full bg-[#FF6B2B] transition-all duration-100 linear", style: { width: `${(step + progress/100) / de.length * 100}%` } })
+        ),
+
+        // Header
+        c("header", { className: "relative z-30 flex items-center justify-between px-6 md:px-10 h-[72px] border-b border-white/[0.06] bg-black/20 backdrop-blur" }, [
+          c("div", { className: "flex items-center gap-4" }, [
+            c("div", { className: "w-9 h-9 rounded-[9px] bg-[#FF6B2B] flex items-center justify-center font-bold text-black" }, "G"),
+            c("div", {}, [
+              c("div", { className: "text-[13px] font-bold tracking-[0.14em]" }, "GODZYKEN"),
+              c("div", { className: "mono text-[9px] tracking-[0.18em] text-white/50" }, "AMOA • FLUTTER • CONSTRUCTION 4.0")
+            ])
+          ]),
+          c("div", { className: "flex items-center gap-3" }, [
+            c("button", { onClick: () => setIsPlaying(!isPlaying), className: "w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/5" }, isPlaying ? "❚❚" : "▶"),
+            c("button", { onClick: () => { setStep(0); setProgress(0); setIsTeaser(true); }, className: "px-6 py-2 rounded-full bg-white text-black font-bold text-xs" }, "REJOUER")
+          ])
+        ]),
+
+        // Main Content
+        c("main", { className: "flex-1 flex flex-col lg:flex-row items-center justify-center p-6 md:p-12 gap-12 max-w-[1400px] mx-auto w-full" }, [
+          // Text Side
+          c("div", { className: "flex-1 flex flex-col gap-6 relative" }, [
+            c("div", { className: "absolute -top-20 -left-10 text-[120px] md:text-[180px] font-black text-stroke opacity-10 select-none pointer-events-none" }, de[step].accent),
+            c("div", { className: "px-4 py-1 rounded-full bg-[#FF6B2B]/10 border border-[#FF6B2B]/20 text-[#FF6B2B] mono text-xs font-bold w-fit" }, de[step].kicker),
+            c("h1", { className: "text-5xl md:text-7xl font-bold leading-[0.9] tracking-tighter" }, de[step].title.split('\n').map((line, i) => c(React.Fragment, { key: i }, [line, c("br")]))),
+            c("div", { className: "flex flex-col gap-2" }, [
+              c("h3", { className: "text-2xl font-bold text-white/90" }, de[step].subtitle),
+              c("p", { className: "text-lg text-white/50 leading-relaxed max-w-lg" }, de[step].desc)
+            ]),
+            c("div", { className: "mt-8 flex items-center gap-4" }, [
+              c("button", { onClick: () => setStep(s => Math.max(0, s - 1)), className: "w-12 h-12 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/10" }, "←"),
+              c("button", { onClick: () => setStep(s => (s + 1) % de.length), className: "w-12 h-12 rounded-full bg-white text-black flex items-center justify-center hover:bg-white/90" }, "→"),
+              c("span", { className: "mono text-sm text-white/30 ml-4" }, `${step + 1} / 05`)
+            ])
+          ]),
+
+          // Visual Side
+          c("div", { className: "flex-1 w-full max-w-[600px] aspect-square relative" }, [
+            c("div", { className: "absolute inset-0 bg-gradient-to-br from-[#FF6B2B]/20 to-transparent rounded-[40px] blur-2xl opacity-20" }),
+            c("div", { className: "relative w-full h-full bg-[#11151C] border border-white/10 rounded-[40px] overflow-hidden shadow-2xl flex items-center justify-center p-8" }, [
+               // Image Slide Logic
+               c("img", {
+                 src: teaserBanners[Math.min(teaserStep, teaserBanners.length-1)].src,
+                 className: "absolute inset-0 w-full h-full object-cover opacity-20 transition-all duration-1000",
+                 key: `bg-vis-${step}`
+               }),
+               c("div", { className: "relative z-10 text-center" }, [
+                  c("div", { className: "text-4xl font-bold mb-4" }, de[step].subtitle),
+                  c("div", { className: "h-1.5 w-24 bg-[#FF6B2B] mx-auto rounded-full shadow-[0_0_20px_rgba(255,107,43,0.5)]" })
+               ])
+            ])
+          ])
+        ])
+      ]);
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(c(Ci));
+  </script>
+</body>
+</html>
