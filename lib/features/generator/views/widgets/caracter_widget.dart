@@ -15,12 +15,22 @@ class CharacterViewer extends ConsumerStatefulWidget {
 
 class _CharacterViewerState extends ConsumerState<CharacterViewer> {
   late String _currentModelPath;
+  bool _isDelayedRender = false;
 
   @override
   void initState() {
     super.initState();
     // On lit une seule fois au démarrage
     _currentModelPath = ref.read(characterModelProvider);
+
+    // ✅ Délai asynchrone pour laisser respirer le thread de rendu principal
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Future.delayed(const Duration(milliseconds: 1500), () {
+        if (mounted) {
+          setState(() => _isDelayedRender = true);
+        }
+      });
+    });
   }
 
   @override
@@ -31,6 +41,10 @@ class _CharacterViewerState extends ConsumerState<CharacterViewer> {
         setState(() => _currentModelPath = next);
       }
     });
+
+    if (!_isDelayedRender) {
+      return const SizedBox.shrink();
+    }
 
     try {
       return ModelViewer(
