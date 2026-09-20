@@ -73,7 +73,7 @@ class HomeScreen extends ConsumerWidget {
           child: Align(
             alignment: Alignment.bottomCenter,
             child: SizedBox(
-              height: info.size.height * 2,
+              height: info.size.height * 0.5,
               child: const Opacity(
                 opacity: 0.5,
                 child: CharacterViewer(),
