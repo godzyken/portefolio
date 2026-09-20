@@ -37,7 +37,7 @@ class _CharacterViewerState extends ConsumerState<CharacterViewer> {
         key: ValueKey(_currentModelPath),
         src: _currentModelPath,
         alt: "Mon personnage de portfolio en 3D",
-        cameraControls: false,
+        cameraControls: true,
         autoPlay: true,
         autoRotate: true,
         backgroundColor: Colors.transparent,
