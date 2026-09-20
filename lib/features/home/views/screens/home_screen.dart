@@ -8,6 +8,7 @@ import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
 import 'package:portefolio/features/parametres/themes/views/widgets/space_background.dart';
 
 import '../../../../core/provider/business_plan_provider.dart';
+import '../../../../core/ui/widgets/seo_wrapper.dart';
 import '../../../diagnostic/views/widgets/diagnostic_teaser_banner.dart';
 import '../../../generator/views/generator_widgets_extentions.dart';
 import '../widgets/client_journey_timeline.dart';
@@ -21,37 +22,43 @@ class HomeScreen extends ConsumerWidget {
     final info = ref.watch(responsiveInfoProvider);
     final theme = Theme.of(context);
 
-    return SpaceBackground(
-      primaryColor: theme.colorScheme.primary,
-      secondaryColor: theme.colorScheme.secondary,
-      starCount: 150,
-      child: SafeArea(
-        child: Stack(
-          children: [
-            LayoutBuilder(builder: (context, constraints) {
-              return info.isPortrait
-                  ? _buildPortraitLayout(context, info, theme)
-                  : SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 48, vertical: 32),
-                      child: _buildLandscapeLayout(context, info, theme),
-                    );
-            }),
-            Positioned(
-              right: 24,
-              bottom: 24,
-              child: FloatingActionButton.extended(
-                onPressed: () => context.go('/avatar'),
-                backgroundColor: ColorHelpers.cyan,
-                foregroundColor: Colors.black,
-                icon: const Icon(Icons.psychology),
-                label: const Text("Besoin d'aide ?",
-                    style: TextStyle(fontWeight: FontWeight.bold)),
-              ).animate().scale(
-                  delay: const Duration(seconds: 2),
-                  duration: const Duration(milliseconds: 500)),
-            ),
-          ],
+    return SeoWrapper(
+      title: 'Emryck Doré | Développeur Flutter & Chef de Projet',
+      description:
+          'Découvrez le portfolio de Emryck Doré, expert en développement mobile cross-platform, architecture logicielle et transformation digitale.',
+      url: 'https://godzyken.github.io/portefolio/',
+      child: SpaceBackground(
+        primaryColor: theme.colorScheme.primary,
+        secondaryColor: theme.colorScheme.secondary,
+        starCount: 150,
+        child: SafeArea(
+          child: Stack(
+            children: [
+              LayoutBuilder(builder: (context, constraints) {
+                return info.isPortrait
+                    ? _buildPortraitLayout(context, info, theme)
+                    : SingleChildScrollView(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 48, vertical: 32),
+                        child: _buildLandscapeLayout(context, info, theme),
+                      );
+              }),
+              Positioned(
+                right: 24,
+                bottom: 24,
+                child: FloatingActionButton.extended(
+                  onPressed: () => context.go('/avatar'),
+                  backgroundColor: ColorHelpers.cyan,
+                  foregroundColor: Colors.black,
+                  icon: const Icon(Icons.psychology),
+                  label: const Text("Besoin d'aide ?",
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                ).animate().scale(
+                    delay: const Duration(seconds: 2),
+                    duration: const Duration(milliseconds: 500)),
+              ),
+            ],
+          ),
         ),
       ),
     );

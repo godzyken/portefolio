@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/config/async_config.dart';
+import 'package:seo/seo.dart';
 
 import 'core/exceptions/error/error_screen.dart';
 import 'core/exceptions/error_notifier.dart';
@@ -66,25 +67,29 @@ class MyFullApp extends ConsumerWidget {
     }
 
     // ── Application complète ──────────────────────────────────────────────────
-    return MaterialApp.router(
-      title: 'Portfolio',
-      theme: themeData,
-      darkTheme: themeData,
-      themeMode: themeMode.mode == AppThemeMode.dark
-          ? ThemeMode.dark
-          : ThemeMode.light,
-      debugShowCheckedModeBanner: false,
-      routerConfig: router,
-      builder: (context, child) {
-        return ErrorBoundary(
-          contextLabel: 'MyFullApp',
-          child: PrecacheWrapper(
-            maxWaitDuration: const Duration(seconds: 20),
-            // ignore: avoid-non-null-assertion
-            child: child!,
-          ),
-        );
-      },
+    return SeoController(
+      enabled: true,
+      tree: WidgetTree(context: context),
+      child: MaterialApp.router(
+        title: 'Portfolio',
+        theme: themeData,
+        darkTheme: themeData,
+        themeMode: themeMode.mode == AppThemeMode.dark
+            ? ThemeMode.dark
+            : ThemeMode.light,
+        debugShowCheckedModeBanner: false,
+        routerConfig: router,
+        builder: (context, child) {
+          return ErrorBoundary(
+            contextLabel: 'MyFullApp',
+            child: PrecacheWrapper(
+              maxWaitDuration: const Duration(seconds: 20),
+              // ignore: avoid-non-null-assertion
+              child: child!,
+            ),
+          );
+        },
+      ),
     );
   }
 }

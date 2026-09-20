@@ -5,6 +5,7 @@ import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
 
 import '../../../../core/logging/app_logger.dart';
 import '../../../../core/provider/provider_extentions.dart';
+import '../../../../core/ui/widgets/seo_wrapper.dart';
 import '../../../generator/views/widgets/immersive_detail_screen.dart';
 import '../../data/project_data.dart';
 import '../../providers/projects_extentions_providers.dart';
@@ -19,73 +20,79 @@ class ProjectsScreen extends ConsumerWidget {
     final selected = ref.watch(selectedProjectsProvider);
     final info = ref.watch(responsiveInfoProvider);
 
-    return projectsAsync.when(
-      data: (projects) {
-        if (projects.isEmpty) {
-          return const Center(
-            child: ResponsiveText.bodyMedium('Aucun projet disponible'),
-          );
-        }
+    return SeoWrapper(
+      title: 'Projets | Emryck Doré',
+      description:
+          'Découvrez mes réalisations en développement Flutter, IoT, VR et gestion de projet digital.',
+      url: 'https://godzyken.github.io/portefolio/projects',
+      child: projectsAsync.when(
+        data: (projects) {
+          if (projects.isEmpty) {
+            return const Center(
+              child: ResponsiveText.bodyMedium('Aucun projet disponible'),
+            );
+          }
 
-        // Desktop large → vue bulles interactives
-        if (info.size.width >= 1024 && info.isLandscape) {
-          return Stack(
-            children: [
-              const Positioned.fill(
-                child: SmartImage(
-                  key: ValueKey('bg-line'),
-                  path: 'assets/images/backgrounds/line.svg',
-                  fit: BoxFit.fitWidth,
-                  width: double.infinity,
-                  height: double.infinity,
-                  responsiveSize: ResponsiveImageSize.xlarge,
-                  fallbackIcon: Icons.grid_view,
-                  fallbackColor: Colors.white,
-                ),
-              ),
-              Positioned.fill(
-                child: Container(
-                  color: Colors.black.withValues(alpha: 0.4),
-                  child: ProjectGridView(
-                    projects: projects,
-                    selected: selected,
+          // Desktop large → vue bulles interactives
+          if (info.size.width >= 1024 && info.isLandscape) {
+            return Stack(
+              children: [
+                const Positioned.fill(
+                  child: SmartImage(
+                    key: ValueKey('bg-line'),
+                    path: 'assets/images/backgrounds/line.svg',
+                    fit: BoxFit.fitWidth,
+                    width: double.infinity,
+                    height: double.infinity,
+                    responsiveSize: ResponsiveImageSize.xlarge,
+                    fallbackIcon: Icons.grid_view,
+                    fallbackColor: Colors.white,
                   ),
                 ),
-              ),
-            ],
-          );
-        }
+                Positioned.fill(
+                  child: Container(
+                    color: Colors.black.withValues(alpha: 0.4),
+                    child: ProjectGridView(
+                      projects: projects,
+                      selected: selected,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          }
 
-        // Mobile / tablette → grille de cartes
-        return _ProjectCardGrid(projects: projects, selected: selected);
-      },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, st) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          ref.read(loggerProvider('ProjectsScreen')).log(
-                'Erreur chargement projets',
-                level: LogLevel.error,
-                error: e,
-                stackTrace: st,
-              );
-        });
-        return Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.error_outline, size: 48, color: Colors.red),
-              const SizedBox(height: 16),
-              ResponsiveText.bodyMedium('Erreur : $e'),
-              const SizedBox(height: 16),
-              ResponsiveButton.icon(
-                onPressed: () => ref.invalidate(enrichedProjectsProvider),
-                icon: const Icon(Icons.refresh),
-                label: 'Réessayer',
-              ),
-            ],
-          ),
-        );
-      },
+          // Mobile / tablette → grille de cartes
+          return _ProjectCardGrid(projects: projects, selected: selected);
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, st) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            ref.read(loggerProvider('ProjectsScreen')).log(
+                  'Erreur chargement projets',
+                  level: LogLevel.error,
+                  error: e,
+                  stackTrace: st,
+                );
+          });
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                const SizedBox(height: 16),
+                ResponsiveText.bodyMedium('Erreur : $e'),
+                const SizedBox(height: 16),
+                ResponsiveButton.icon(
+                  onPressed: () => ref.invalidate(enrichedProjectsProvider),
+                  icon: const Icon(Icons.refresh),
+                  label: 'Réessayer',
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 }

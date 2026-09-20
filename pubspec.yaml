@@ -32,6 +32,9 @@ dependencies:
   # Markdown (artefacts projets : présentation, workthrough, valuation...)
   flutter_markdown_plus: ^1.0.12
 
+  # SEO
+  seo: ^0.0.10
+
   # Location & Maps
   flutter_map: ^8.2.2
   latlong2: ^0.9.1

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/ui/widgets/responsive_text.dart';
+import '../../../../core/ui/widgets/seo_wrapper.dart';
 
 import '../../../../core/provider/app_providers.dart';
 import '../../../about/views/screens/about_screens.dart';
@@ -172,45 +173,51 @@ class _ContactScreenState extends ConsumerState<ContactScreen>
     final info = ref.watch(responsiveInfoProvider);
     final theme = Theme.of(context);
 
-    return FadeTransition(
-      opacity: _fadeAnimation,
-      child: ResponsiveBox(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              theme.colorScheme.surface,
-              theme.colorScheme.surface.withValues(alpha: 0.95),
-            ],
-          ),
-        ),
-        child: Scrollbar(
-          controller: _scrollCtrl,
-          child: SingleChildScrollView(
-            controller: _scrollCtrl,
-            physics: const BouncingScrollPhysics(),
-            child: Column(
-              children: [
-                // ✨ SECTION ABOUT (en haut)
-                _buildAboutSection(info, theme),
-
-                // 🎨 SÉPARATEUR ANIMÉ
-                _buildAnimatedDivider(info, theme),
-
-                // 📝 FORMULAIRE DE CONTACT
-                ContactForm(
-                  formState: formState,
-                  info: info,
-                  formKey: _formKey,
-                ),
-
-                // 🎯 APPEL À L'ACTION SECONDAIRE
-                ContactConversionOption(info: info, theme: theme),
-
-                // Footer avec informations complémentaires
-                ContactFooter(info: info, theme: theme),
+    return SeoWrapper(
+      title: 'Contact | Emryck Doré',
+      description:
+          'Vous avez un projet Flutter, IoT ou digital ? Contactez-moi pour en discuter.',
+      url: 'https://godzyken.github.io/portefolio/contact',
+      child: FadeTransition(
+        opacity: _fadeAnimation,
+        child: ResponsiveBox(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                theme.colorScheme.surface,
+                theme.colorScheme.surface.withValues(alpha: 0.95),
               ],
+            ),
+          ),
+          child: Scrollbar(
+            controller: _scrollCtrl,
+            child: SingleChildScrollView(
+              controller: _scrollCtrl,
+              physics: const BouncingScrollPhysics(),
+              child: Column(
+                children: [
+                  // ✨ SECTION ABOUT (en haut)
+                  _buildAboutSection(info, theme),
+
+                  // 🎨 SÉPARATEUR ANIMÉ
+                  _buildAnimatedDivider(info, theme),
+
+                  // 📝 FORMULAIRE DE CONTACT
+                  ContactForm(
+                    formState: formState,
+                    info: info,
+                    formKey: _formKey,
+                  ),
+
+                  // 🎯 APPEL À L'ACTION SECONDAIRE
+                  ContactConversionOption(info: info, theme: theme),
+
+                  // Footer avec informations complémentaires
+                  ContactFooter(info: info, theme: theme),
+                ],
+              ),
             ),
           ),
         ),
