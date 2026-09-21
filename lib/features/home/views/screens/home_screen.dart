@@ -271,6 +271,24 @@ class HomeScreen extends ConsumerWidget {
           ),
         ),
         ResponsiveButton.icon(
+          onPressed: () => context.go('/start-project'),
+          icon: const Icon(Icons.rocket_launch_outlined,
+              color: Colors.amberAccent),
+          label: 'Démarrer un projet',
+          style: ElevatedButton.styleFrom(
+            padding: EdgeInsets.symmetric(
+              horizontal: isMobile ? 24 : 32,
+              vertical: isMobile ? 16 : 20,
+            ),
+            backgroundColor: Colors.white.withOpacity(0.08),
+            foregroundColor: Colors.white,
+            side: const BorderSide(color: Colors.amberAccent, width: 1.5),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+          ),
+        ),
+        ResponsiveButton.icon(
           onPressed: () => context.go('/contact'),
           icon: Icon(
             Icons.mail_outline,

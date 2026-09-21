@@ -3,20 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../features/avatar/views/screens/avatar_screen.dart';
 import '../../features/about/views/screens/legal_mentions_screen.dart';
 import '../../features/admin/views/screens/admin_dashboard_screen.dart';
 import '../../features/admin/views/screens/admin_login_screen.dart';
 import '../../features/admin/views/screens/admin_reset_password_screen.dart';
-import '../../features/diagnostic/views/screens/diagnostic_screen.dart';
-import '../../features/project_wizard/views/screens/project_wizard_screen.dart';
-import '../../features/home/views/screens/pricing_rationale_screen.dart';
+import '../../features/avatar/views/screens/avatar_screen.dart';
 import '../../features/contact/views/screens/contact_screen.dart';
+import '../../features/conversion/views/screens/qualification_wizard_screen.dart';
+import '../../features/diagnostic/views/screens/diagnostic_screen.dart';
 import '../../features/experience/views/screens/experiences_screen.dart';
 import '../../features/generator/views/screens/generator_extentions_screens.dart';
 import '../../features/home/views/screens/home_screen.dart';
+import '../../features/home/views/screens/pricing_rationale_screen.dart';
 import '../../features/home/views/screens/splash_screen.dart';
 import '../../features/parametres/themes/views/screens/theme_settings_page.dart';
+import '../../features/project_wizard/views/screens/project_wizard_screen.dart';
 import '../../features/projets/views/screens/projects_screen.dart';
 import '../notifier/notifiers.dart';
 import '../provider/providers.dart';
@@ -99,6 +100,13 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           path: '/project-wizard',
           name: 'project_wizard',
           builder: (_, __) => const ProjectWizardScreen(),
+        ),
+
+        // ── Conversion Prompt Engine (Nouveau) ────────────────────────
+        GoRoute(
+          path: '/start-project',
+          name: 'start_project',
+          builder: (_, __) => const QualificationWizardScreen(),
         ),
 
         // ── Page publique "pourquoi ce tarif" (clic sur le prix) ─────────

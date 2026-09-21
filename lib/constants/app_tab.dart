@@ -26,7 +26,11 @@ enum AppTab {
   experiences(path: '/experiences', label: 'Exp', icon: Icons.history),
   projects(path: '/projects', label: 'Projets', icon: Icons.work),
   avatar(path: '/avatar', label: 'Avatar IA', icon: Icons.psychology),
-  contact(path: '/contact', label: 'Contact', icon: Icons.mail);
+  contact(path: '/contact', label: 'Contact', icon: Icons.mail),
+  startProject(
+      path: '/start-project',
+      label: 'Cadrer un projet',
+      icon: Icons.rocket_launch);
 
   final String path;
   final String label;
@@ -183,6 +187,9 @@ enum AppTab {
 
       case AppTab.contact:
         return const AppBarConfig(title: "Contact");
+
+      case AppTab.startProject:
+        return const AppBarConfig(title: "Cadrage de Projet");
     }
   }
 
@@ -191,6 +198,7 @@ enum AppTab {
     if (location.startsWith('/projects')) return AppTab.projects;
     if (location.startsWith('/avatar')) return AppTab.avatar;
     if (location.startsWith('/contact')) return AppTab.contact;
+    if (location.startsWith('/start-project')) return AppTab.startProject;
     return AppTab.home;
   }
 }

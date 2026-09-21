@@ -3,6 +3,8 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/provider/tracking_provider.dart';
+import '../../../../core/service/tracking_service.dart';
 import '../../../../core/ui/sections/section_system.dart';
 import '../../../../core/ui/widgets/responsive_text.dart';
 import '../../../generator/views/widgets/animations/diagnostic_category_bar.dart';
@@ -10,8 +12,6 @@ import '../../../generator/views/widgets/animations/diagnostic_progress_bar.dart
 import '../../../generator/views/widgets/animations/diagnostic_score_gauge.dart';
 import '../../../generator/views/widgets/cards/diagnostic_option_card.dart';
 import '../../../parametres/themes/views/widgets/space_background.dart';
-import '../../../../core/provider/tracking_provider.dart';
-import '../../../../core/service/tracking_service.dart';
 import '../../data/models/diagnostic_models.dart';
 import '../../data/state/diagnostic_state.dart';
 import '../../providers/diagnostic_provider.dart';
@@ -371,6 +371,23 @@ class _ThankYouCard extends ConsumerWidget {
               style: FilledButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 backgroundColor: theme.colorScheme.primary,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: () => context.go('/start-project'),
+              icon: const Icon(Icons.rocket_launch, color: Colors.amberAccent),
+              label: const Text('Cadrer mon projet dès maintenant',
+                  style: TextStyle(color: Colors.white)),
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                side: const BorderSide(color: Colors.amberAccent),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
                 ),
