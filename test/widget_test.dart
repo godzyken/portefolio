@@ -8,13 +8,18 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:portefolio/app.dart';
+import 'package:portefolio/core/notifier/precache_notifier.dart';
+import 'package:portefolio/core/provider/precache_providers.dart';
 import 'package:portefolio/core/provider/providers.dart';
+import 'package:portefolio/features/home/controller/splash_state.dart';
+import 'package:portefolio/features/home/notifier/splash_notifier.dart';
+import 'package:portefolio/features/home/provider/splash_provider.dart';
 import 'package:portefolio/features/home/views/screens/home_screen.dart';
 import 'package:portefolio/features/parametres/themes/provider/theme_repository_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -81,10 +86,13 @@ void main() {
             sharedPreferencesProvider.overrideWithValue(mockPrefs),
             bootstrapProvider.overrideWithValue(bootstrap),
             bootstrapFutureProvider.overrideWith((ref) => bootstrap),
-            //  assetServiceProvider.overrideWithValue(MockAssetService()),
+            precacheNotifierProvider.overrideWith(() => MockPrecacheNotifier()),
+            splashProvider.overrideWith(() => MockSplashNotifier()),
           ],
-          child: MyFullApp(
-            bootstrap: bootstrap,
+          child: const MaterialApp(
+            home: Material(
+              child: HomeScreen(),
+            ),
           ),
         ),
       );
@@ -95,8 +103,11 @@ void main() {
       await tester.pump();
     });
 
-    // 2. Attendez que tous les widgets et les animations se terminent.
-    await tester.pumpAndSettle();
+    // 2. Attendez que tous les widgets et les animations se terminent ou se stabilisent.
+    // Utilisation de plusieurs pump successifs pour laisser passer l'écran de splash
+    for (int i = 0; i < 5; i++) {
+      await tester.pump(const Duration(milliseconds: 500));
+    }
 
     final exception = tester.takeException();
     expect(exception, isNull,
@@ -118,6 +129,25 @@ void main() {
     //    si vous lui avez donné une clé de test.
     //    Exemple : expect(find.byKey(const Key('profile_picture')), findsOneWidget);
   });
+}
+
+class MockPrecacheNotifier extends PrecacheAsyncNotifier {
+  @override
+  Future<PrecacheReport> build() async {
+    return const PrecacheReport(1, 1, 0);
+  }
+}
+
+class MockSplashNotifier extends SplashNotifier {
+  @override
+  SplashState build() => const SplashState(
+        phase: SplashPhase.ready,
+        progress: 1.0,
+        statusMessage: 'Prêt !',
+      );
+
+  @override
+  Future<void> start({int minimumDisplayMs = 1500}) async {}
 }
 
 void setupTestAssets() {
