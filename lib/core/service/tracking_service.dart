@@ -14,6 +14,15 @@ enum TrackingAction {
 }
 
 class TrackingService {
+  String _toSnakeCase(String text) {
+    return text
+        .replaceAllMapped(
+          RegExp(r'([A-Z])'),
+          (match) => '_${match.group(1)}',
+        )
+        .toUpperCase();
+  }
+
   Future<void> trackInteraction({
     required String projectId,
     String? projectName,
@@ -27,7 +36,8 @@ class TrackingService {
     }
 
     try {
-      final actionStr = action.name.toUpperCase();
+      final actionStr = _toSnakeCase(action.name);
+
       final payload = {
         'project_id': projectId.isEmpty ? 'unknown' : projectId,
         'project_name': projectName ?? 'Portfolio',
@@ -38,24 +48,21 @@ class TrackingService {
       developer.log('📡 Tracking interaction: $payload',
           name: 'TrackingService');
 
-      // 1. Log détaillé (Historique)
+      // 1. Log détaillé
       await SupabaseService.client
           .from('portfolio_interactions')
           .insert(payload);
 
-      // 2. Flux Live (Graphiques Artisan)
-      // Si c'est une interaction sur le portfolio, on l'envoie aussi dans app_analytics
+      // 2. Flux Live
       try {
         await SupabaseService.client.from('app_analytics').insert({
-          'app_id': projectId == 'portfolio' || projectId == 'portefolio'
+          'app_id': (projectId == 'portfolio' || projectId == 'portefolio')
               ? 'portfolio'
               : projectId,
           'event_type': actionStr.toLowerCase(),
           'value': 1.0,
         });
-      } catch (_) {
-        // Optionnel : ignorer si la table n'existe pas encore ou erreur de contrainte
-      }
+      } catch (_) {}
 
       developer.log('✅ Interaction tracked & Live event sent: $projectId',
           name: 'TrackingService');
