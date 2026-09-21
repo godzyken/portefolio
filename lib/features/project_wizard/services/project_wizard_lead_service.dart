@@ -1,5 +1,7 @@
 import 'dart:developer' as developer;
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../../core/provider/config_env_provider.dart';
 import '../../../../core/service/supabase_service.dart';
 import '../../contact/providers/emailjs_provider.dart';
@@ -20,7 +22,7 @@ class ProjectWizardLeadService {
     // 1. Tentative d'enregistrement en BDD Supabase
     if (SupabaseService.isReady) {
       try {
-        await SupabaseService.client.from('portfolio_project_leads').insert({
+        await SupabaseService.client.from('portfolio_diagnostic_leads').insert({
           'name': name.isEmpty ? null : name,
           'email': email,
           'project_context': description.context,

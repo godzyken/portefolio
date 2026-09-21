@@ -24,7 +24,7 @@ class ConversionLeadService {
     // 1. Sauvegarde Supabase
     if (SupabaseService.isReady) {
       try {
-        await SupabaseService.client.from('portfolio_project_leads').insert({
+        await SupabaseService.client.from('portfolio_diagnostic_leads').insert({
           'name': name.isEmpty ? null : name,
           'email': email,
           'company': company.isEmpty ? null : company,
