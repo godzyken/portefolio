@@ -29,10 +29,10 @@ class TrackingService {
     try {
       final actionStr = action.name.toUpperCase();
       final payload = {
-        'project_id': projectId,
-        'project_name': projectName,
+        'project_id': projectId.isEmpty ? 'unknown' : projectId,
+        'project_name': projectName ?? 'Portfolio',
         'action_type': actionStr,
-        'details': details,
+        'details': details ?? {},
       };
 
       developer.log('📡 Tracking interaction: $payload',
