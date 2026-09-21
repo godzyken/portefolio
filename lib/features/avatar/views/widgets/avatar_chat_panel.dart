@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/colors_spec.dart';
 import 'package:portefolio/core/service/turnstile_service.dart';
 import 'package:portefolio/core/ui/widgets/narrative_bubble.dart';
+
 import '../../data/avatar_message.dart';
 import '../../notifiers/avatar_chat_notifier.dart';
 import '../../notifiers/engagement_notifier.dart';
@@ -50,7 +51,7 @@ class _AvatarChatPanelState extends ConsumerState<AvatarChatPanel> {
               if (messages.isEmpty) {
                 return const Center(
                   child: Text(
-                    "Posez-moi une question sur le parcours de Soufiane.",
+                    "Posez-moi une question sur le parcours de Emryck.",
                     style: TextStyle(
                         color: ColorHelpers.textSecondary,
                         fontStyle: FontStyle.italic),
