@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/ui/widgets/common_form_fields.dart';
 import '../../data/models/journey_definition.dart';
@@ -47,7 +48,7 @@ class _QualificationWizardScreenState
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => context.canPop() ? context.pop() : context.go('/'),
         ),
       ),
       body: SafeArea(
@@ -344,7 +345,11 @@ class _QualificationWizardScreenState
           ),
           onPressed: () {
             ref.read(conversionSessionProvider.notifier).reset();
-            Navigator.pop(context);
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go('/');
+            }
           },
           child: const Text("Retour au Portfolio",
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),

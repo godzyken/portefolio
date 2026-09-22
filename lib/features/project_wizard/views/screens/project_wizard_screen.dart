@@ -36,7 +36,11 @@ class ProjectWizardScreen extends ConsumerWidget {
             if (state.currentStep > 0 && state.currentStep < 4) {
               notifier.prevStep();
             } else {
-              context.pop();
+              if (context.canPop()) {
+                context.pop();
+              } else {
+                context.go('/');
+              }
             }
           },
         ),
@@ -143,7 +147,11 @@ class ProjectWizardScreen extends ConsumerWidget {
             const SnackBar(content: Text('Projet envoyé avec succès !')),
           );
           notifier.reset();
-          context.pop();
+          if (context.canPop()) {
+            context.pop();
+          } else {
+            context.go('/');
+          }
         }
       });
     }
