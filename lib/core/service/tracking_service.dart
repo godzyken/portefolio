@@ -39,7 +39,7 @@ class TrackingService {
       final actionStr = _toSnakeCase(action.name);
 
       final payload = {
-        'project_id': projectId.isEmpty ? 'unknown' : projectId,
+        'source_project': projectId.isEmpty ? 'unknown' : projectId,
         'project_name': projectName ?? 'Portfolio',
         'action_type': actionStr,
         'details': details ?? {},
