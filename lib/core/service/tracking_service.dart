@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer' as developer;
 
 import '../service/supabase_service.dart';
@@ -39,10 +40,10 @@ class TrackingService {
       final actionStr = _toSnakeCase(action.name);
 
       final payload = {
-        'source_project': projectId.isEmpty ? 'unknown' : projectId,
-        'project_name': projectName ?? 'Portfolio',
+        'source_project':
+            projectName ?? (projectId.isEmpty ? 'unknown' : projectId),
         'action_type': actionStr,
-        'details': details ?? {},
+        'details': jsonEncode(details ?? {}),
       };
 
       developer.log('📡 Tracking interaction: $payload',
