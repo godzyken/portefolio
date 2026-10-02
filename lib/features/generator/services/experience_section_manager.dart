@@ -5,8 +5,8 @@ import '../../../core/ui/widgets/smart_image.dart';
 import '../../experience/data/experiences_data.dart';
 import '../../projets/data/project_data.dart';
 import '../../projets/data/project_section.dart';
+import '../../projets/views/widgets/project_milestones_widget.dart';
 import '../views/generator_widgets_extentions.dart';
-
 import '../views/widgets/sections/experience_theatre_section.dart';
 
 /// Tags qui indiquent une expérience IT / développement logiciel
@@ -137,6 +137,11 @@ class ExperienceSectionManager {
       sections.add(_resultatsSection());
     }
 
+    // 9. Jalons & Sprints
+    if (_getSprints().isNotEmpty) {
+      sections.add(_sprintsSection());
+    }
+
     return sections;
   }
 
@@ -226,6 +231,91 @@ class ExperienceSectionManager {
           items: experience.resultats,
         ),
       );
+
+  ProjectSection _sprintsSection() => ProjectSection(
+        id: 'sprints',
+        title: 'Jalons & Sprints',
+        icon: Icons.flag_circle_rounded,
+        builder: (context, info) => SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: ProjectMilestonesProgressBar(
+            sprints: _getSprints(),
+            info: info,
+          ),
+        ),
+      );
+
+  List<ProjectSprintItem> _getSprints() {
+    final raw = project?.resultsMap?['sprints'];
+    if (raw is List) {
+      return raw
+          .map((item) =>
+              ProjectSprintItem.fromJson(Map<String, dynamic>.from(item)))
+          .toList();
+    }
+    if (experience.id == 'exp_23' ||
+        experience.entreprise.toLowerCase().contains('emap')) {
+      return const [
+        ProjectSprintItem(
+          step: 1,
+          title: 'AMOA & Analyse Métier',
+          description:
+              'Analyse de l’activité BTP/artisanat, étude du besoin client et cadrage des opportunités.',
+          status: 'completed',
+          completion: 100,
+        ),
+        ProjectSprintItem(
+          step: 2,
+          title: 'Cadrage & UX/UI Design',
+          description:
+              'Spécifications fonctionnelles, parcours utilisateurs et maquettage responsive.',
+          status: 'completed',
+          completion: 100,
+        ),
+        ProjectSprintItem(
+          step: 3,
+          title: 'Développement Flutter Web',
+          description:
+              'Clean Architecture, Riverpod 3, modules d’urgence et de contact direct.',
+          status: 'completed',
+          completion: 100,
+        ),
+        ProjectSprintItem(
+          step: 4,
+          title: 'Backend Supabase & Sécurité',
+          description:
+              'Gestion des formulaires, Cloudflare Turnstile, authentification et protection des endpoints.',
+          status: 'completed',
+          completion: 100,
+        ),
+        ProjectSprintItem(
+          step: 5,
+          title: 'CI/CD Netlify & DNS',
+          description:
+              'Pipelines GitHub Actions, gestion du domaine emap-82.fr et redirections HTTPS.',
+          status: 'completed',
+          completion: 100,
+        ),
+        ProjectSprintItem(
+          step: 6,
+          title: 'SEO Local & Acquisition',
+          description:
+              'Google Search Console, référencement ciblé Tarn-et-Garonne et tunnel de conversion.',
+          status: 'completed',
+          completion: 100,
+        ),
+        ProjectSprintItem(
+          step: 7,
+          title: 'Écosystème CRM & Automatisation',
+          description:
+              'Préparation de la connexion aux outils de gestion BTP et automatisation des devis.',
+          status: 'in_progress',
+          completion: 65,
+        ),
+      ];
+    }
+    return [];
+  }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -255,218 +345,218 @@ class ExperiencePresentationSection extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Logo + infos
-          Row(
-            children: [
-              if (experience.logo.isNotEmpty)
-                Container(
-                  width: 80,
-                  height: 80,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: Colors.white.withValues(alpha: 0.1),
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.2),
+            Row(
+              children: [
+                if (experience.logo.isNotEmpty)
+                  Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: Colors.white.withValues(alpha: 0.1),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.2),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 10,
+                        ),
+                      ],
                     ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black26,
-                        blurRadius: 10,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(19),
+                      child: SmartImage(
+                        path: experience.logo,
+                        fit: BoxFit.contain,
+                        enableShimmer: true,
+                      ),
+                    ),
+                  ),
+                const SizedBox(width: 20),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          experience.poste,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Row(
+                        children: [
+                          Container(
+                            width: 8,
+                            height: 8,
+                            decoration: const BoxDecoration(
+                              color: ColorHelpers.magenta,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              experience.entreprise,
+                              style: const TextStyle(
+                                color: ColorHelpers.magenta,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 1.1,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.schedule_outlined,
+                            size: 14,
+                            color: Colors.white54,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            experience.periode,
+                            style: const TextStyle(
+                              color: Colors.white38,
+                              fontSize: 12,
+                              fontFamily: 'monospace',
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(19),
-                    child: SmartImage(
-                      path: experience.logo,
-                      fit: BoxFit.contain,
-                      enableShimmer: true,
+                ),
+              ],
+            ),
+
+            // Tags
+            if (experience.tags.isNotEmpty) ...[
+              const SizedBox(height: 32),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: experience.tags.map((tag) {
+                  return Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
                     ),
+                    decoration: BoxDecoration(
+                      color: ColorHelpers.cyan.withValues(alpha: 0.05),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: ColorHelpers.cyan.withValues(alpha: 0.2),
+                      ),
+                    ),
+                    child: Text(
+                      tag.toUpperCase(),
+                      style: const TextStyle(
+                        color: ColorHelpers.cyan,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 1.0,
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ],
+
+            // Contexte
+            if (experience.contexte.isNotEmpty) ...[
+              const SizedBox(height: 32),
+              Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Colors.white.withValues(alpha: 0.05),
+                      Colors.white.withValues(alpha: 0.02),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.1),
                   ),
                 ),
-              const SizedBox(width: 20),
-              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    FittedBox(
-                      fit: BoxFit.scaleDown,
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        experience.poste,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 6),
                     Row(
                       children: [
-                        Container(
-                          width: 8,
-                          height: 8,
-                          decoration: const BoxDecoration(
-                            color: ColorHelpers.magenta,
-                            shape: BoxShape.circle,
-                          ),
+                        Icon(
+                          Icons.info_outline,
+                          size: 18,
+                          color: ColorHelpers.cyan,
                         ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Text(
-                            experience.entreprise,
-                            style: const TextStyle(
-                              color: ColorHelpers.magenta,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: 1.1,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.schedule_outlined,
-                          size: 14,
-                          color: Colors.white54,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          experience.periode,
-                          style: const TextStyle(
-                            color: Colors.white38,
+                        const SizedBox(width: 12),
+                        const Text(
+                          'CONTEXTE DE MISSION',
+                          style: TextStyle(
+                            color: ColorHelpers.cyan,
+                            fontWeight: FontWeight.w900,
                             fontSize: 12,
-                            fontFamily: 'monospace',
+                            letterSpacing: 1.2,
                           ),
                         ),
                       ],
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      experience.contexte,
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 15,
+                        height: 1.6,
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
                   ],
                 ),
               ),
             ],
-          ),
 
-          // Tags
-          if (experience.tags.isNotEmpty) ...[
-            const SizedBox(height: 32),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: experience.tags.map((tag) {
-                return Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: ColorHelpers.cyan.withValues(alpha: 0.05),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: ColorHelpers.cyan.withValues(alpha: 0.2),
+            // Image
+            if (experience.image.isNotEmpty) ...[
+              const SizedBox(height: 32),
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: Colors.white12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black54,
+                      blurRadius: 20,
                     ),
-                  ),
-                  child: Text(
-                    tag.toUpperCase(),
-                    style: const TextStyle(
-                      color: ColorHelpers.cyan,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 1.0,
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
-          ],
-
-          // Contexte
-          if (experience.contexte.isNotEmpty) ...[
-            const SizedBox(height: 32),
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Colors.white.withValues(alpha: 0.05),
-                    Colors.white.withValues(alpha: 0.02),
                   ],
                 ),
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.1),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(23),
+                  child: SmartImage(
+                    path: experience.image,
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    height: 250,
+                    enableShimmer: true,
+                  ),
                 ),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.info_outline,
-                        size: 18,
-                        color: ColorHelpers.cyan,
-                      ),
-                      const SizedBox(width: 12),
-                      const Text(
-                        'CONTEXTE DE MISSION',
-                        style: TextStyle(
-                          color: ColorHelpers.cyan,
-                          fontWeight: FontWeight.w900,
-                          fontSize: 12,
-                          letterSpacing: 1.2,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    experience.contexte,
-                    style: const TextStyle(
-                      color: Colors.white70,
-                      fontSize: 15,
-                      height: 1.6,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-
-          // Image
-          if (experience.image.isNotEmpty) ...[
-            const SizedBox(height: 32),
-            Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: Colors.white12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black54,
-                    blurRadius: 20,
-                  ),
-                ],
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(23),
-                child: SmartImage(
-                  path: experience.image,
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                  height: 250,
-                  enableShimmer: true,
-                ),
-              ),
-            ),
-          ],
-          const SizedBox(height: 60),
+            ],
+            const SizedBox(height: 60),
           ],
         ),
       ),
@@ -502,70 +592,71 @@ class _SimpleListSection extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: color.withValues(alpha: 0.3)),
-                ),
-                child: Icon(icon, color: color, size: 20),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    title.toUpperCase(),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 1.5,
-                    ),
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: color.withValues(alpha: 0.3)),
                   ),
+                  child: Icon(icon, color: color, size: 20),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-
-          // GRILLE DE CARTES (Visuel)
-          ...items.map(
-            (item) => Container(
-              margin: const EdgeInsets.only(bottom: 16),
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.03),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(
-                    useCheck ? Icons.check_circle : Icons.arrow_right_alt,
-                    size: 18,
-                    color: color.withValues(alpha: 0.7),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
+                const SizedBox(width: 16),
+                Expanded(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
                     child: Text(
-                      item,
+                      title.toUpperCase(),
                       style: const TextStyle(
-                        color: Colors.white70,
-                        fontSize: 14,
-                        height: 1.5,
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 1.5,
                       ),
                     ),
                   ),
-                ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+
+            // GRILLE DE CARTES (Visuel)
+            ...items.map(
+              (item) => Container(
+                margin: const EdgeInsets.only(bottom: 16),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.03),
+                  borderRadius: BorderRadius.circular(16),
+                  border:
+                      Border.all(color: Colors.white.withValues(alpha: 0.05)),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(
+                      useCheck ? Icons.check_circle : Icons.arrow_right_alt,
+                      size: 18,
+                      color: color.withValues(alpha: 0.7),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Text(
+                        item,
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 14,
+                          height: 1.5,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 40),
+            const SizedBox(height: 40),
           ],
         ),
       ),
@@ -595,86 +686,86 @@ class _CodeSnippetSection extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Colors.greenAccent.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                      color: Colors.greenAccent.withValues(alpha: 0.3)),
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.greenAccent.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                        color: Colors.greenAccent.withValues(alpha: 0.3)),
+                  ),
+                  child: const Icon(Icons.code,
+                      color: Colors.greenAccent, size: 20),
                 ),
-                child:
-                    const Icon(Icons.code, color: Colors.greenAccent, size: 20),
-              ),
-              const SizedBox(width: 16),
-              const Expanded(
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'EXTRAIT TECHNIQUE',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 1.5,
+                const SizedBox(width: 16),
+                const Expanded(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'EXTRAIT TECHNIQUE',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 1.5,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: const Color(0xFF0D1117),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: Colors.greenAccent.withValues(alpha: 0.2),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black54,
-                  blurRadius: 10,
-                ),
               ],
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header type éditeur
-                Row(
-                  children: [
-                    _dot(const Color(0xFFFF5F56)),
-                    const SizedBox(width: 8),
-                    _dot(const Color(0xFFFFBD2E)),
-                    const SizedBox(width: 8),
-                    _dot(const Color(0xFF27C93F)),
-                    const Spacer(),
-                    const Text('DART / FLUTTER',
-                        style: TextStyle(
-                            color: Colors.white24,
-                            fontSize: 9,
-                            fontWeight: FontWeight.bold)),
-                  ],
+            const SizedBox(height: 24),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: const Color(0xFF0D1117),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: Colors.greenAccent.withValues(alpha: 0.2),
                 ),
-                const SizedBox(height: 24),
-                SelectableText(
-                  code,
-                  style: const TextStyle(
-                    color: Color(0xFF9FE1CB),
-                    fontFamily: 'monospace',
-                    fontSize: 13,
-                    height: 1.6,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black54,
+                    blurRadius: 10,
                   ),
-                ),
-              ],
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Header type éditeur
+                  Row(
+                    children: [
+                      _dot(const Color(0xFFFF5F56)),
+                      const SizedBox(width: 8),
+                      _dot(const Color(0xFFFFBD2E)),
+                      const SizedBox(width: 8),
+                      _dot(const Color(0xFF27C93F)),
+                      const Spacer(),
+                      const Text('DART / FLUTTER',
+                          style: TextStyle(
+                              color: Colors.white24,
+                              fontSize: 9,
+                              fontWeight: FontWeight.bold)),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  SelectableText(
+                    code,
+                    style: const TextStyle(
+                      color: Color(0xFF9FE1CB),
+                      fontFamily: 'monospace',
+                      fontSize: 13,
+                      height: 1.6,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(height: 40),
+            const SizedBox(height: 40),
           ],
         ),
       ),

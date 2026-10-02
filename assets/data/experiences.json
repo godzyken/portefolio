@@ -4,40 +4,45 @@
     "entreprise": "EMAP Services",
     "logo": "assets/images/entreprises/emap_3d.webp",
     "image": "assets/images/realisations/landing_page_emap.webp",
-    "contexte": "Conception d'un site vitrine avec page de contact pour EMAP Services, visant à centraliser tous les canaux de communication (téléphone, email, réseaux sociaux) dans une interface moderne, interactive et responsive.",
+    "contexte": "Conception et déploiement d’un écosystème digital pour EMAP-82, entreprise artisanale du BTP spécialisée en plomberie, chauffage, climatisation, VMC et performance énergétique. Mission combinant AMOA, cadrage fonctionnel, UX/UI, développement Flutter Web, backend Supabase, CI/CD, SEO local, acquisition et pilotage par la donnée (Data Driven).",
     "objectifs": [
-      "Créer une page de contact multi-canal fluide et responsive (mobile, tablette, desktop).",
-      "Offrir un accès rapide aux canaux de communication directs (appel, email, réseaux sociaux).",
-      "Faciliter les échanges entre clients et équipe via un formulaire validé en temps réel."
+      "Traduire les besoins métier d'une PME artisanale du BTP en fonctionnalités numériques concrètes (AMOA & Cadrage).",
+      "Transformer le site web en un outil commercial et opérationnel de génération de prospects qualifiés.",
+      "Déployer une infrastructure automatisée, sécurisée et évolutive vers un écosystème numérique complet (CRM & Automatisation)."
     ],
     "missions": [
-      "Conseil en stratégie globale : financement, digitalisation et structuration juridique/fiscale.",
-      "Conception et intégration d’un formulaire de contact interactif avec validation instantanée.",
-      "Ajout des canaux de communication directs : téléphone (`tel:`), email (`mailto:`), et localisation.",
-      "Intégration des réseaux sociaux (Facebook, Instagram, WhatsApp, LinkedIn).",
-      "Création d’une section 'urgence' avec bouton d’appel prioritaire et design distinctif.",
-      "Mise en œuvre d’un design responsive avec animations fluides et effets de survol.",
-      "Paramétrage des permissions iOS/Android pour le lancement d’URL (via `url_launcher`).",
-      "Option Supabase intégrée pour l’envoi d’emails avec backend."
+      "1. AMOA : Analyse approfondie de l’activité BTP, du positionnement commercial, des parcours de contact et contraintes opérationnelles.",
+      "2. Cadrage fonctionnel : Définition de l’architecture cible, des points de conversion, formulaires et modules d'urgence.",
+      "3. UX/UI : Conception d'interfaces ergonomiques optimisées pour la prise de contact rapide sur mobile, tablette et desktop.",
+      "4. Développement Flutter Web : Architecture logicielle modulaire (Clean Arch + Riverpod 3) avec composants réutilisables.",
+      "5. Backend & Cloud : Intégration de Supabase (authentification, formulaires, stockage) et services de messagerie sécurisés.",
+      "6. CI/CD & Déploiement : Pipeline d'intégration et déploiement continu automatisé via GitHub Actions et Netlify.",
+      "7. Gestion DNS & Domaine : Configuration de l'infrastructure web, routage DNS, redirections WWW et nom de domaine emap-82.fr.",
+      "8. Sécurité (Security by Design) : Protection Cloudflare Turnstile, sécurisation des routes, headers HTTP et variables d'environnement.",
+      "9. SEO Technique & Local : Balisage sémantique, sitemap.xml, robots.txt, Google Search Console et référencement Tarn-et-Garonne.",
+      "10. Acquisition & Conversion : Mise en place du tunnel de conversion (Visibilité → Confiance → Prise de contact → Devis).",
+      "11. Pilotage Data Driven : Intégration du suivi analytique des événements (clics, appels, formulaires) pour décisions par la donnée.",
+      "12. Trajectoire Écosystème : Préparation de l'interconnexion future (Site Web → Acquisition → CRM → Gestion → Automatisation).",
+      "13. Méthode Hybride : Coordination agile combinant AMOA, UX/UI, Flutter, DevOps, SEO et Growth."
     ],
-    "code": "// Exemple Flutter – ouverture d’un lien WhatsApp\nvoid _launchWhatsApp() async {\n  final url = Uri.parse('https://wa.me/33648777661?text=Bonjour EMAP');\n  if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {\n    throw Exception('Impossible d’ouvrir WhatsApp');\n  }\n}",
-    "tags": ["Flutter", "UI/UX", "url_launcher", "Responsive Design", "Communication", "Supabase"],
+    "code": "// Exemple Flutter – Ouverture d’un canal de communication direct (WhatsApp / Urgence)\nvoid _launchDirectChannel(String url) async {\n  final uri = Uri.parse(url);\n  if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {\n    throw Exception('Impossible d’ouvrir le canal: $url');\n  }\n}",
+    "tags": ["AMOA", "Flutter", "Riverpod3", "Supabase", "CI/CD", "Netlify", "SEO Local", "Security", "Data Driven", "BTP"],
     "stack": {
-      "frontend": ["Flutter", "Dart"],
-      "architecture": ["Clean Architecture", "Modular"],
-      "state": ["Riverpod"],
-      "packages": ["url_launcher", "Supabase"],
-      "design": ["Material 3", "Animations", "Cards ombrées", "Hover effects"],
-      "intégration": ["tel:", "mailto:", "https", "WhatsApp API"]
+      "AMOA & Cadrage": ["Analyse Métier", "Cadrage Fonctionnel", "Wireframing UX/UI", "User Journeys"],
+      "Frontend": ["Flutter Web", "Dart", "Clean Architecture", "Riverpod 3"],
+      "Backend & Cloud": ["Supabase DB & Auth", "Cloudflare Turnstile", "Tawk.to Chat", "Google Maps SDK"],
+      "DevOps & Infra": ["GitHub Actions (CI/CD)", "Netlify Hosting", "DNS Management", "Custom Domains"],
+      "SEO & Analytics": ["Google Search Console", "Local SEO (Tarn-et-Garonne)", "Custom Event Tracking"]
     },
     "periode": "Janvier 2026 – Janvier 2027",
-    "lienProjet": "https://www.emap.godzyken.com/",
+    "lienProjet": "https://emap-82.fr",
     "resultats": [
-      "Expérience utilisateur modernisée et intuitive sur tous les supports.",
-      "Communication client simplifiée avec accès direct aux canaux préférés.",
-      "Interface prête à être connectée au backend de Bat_Track_v1 pour production."
+      "Mise en production réussie d'un socle digital complet et performant (emap-82.fr).",
+      "Tunnel d'acquisition fonctionnel réduisant la friction de prise de contact (appels, devis, chat).",
+      "Chaîne CI/CD automatisée supprimant tout processus manuel de déploiement.",
+      "Positionnement SEO local renforcé et architecture prête pour l'évolution CRM & IoT."
     ],
-    "poste": "Directeur de projet digital"
+    "poste": "Consultant AMOA & Développeur Flutter – Transformation digitale"
   },
   {
     "id": "exp_22",

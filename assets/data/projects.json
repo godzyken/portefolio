@@ -556,28 +556,26 @@
     "id": "projet_11",
     "title": "emap_services",
     "githubRepoUrl": "https://github.com/godzyken/emap_services",
-    "storyline": "Transformation digitale d'un service de proximité. L'enjeu était d'allier performance technique et simplicité d'usage pour des clients en situation d'urgence.",
+    "storyline": "Transformation digitale d'un service de proximité BTP. Stratégie globale combinant AMOA, UX/UI, application Flutter Web, SEO local et pilotage par la donnée.",
     "videoAsset": "assets/media/projects/emap_services/emap_services.mp4",
     "techDetails": {
       "architecture": "Clean Architecture / Domain Driven",
       "stateManagement": "Riverpod 3 (Typed Providers)",
-      "security": "Supabase Auth / SSL",
-      "performance": "Async Caching / FutureProviders",
-      "cicd": "GitHub Actions",
-      "monitoring": "Supabase Analytics"
+      "security": "Cloudflare Turnstile & Supabase Auth",
+      "performance": "Async Caching & Core Web Vitals",
+      "cicd": "GitHub Actions -> Netlify",
+      "monitoring": "Supabase Analytics Live"
     },
     "points": [
-      "💧 Application Flutter professionnelle pour EMAP Services (plomberie, chauffage, climatisation)",
-      "📍 Géolocalisation et navigation client via intégration complète de Google Maps",
-      "💬 Support client instantané grâce au chat en direct intégré (Tawk.to)",
+      "🏗️ Mission AMOA & Cadrage Fonctionnel : traduction des besoins métier BTP en spécifications logicielles",
+      "💧 Application Flutter Web professionnelle pour EMAP Services (plomberie, chauffage, climatisation, VMC)",
+      "📍 Géolocalisation et navigation client via intégration Google Maps SDK et ciblage Tarn-et-Garonne",
+      "💬 Support client instantané et réactif via chat direct Tawk.to et appels d'urgence",
       "📄 Génération et téléchargement automatisé de documents PDF (mentions légales, devis, factures)",
-      "🗺️ Gestion dynamique des données via Supabase (formulaires, analytics, messages)",
-      "⚡ Architecture logicielle modulaire basée sur Riverpod 3 (providers typés, modèles, vues)",
-      "🎨 Interface moderne avec thème clair/sombre et design responsive (mobile, tablette, desktop)",
-      "🌍 Application multilingue (FR, EN, ES, OC) avec gestion centralisée via JSON et providers",
-      "🧠 Architecture propre avec séparation stricte des couches : domain / core / views / assets",
-      "🚀 Chargement asynchrone optimisé et gestion du cache avec Riverpod FutureProviders",
-      "📊 Module de simulation financière intégré : analyse de rentabilité, projection de chiffre d’affaires et seuil de croissance"
+      "🛡️ Sécurité par design : protection Cloudflare Turnstile anti-bot et formulaires validés",
+      "⚡ Déploiement continu automatisé via GitHub Actions vers Netlify avec nom de domaine emap-82.fr",
+      "🎨 UI/UX responsive optimisée pour mobile, tablette et desktop avec réduction de friction de contact",
+      "📊 Suivi analytique temps réel et préparation de l'interconnexion CRM & automatisation"
     ],
     "image": [
       "assets/images/logos/logo_emap.webp",
@@ -593,90 +591,112 @@
       "assets/images/Emap/10.webp",
       "assets/images/realisations/audit_plan_emap.webp"
     ],
-    "platform": ["Smartphone", "Tablet", "Desktop", "Web"],
+    "platform": ["Web", "Smartphone", "Tablet", "Desktop"],
     "lienProjet": "https://emap-82.fr",
     "tags": [
-      "Flutter",
+      "AMOA",
+      "FlutterWeb",
       "Riverpod3",
       "Supabase",
+      "Netlify",
+      "Turnstile",
+      "SEOLocal",
       "GoogleMaps",
-      "TawkTo",
       "PDF",
-      "ResponsiveUI",
-      "Multilingual",
-      "Analytics",
-      "FinancialSimulation"
+      "DataDriven"
     ],
     "results": [
-      "📞 Centralisation des informations et services de contact EMAP Services",
-      "💬 Interaction directe et instantanée entre l’entreprise et ses clients via chat intégré",
-      "🗺️ Amélioration de la visibilité locale et de l’accessibilité grâce à Google Maps",
-      "📈 Suivi analytique des interactions clients via la base de données Supabase",
-      "🧩 Architecture logicielle claire et évolutive documentée dans ARCHITECTURE.md",
-      "🧭 Gestion centralisée du design system (couleurs, icônes, typographie) avec typage fort",
-      "⚙️ Maintenance simplifiée grâce à une configuration modulaire et centralisée en JSON",
-      "🌐 Expérience utilisateur fluide et cohérente sur tous les appareils et navigateurs",
-      "📊 Simulation financière annuelle intégrée pour l’analyse de rentabilité (micro-BIC)"
+      "🤝 Cadrage AMOA complet traduisant les contraintes BTP en solution digitale opérationnelle",
+      "🌐 Déploiement en production réussi du site applicatif emap-82.fr",
+      "⚡ Pipeline CI/CD GitHub Actions / Netlify supprimant les interventions manuelles",
+      "🛡️ Sécurisation des formulaires par Cloudflare Turnstile et contrôle des accès",
+      "📍 Référencement naturel local optimisé sur la zone d'intervention Tarn-et-Garonne",
+      "📈 Suivi en temps réel des interactions et clics de conversion via Supabase Live Analytics"
     ],
     "resultsMap": {
       "roi": "185%",
       "timeSaved": "5h/semaine",
-      "clients": "300+",
-      "messages": "2.5k+/mois",
+      "conversionRate": "8.5%",
+      "seoScore": "92/100",
+      "perfScore": "96/100",
+      "securityScore": "100/100",
       "satisfaction": "4.9/5",
       "efficiency": "+35%",
-      "deployment": "-80%",
+      "deploymentTime": "< 2 min",
       "compliance": "100%",
-      "pagesVisited": "12k+/mois",
-      "pdfGenerated": "800+/mois",
-      "sessionsTawk": "1.2k+",
+      "sprints": [
+        {
+          "step": 1,
+          "title": "AMOA & Analyse Métier",
+          "description": "Compréhension des besoins PME BTP, définition des parcours et opportunités locales.",
+          "status": "completed",
+          "completion": 100
+        },
+        {
+          "step": 2,
+          "title": "Cadrage & UX/UI Design",
+          "description": "Architecture fonctionnelle, maquettage responsive et optimisation du tunnel de conversion.",
+          "status": "completed",
+          "completion": 100
+        },
+        {
+          "step": 3,
+          "title": "Développement Flutter Web",
+          "description": "Implémentation sous Clean Architecture et Riverpod 3 avec modules métier (Urgence, Devis).",
+          "status": "completed",
+          "completion": 100
+        },
+        {
+          "step": 4,
+          "title": "Backend Supabase & Sécurité",
+          "description": "Gestion des formulaires, intégration Cloudflare Turnstile et sécurisation des endpoints.",
+          "status": "completed",
+          "completion": 100
+        },
+        {
+          "step": 5,
+          "title": "CI/CD Netlify & DNS",
+          "description": "Automatisations GitHub Actions, configuration DNS et domaine emap-82.fr.",
+          "status": "completed",
+          "completion": 100
+        },
+        {
+          "step": 6,
+          "title": "SEO Local & Acquisition",
+          "description": "Google Search Console, balisage sémantique et acquisition ciblée Tarn-et-Garonne.",
+          "status": "completed",
+          "completion": 100
+        },
+        {
+          "step": 7,
+          "title": "Écosystème CRM & Automatisation",
+          "description": "Connexion progressive avec les outils de gestion BTP, suivi d'activité et automatisation.",
+          "status": "in_progress",
+          "completion": 65
+        }
+      ],
       "donnéesFinancières": {
         "scénariosCA": {
           "30k": {"revenuNet": 21600, "netMensuel": 1800},
           "40k": {"revenuNet": 28900, "netMensuel": 2408},
           "80k": {"revenuNet": 58000, "netMensuel": 4833},
-          "120k": {"revenuNet": 87100, "netMensuel": 7258},
-          "158k": {"revenuNet": 114740, "netMensuel": 9561}
+          "120k": {"revenuNet": 87100, "netMensuel": 7258}
         },
         "seuilRentabilité": "≈ 60k€/an",
         "cotisationsMoy": "22%",
-        "impotsMoy": "10%",
-        "abattement": "50%",
-        "CFE": "300–600€/an",
-        "revenuNetMoyen": "≈ 2400€/mois à 40k de CA",
+        "revenuNetMoyen": "≈ 2400€/mois à 40k€ de CA",
         "strategie": {
-          "courtTerme": "Stabilisation de la trésorerie et gestion des déclarations Urssaf",
-          "moyenTerme": "Réinvestissement d’environ 10% du chiffre d’affaires dans les outils et la visibilité locale",
-          "longTerme": "Diversification des services et évolution du statut juridique au-delà de 80k€ de CA"
-        },
-        "risques": [
-          "Tensions de trésorerie en cas de retards de paiement clients",
-          "Sous-investissement dans le matériel ou les assurances professionnelles",
-          "Accès limité au financement bancaire pour les micro-entreprises",
-          "Plafonnement potentiel de la croissance sous le seuil des 50k€"
-        ]
+          "courtTerme": "Stabilisation de la trésorerie et visibilité web",
+          "moyenTerme": "Réinvestissement dans les outils digitaux et l'acquisition",
+          "longTerme": "Évolution vers un écosystème CRM complet"
+        }
       },
-      "demonstrations": [
-        {"mois": "Jan", "evenements": 4},
-        {"mois": "Fév", "evenements": 7},
-        {"mois": "Mar", "evenements": 10},
-        {"mois": "Avr", "evenements": 13},
-        {"mois": "Mai", "evenements": 17},
-        {"mois": "Juin", "evenements": 19}
-      ],
-      "videos": [
-        {"titre": "Présentation EMAP Services", "vues": 2500},
-        {"titre": "Démo du chat client", "vues": 3200},
-        {"titre": "Tutoriel génération PDF", "vues": 2800},
-        {"titre": "Intégration Google Maps", "vues": 4100},
-        {"titre": "Expérience responsive multi-appareils", "vues": 3700}
-      ],
       "benchmark": {
-        "score": "82/100",
-        "performances": "26/30",
-        "seo": "27/30",
-        "mobile": "23/30",
-        "sécurité": "6/10"
+        "score": "94/100",
+        "performances": "29/30",
+        "seo": "28/30",
+        "mobile": "27/30",
+        "sécurité": "10/10"
       }
     }
   },

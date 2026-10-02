@@ -7,6 +7,7 @@ import 'package:portefolio/features/projets/data/analytics_models.dart';
 import 'package:portefolio/features/projets/data/project_data.dart';
 import 'package:portefolio/features/projets/providers/analytics_providers.dart';
 import 'package:portefolio/features/projets/views/widgets/analytics_widgets.dart';
+import 'package:portefolio/features/projets/views/widgets/project_milestones_widget.dart';
 
 class AnalyticsSection extends ConsumerWidget {
   final ProjectInfo project;
@@ -20,7 +21,8 @@ class AnalyticsSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final analyticsAsync = ref.watch(projectAnalyticsProvider(project.analyticsId));
+    final analyticsAsync =
+        ref.watch(projectAnalyticsProvider(project.analyticsId));
 
     return analyticsAsync.when(
       data: (analytics) => _buildContent(context, analytics),
@@ -37,10 +39,19 @@ class AnalyticsSection extends ConsumerWidget {
         children: [
           _buildHeader(),
           const SizedBox(height: 32),
-          
+
           // Métriques Live / KPIs
           _buildMetricsGrid(analytics),
           const SizedBox(height: 40),
+
+          // Jalons & Sprints
+          if (_extractSprints().isNotEmpty) ...[
+            ProjectMilestonesProgressBar(
+              sprints: _extractSprints(),
+              info: info,
+            ),
+            const SizedBox(height: 40),
+          ],
 
           // Audits (SEO, Perf, GEO)
           if (analytics.audits.isNotEmpty) ...[
@@ -67,11 +78,13 @@ class AnalyticsSection extends ConsumerWidget {
       children: [
         Row(
           children: [
-            const Icon(Icons.analytics_outlined, color: Colors.cyanAccent, size: 32),
+            const Icon(Icons.analytics_outlined,
+                color: Colors.cyanAccent, size: 32),
             const SizedBox(width: 16),
             ResponsiveText.headlineMedium(
               'Performance & ROI',
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                  color: Colors.white, fontWeight: FontWeight.bold),
             ),
           ],
         ),
@@ -90,14 +103,19 @@ class AnalyticsSection extends ConsumerWidget {
     final allMetrics = [...kpiMetrics, ...eventMetrics];
 
     if (allMetrics.isEmpty) {
-      return _buildEmptyState('Aucune métrique live disponible pour le moment.');
+      return _buildEmptyState(
+          'Aucune métrique live disponible pour le moment.');
     }
 
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: info.isMobile ? 2 : info.isTablet ? 3 : 4,
+        crossAxisCount: info.isMobile
+            ? 2
+            : info.isTablet
+                ? 3
+                : 4,
         crossAxisSpacing: 16,
         mainAxisSpacing: 16,
         childAspectRatio: 1.2,
@@ -140,7 +158,10 @@ class AnalyticsSection extends ConsumerWidget {
                       children: [
                         const Text(
                           'Points clés :',
-                          style: TextStyle(color: Colors.white60, fontSize: 12, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              color: Colors.white60,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 8),
                         AuditItemsList(items: audit.items),
@@ -187,7 +208,8 @@ class AnalyticsSection extends ConsumerWidget {
                           padding: const EdgeInsets.only(top: 8.0),
                           child: Text(
                             '${date.day}/${date.month}',
-                            style: const TextStyle(color: Colors.white38, fontSize: 10),
+                            style: const TextStyle(
+                                color: Colors.white38, fontSize: 10),
                           ),
                         );
                       }
@@ -195,9 +217,12 @@ class AnalyticsSection extends ConsumerWidget {
                     },
                   ),
                 ),
-                leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                leftTitles:
+                    const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                topTitles:
+                    const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                rightTitles:
+                    const AxisTitles(sideTitles: SideTitles(showTitles: false)),
               ),
               borderData: FlBorderData(show: false),
               lineBarsData: [
@@ -215,7 +240,8 @@ class AnalyticsSection extends ConsumerWidget {
                 ),
                 LineChartBarData(
                   spots: analytics.history.asMap().entries.map((e) {
-                    return FlSpot(e.key.toDouble(), e.value.performanceScore ?? 0);
+                    return FlSpot(
+                        e.key.toDouble(), e.value.performanceScore ?? 0);
                   }).toList(),
                   isCurved: true,
                   color: Colors.purpleAccent,
@@ -247,7 +273,8 @@ class AnalyticsSection extends ConsumerWidget {
       children: [
         Container(width: 12, height: 4, color: color),
         const SizedBox(width: 8),
-        Text(label, style: const TextStyle(color: Colors.white60, fontSize: 12)),
+        Text(label,
+            style: const TextStyle(color: Colors.white60, fontSize: 12)),
       ],
     );
   }
@@ -269,7 +296,10 @@ class AnalyticsSection extends ConsumerWidget {
               SizedBox(width: 8),
               Text(
                 'Méthodologie',
-                style: TextStyle(color: Colors.amberAccent, fontSize: 12, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    color: Colors.amberAccent,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold),
               ),
             ],
           ),
@@ -278,7 +308,8 @@ class AnalyticsSection extends ConsumerWidget {
             'Les scores CALCULATED sont générés par notre moteur d\'analyse interne basé sur des critères standards. '
             'Les données REAL proviennent directement des APIs connectées. '
             'Les projections ESTIMATED sont basées sur les tendances actuelles.',
-            style: TextStyle(color: Colors.white.withValues(alpha: 0.4), fontSize: 11),
+            style: TextStyle(
+                color: Colors.white.withValues(alpha: 0.4), fontSize: 11),
           ),
         ],
       ),
@@ -305,7 +336,8 @@ class AnalyticsSection extends ConsumerWidget {
         children: [
           const Icon(Icons.error_outline, color: Colors.redAccent, size: 48),
           const SizedBox(height: 16),
-          Text('Erreur Analytics: $e', style: const TextStyle(color: Colors.redAccent)),
+          Text('Erreur Analytics: $e',
+              style: const TextStyle(color: Colors.redAccent)),
         ],
       ),
     );
@@ -318,5 +350,16 @@ class AnalyticsSection extends ConsumerWidget {
     if (key.contains('form')) return Icons.assignment;
     if (key.contains('lead')) return Icons.trending_up;
     return Icons.bolt;
+  }
+
+  List<ProjectSprintItem> _extractSprints() {
+    final raw = project.resultsMap?['sprints'];
+    if (raw is List) {
+      return raw
+          .map((item) =>
+              ProjectSprintItem.fromJson(Map<String, dynamic>.from(item)))
+          .toList();
+    }
+    return [];
   }
 }

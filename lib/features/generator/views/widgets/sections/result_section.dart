@@ -6,6 +6,7 @@ import 'package:portefolio/features/experience/views/widgets/activity_metrics_ch
 import 'package:portefolio/features/generator/data/extention_models.dart';
 import 'package:portefolio/features/generator/views/generator_widgets_extentions.dart';
 import 'package:portefolio/features/projets/data/github_project_analyzer.dart';
+import 'package:portefolio/features/projets/views/widgets/project_milestones_widget.dart';
 
 /// Section Résultats - Affiche de véritables analyses dynamiques (GitHub, WakaTime, Performance)
 /// et une présentation claire et structurée (plus facile à lire).
@@ -137,6 +138,15 @@ class _ResultsSectionState extends State<ResultsSection> {
             const SizedBox(height: 12),
             BadgeList(
               badges: _buildResultBadges(results),
+            ),
+            const SizedBox(height: 32),
+          ],
+
+          // 2.5 Jalons & Sprints (Barre de progression)
+          if (_extractSprints().isNotEmpty) ...[
+            ProjectMilestonesProgressBar(
+              sprints: _extractSprints(),
+              info: widget.info,
             ),
             const SizedBox(height: 32),
           ],
@@ -281,6 +291,17 @@ class _ResultsSectionState extends State<ResultsSection> {
             color: color[200], fontSize: 12, fontWeight: FontWeight.w500),
       ),
     );
+  }
+
+  List<ProjectSprintItem> _extractSprints() {
+    final raw = widget.project.resultsMap?['sprints'];
+    if (raw is List) {
+      return raw
+          .map((item) =>
+              ProjectSprintItem.fromJson(Map<String, dynamic>.from(item)))
+          .toList();
+    }
+    return [];
   }
 
   List<Widget> _buildResultBadges(List<String> results) {

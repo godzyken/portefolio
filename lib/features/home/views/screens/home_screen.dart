@@ -280,7 +280,7 @@ class HomeScreen extends ConsumerWidget {
               horizontal: isMobile ? 24 : 32,
               vertical: isMobile ? 16 : 20,
             ),
-            backgroundColor: Colors.white.withOpacity(0.08),
+            backgroundColor: Colors.white.withValues(alpha: 0.08),
             foregroundColor: Colors.white,
             side: const BorderSide(color: Colors.amberAccent, width: 1.5),
             shape: RoundedRectangleBorder(
