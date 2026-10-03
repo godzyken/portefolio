@@ -305,15 +305,22 @@ class UnifiedImageManager with ChangeNotifier {
       p = p.replaceAll('//', '/');
     }
 
-    // 4. MIGRATION WEBP GLOBALE : On force l'extension .webp pour tous les assets raster
-    // On ignore les SVG et les JSON (Lottie)
+    // Si le fichier exact est présent dans le manifest des assets, le retourner directement
+    if (_assetManifest.containsKey(p)) {
+      return p;
+    }
+
+    // Sinon essayer avec l'extension .webp si elle existe dans le manifest
     final lower = p.toLowerCase();
     if (!lower.endsWith('.svg') &&
         !lower.endsWith('.json') &&
         !lower.endsWith('.riv')) {
       if (lower.contains('.')) {
         final lastDot = p.lastIndexOf('.');
-        p = '${p.substring(0, lastDot)}.webp';
+        final webpPath = '${p.substring(0, lastDot)}.webp';
+        if (_assetManifest.containsKey(webpPath)) {
+          return webpPath;
+        }
       }
     }
 

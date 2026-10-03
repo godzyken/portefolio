@@ -86,6 +86,18 @@ final characterModelProvider = Provider<String>((ref) {
   return 'assets/images/models/perso_samurail.glb';
 }, name: 'CharacterModel');
 
+String _cleanSkillKey(String s) {
+  return s
+      .toLowerCase()
+      .replaceAll(' ', '')
+      .replaceAll('-', '')
+      .replaceAll('_', '')
+      .replaceAll('.', '')
+      .replaceAll('/', '')
+      .replaceAll('+', 'plus')
+      .replaceAll('#', 'sharp');
+}
+
 final skillLogoPathProvider =
     Provider.family<String?, String>((ref, skillName) {
   final logoAssetsAsync = ref.watch(techLogosAssetsProvider);
@@ -93,15 +105,72 @@ final skillLogoPathProvider =
     loading: () => null,
     error: (err, stack) => null,
     data: (paths) {
-      final normalizedName = skillName.toLowerCase();
-      final path = paths.firstWhere(
-        (p) {
-          final fileName = p.split('/').last.split('.').first;
-          return fileName.startsWith(normalizedName);
-        },
-        orElse: () => '',
-      );
-      return path.isEmpty ? null : path;
+      if (paths.isEmpty) return null;
+      final targetKey = _cleanSkillKey(skillName);
+      if (targetKey.isEmpty) return null;
+
+      // 1. Chercher d'abord une correspondance exacte du nom nettoyé
+      for (final p in paths) {
+        final rawFileName = p.split('/').last.split('.').first;
+        final cleanFileName = _cleanSkillKey(rawFileName);
+
+        if (cleanFileName == targetKey) {
+          return p;
+        }
+      }
+
+      // 2. Traiter les alias connus
+      final aliasMap = <String, String>{
+        'cplusplus': 'c_plusplus',
+        'cpp': 'c_plusplus',
+        'csharp': 'c_sharp',
+        'cs': 'c_sharp',
+        'node': 'nodejs_icon_alt',
+        'nodejs': 'nodejs_icon_alt',
+        'express': 'express_js',
+        'expressjs': 'express_js',
+        'cicd': 'ci_cd_logo',
+        'firebase': 'firebase_hosting_logo',
+        'github': 'github_octocat',
+        'git': 'git',
+        'html': 'html_5',
+        'html5': 'html_5',
+        'css': 'css_3',
+        'css3': 'css_3',
+        'typescript': 'typescript_icon_round',
+        'js': 'javascript',
+        'ts': 'typescript_icon_round',
+        'raspi': 'raspberry_pi',
+        'raspberry': 'raspberry_pi',
+        'raspberrypi': 'raspberry_pi',
+      };
+
+      if (aliasMap.containsKey(targetKey)) {
+        final alias = aliasMap[targetKey]!;
+        for (final p in paths) {
+          final rawFileName = p.split('/').last.split('.').first;
+          if (rawFileName.contains(alias) ||
+              _cleanSkillKey(rawFileName).contains(_cleanSkillKey(alias))) {
+            return p;
+          }
+        }
+      }
+
+      // 3. Chercher par inclusion partielle
+      for (final p in paths) {
+        final rawFileName = p.split('/').last.split('.').first;
+        final cleanFileName = _cleanSkillKey(rawFileName);
+
+        if (cleanFileName.startsWith(targetKey) ||
+            targetKey.startsWith(cleanFileName)) {
+          if (targetKey == 'git' && cleanFileName.startsWith('github')) {
+            continue;
+          }
+          return p;
+        }
+      }
+
+      return null;
     },
   );
 }, name: 'SkillLogoPath');

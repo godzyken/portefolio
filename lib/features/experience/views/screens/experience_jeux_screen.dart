@@ -487,30 +487,32 @@ class _CardClone extends StatelessWidget {
       builder: (context, constraints) {
         final w = constraints.hasBoundedWidth ? constraints.maxWidth : 80.0;
         final h = constraints.hasBoundedHeight ? constraints.maxHeight : 106.0;
+        final imagePath = exp.image.isNotEmpty ? exp.image : exp.logo;
+
         return SizedBox(
           width: w,
           height: h,
           child: Card(
             elevation: 6,
             margin: EdgeInsets.zero,
+            color: const Color(0xFF1E1E2C),
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                if (exp.image.isNotEmpty)
+                if (imagePath.isNotEmpty)
                   Expanded(
-                    // ✅ Remplace le SizedBox fixe. L'image prend tout l'espace RESTANT
                     child: SizedBox(
                       width: double.infinity,
                       child: ClipRRect(
                         borderRadius: const BorderRadius.vertical(
                             top: Radius.circular(12)),
                         child: SmartImage(
-                          path: exp.image,
+                          path: imagePath,
                           fit: BoxFit.cover,
                           enableShimmer: false,
-                          autoPreload: false,
+                          autoPreload: true,
                           fallbackIcon: Icons.business,
                         ),
                       ),
@@ -520,7 +522,8 @@ class _CardClone extends StatelessWidget {
                   padding: const EdgeInsets.fromLTRB(4, 2, 4, 4),
                   child: ResponsiveText.bodySmall(
                     exp.entreprise,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.white),
                     textAlign: TextAlign.center,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,

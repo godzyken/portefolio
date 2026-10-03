@@ -4,8 +4,8 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/provider/unified_image_provider.dart';
 import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
-import 'package:timelines_plus/timelines_plus.dart';
 import 'package:portefolio/features/generator/views/widgets/immersive_experience_detail.dart';
+import 'package:timelines_plus/timelines_plus.dart';
 
 import '../../../../core/affichage/colors_spec.dart';
 import '../../../../core/affichage/screen_size_detector.dart';
@@ -198,84 +198,126 @@ class _LogoTileState extends State<_LogoTile> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       onEnter: (_) => setState(() => _hovered = true),
       onExit: (_) => setState(() => _hovered = false),
       child: AnimatedScale(
-        scale: _hovered ? 1.05 : 1.0,
+        scale: _hovered ? 1.04 : 1.0,
         duration: const Duration(milliseconds: 220),
         curve: Curves.easeOut,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 220),
-          curve: Curves.easeOut,
-          margin: const EdgeInsets.all(6),
-          decoration: BoxDecoration(
-            color: _hovered
-                ? ColorHelpers.surface.withValues(alpha: 0.9)
-                : ColorHelpers.surface.withValues(alpha: 0.75),
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(
-              color: _hovered
-                  ? ColorHelpers.cyan.withValues(alpha: 0.7)
-                  : ColorHelpers.border.withValues(alpha: 0.4),
-              width: _hovered ? 2 : 1,
-            ),
-            boxShadow: [
-              if (_hovered)
-                BoxShadow(
-                  color: ColorHelpers.cyan.withValues(alpha: 0.25),
-                  blurRadius: 20,
-                  spreadRadius: 2,
-                ),
-            ],
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(
+            maxWidth: 280,
+            maxHeight: 120,
           ),
-          child: InkWell(
-            borderRadius: BorderRadius.circular(14),
-            onTap: widget.onTap,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ClipOval(
-                    child: SmartImage(
-                      path: widget.experience.logo,
-                      width: 48,
-                      height: 48,
-                      fit: BoxFit.cover,
-                      enableShimmer: true,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 220),
+            curve: Curves.easeOut,
+            margin: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: _hovered
+                  ? ColorHelpers.surface.withValues(alpha: 0.95)
+                  : ColorHelpers.surface.withValues(alpha: 0.8),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: _hovered
+                    ? ColorHelpers.cyan
+                    : ColorHelpers.border.withValues(alpha: 0.5),
+                width: _hovered ? 2 : 1,
+              ),
+              boxShadow: [
+                if (_hovered)
+                  BoxShadow(
+                    color: ColorHelpers.cyan.withValues(alpha: 0.3),
+                    blurRadius: 16,
+                    spreadRadius: 2,
+                  ),
+              ],
+            ),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(14),
+              onTap: widget.onTap,
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ClipOval(
+                      child: Container(
+                        width: 44,
+                        height: 44,
+                        color: Colors.white.withValues(alpha: 0.08),
+                        child: SmartImage(
+                          path: widget.experience.logo,
+                          width: 44,
+                          height: 44,
+                          fit: BoxFit.cover,
+                          enableShimmer: true,
+                          fallbackIcon: Icons.business,
+                        ),
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      FittedBox(
-                        fit: BoxFit.scaleDown,
-                        alignment: Alignment.centerLeft,
-                        child: ResponsiveText.titleMedium(
-                          widget.experience.entreprise,
-                          style: theme.textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.experience.entreprise,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              fontSize: 14,
+                            ),
                           ),
-                        ),
+                          const SizedBox(height: 2),
+                          Text(
+                            widget.experience.poste,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              color: ColorHelpers.cyan,
+                              fontSize: 11,
+                              height: 1.2,
+                            ),
+                          ),
+                          if (widget.experience.tags.isNotEmpty) ...[
+                            const SizedBox(height: 6),
+                            Wrap(
+                              spacing: 4,
+                              children:
+                                  widget.experience.tags.take(3).map((tag) {
+                                return Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 6, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withValues(alpha: 0.08),
+                                    borderRadius: BorderRadius.circular(4),
+                                    border: Border.all(
+                                        color: Colors.white
+                                            .withValues(alpha: 0.15)),
+                                  ),
+                                  child: Text(
+                                    tag,
+                                    style: const TextStyle(
+                                      color: Colors.white70,
+                                      fontSize: 9,
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+                          ],
+                        ],
                       ),
-                      ResponsiveText.bodyMedium(
-                        widget.experience.poste,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: ColorHelpers.textMuted,
-                          height: 1.2,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

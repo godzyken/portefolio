@@ -5,12 +5,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/provider/providers.dart';
 import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
-import '../../../../core/ui/widgets/seo_wrapper.dart';
 import 'package:portefolio/features/experience/views/screens/experience_screens_extentions.dart';
 
 import '../../../../core/logging/app_logger.dart';
 import '../../../../core/provider/experience_providers.dart';
 import '../../../../core/provider/json_data_provider.dart';
+import '../../../../core/ui/widgets/seo_wrapper.dart';
 import '../../data/experiences_data.dart';
 import '../widgets/experience_widgets_extentions.dart';
 
@@ -155,8 +155,17 @@ class _ExperiencesScreenState extends ConsumerState<ExperiencesScreen> {
           }
 
           // 🟢 Fallback : Timeline (toujours disponible)
-          return ExperienceTimelineWrapper(
-              key: _freezeKey, experiences: filteredExperiences);
+          return Center(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxHeight: info.isMobile ? double.infinity : 380,
+              ),
+              child: ExperienceTimelineWrapper(
+                key: _freezeKey,
+                experiences: filteredExperiences,
+              ),
+            ),
+          );
         },
         error: (e, st) {
           ref.read(loggerProvider("ExperienceScreen")).log(
