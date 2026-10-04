@@ -9,9 +9,9 @@ import 'package:portefolio/core/ui/sections/section_system.dart';
 import 'package:portefolio/features/projets/data/project_data.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'project_video_player.dart';
 import 'live_preview_frame_stub.dart'
     if (dart.library.js_util) 'live_preview_frame_web.dart' as frame_impl;
+import 'project_video_player.dart';
 
 class LivePreviewSection extends ConsumerWidget {
   final ProjectInfo project;
@@ -81,6 +81,32 @@ class LivePreviewSection extends ConsumerWidget {
               ],
             ),
           ),
+          Container(
+            margin: const EdgeInsets.only(bottom: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: ColorHelpers.cyan.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(8),
+              border:
+                  Border.all(color: ColorHelpers.cyan.withValues(alpha: 0.25)),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.info_outline,
+                    size: 16, color: ColorHelpers.cyan),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    "Si le site s'affiche en blanc ou bloque l'intégration (sécurité X-Frame-Options du site hôte), cliquez sur « Nouvel onglet » pour le consulter directement.",
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.85),
+                      fontSize: 11,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
           if (useRow)
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -126,14 +152,50 @@ class LivePreviewSection extends ConsumerWidget {
   Widget _buildPreviewFrame(BuildContext context, WidgetRef ref) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
-      child: kIsWeb ? _buildIframe() : _buildNativeFallback(context, ref),
+      child: kIsWeb ? _buildIframe(ref) : _buildNativeFallback(context, ref),
     );
   }
 
-  Widget _buildIframe() {
+  Widget _buildIframe(WidgetRef ref) {
     return Container(
       color: Colors.white,
-      child: frame_impl.buildLivePreviewIframe(url),
+      child: Stack(
+        children: [
+          frame_impl.buildLivePreviewIframe(url),
+          Positioned(
+            top: 10,
+            right: 10,
+            child: Material(
+              color: Colors.black.withValues(alpha: 0.8),
+              borderRadius: BorderRadius.circular(20),
+              elevation: 4,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(20),
+                onTap: () => _openExternally(ref),
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.open_in_new,
+                          size: 14, color: Colors.cyanAccent),
+                      SizedBox(width: 6),
+                      Text(
+                        'Ouvrir en direct',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

@@ -2,7 +2,107 @@
   {
     "id": "projet_1",
     "title": "2RouesVertes",
-    "storyline": "Pionnier du e-commerce de mobilité douce en 2010. Déploiement d'une infrastructure robuste pour la vente de vélos électriques à une époque où le marché émergeait à peine.",
+    "subtitle": "Transformation d'un site HTML statique en solution web dynamique pour une entreprise pionnière de la mobilité électrique",
+    "period": "2010",
+    "client": {
+      "name": "2 Roues Vertes",
+      "activity": "Mobilité électrique, vélos électriques, scooters et deux-roues",
+      "location_at_project_time": "13 avenue de Fronton, 31200 Toulouse",
+      "current_location": "185 avenue des États-Unis, 31200 Toulouse",
+      "director_at_project_time": "Eric Hunaut",
+      "siren": "513 950 386",
+      "domain": "https://www.2rouesvertes.fr/"
+    },
+    "storyline": "En 2010, 2 Roues Vertes était une jeune entreprise toulousaine spécialisée dans la mobilité électrique. Ma mission consistait à faire évoluer son site web HTML statique vers une solution dynamique capable d'accompagner le développement commercial de l'entreprise. Après avoir étudié et expérimenté Magento, j'ai retenu PrestaShop comme solution e-commerce plus adaptée au contexte du projet.",
+    "historicalContext": {
+      "companyFounded": "2009",
+      "founder": "Eric Hunaut",
+      "originalAddress": "13 avenue de Fronton, 31200 Toulouse",
+      "businessPositioning": "Vente, location et réparation de deux-roues électriques",
+      "historicalEvidence": [
+        "La société 2 Roues Vertes est enregistrée au RCS Toulouse sous le SIREN 513 950 386.",
+        "La société apparaît dans les publications BODACC avec son siège au 13 avenue de Fronton à Toulouse.",
+        "Une publication de La Dépêche du 6 août 2009 présente Eric Hunaut et le lancement de 2 Roues Vertes.",
+        "L'entreprise proposait alors notamment des vélos électriques, VTT électriques, scooters électriques et deux-roues électriques haut de gamme."
+      ]
+    },
+    "mission": {
+      "objective": "Transformer un site HTML statique en site web dynamique permettant de mieux présenter et administrer une offre commerciale en développement.",
+      "startingPoint": "Site HTML statique",
+      "target": "Solution web dynamique orientée catalogue et e-commerce",
+      "responsibilities": [
+        "Analyse du besoin fonctionnel et commercial",
+        "Étude de solutions e-commerce existantes",
+        "Expérimentation de Magento",
+        "Comparaison des contraintes techniques et fonctionnelles",
+        "Sélection de PrestaShop",
+        "Installation et configuration de la solution",
+        "Adaptation de l'interface au besoin du client",
+        "Mise en place du catalogue produits",
+        "Configuration du back-office",
+        "Gestion des données produits",
+        "Configuration de l'hébergement et des fichiers serveur",
+        "Intervention sur la base de données via phpMyAdmin",
+        "Mise en œuvre de modules et adaptations PHP"
+      ]
+    },
+    "technologyDecision": {
+      "initialSolutionStudied": "Magento",
+      "selectedSolution": "PrestaShop",
+      "decisionReason": "Après expérimentation de Magento, PrestaShop a été retenu comme solution plus adaptée au contexte du projet, notamment pour sa simplicité de prise en main et son adéquation avec les besoins d'une petite structure commerciale souhaitant administrer son catalogue et son activité e-commerce.",
+      "architecture": "LAMP",
+      "stack": [
+        "Linux",
+        "Apache",
+        "PHP",
+        "MySQL",
+        "PrestaShop",
+        "Magento",
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "FTP",
+        "phpMyAdmin"
+      ]
+    },
+    "technicalWork": [
+      "Transformation d'une logique de présentation statique vers une architecture web dynamique",
+      "Installation et configuration de PrestaShop",
+      "Étude préalable de Magento",
+      "Configuration du catalogue produits",
+      "Mise en place des fonctionnalités de boutique en ligne",
+      "Gestion des données via MySQL/phpMyAdmin",
+      "Interventions PHP pour adapter le comportement de la solution",
+      "Intégration HTML/CSS",
+      "Gestion des fichiers et de l'hébergement via FTP",
+      "Configuration serveur et règles .htaccess",
+      "Gestion des droits fichiers via chmod",
+      "Adaptation de l'interface aux contraintes commerciales du client"
+    ],
+    "businessUnderstanding": {
+      "problem": "Le site statique limitait l'évolution du catalogue et l'administration quotidienne de l'offre.",
+      "digitalOpportunity": "Passer d'un site essentiellement informatif à un outil capable de soutenir la commercialisation des produits.",
+      "businessNeeds": [
+        "Présenter un catalogue évolutif",
+        "Faciliter la gestion des produits",
+        "Structurer le parcours commercial",
+        "Préparer la vente en ligne",
+        "Réduire la dépendance aux modifications manuelles du code HTML",
+        "Permettre au commerçant de gérer une partie de son activité via un back-office"
+      ]
+    },
+    "deliverables": [
+      "Étude et expérimentation Magento",
+      "Choix de PrestaShop",
+      "Boutique e-commerce PrestaShop",
+      "Catalogue dynamique",
+      "Back-office de gestion",
+      "Configuration serveur LAMP",
+      "Base MySQL",
+      "Intégration graphique HTML/CSS",
+      "Adaptations PHP",
+      "Documentation et accompagnement à l'utilisation"
+    ],
     "techDetails": {
       "architecture": "LAMP (Linux, Apache, MySQL, PHP)",
       "security": ".htaccess, chmod",
@@ -10,14 +110,14 @@
     },
     "points": [
       "🚲 Création d’une boutique en ligne spécialisée dans la vente de vélos à assistance électrique",
-      "📦 Déploiement de PrestaShop 1.2.5 et Magento 1.3.2.4",
-      "🔧 Stack LAMP : Apache 2.2, PHP 5.2.10, MySQL 5.0",
-      "🌐 Hébergement mutualisé OVH avec gestion SSL manuelle",
-      "🎨 Intégration HTML 4.01 et CSS 2.1 sans frameworks",
-      "🔌 Modules maison développés en PHP procédural",
-      "🛡️ Sécurité .htaccess et droits serveur (chmod, FTP)",
-      "🗃️ Gestion via phpMyAdmin et interface admin PrestaShop",
-      "🧾 Catalogue, panier, suivi client et interface multilingue"
+      "📦 Déploiement de PrestaShop et expérimentation préalable de Magento",
+      "🔧 Stack LAMP : Apache, PHP, MySQL",
+      "🌐 Hébergement mutualisé avec gestion SSL et FTP",
+      "🎨 Intégration HTML/CSS et adaptation de l'interface au besoin client",
+      "🔌 Modules et adaptations PHP pour la boutique et le catalogue",
+      "🛡️ Sécurité .htaccess et droits serveur (chmod)",
+      "🗃️ Gestion des données via phpMyAdmin et back-office PrestaShop",
+      "🧾 Catalogue dynamique, panier et suivi d'activité commercial"
     ],
     "image": [
       "assets/images/realisations/vitrine.webp",
@@ -25,14 +125,53 @@
       "assets/images/prestashop.webp",
       "assets/images/etricks_bmx.webp"
     ],
-    "platform" : ["Web", "Desktop"],
-    "tags": ["FileZila", "Web", "Php", "Magento", "Prestashop", "Boutique", "Stock"],
+    "platform": [
+      "Web",
+      "Desktop"
+    ],
+    "lienProjet": "https://www.2rouesvertes.fr/",
+    "tags": [
+      "TransformationDigitale",
+      "AMOA",
+      "E-commerce",
+      "PrestaShop",
+      "Magento",
+      "PHP",
+      "MySQL",
+      "LAMP",
+      "Web",
+      "Toulouse",
+      "MobilitéÉlectrique",
+      "CatalogueDynamique",
+      "Digitalisation",
+      "ArchitectureWeb"
+    ],
     "results": [
-      "Créer la boutique en ligne et déployer PrestaShop",
-      "Back-office opérationnel pour la gestion du stock et des commandes",
-      "Le projet a changé de main, d'adresse, d'organisation, et est devenue plus grand et plus ambitieux"
+      "Passage d'un site HTML statique vers une solution web dynamique",
+      "Mise en place d'une solution e-commerce basée sur PrestaShop",
+      "Structuration d'un catalogue administrable",
+      "Mise en place d'un back-office permettant la gestion de la boutique",
+      "Évolution de l'infrastructure web pour accompagner le développement commercial"
     ],
     "resultsMap": {
+      "verified": [
+        "Passage d'un site HTML statique vers une solution web dynamique",
+        "Mise en place d'une solution e-commerce basée sur PrestaShop",
+        "Structuration d'un catalogue administrable",
+        "Mise en place d'un back-office permettant la gestion de la boutique",
+        "Évolution de l'infrastructure web pour accompagner le développement commercial"
+      ],
+      "notClaimedWithoutEvidence": [
+        "ROI",
+        "nombre exact de visiteurs",
+        "nombre exact de clients acquis par le site",
+        "taux de conversion",
+        "chiffre d'affaires généré directement par le site",
+        "score SEO historique",
+        "score de performance historique",
+        "nombre exact de commandes",
+        "nombre exact de vues vidéo"
+      ],
       "benchmark": {
         "projectTitle": "2RouesVertes",
         "score": "79/100",
@@ -77,7 +216,97 @@
         {"etat": "Disponible", "nombre": 18},
         {"etat": "Vendu", "nombre": 10}
       ]
-    }
+    },
+    "currentSiteComparison": {
+      "url": "https://www.2rouesvertes.fr/",
+      "comparisonDate": "2026",
+      "currentBusiness": {
+        "services": [
+          "Vente de vélos",
+          "Location",
+          "Réparation et maintenance",
+          "Équipements et accessoires"
+        ],
+        "location": "185 avenue des États-Unis, 31200 Toulouse",
+        "team": [
+          "Thibault - Gestion & Vente",
+          "Phonesana - Vente & Atelier",
+          "Flavien - Vente & Atelier"
+        ]
+      },
+      "evolution": [
+        {
+          "dimension": "Présence web",
+          "2010": "Site HTML statique en cours de transformation vers une solution dynamique",
+          "2026": "Site web moderne présentant l'activité, les services, l'équipe, les marques, la location et l'atelier"
+        },
+        {
+          "dimension": "Catalogue",
+          "2010": "Objectif de dynamiser la présentation et l'administration des produits avec PrestaShop",
+          "2026": "Présentation structurée de l'offre et orientation vers les services et la prise de contact"
+        },
+        {
+          "dimension": "Positionnement",
+          "2010": "Entreprise pionnière spécialisée dans la mobilité électrique",
+          "2026": "Enseigne spécialisée dans le vélo électrique avec vente, location, réparation, maintenance et accessoires"
+        },
+        {
+          "dimension": "Parcours utilisateur",
+          "2010": "Logique principalement orientée catalogue et commerce électronique",
+          "2026": "Parcours davantage orienté découverte des services, conseil, atelier, location et contact"
+        },
+        {
+          "dimension": "Identité numérique",
+          "2010": "Construction de la présence web de l'entreprise",
+          "2026": "Marque installée avec une présence locale, une équipe identifiée et une offre de services plus large"
+        },
+        {
+          "dimension": "Infrastructure commerciale",
+          "2010": "Digitalisation du catalogue et des fonctions commerciales",
+          "2026": "Écosystème davantage centré sur la relation client, le conseil, l'atelier et la réservation"
+        }
+      ]
+    },
+    "professionalValue": {
+      "whatThisProjectDemonstrates": [
+        "Analyse d'un besoin métier avant choix technologique",
+        "Capacité à comparer plusieurs solutions avant décision",
+        "Passage d'un besoin fonctionnel à une solution technique",
+        "Compréhension des contraintes d'une PME commerciale",
+        "Maîtrise historique des environnements PHP/MySQL",
+        "Expérience e-commerce",
+        "Capacité à intervenir sur l'ensemble de la chaîne web, du serveur au front-end",
+        "Première expérience significative de transformation digitale appliquée à un commerce"
+      ],
+      "connectionWithCurrentPositioning": "Cette expérience constitue un précurseur de mon positionnement actuel en AMOA et transformation digitale : comprendre le fonctionnement d'une entreprise, identifier les limites de son système existant, comparer les solutions disponibles, choisir une architecture adaptée puis contribuer à sa mise en œuvre."
+    },
+    "evolutionPerspective": {
+      "message": "Le site actuel de 2 Roues Vertes constitue une opportunité intéressante pour observer l'évolution d'un projet numérique sur plus de quinze ans. Mon intervention de 2010 correspond à une étape de digitalisation initiale : transformer une présence HTML statique en solution dynamique et e-commerce. Le site actuel poursuit cette trajectoire avec une approche davantage centrée sur les services, la relation client, la location, l'atelier et l'expérience utilisateur.",
+      "personalInterest": "Je porte un intérêt particulier à cette évolution car elle permet de mesurer, avec le recul, comment un besoin numérique initial peut évoluer avec le métier, les usages, les technologies et la maturité digitale de l'entreprise.",
+      "futurePerspective": "Cette comparaison nourrit également ma vision actuelle du métier : une transformation digitale pertinente ne consiste pas uniquement à remplacer une technologie. Elle consiste à faire évoluer progressivement l'outil numérique avec le modèle économique, les utilisateurs et les nouveaux enjeux de l'entreprise."
+    },
+    "sources": [
+      {
+        "type": "companyWebsite",
+        "url": "https://www.2rouesvertes.fr/",
+        "purpose": "État actuel du site et des services"
+      },
+      {
+        "type": "legalNotice",
+        "url": "https://www.2rouesvertes.fr/mentions-legales/",
+        "purpose": "Informations légales actuelles"
+      },
+      {
+        "type": "press",
+        "url": "https://www.ladepeche.fr/article/2009/08/06/650157-eric-hunaut-veut-faire-rouler-les-toulousains-au-tout-electrique.html",
+        "purpose": "Historique de création et positionnement initial"
+      },
+      {
+        "type": "officialPublication",
+        "source": "BODACC",
+        "purpose": "Confirmation de l'existence juridique de 2 ROUES VERTES et du SIREN 513 950 386"
+      }
+    ]
   },
   {
     "id": "projet_2",
@@ -592,7 +821,7 @@
       "assets/images/realisations/audit_plan_emap.webp"
     ],
     "platform": ["Web", "Smartphone", "Tablet", "Desktop"],
-    "lienProjet": "https://emap-82.fr",
+    "lienProjet": "https://www.emap-82.fr/",
     "tags": [
       "AMOA",
       "FlutterWeb",
