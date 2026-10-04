@@ -4,12 +4,12 @@ import 'dart:math';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
-import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
+import 'package:portefolio/features/generator/views/widgets/animations/chart_animator.dart';
+import 'package:portefolio/features/generator/views/widgets/animations/chart_content_animation.dart';
+import 'package:portefolio/features/generator/views/widgets/animations/painter_chart_animation.dart';
 
-import '../../generator_widgets_extentions.dart';
-
-/// KPI Cards version compacte
-class CompactKPICards extends StatelessWidget {
+/// KPI Cards version compacte et moderne avec support multi-pages (Carousel)
+class CompactKPICards extends StatefulWidget {
   final Map<String, String> kpiValues;
   final ResponsiveInfo info;
 
@@ -20,60 +20,230 @@ class CompactKPICards extends StatelessWidget {
   });
 
   @override
+  State<CompactKPICards> createState() => _CompactKPICardsState();
+}
+
+class _CompactKPICardsState extends State<CompactKPICards> {
+  late final PageController _pageController;
+  int _currentPage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final crossAxisCount = info.isMobile ? 2 : (info.isTablet ? 3 : 4);
+    final entries = widget.kpiValues.entries.toList();
+    if (entries.isEmpty) return const SizedBox.shrink();
+
+    // Découpage en pages de 4 éléments max (grille 2x2 idéale pour la lisibilité)
+    const pageSize = 4;
+    final pageCount = (entries.length / pageSize).ceil();
+
+    return Column(
+      children: [
+        Expanded(
+          child: pageCount == 1
+              ? _buildKpiGrid(entries)
+              : PageView.builder(
+                  controller: _pageController,
+                  itemCount: pageCount,
+                  onPageChanged: (index) {
+                    setState(() => _currentPage = index);
+                  },
+                  itemBuilder: (context, pageIndex) {
+                    final startIndex = pageIndex * pageSize;
+                    final endIndex =
+                        (startIndex + pageSize).clamp(0, entries.length);
+                    final pageEntries = entries.sublist(startIndex, endIndex);
+                    return _buildKpiGrid(pageEntries);
+                  },
+                ),
+        ),
+        if (pageCount > 1) ...[
+          const SizedBox(height: 6),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(pageCount, (index) {
+              final isSelected = index == _currentPage;
+              return GestureDetector(
+                onTap: () {
+                  _pageController.animateToPage(
+                    index,
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                  );
+                },
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 250),
+                  margin: const EdgeInsets.symmetric(horizontal: 3),
+                  width: isSelected ? 16 : 6,
+                  height: 6,
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? Colors.cyanAccent
+                        : Colors.white.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(3),
+                  ),
+                ),
+              );
+            }),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildKpiGrid(List<MapEntry<String, String>> pageEntries) {
     return GridView.builder(
-      shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
+      padding: EdgeInsets.zero,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: crossAxisCount,
-        childAspectRatio: info.isMobile ? 1.8 : 2.2,
+        crossAxisCount: 2,
+        childAspectRatio: widget.info.isMobile ? 2.1 : 2.3,
         crossAxisSpacing: 8,
         mainAxisSpacing: 8,
       ),
-      itemCount: kpiValues.length,
+      itemCount: pageEntries.length,
       itemBuilder: (context, index) {
-        final entry = kpiValues.entries.elementAt(index);
+        final entry = pageEntries[index];
+        final visual = _KPIVisual.getFor(entry.key);
+
         return Container(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
           decoration: BoxDecoration(
-            color: Colors.blue.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.blue.withValues(alpha: 0.3)),
+            gradient: LinearGradient(
+              colors: [
+                visual.color.withValues(alpha: 0.15),
+                Colors.white.withValues(alpha: 0.03),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: visual.color.withValues(alpha: 0.3),
+              width: 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: visual.color.withValues(alpha: 0.08),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Flexible(
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: ResponsiveText.bodySmall(
-                    entry.key,
-                    style: const TextStyle(color: Colors.white70, fontSize: 10),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 4),
-              Flexible(
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Text(
-                    entry.value,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: visual.color.withValues(alpha: 0.2),
+                      shape: BoxShape.circle,
                     ),
-                    maxLines: 1,
+                    child: Icon(
+                      visual.icon,
+                      size: widget.info.isMobile ? 12 : 14,
+                      color: visual.color,
+                    ),
                   ),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      entry.key,
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.8),
+                        fontSize: widget.info.isMobile ? 10 : 11,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+              Text(
+                entry.value,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: widget.info.isMobile ? 15 : 17,
+                  letterSpacing: -0.5,
+                  shadows: [
+                    Shadow(
+                      color: visual.color.withValues(alpha: 0.4),
+                      blurRadius: 8,
+                    ),
+                  ],
                 ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
         );
       },
     );
+  }
+}
+
+class _KPIVisual {
+  final IconData icon;
+  final Color color;
+
+  const _KPIVisual(this.icon, this.color);
+
+  static _KPIVisual getFor(String label) {
+    final lower = label.toLowerCase();
+    if (lower.contains('roi') ||
+        lower.contains('ca') ||
+        lower.contains('gain')) {
+      return const _KPIVisual(Icons.trending_up_rounded, Colors.greenAccent);
+    }
+    if (lower.contains('temps') ||
+        lower.contains('gagné') ||
+        lower.contains('durée')) {
+      return const _KPIVisual(
+          Icons.access_time_filled_rounded, Colors.cyanAccent);
+    }
+    if (lower.contains('conversion') || lower.contains('taux')) {
+      return const _KPIVisual(Icons.ads_click_rounded, Colors.amberAccent);
+    }
+    if (lower.contains('seo')) {
+      return const _KPIVisual(Icons.search_rounded, Colors.purpleAccent);
+    }
+    if (lower.contains('perf') ||
+        lower.contains('efficac') ||
+        lower.contains('vitesse')) {
+      return const _KPIVisual(Icons.speed_rounded, Colors.lightBlueAccent);
+    }
+    if (lower.contains('sécurit') || lower.contains('conform')) {
+      return const _KPIVisual(Icons.verified_user_rounded, Colors.tealAccent);
+    }
+    if (lower.contains('satisfaction') ||
+        lower.contains('note') ||
+        lower.contains('avis')) {
+      return const _KPIVisual(Icons.star_rounded, Colors.amber);
+    }
+    if (lower.contains('déploiement') || lower.contains('deploy')) {
+      return const _KPIVisual(Icons.rocket_launch_rounded, Colors.pinkAccent);
+    }
+    if (lower.contains('client') || lower.contains('utilisateur')) {
+      return const _KPIVisual(Icons.groups_rounded, Colors.indigoAccent);
+    }
+    return const _KPIVisual(Icons.analytics_rounded, Colors.cyanAccent);
   }
 }
 

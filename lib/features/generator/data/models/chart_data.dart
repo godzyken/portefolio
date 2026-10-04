@@ -1,6 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:portefolio/features/generator/data/extention_models.dart';
+import 'package:portefolio/features/generator/data/models/benchmark_info.dart';
 
 /// Représente un type de chart à afficher
 enum ChartType {

@@ -1,24 +1,20 @@
-// lib/features/generator/views/widgets/charts/unified_chart_system.dart
-
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
-import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
-
-import '../../../data/models/chart_data.dart';
+import 'package:portefolio/features/generator/data/extention_models.dart';
+import 'package:portefolio/features/generator/views/widgets/cards/compact_charts_card.dart';
 
 /// 🎯 SYSTÈME UNIFIÉ DE GRAPHIQUES
-/// Remplace : chart_renderer.dart, compact_charts_card.dart, chart_widgets_unified.dart
 /// Économie : ~1400 lignes → ~400 lignes
 
-class ChartConfig {
+class UnifiedChartConfig {
   final ResponsiveInfo info;
   final Color primaryColor;
   final bool showGrid;
   final bool animate;
   final EdgeInsets padding;
 
-  const ChartConfig({
+  const UnifiedChartConfig({
     required this.info,
     this.primaryColor = Colors.blue,
     this.showGrid = true,
@@ -29,7 +25,7 @@ class ChartConfig {
 
 class UnifiedChart extends StatelessWidget {
   final ChartData data;
-  final ChartConfig config;
+  final UnifiedChartConfig config;
 
   const UnifiedChart({
     super.key,
@@ -60,7 +56,7 @@ class UnifiedChart extends StatelessWidget {
 
 class _BarChartBuilder extends StatelessWidget {
   final ChartData data;
-  final ChartConfig config;
+  final UnifiedChartConfig config;
 
   const _BarChartBuilder({required this.data, required this.config});
 
@@ -127,7 +123,7 @@ class _BarChartBuilder extends StatelessWidget {
 
 class _LineChartBuilder extends StatelessWidget {
   final ChartData data;
-  final ChartConfig config;
+  final UnifiedChartConfig config;
 
   const _LineChartBuilder({required this.data, required this.config});
 
@@ -158,7 +154,7 @@ class _LineChartBuilder extends StatelessWidget {
 
 class _PieChartBuilder extends StatelessWidget {
   final ChartData data;
-  final ChartConfig config;
+  final UnifiedChartConfig config;
 
   const _PieChartBuilder({required this.data, required this.config});
 
@@ -179,7 +175,7 @@ class _PieChartBuilder extends StatelessWidget {
 
 class _ScatterChartBuilder extends StatelessWidget {
   final ChartData data;
-  final ChartConfig config;
+  final UnifiedChartConfig config;
 
   const _ScatterChartBuilder({required this.data, required this.config});
 
@@ -197,70 +193,15 @@ class _ScatterChartBuilder extends StatelessWidget {
 
 class _KPIBuilder extends StatelessWidget {
   final ChartData data;
-  final ChartConfig config;
+  final UnifiedChartConfig config;
 
   const _KPIBuilder({required this.data, required this.config});
 
   @override
   Widget build(BuildContext context) {
-    final entries = data.kpiValues?.entries.toList() ?? [];
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: config.info.isMobile ? 2 : 4,
-        childAspectRatio: config.info.isMobile ? 1.8 : 2.2,
-        crossAxisSpacing: 8,
-        mainAxisSpacing: 8,
-      ),
-      itemCount: entries.length,
-      itemBuilder: (context, index) =>
-          _KPICard(label: entries[index].key, value: entries[index].value),
-    );
-  }
-}
-
-class _KPICard extends StatelessWidget {
-  final String label;
-  final String value;
-
-  const _KPICard({required this.label, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: Colors.blue.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.blue.withValues(alpha: 0.2)),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Flexible(
-              child: ResponsiveText.titleSmall(
-            label,
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 10),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          )),
-          const SizedBox(height: 4),
-          Expanded(
-            child: FittedBox(
-              fit: BoxFit.scaleDown,
-              child: ResponsiveText.bodySmall(
-                value,
-                style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blueAccent),
-              ),
-            ),
-          )
-        ],
-      ),
+    return CompactKPICards(
+      kpiValues: data.kpiValues ?? {},
+      info: config.info,
     );
   }
 }

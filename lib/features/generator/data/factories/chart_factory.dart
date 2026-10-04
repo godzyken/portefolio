@@ -104,16 +104,20 @@ class ChartDataFactory {
       Map<String, dynamic> resultsMap) {
     final kpis = <String, String>{};
 
-    // Clés KPI connues (étendre selon les besoins)
+    // Clés KPI connues avec libellés optimisés
     const kpiKeys = {
       'roi': 'ROI',
       'timeSaved': 'Temps gagné',
+      'conversionRate': 'Taux de conversion',
+      'seoScore': 'Score SEO',
+      'perfScore': 'Score Performance',
+      'securityScore': 'Score Sécurité',
+      'satisfaction': 'Satisfaction Client',
+      'efficiency': 'Efficacité',
+      'deploymentTime': 'Temps déploiement',
+      'compliance': 'Conformité',
       'clients': 'Clients',
       'messages': 'Messages/mois',
-      'satisfaction': 'Satisfaction',
-      'efficiency': 'Efficacité',
-      'deployment': 'Déploiement',
-      'compliance': 'Conformité',
       'pagesVisited': 'Pages visitées',
       'pdfGenerated': 'PDF générés',
       'sessionsTawk': 'Sessions chat',

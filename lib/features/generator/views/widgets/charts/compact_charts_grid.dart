@@ -78,10 +78,8 @@ class CompactChartsGrid extends StatelessWidget {
     final m = info.isMobile;
     switch (chart.type) {
       case ChartType.kpiCards:
-        final count = chart.kpiValues?.length ?? 4;
-        final rows = (count / (m ? 2 : 3)).ceil();
-        // 70px par ligne de KPI + 48px header
-        return ((rows * 70) + 48).clamp(120.0, 300.0).toDouble();
+        // Carousel paginé 2x2 + header + indicateur de page
+        return m ? 240.0 : 270.0;
 
       case ChartType.pieChart:
         // Le pie + légende horizontale

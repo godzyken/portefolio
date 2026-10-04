@@ -355,7 +355,7 @@ class BenchmarkRadarWidget extends StatelessWidget {
                   const labels = ['Perfs', 'SEO', 'Mobile', 'Sécu'];
                   return RadarChartTitle(
                     text: labels[index],
-                    angle: angle,
+                    angle: 0,
                   );
                 },
                 titleTextStyle: TextStyle(
