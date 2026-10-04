@@ -311,15 +311,64 @@
   {
     "id": "projet_2",
     "title": "APVM Pièces & Accessoires",
+    "subtitle": "Transformation d'un site HTML statique en solution web dynamique",
+    "period": "2012",
+    "client": {
+      "name": "APVM Pièces & Accessoires",
+      "role": "Mission de transformation numérique",
+      "context": "Entreprise spécialisée dans les pièces et accessoires"
+    },
+    "storyline": "En 2012, intervention sur le site existant d'APVM Pièces & Accessoires avec pour objectif de faire évoluer une présence web statique vers une solution plus dynamique, administrable et adaptée aux besoins de l'activité.",
+    "historicalContext": {
+      "startingPoint": "Site web existant développé en HTML statique",
+      "businessNeed": "Faire évoluer la présence web afin de faciliter la présentation et la gestion du catalogue de produits et services.",
+      "missionType": "Étude, choix de solution et développement"
+    },
+    "mission": [
+      "Analyse de l'existant et identification des limites du site statique",
+      "Analyse des besoins fonctionnels liés à la présentation des pièces et accessoires",
+      "Étude des solutions permettant de rendre le site dynamique",
+      "Évaluation de la faisabilité technique et de l'adéquation avec le besoin",
+      "Mise en œuvre de la solution retenue",
+      "Adaptation de l'interface et du contenu au fonctionnement dynamique du site"
+    ],
+    "businessUnderstanding": [
+      "Compréhension du besoin métier avant le choix de la solution technique",
+      "Identification des informations devant pouvoir évoluer sans modifier directement chaque page HTML",
+      "Réflexion sur l'organisation du catalogue et de l'information produit",
+      "Recherche d'une solution permettant de faire évoluer progressivement le site"
+    ],
+    "technologyDecision": {
+      "approach": "Analyse de plusieurs possibilités avant mise en œuvre",
+      "objective": "Privilégier une solution cohérente avec la taille du projet, les besoins de gestion et les contraintes techniques de l'époque",
+      "positioning": "La technologie est considérée comme un moyen au service du besoin métier, et non comme une finalité."
+    },
+    "technicalWork": [
+      "Évolution d'une architecture web statique vers une logique dynamique",
+      "Développement et intégration des fonctionnalités nécessaires au nouveau fonctionnement du site",
+      "Structuration des contenus afin de faciliter leur évolution",
+      "Travail sur l'interface HTML/CSS",
+      "Gestion de l'environnement serveur et des fichiers du site",
+      "Tests et corrections avant mise en ligne"
+    ],
+    "deliverables": [
+      "Analyse de l'existant",
+      "Solution web dynamique",
+      "Interface adaptée au fonctionnement de l'entreprise",
+      "Organisation des contenus permettant leur évolution",
+      "Site prêt à être exploité et maintenu"
+    ],
+    "techDetails": {
+      "architecture": "Web Dynamique (HTML/CSS, CMS/PHP)",
+      "security": "Gestion droits et serveur",
+      "performance": "Organisation dynamique des contenus"
+    },
     "points": [
-      "🏍️ Création d’une boutique en ligne spécialisée dans la vente de pièces détachées moto et accessoires",
-      "🛒 Développement complet sous PrestaShop avec module de facturation automatisé",
-      "⚙️ Mise en place d’un moteur de recherche par marque, modèle et année",
-      "💾 Intégration du catalogue fournisseur (import automatique depuis source partenaire)",
-      "💳 Intégration du paiement en ligne sécurisé (Prestashop Checkout / PayPal)",
-      "📈 Optimisation SEO et configuration de l’hébergement OVH",
-      "🎨 Collaboration avec un designer pour la création du logo professionnel (style dessin au crayon)",
-      "🔧 Formation du client à la gestion du CMS"
+      "🏍️ Transformation d'une présence web statique vers une solution dynamique pour pièces & accessoires",
+      "⚙️ Analyse des besoins métier et étude de faisabilité technique",
+      "📦 Structuration du catalogue produit et organisation des contenus",
+      "🎨 Intégration HTML/CSS et adaptation de l'interface utilisateur",
+      "🛠️ Gestion de l'environnement serveur, déploiement et tests"
     ],
     "image": [
       "assets/images/logos/wemoto_logo.webp",
@@ -327,13 +376,44 @@
       "assets/images/piece_moto.webp",
       "https://assets.setmore.com/website/v2/images/integrations-listing/wordpress/wordpress-plugin-crop@2x.webp"
     ],
-    "platform": ["Desktop", "Tablet"],
-    "tags": ["E-commerce", "PrestaShop", "Facturation", "Moto", "Catalogue Dynamique"],
+    "platform": [
+      "Web",
+      "Desktop"
+    ],
+    "lienProjet": "https://www.wemoto.fr/",
+    "tags": [
+      "AMOA",
+      "Transformation digitale",
+      "Web",
+      "HTML",
+      "CSS",
+      "Développement",
+      "Digitalisation",
+      "Analyse fonctionnelle",
+      "Choix technologique",
+      "E-commerce",
+      "Catalogue produit"
+    ],
     "results": [
-      "Projet avortée en 2013, reportée et repris avec Wordpress cette année par le client, donc aucune données statistiques disponible",
-      "Visitez le site https://www.wemoto.fr/"
+      "Transformation d'un site web existant dans le cadre d'une mission réalisée en 2012",
+      "Travail orienté vers le passage d'une logique statique à une logique dynamique",
+      "Intervention couvrant à la fois l'analyse du besoin, l'étude de solution et le développement"
     ],
     "resultsMap": {
+      "verified": [
+        "Transformation d'un site web existant dans le cadre d'une mission réalisée en 2012",
+        "Travail orienté vers le passage d'une logique statique à une logique dynamique",
+        "Intervention couvrant à la fois l'analyse du besoin, l'étude de solution et le développement"
+      ],
+      "notClaimedWithoutEvidence": [
+        "Chiffre d'affaires généré",
+        "Nombre de visiteurs",
+        "Nombre de produits vendus",
+        "Taux de conversion",
+        "Nombre de clients acquis",
+        "Performances SEO",
+        "ROI"
+      ],
       "benchmark": {
         "score": "62/100",
         "performances": "12/30",
@@ -341,6 +421,34 @@
         "mobile": "20/30",
         "sécurité": "5/10"
       }
+    },
+    "professionalValue": [
+      "Première expérience concrète de transformation d'un outil web existant à partir d'un besoin métier",
+      "Capacité à analyser l'existant avant de choisir une solution technique",
+      "Approche orientée solution et non uniquement développement",
+      "Expérience précoce dans la digitalisation d'une activité commerciale",
+      "Préfiguration de l'approche actuelle AMOA : comprendre, cadrer, comparer, choisir puis réaliser"
+    ],
+    "evolutionPerspective": "Cette mission s'inscrit dans une continuité avec mes expériences actuelles : partir d'un besoin métier réel, analyser l'existant, identifier les limites, étudier les solutions possibles puis construire une réponse numérique adaptée. Elle constitue une étape ancienne mais significative dans l'évolution de mon positionnement vers l'AMOA et la transformation digitale.",
+    "comparisonWithCurrentApproach": {
+      "2012": [
+        "Analyse d'un site existant",
+        "Identification des limites d'une approche statique",
+        "Recherche d'une solution dynamique",
+        "Développement et intégration"
+      ],
+      "today": [
+        "Analyse du besoin métier",
+        "Cadrage fonctionnel",
+        "Cartographie de l'existant",
+        "Étude et comparaison des solutions",
+        "Choix d'architecture",
+        "Conception",
+        "Développement",
+        "Déploiement",
+        "Mesure et amélioration"
+      ],
+      "evolution": "La différence principale est aujourd'hui l'élargissement du périmètre : le développement reste une compétence forte, mais il intervient après le cadrage du besoin et la réflexion sur la transformation."
     }
   },
   {
