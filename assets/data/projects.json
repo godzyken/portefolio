@@ -1044,6 +1044,10 @@
       "📊 Analyse comparative des performances des boutiques en ligne",
       "🎯 Identification des axes d'amélioration"
     ],
+    "image": [
+      "assets/images/realisations/rv_4200.webp",
+      "assets/images/realisations/audit_plan_emap.webp"
+    ],
     "results": [
       "2RouesVertes : 79/100, APVM : 62/100, CoyCoyCoy : 75/100"
     ],
@@ -1188,7 +1192,10 @@
       "📊 Pilotage Financier et Conformité Sportive automatisée",
       "🤖 Assistant IA stratégique pour les dirigeants de clubs"
     ],
-    "image": [],
+    "image": [
+      "assets/images/realisations/business_app.svg",
+      "assets/images/flutter_mascotte.webp"
+    ],
     "platform": ["Android", "iOS", "Web", "Linux", "macOS", "Windows"],
     "tags": ["Flutter", "Dart", "Firebase", "Stripe", "ERP", "Sport", "IA", "Clean Architecture"],
     "results": [

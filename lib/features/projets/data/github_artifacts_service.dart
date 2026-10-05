@@ -145,8 +145,9 @@ class GithubArtifactsService {
     }
 
     // 3. Fallback ultime : si vraiment vide, on essaye de trouver PROJECT.md à la racine
-    if (artifacts.isEmpty || (artifacts.length == 1 && artifacts.containsKey('readme'))) {
-       final projectMd = await _fetchSingleFile(
+    if (artifacts.isEmpty ||
+        (artifacts.length == 1 && artifacts.containsKey('readme'))) {
+      final projectMd = await _fetchSingleFile(
         owner: repoInfo.owner,
         repo: repoInfo.repo,
         path: 'PROJECT.md',

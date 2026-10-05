@@ -167,7 +167,8 @@ class _ExperienceSlideScreenState extends ConsumerState<ExperienceSlideScreen>
                     },
                     child: Padding(
                       padding: EdgeInsets.symmetric(
-                        horizontal: info.isDesktop ? 32 : (info.isMobile ? 8 : 16),
+                        horizontal:
+                            info.isDesktop ? 32 : (info.isMobile ? 8 : 16),
                         vertical: info.isDesktop ? 16 : 8,
                       ),
                       child: Center(

@@ -12,7 +12,8 @@ import '../widgets/exp_tags.dart';
 import '../widgets/exp_top_row.dart';
 
 class TabletLayout extends ConsumerStatefulWidget {
-  const TabletLayout({super.key, required this.experience, this.isScrollable = true});
+  const TabletLayout(
+      {super.key, required this.experience, this.isScrollable = true});
   final Experience experience;
   final bool isScrollable;
   @override

@@ -261,7 +261,8 @@ class _ArtifactsSectionState extends ConsumerState<ArtifactsSection>
       ),
       child: Column(
         children: [
-          const Icon(Icons.info_outline, color: ColorHelpers.textMuted, size: 48),
+          const Icon(Icons.info_outline,
+              color: ColorHelpers.textMuted, size: 48),
           const SizedBox(height: 16),
           Text(
             message,
@@ -392,8 +393,8 @@ class _TechnicalDiagramGalleryState extends State<_TechnicalDiagramGallery> {
                       ),
                     ),
                     TextButton.icon(
-                      onPressed: () =>
-                          setState(() => _showOriginalImage = !_showOriginalImage),
+                      onPressed: () => setState(
+                          () => _showOriginalImage = !_showOriginalImage),
                       icon: Icon(
                         _showOriginalImage ? Icons.auto_awesome : Icons.image,
                         size: 16,

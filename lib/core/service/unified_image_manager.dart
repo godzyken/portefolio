@@ -52,7 +52,7 @@ class UnifiedImageManager with ChangeNotifier {
 
       _assetManifest.clear();
       for (final path in allAssets) {
-        if (!path.startsWith('assets/images/')) continue;
+        if (!path.startsWith('assets/')) continue;
         // ✅ Exclure les variantes de résolution — Flutter les sélectionne
         //    automatiquement via AssetImage ; les charger manuellement
         //    provoque des requêtes 400/404 sur le serveur web.
@@ -249,7 +249,9 @@ class UnifiedImageManager with ChangeNotifier {
         name: 'ImageManager',
         level: 900, // WARNING
       );
-      _failedPaths.add(cleanPath);
+      if (e is! TimeoutException) {
+        _failedPaths.add(cleanPath);
+      }
       return false;
     } finally {
       _loadingPaths.remove(cleanPath);

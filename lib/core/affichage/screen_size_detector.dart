@@ -10,7 +10,8 @@ class Breakpoints {
   static const double mobile = 600;
   static const double smallTablet = 800;
   static const double tablet = 1024;
-  static const double desktop = 1280; // Réduit à 1280 pour inclure les laptops standards
+  static const double desktop =
+      1280; // Réduit à 1280 pour inclure les laptops standards
   static const double largeDesktop = 1920;
 }
 
@@ -86,7 +87,7 @@ final responsiveInfoProvider = Provider<ResponsiveInfo>((ref) {
   // Ajustement dynamique du ratio de hauteur des cartes selon la hauteur dispo
   // Évite que les cartes soient trop hautes sur des écrans "Wide" mais peu profonds
   final cardWidth = size.width / grid.columns - 16;
-  
+
   // Ratio adaptatif : si l'écran est très large mais peu haut (Laptop), on réduit le ratio
   final baseRatio = switch (type) {
     DeviceType.watch => 1.6,
@@ -99,7 +100,9 @@ final responsiveInfoProvider = Provider<ResponsiveInfo>((ref) {
 
   // Correction si la hauteur est limitée (Laptop typique : 1366x768 ou 1440x900)
   // On réduit le ratio pour que la carte prenne moins de place verticale
-  final cardHeightRatio = (height < 750 && type == DeviceType.desktop) ? baseRatio * 0.8 : baseRatio;
+  final cardHeightRatio = (height < 750 && type == DeviceType.desktop)
+      ? baseRatio * 0.8
+      : baseRatio;
 
   return ResponsiveInfo(
     size: size,

@@ -12,7 +12,8 @@ import '../widgets/exp_tags.dart';
 import '../widgets/exp_top_row.dart';
 
 class DesktopLayout extends ConsumerStatefulWidget {
-  const DesktopLayout({super.key, required this.experience, this.isScrollable = true});
+  const DesktopLayout(
+      {super.key, required this.experience, this.isScrollable = true});
   final Experience experience;
   final bool isScrollable;
   @override

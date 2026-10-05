@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../service/unified_image_manager.dart';
 import '../ui/widgets/smart_image.dart';
@@ -150,43 +151,55 @@ class CachedImage extends ConsumerWidget {
 
   Widget _buildRasterImage(
       BuildContext context, WidgetRef ref, UnifiedImageManager manager) {
-    if (manager.hasFailed(path)) {
-      return _buildError(context, ref, manager);
-    }
-
     final cached = manager.getCachedImage(path);
+    final cleanPath = manager.normalizePath(path);
 
-    if (cached != null) {
-      return Image(
-        image: cached,
-        width: width,
-        height: height,
-        fit: fit,
-        color: color,
-        colorBlendMode: colorBlendMode,
-        errorBuilder: (_, __, ___) => _buildError(context, ref, manager),
-      );
-    }
+    final provider = cached ??
+        (cleanPath.startsWith('http')
+            ? NetworkImage(cleanPath)
+            : AssetImage(cleanPath) as ImageProvider);
 
-    return _buildPlaceholder();
+    return Image(
+      image: provider,
+      width: width,
+      height: height,
+      fit: fit,
+      color: color,
+      colorBlendMode: colorBlendMode,
+      errorBuilder: (_, __, ___) => _buildError(context, ref, manager),
+    );
   }
 
   Widget _buildSvgImage(
       BuildContext context, WidgetRef ref, UnifiedImageManager manager) {
-    if (manager.hasFailed(path)) {
-      return _buildError(context, ref, manager);
-    }
-
     final cached = manager.getCachedSvg(path);
+    final cleanPath = manager.normalizePath(path);
 
     if (cached != null) {
-      return CustomPaint(
-        painter: SvgPainter(cached, fit),
-        size: Size(width ?? double.infinity, height ?? double.infinity),
+      return SizedBox(
+        width: width,
+        height: height,
+        child: CustomPaint(painter: SvgPainter(cached, fit)),
       );
     }
 
-    return _buildPlaceholder();
+    if (cleanPath.startsWith('http')) {
+      return SvgPicture.network(
+        cleanPath,
+        width: width,
+        height: height,
+        fit: fit,
+        placeholderBuilder: (_) => _buildPlaceholder(),
+      );
+    }
+
+    return SvgPicture.asset(
+      cleanPath,
+      width: width,
+      height: height,
+      fit: fit,
+      placeholderBuilder: (_) => _buildPlaceholder(),
+    );
   }
 
   Widget _buildPlaceholder() {

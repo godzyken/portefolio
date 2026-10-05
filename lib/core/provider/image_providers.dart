@@ -132,6 +132,7 @@ final skillLogoPathProvider =
         'cicd': 'ci_cd_logo',
         'firebase': 'firebase_hosting_logo',
         'github': 'github_octocat',
+        'githubactions': 'github_actions',
         'git': 'git',
         'html': 'html_5',
         'html5': 'html_5',
@@ -143,6 +144,10 @@ final skillLogoPathProvider =
         'raspi': 'raspberry_pi',
         'raspberry': 'raspberry_pi',
         'raspberrypi': 'raspberry_pi',
+        'wordpress': 'wordpress_icon',
+        'prestashop': 'prestashop_icon',
+        'unity': 'unity',
+        'hive': 'hive_logo',
       };
 
       if (aliasMap.containsKey(targetKey)) {

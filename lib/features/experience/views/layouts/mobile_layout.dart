@@ -12,7 +12,8 @@ import '../widgets/exp_tags.dart';
 import '../widgets/exp_top_row.dart';
 
 class MobileLayout extends ConsumerStatefulWidget {
-  const MobileLayout({super.key, required this.experience, this.isScrollable = true});
+  const MobileLayout(
+      {super.key, required this.experience, this.isScrollable = true});
   final Experience experience;
   final bool isScrollable;
   @override

@@ -31,7 +31,7 @@ class ScreenSizeNotifier extends Notifier<Size> {
     // Tente de récupérer la taille réelle de la fenêtre dès le départ
     final view = ui.PlatformDispatcher.instance.implicitView;
     if (view == null) return const Size(1280, 800);
-    
+
     final size = view.physicalSize / view.devicePixelRatio;
     return size == Size.zero ? const Size(1280, 800) : size;
   }
