@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:portefolio/landing_pages/pages/landing_amoa_page.dart';
+import 'package:portefolio/landing_pages/pages/landing_flutter_page.dart';
 import '../../features/about/views/screens/legal_mentions_screen.dart';
 import '../../features/admin/views/screens/admin_dashboard_screen.dart';
 import '../../features/admin/views/screens/admin_login_screen.dart';
@@ -116,6 +118,18 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           builder: (_, state) => PricingRationaleScreen(
             serviceId: state.pathParameters['serviceId']!,
           ),
+        ),
+
+        // ── Landing Pages dédiées (Flutter & AMOA) ────────────────────
+        GoRoute(
+          path: '/landing/flutter',
+          name: 'landing_flutter',
+          builder: (_, __) => const LandingFlutterPage(),
+        ),
+        GoRoute(
+          path: '/landing/amoa',
+          name: 'landing_amoa',
+          builder: (_, __) => const LandingAmoaPage(),
         ),
 
         // ── Shell principal (navbar, scaffold partagé) ──────────────────

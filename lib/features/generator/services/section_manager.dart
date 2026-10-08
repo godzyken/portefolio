@@ -227,9 +227,9 @@ class SectionManager {
     return titleMatches || pointsMatch;
   }
 
-  /// Détecte si le projet a des liens vers un site déployé (preview live)
+  /// Détecte si le projet a un aperçu (site live ou landing page intégrée Flutter/AMOA)
   bool hasLivePreview() {
-    return project.lienProjet != null && project.lienProjet!.trim().isNotEmpty;
+    return true;
   }
 
   /// Détecte si le projet a des features IoT

@@ -18,6 +18,24 @@ Besoin de réactivité forte, testabilité et découplage des services.
 
 Accepted
 
+## ADR-004
+
+### Decision
+
+Mise en place de redirections par dossiers statiques (`web/<slug>/index.html`) pour les landing pages et démos hébergées sur GitHub Pages.
+
+### Reason
+
+Les URLs longues type `godzyken.github.io/portefolio/demos/demo_btp1.html` ne sont pas pratiques à partager. GitHub Pages hébergeant des fichiers statiques, l'utilisation de dossiers dédiés contenant un `index.html` avec méta-rafraîchissement et redirection JavaScript (`window.location.replace`) permet d'obtenir des URLs courtes et propres (`godzyken.github.io/portefolio/btp`, `godzyken.github.io/portefolio/demo-btp`) tout en facilitant l'ajout de futures landing pages.
+
+### Date
+
+2026-03-24
+
+### Status
+
+Accepted
+
 ## ADR-002
 
 ### Decision
@@ -36,6 +54,24 @@ Facilite la scalabilité et le travail isolé sur chaque section du portfolio.
 
 Accepted
 
+## ADR-004
+
+### Decision
+
+Mise en place de redirections par dossiers statiques (`web/<slug>/index.html`) pour les landing pages et démos hébergées sur GitHub Pages.
+
+### Reason
+
+Les URLs longues type `godzyken.github.io/portefolio/demos/demo_btp1.html` ne sont pas pratiques à partager. GitHub Pages hébergeant des fichiers statiques, l'utilisation de dossiers dédiés contenant un `index.html` avec méta-rafraîchissement et redirection JavaScript (`window.location.replace`) permet d'obtenir des URLs courtes et propres (`godzyken.github.io/portefolio/btp`, `godzyken.github.io/portefolio/demo-btp`) tout en facilitant l'ajout de futures landing pages.
+
+### Date
+
+2026-03-24
+
+### Status
+
+Accepted
+
 ## ADR-003
 
 ### Decision
@@ -49,6 +85,24 @@ Le format AVIF offre une compression supérieure au WebP et JPEG, garantissant d
 ### Date
 
 2026-09-02
+
+### Status
+
+Accepted
+
+## ADR-004
+
+### Decision
+
+Mise en place de redirections par dossiers statiques (`web/<slug>/index.html`) pour les landing pages et démos hébergées sur GitHub Pages.
+
+### Reason
+
+Les URLs longues type `godzyken.github.io/portefolio/demos/demo_btp1.html` ne sont pas pratiques à partager. GitHub Pages hébergeant des fichiers statiques, l'utilisation de dossiers dédiés contenant un `index.html` avec méta-rafraîchissement et redirection JavaScript (`window.location.replace`) permet d'obtenir des URLs courtes et propres (`godzyken.github.io/portefolio/btp`, `godzyken.github.io/portefolio/demo-btp`) tout en facilitant l'ajout de futures landing pages.
+
+### Date
+
+2026-03-24
 
 ### Status
 
