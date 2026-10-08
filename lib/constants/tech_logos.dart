@@ -44,51 +44,89 @@ IconData getIconFromName(String name) {
     case 'phone':
     case 'mobile':
     case 'smartphone':
+    case 'ios':
+    case 'android':
       return Icons.phone_android;
     case 'tablet':
       return Icons.tablet_mac;
     case 'desktop':
+    case 'windows':
+    case 'macos':
+    case 'linux':
       return Icons.desktop_windows;
     case 'design':
     case 'ui':
     case 'ux':
     case 'uxui':
+    case 'figma':
+    case 'adobe':
       return Icons.design_services;
     case 'cloud':
     case 'aws':
+    case 'googlecloud':
+    case 'gcp':
       return Icons.cloud;
     case 'web':
     case 'internet':
+    case 'html':
+    case 'html5':
+    case 'css':
+    case 'css3':
       return Icons.web;
     case 'code':
     case 'development':
     case 'flutter':
     case 'dart':
+    case 'python':
+    case 'javascript':
+    case 'js':
+    case 'typescript':
+    case 'ts':
+    case 'c':
+    case 'cpp':
+    case 'cplusplus':
+    case 'csharp':
+    case 'cs':
       return Icons.code;
     case 'database':
     case 'sql':
     case 'sqlite':
+    case 'postgresql':
+    case 'mysql':
+    case 'mongodb':
     case 'hive':
     case 'storage':
       return Icons.storage;
     case 'api':
     case 'rest':
+    case 'graphql':
+    case 'openapi':
+    case 'websocket':
       return Icons.api;
     case 'security':
     case 'aes':
     case 'auth':
+    case 'gdpr':
+    case 'rgpd':
       return Icons.security;
     case 'support':
     case 'maintenance':
+    case 'bug':
+    case 'testing':
       return Icons.build;
     case 'management':
     case 'amoa':
     case 'digitalisation':
     case 'transformationdigitale':
+    case 'agile':
+    case 'scrum':
       return Icons.business_center;
     case 'vr':
     case 'ar':
     case '3d':
+    case 'unity':
+    case 'blender':
+    case 'sketchup':
       return Icons.view_in_ar;
     case 'sport':
     case 'football':
@@ -102,7 +140,22 @@ IconData getIconFromName(String name) {
     case 'ecommerce':
     case 'shop':
     case 'boutique':
+    case 'prestashop':
+    case 'wordpress':
       return Icons.shopping_cart;
+    case 'git':
+    case 'github':
+    case 'gitlab':
+    case 'cicd':
+    case 'githubactions':
+    case 'docker':
+    case 'kubernetes':
+      return Icons.source;
+    case 'riverpod':
+    case 'provider':
+    case 'bloc':
+    case 'statemanagement':
+      return Icons.layers;
     default:
       return Icons.extension;
   }

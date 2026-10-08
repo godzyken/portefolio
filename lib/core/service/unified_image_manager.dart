@@ -100,9 +100,6 @@ class UnifiedImageManager with ChangeNotifier {
     // ✅ 3. Chargement en cours — évite les requêtes parallèles
     if (_loadingPaths.contains(cleanPath)) return false;
 
-    // ✅ 4. Déjà échoué — ne pas réessayer indéfiniment
-    if (_failedPaths.contains(cleanPath)) return false;
-
     final lower = cleanPath.toLowerCase();
 
     // Les fichiers JSON/Lottie ne sont pas des images — on les marque loaded
