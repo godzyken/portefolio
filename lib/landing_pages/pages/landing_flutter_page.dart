@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
 import '../theme/app_theme.dart';
+import '../widgets/cta_section.dart';
+import '../widgets/process_step.dart';
 import '../widgets/section_title.dart';
 import '../widgets/service_card.dart';
-import '../widgets/process_step.dart';
-import '../widgets/cta_section.dart';
 
 class LandingFlutterPage extends StatelessWidget {
   const LandingFlutterPage({super.key});
@@ -50,15 +52,15 @@ class LandingFlutterContent extends StatelessWidget {
           ),
           actions: [
             if (isWide) ...[
-              _NavLink(label: 'Services', onTap: () {}),
-              _NavLink(label: 'Stack', onTap: () {}),
-              _NavLink(label: 'Approche', onTap: () {}),
+              _NavLink(label: 'Services', onTap: () => context.go('/contact')),
+              _NavLink(label: 'Stack', onTap: () => context.go('/contact')),
+              _NavLink(label: 'Approche', onTap: () => context.go('/contact')),
               const SizedBox(width: 12),
             ],
             Padding(
               padding: const EdgeInsets.only(right: 16),
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () => context.go('/contact'),
                 style: ElevatedButton.styleFrom(backgroundColor: _accent),
                 child: const Text('Me contacter'),
               ),
@@ -113,14 +115,14 @@ class LandingFlutterContent extends StatelessWidget {
                   alignment: WrapAlignment.center,
                   children: [
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () => context.go('/contact'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: _accent,
                       ),
                       child: const Text('Parler de votre app'),
                     ),
                     OutlinedButton(
-                      onPressed: () {},
+                      onPressed: () => context.go('/contact'),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Colors.white,
                         side: const BorderSide(color: Colors.white, width: 2),
@@ -158,7 +160,7 @@ class LandingFlutterContent extends StatelessWidget {
                       crossAxisSpacing: 24,
                       mainAxisSpacing: 24,
                       childAspectRatio: 1.15,
-                      children: const [
+                      children: [
                         ServiceCard(
                           icon: Icons.architecture,
                           title: 'Architecture applicative',
@@ -269,7 +271,7 @@ class LandingFlutterContent extends StatelessWidget {
                       crossAxisSpacing: 24,
                       mainAxisSpacing: 32,
                       childAspectRatio: 1.3,
-                      children: const [
+                      children: [
                         ProcessStep(
                           number: 1,
                           title: 'Analyse',
@@ -314,7 +316,7 @@ class LandingFlutterContent extends StatelessWidget {
             subtitle:
                 'Que ce soit un audit d’architecture, un démarrage de projet ou un renfort senior, parlons-en.',
             buttonLabel: 'Prendre contact',
-            onPressed: () {},
+            onPressed: () => context.go('/contact'),
             accentColor: _accent,
           ),
         ),

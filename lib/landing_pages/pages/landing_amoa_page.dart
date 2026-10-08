@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../theme/app_theme.dart';
 import '../widgets/cta_section.dart';
@@ -51,15 +52,15 @@ class LandingAmoaContent extends StatelessWidget {
           ),
           actions: [
             if (isWide) ...[
-              _NavLink(label: 'Services', onTap: () {}),
-              _NavLink(label: 'Approche', onTap: () {}),
-              _NavLink(label: 'Avantages', onTap: () {}),
+              _NavLink(label: 'Services', onTap: () => context.go('/contact')),
+              _NavLink(label: 'Approche', onTap: () => context.go('/contact')),
+              _NavLink(label: 'Avantages', onTap: () => context.go('/contact')),
               const SizedBox(width: 12),
             ],
             Padding(
               padding: const EdgeInsets.only(right: 16),
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () => context.go('/contact'),
                 child: const Text('Me contacter'),
               ),
             ),
@@ -109,11 +110,11 @@ class LandingAmoaContent extends StatelessWidget {
                   alignment: WrapAlignment.center,
                   children: [
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () => context.go('/contact'),
                       child: const Text('Discutons de votre projet'),
                     ),
                     OutlinedButton(
-                      onPressed: () {},
+                      onPressed: () => context.go('/contact'),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Colors.white,
                         side: const BorderSide(color: Colors.white, width: 2),
@@ -152,7 +153,7 @@ class LandingAmoaContent extends StatelessWidget {
                       crossAxisSpacing: 24,
                       mainAxisSpacing: 24,
                       childAspectRatio: 1.15,
-                      children: const [
+                      children: [
                         ServiceCard(
                           icon: Icons.assignment_outlined,
                           title: 'Cadrage & Expression de besoins',
@@ -280,7 +281,7 @@ class LandingAmoaContent extends StatelessWidget {
                       crossAxisSpacing: 24,
                       mainAxisSpacing: 32,
                       childAspectRatio: 1.3,
-                      children: const [
+                      children: [
                         ProcessStep(
                           number: 1,
                           title: 'Diagnostic',
@@ -324,7 +325,7 @@ class LandingAmoaContent extends StatelessWidget {
             subtitle:
                 'Parlons de vos enjeux. Je vous propose un échange gratuit de 30 minutes pour évaluer ensemble les besoins.',
             buttonLabel: 'Prendre contact',
-            onPressed: () {},
+            onPressed: () => context.go('/contact'),
             accentColor: _accent,
           ),
         ),

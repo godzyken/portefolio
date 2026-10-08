@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
-import 'package:portefolio/core/ui/widgets/responsive_text.dart';
-import '../../../../core/ui/widgets/seo_wrapper.dart';
+import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
+import 'package:portefolio/core/ui/widgets/seo_wrapper.dart';
 
 import '../../../../core/provider/app_providers.dart';
 import '../../../about/views/screens/about_screens.dart';
@@ -172,6 +172,7 @@ class _ContactScreenState extends ConsumerState<ContactScreen>
     final formState = ref.watch(contactFormProvider);
     final info = ref.watch(responsiveInfoProvider);
     final theme = Theme.of(context);
+    final isWide = info.size.width > 1024;
 
     return SeoWrapper(
       title: 'Contact | Emryck Doré',
@@ -198,21 +199,149 @@ class _ContactScreenState extends ConsumerState<ContactScreen>
               physics: const BouncingScrollPhysics(),
               child: Column(
                 children: [
-                  // ✨ SECTION ABOUT (en haut)
-                  _buildAboutSection(info, theme),
-
-                  // 🎨 SÉPARATEUR ANIMÉ
-                  _buildAnimatedDivider(info, theme),
-
-                  // 📝 FORMULAIRE DE CONTACT
-                  ContactForm(
-                    formState: formState,
-                    info: info,
-                    formKey: _formKey,
+                  // 🚀 FORMULAIRE & CALENDRIER EN PRIORITÉ (aux côtés de l'avatar sur grand écran)
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: info.isMobile ? 16 : 32,
+                      vertical: 24,
+                    ),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ScaleTransition(
+                              scale: _pulseAnimation,
+                              child: Icon(
+                                Icons.mail_outline,
+                                color: theme.colorScheme.primary,
+                                size: 32,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            ResponsiveText.bodyMedium(
+                              'Parlons de votre projet',
+                              style: theme.textTheme.headlineMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        ResponsiveText.bodyMedium(
+                          'Formulaire et prise de rendez-vous en ligne — Réponse sous 24h',
+                          style: TextStyle(
+                            color: theme.colorScheme.onSurface
+                                .withValues(alpha: 0.7),
+                            fontSize: 14,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 32),
+                        if (isWide)
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Avatar et carte d'identité à gauche
+                              Expanded(
+                                flex: 4,
+                                child: Container(
+                                  padding: const EdgeInsets.all(24),
+                                  decoration: BoxDecoration(
+                                    color: theme
+                                        .colorScheme.surfaceContainerHighest
+                                        .withValues(alpha: 0.3),
+                                    borderRadius: BorderRadius.circular(24),
+                                    border: Border.all(
+                                      color: theme.colorScheme.primary
+                                          .withValues(alpha: 0.15),
+                                    ),
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(20),
+                                        child: SizedBox(
+                                          width: 180,
+                                          height: 220,
+                                          child: SmartImage(
+                                            path:
+                                                'assets/images/realisations/vignette_clip_articles_1.avif',
+                                            fit: BoxFit.cover,
+                                            fallbackIcon: Icons.person,
+                                            fallbackColor:
+                                                theme.colorScheme.primary,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 20),
+                                      ResponsiveText.titleLarge(
+                                        'Emryck Doré',
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                      const SizedBox(height: 8),
+                                      ResponsiveText.bodyMedium(
+                                        'Architecte Flutter & Consultant AMOA',
+                                        style: TextStyle(
+                                          color: theme.colorScheme.primary,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                      const SizedBox(height: 16),
+                                      ResponsiveText.bodySmall(
+                                        'Disponible pour vos projets d’applications mobiles, web, IoT et le pilotage de vos projets digitaux.',
+                                        style: TextStyle(
+                                          color: theme.colorScheme.onSurface
+                                              .withValues(alpha: 0.8),
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 32),
+                              // Formulaire + Calendrier à droite (accessibles immédiatement sans scroll)
+                              Expanded(
+                                flex: 8,
+                                child: Column(
+                                  children: [
+                                    ContactForm(
+                                      formState: formState,
+                                      info: info,
+                                      formKey: _formKey,
+                                    ),
+                                    const SizedBox(height: 24),
+                                    ContactConversionOption(
+                                        info: info, theme: theme),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          )
+                        else
+                          Column(
+                            children: [
+                              ContactForm(
+                                formState: formState,
+                                info: info,
+                                formKey: _formKey,
+                              ),
+                              const SizedBox(height: 24),
+                              ContactConversionOption(info: info, theme: theme),
+                            ],
+                          ),
+                      ],
+                    ),
                   ),
 
-                  // 🎯 APPEL À L'ACTION SECONDAIRE
-                  ContactConversionOption(info: info, theme: theme),
+                  // ✨ SECTION ABOUT (complète en dessous)
+                  _buildAboutSection(info, theme),
 
                   // Footer avec informations complémentaires
                   ContactFooter(info: info, theme: theme),
@@ -242,131 +371,6 @@ class _ContactScreenState extends ConsumerState<ContactScreen>
         ),
       ),
       child: const AboutSection(),
-    );
-  }
-
-  /// 🎨 Séparateur animé avec icône pulsante
-  Widget _buildAnimatedDivider(ResponsiveInfo info, ThemeData theme) {
-    return ResponsiveBox(
-      width: double.infinity,
-      padding: EdgeInsets.symmetric(
-        vertical: info.isMobile ? 40 : 64,
-        horizontal: info.isMobile ? 24 : 48,
-      ),
-      paddingSize: info.isMobile ? ResponsiveSpacing.m : ResponsiveSpacing.l,
-      child: Column(
-        children: [
-          // Ligne décorative avec icône au centre
-          Row(
-            children: [
-              Expanded(
-                child: ResponsiveBox(
-                  height: 2,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Colors.transparent,
-                        theme.colorScheme.primary.withValues(alpha: 0.5),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: ScaleTransition(
-                  scale: _pulseAnimation,
-                  child: ResponsiveBox(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          theme.colorScheme.primary,
-                          theme.colorScheme.secondary,
-                        ],
-                      ),
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color:
-                              theme.colorScheme.primary.withValues(alpha: 0.4),
-                          blurRadius: 20,
-                          spreadRadius: 5,
-                        ),
-                      ],
-                    ),
-                    child: const Icon(
-                      Icons.mail_outline,
-                      color: Colors.white,
-                      size: 32,
-                    ),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: ResponsiveBox(
-                  height: 2,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        theme.colorScheme.primary.withValues(alpha: 0.5),
-                        Colors.transparent,
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-
-          ResponsiveBox(height: info.isMobile ? 24 : 32),
-
-          // Titre principal
-          TweenAnimationBuilder<double>(
-            tween: Tween(begin: 0.0, end: 1.0),
-            duration: const Duration(milliseconds: 800),
-            curve: Curves.easeOut,
-            builder: (context, value, child) {
-              return Transform.translate(
-                offset: Offset(0, 20 * (1 - value)),
-                child: Opacity(
-                  opacity: value,
-                  child: child,
-                ),
-              );
-            },
-            child: Column(
-              children: [
-                ResponsiveText.bodyMedium(
-                  'Parlons de votre projet',
-                  style: theme.textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1,
-                    foreground: Paint()
-                      ..shader = LinearGradient(
-                        colors: [
-                          theme.colorScheme.primary,
-                          theme.colorScheme.secondary,
-                        ],
-                      ).createShader(const Rect.fromLTWH(0, 0, 300, 70)),
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const ResponsiveBox(
-                  paddingSize: ResponsiveSpacing.m,
-                ),
-                ResponsiveText.headlineMedium(
-                  'Je réponds généralement sous 24 heures',
-                  style: TextStyle(
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
