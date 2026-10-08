@@ -12,12 +12,22 @@ const Map<String, String> kArtifactLabels = {
   'implementation': 'Mise en œuvre',
   'vision': 'Vision',
   'securite': 'Sécurité',
+  'offres': 'Offres commerciales',
+  'offres_commerciales': 'Offres commerciales',
+  'tarifs': 'Tarifs',
+  'commercial': 'Offre commerciale',
+  'offres-commerciales': 'Offres commerciales',
 };
 
 /// Ordre d'affichage préféré.
 const List<String> kArtifactOrder = [
   'readme',
   'presentation',
+  'offres',
+  'offres_commerciales',
+  'tarifs',
+  'commercial',
+  'offres-commerciales',
   'vision',
   'workthrough',
   'implementation',
@@ -28,10 +38,7 @@ const List<String> kArtifactOrder = [
 /// Va chercher les fichiers .md d'artefacts d'un projet sur GitHub.
 ///
 /// Convention : à la racine de chaque repo, un dossier `.artefacts/{id}/`
-/// contient les fichiers (presentation.md, workthrough.md, valuation.md,
-/// implementation.md, vision.md). Certains projets (ex: emap_services)
-/// dérogent à la convention et utilisent readme.md/presentation.md/
-/// securite.md — ces noms sont donc aussi tentés systématiquement.
+/// ou `docs/` contient les fichiers (presentation.md, offres.md, tarifs.md, etc.).
 class GithubArtifactsService {
   static const _candidateFilenames = [
     'presentation',
@@ -41,13 +48,18 @@ class GithubArtifactsService {
     'vision',
     'readme',
     'securite',
+    'offres',
+    'offres_commerciales',
+    'tarifs',
+    'commercial',
+    'offres-commerciales',
     'implementation_plan.artifact',
     'analysis_results.artifact',
   ];
 
   /// Va chercher les fichiers .md d'artefacts d'un projet sur GitHub.
   ///
-  /// Supporte les dossiers UUID temporaires et le format .artifact.md
+  /// Supporte les dossiers UUID temporaires, le format .artifact.md, et le dossier docs/
   static Future<Map<String, String>> fetchArtifacts({
     required String repoUrl,
     required String projectId,
@@ -61,8 +73,8 @@ class GithubArtifactsService {
       return {};
     }
 
-    // On tente avec les deux orthographes de dossier et les deux IDs
-    final folderNames = ['.artifacts', '.artefacts'];
+    // On tente avec les dossiers .artifacts, .artefacts et docs
+    final folderNames = ['.artifacts', '.artefacts', 'docs'];
     final ids = [projectId, if (alternativeId != null) alternativeId];
 
     final artifacts = <String, String>{};
@@ -76,70 +88,74 @@ class GithubArtifactsService {
     );
     if (readme != null) artifacts['readme'] = readme;
 
-    // 2. Recherche itérative des fichiers
+    // 2. Recherche itérative des fichiers dans .artifacts, .artefacts et docs
     for (final folder in folderNames) {
-      for (final id in ids) {
-        final results = await Future.wait(
-          _candidateFilenames.where((name) => name != 'readme').map(
-            (name) async {
-              // Si déjà trouvé pour un autre folder/id, on ne cherche plus
-              if (artifacts.containsKey(name)) return null;
+      for (final name in _candidateFilenames.where((n) => n != 'readme')) {
+        if (artifacts.containsKey(name)) continue;
 
-              // On tente plusieurs extensions pour chaque nom
-              for (final ext in ['.artifact.md', '.md']) {
-                final content = await _fetchSingleFile(
-                  owner: repoInfo.owner,
-                  repo: repoInfo.repo,
-                  path: '$folder/$id/$name$ext',
-                  token: token,
-                );
-                if (content != null) return MapEntry(name, content);
-              }
+        for (final ext in ['.artifact.md', '.md']) {
+          // Tenter avec l'ID (ex: .artifacts/projet_4/offres.md, docs/projet_4/offres.md)
+          for (final id in ids) {
+            final content = await _fetchSingleFile(
+              owner: repoInfo.owner,
+              repo: repoInfo.repo,
+              path: '$folder/$id/$name$ext',
+              token: token,
+            );
+            if (content != null) {
+              artifacts[name] = content;
+              break;
+            }
+          }
+          if (artifacts.containsKey(name)) break;
 
-              // Fallback : tenter sans le sous-dossier ID (à la racine du dossier .artifacts)
-              for (final ext in ['.artifact.md', '.md']) {
-                final rootContent = await _fetchSingleFile(
-                  owner: repoInfo.owner,
-                  repo: repoInfo.repo,
-                  path: '$folder/$name$ext',
-                  token: token,
-                );
-                if (rootContent != null) return MapEntry(name, rootContent);
-              }
+          // Tenter à la racine du dossier (ex: docs/offres.md, .artifacts/offres.md)
+          final rootContent = await _fetchSingleFile(
+            owner: repoInfo.owner,
+            repo: repoInfo.repo,
+            path: '$folder/$name$ext',
+            token: token,
+          );
+          if (rootContent != null) {
+            artifacts[name] = rootContent;
+            break;
+          }
+        }
+      }
+    }
 
-              // Fallback spécial convention .ai/ (uniquement si rien trouvé avant)
-              String? aiPath;
-              switch (name) {
-                case 'presentation':
-                  aiPath = 'PROJECT.md';
-                  break;
-                case 'vision':
-                  aiPath = 'ARCHITECTURE.md';
-                  break;
-                case 'workthrough':
-                  aiPath = 'ROADMAP.md';
-                  break;
-                case 'implementation':
-                  aiPath = 'DECISIONS.md';
-                  break;
-              }
-
-              if (aiPath != null) {
-                final aiContent = await _fetchSingleFile(
-                  owner: repoInfo.owner,
-                  repo: repoInfo.repo,
-                  path: '.ai/$aiPath',
-                  token: token,
-                );
-                if (aiContent != null) return MapEntry(name, aiContent);
-              }
-              return null;
-            },
-          ),
+    // Fallback spécial convention .ai/ (uniquement si présentation/vision/workthrough/implementation non trouvés)
+    for (final name in [
+      'presentation',
+      'vision',
+      'workthrough',
+      'implementation'
+    ]) {
+      if (artifacts.containsKey(name)) continue;
+      String? aiPath;
+      switch (name) {
+        case 'presentation':
+          aiPath = 'PROJECT.md';
+          break;
+        case 'vision':
+          aiPath = 'ARCHITECTURE.md';
+          break;
+        case 'workthrough':
+          aiPath = 'ROADMAP.md';
+          break;
+        case 'implementation':
+          aiPath = 'DECISIONS.md';
+          break;
+      }
+      if (aiPath != null) {
+        final aiContent = await _fetchSingleFile(
+          owner: repoInfo.owner,
+          repo: repoInfo.repo,
+          path: '.ai/$aiPath',
+          token: token,
         );
-
-        for (final entry in results) {
-          if (entry != null) artifacts[entry.key] = entry.value;
+        if (aiContent != null) {
+          artifacts[name] = aiContent;
         }
       }
     }
