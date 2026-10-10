@@ -6,6 +6,7 @@ import 'package:portefolio/core/ui/widgets/seo_wrapper.dart';
 import 'package:portefolio/resources/resources.dart';
 
 import '../../../../core/provider/app_providers.dart';
+import 'package:portefolio/features/about/views/screens/about_screens.dart';
 import '../../model/state/contact_form_state.dart';
 import '../../providers/contact_form_provider.dart';
 import '../widgets/contact_extention_widgets.dart';
@@ -261,20 +262,7 @@ class _ContactScreenState extends ConsumerState<ContactScreen>
                                   ),
                                   child: Column(
                                     children: [
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(20),
-                                        child: SizedBox(
-                                          width: 180,
-                                          height: 220,
-                                          child: SmartImage(
-                                            path: Images.mePortrait2,
-                                            fit: BoxFit.cover,
-                                            fallbackIcon: Icons.person,
-                                            fallbackColor:
-                                                theme.colorScheme.primary,
-                                          ),
-                                        ),
-                                      ),
+                                      _buildProfileImage(context, theme, info),
                                       const SizedBox(height: 20),
                                       ResponsiveText.titleLarge(
                                         'Emryck Doré',
@@ -339,6 +327,9 @@ class _ContactScreenState extends ConsumerState<ContactScreen>
                     ),
                   ),
 
+                  // ✨ SECTION ABOUT (complète en dessous)
+                  _buildAboutSection(info, theme),
+
                   // Footer avec informations complémentaires
                   ContactFooter(info: info, theme: theme),
                 ],
@@ -347,6 +338,72 @@ class _ContactScreenState extends ConsumerState<ContactScreen>
           ),
         ),
       ),
+    );
+  }
+
+  /// ✨ Image de profil avec cadre lumineux (identique à la section About)
+  Widget _buildProfileImage(
+    BuildContext context,
+    ThemeData theme,
+    ResponsiveInfo info,
+  ) {
+    const imageWidth = 180.0;
+    const imageHeight = 220.0;
+
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(32),
+        gradient: LinearGradient(
+          colors: [
+            theme.colorScheme.primary.withValues(alpha: 0.3),
+            theme.colorScheme.secondary.withValues(alpha: 0.3),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: theme.colorScheme.primary.withValues(alpha: 0.3),
+            blurRadius: 30,
+            spreadRadius: 5,
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(6),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: SizedBox(
+          width: imageWidth,
+          height: imageHeight,
+          child: SmartImage(
+            path: Images.mePortrait2,
+            fit: BoxFit.cover,
+            fallbackIcon: Icons.person,
+            fallbackColor: theme.colorScheme.primary,
+            enableShimmer: true,
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// ✨ Section About avec effet glassmorphism
+  Widget _buildAboutSection(ResponsiveInfo info, ThemeData theme) {
+    return ResponsiveBox(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            theme.colorScheme.primary.withValues(alpha: 0.05),
+            theme.colorScheme.secondary.withValues(alpha: 0.03),
+            Colors.transparent,
+          ],
+          stops: const [0.0, 0.5, 1.0],
+        ),
+      ),
+      child: const AboutSection(),
     );
   }
 }
