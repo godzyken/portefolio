@@ -3,10 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
 import 'package:portefolio/core/ui/widgets/seo_wrapper.dart';
+import 'package:portefolio/features/about/views/screens/about_screens.dart';
 import 'package:portefolio/resources/resources.dart';
 
 import '../../../../core/provider/app_providers.dart';
-import 'package:portefolio/features/about/views/screens/about_screens.dart';
 import '../../model/state/contact_form_state.dart';
 import '../../providers/contact_form_provider.dart';
 import '../widgets/contact_extention_widgets.dart';
@@ -245,51 +245,38 @@ class _ContactScreenState extends ConsumerState<ContactScreen>
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Avatar et carte d'identité à gauche
+                              // Avatar et carte d'identité à gauche (sans cadre externe redondant)
                               Expanded(
                                 flex: 4,
-                                child: Container(
-                                  padding: const EdgeInsets.all(24),
-                                  decoration: BoxDecoration(
-                                    color: theme
-                                        .colorScheme.surfaceContainerHighest
-                                        .withValues(alpha: 0.3),
-                                    borderRadius: BorderRadius.circular(24),
-                                    border: Border.all(
-                                      color: theme.colorScheme.primary
-                                          .withValues(alpha: 0.15),
+                                child: Column(
+                                  children: [
+                                    _buildProfileImage(context, theme, info),
+                                    const SizedBox(height: 20),
+                                    ResponsiveText.titleLarge(
+                                      'Emryck Doré',
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                      textAlign: TextAlign.center,
                                     ),
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      _buildProfileImage(context, theme, info),
-                                      const SizedBox(height: 20),
-                                      ResponsiveText.titleLarge(
-                                        'Emryck Doré',
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold),
-                                        textAlign: TextAlign.center,
+                                    const SizedBox(height: 8),
+                                    ResponsiveText.bodyMedium(
+                                      'Architecte Flutter & Consultant AMOA',
+                                      style: TextStyle(
+                                        color: theme.colorScheme.primary,
+                                        fontWeight: FontWeight.w600,
                                       ),
-                                      const SizedBox(height: 8),
-                                      ResponsiveText.bodyMedium(
-                                        'Architecte Flutter & Consultant AMOA',
-                                        style: TextStyle(
-                                          color: theme.colorScheme.primary,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                        textAlign: TextAlign.center,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    const SizedBox(height: 16),
+                                    ResponsiveText.bodySmall(
+                                      'Disponible pour vos projets d’applications mobiles, web, IoT et le pilotage de vos projets digitaux.',
+                                      style: TextStyle(
+                                        color: theme.colorScheme.onSurface
+                                            .withValues(alpha: 0.8),
                                       ),
-                                      const SizedBox(height: 16),
-                                      ResponsiveText.bodySmall(
-                                        'Disponible pour vos projets d’applications mobiles, web, IoT et le pilotage de vos projets digitaux.',
-                                        style: TextStyle(
-                                          color: theme.colorScheme.onSurface
-                                              .withValues(alpha: 0.8),
-                                        ),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ],
-                                  ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ],
                                 ),
                               ),
                               const SizedBox(width: 32),
