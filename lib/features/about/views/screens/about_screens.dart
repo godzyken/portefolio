@@ -234,21 +234,15 @@ class _AboutSectionState extends ConsumerState<AboutSection>
           ),
         ),
         const ResponsiveBox(paddingSize: ResponsiveSpacing.xl),
-        // Description
-        _buildAnimatedText(
-          delay: 600,
-          child: _buildDescription(context, theme, isCentered),
-        ),
-        const ResponsiveBox(paddingSize: ResponsiveSpacing.xl),
         // Statistiques
         _buildAnimatedText(
-          delay: 800,
+          delay: 600,
           child: _buildStats(context, theme, isCentered),
         ),
         const ResponsiveBox(paddingSize: ResponsiveSpacing.xl),
         // Analytics
         _buildAnimatedText(
-          delay: 1000,
+          delay: 800,
           child: const ExperienceAnalyticsWidget(),
         ),
       ],
@@ -273,84 +267,6 @@ class _AboutSectionState extends ConsumerState<AboutSection>
         );
       },
       child: child,
-    );
-  }
-
-  Widget _buildDescription(
-    BuildContext context,
-    ThemeData theme,
-    bool isCentered,
-  ) {
-    return Column(
-      crossAxisAlignment:
-          isCentered ? CrossAxisAlignment.center : CrossAxisAlignment.start,
-      children: [
-        _buildParagraph(
-          context,
-          theme,
-          isCentered,
-          "Je conçois des applications Flutter sur mesure pour aider les entreprises à digitaliser leurs processus métiers.",
-          isFirst: true,
-        ),
-        const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
-        _buildParagraph(
-          context,
-          theme,
-          isCentered,
-          "Chaque année, je développe un projet complet pour transformer des besoins réels en solutions performantes et durables.",
-          isFirst: false,
-        ),
-        const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
-        _buildParagraph(
-          context,
-          theme,
-          isCentered,
-          "Travaillant seul, je maîtrise chaque aspect du développement (UX, architecture, intégration, déploiement) afin d'offrir des outils clairs, efficaces et alignés sur les objectifs de mes clients.",
-          isFirst: false,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildParagraph(
-    BuildContext context,
-    ThemeData theme,
-    bool isCentered,
-    String text, {
-    required bool isFirst,
-  }) {
-    return ResponsiveBox(
-      padding: const EdgeInsets.all(16),
-      paddingSize: ResponsiveSpacing.m,
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: theme.colorScheme.primary.withValues(alpha: 0.1),
-        ),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(
-            isFirst ? Icons.stars : Icons.arrow_right_rounded,
-            color: theme.colorScheme.primary,
-            size: 20,
-          ),
-          const ResponsiveBox(width: 12),
-          Expanded(
-            child: ResponsiveText.headlineSmall(
-              text,
-              textAlign: isCentered ? TextAlign.center : TextAlign.start,
-              style: GoogleFonts.openSans(
-                fontSize: 15,
-                height: 1.6,
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.9),
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 
