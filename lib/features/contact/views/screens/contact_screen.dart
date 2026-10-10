@@ -5,6 +5,7 @@ import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
 import 'package:portefolio/core/ui/widgets/seo_wrapper.dart';
 
 import '../../../../core/provider/app_providers.dart';
+import 'package:portefolio/resources/resources.dart';
 import '../../../about/views/screens/about_screens.dart';
 import '../../model/state/contact_form_state.dart';
 import '../../providers/contact_form_provider.dart';
@@ -267,8 +268,7 @@ class _ContactScreenState extends ConsumerState<ContactScreen>
                                           width: 180,
                                           height: 220,
                                           child: SmartImage(
-                                            path:
-                                                'assets/images/realisations/vignette_clip_articles_1.avif',
+                                            path: Images.mePortrait2,
                                             fit: BoxFit.cover,
                                             fallbackIcon: Icons.person,
                                             fallbackColor:

@@ -108,11 +108,12 @@ class _AboutSectionState extends ConsumerState<AboutSection>
     ThemeData theme,
     ResponsiveInfo info,
   ) {
-    final imageSize = info.isMobile
+    final imageWidth = info.isMobile
         ? info.size.width * 0.65
         : info.isTablet
             ? info.size.width * 0.35
-            : 320.0;
+            : 260.0;
+    final imageHeight = imageWidth * 1.3;
 
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0.0, end: 1.0),
@@ -124,8 +125,8 @@ class _AboutSectionState extends ConsumerState<AboutSection>
           child: Hero(
             tag: 'profile_image',
             child: ResponsiveBox(
-              width: imageSize / 2,
-              height: imageSize / 1.5,
+              width: imageWidth,
+              height: imageHeight,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(32),
                 gradient: LinearGradient(
@@ -151,8 +152,8 @@ class _AboutSectionState extends ConsumerState<AboutSection>
                 child: SmartImage(
                   path: Images.mePortrait2,
                   fit: BoxFit.cover,
-                  width: imageSize,
-                  height: imageSize,
+                  width: imageWidth,
+                  height: imageHeight,
                   fallbackIcon: Icons.person,
                   fallbackColor: theme.colorScheme.primary,
                   enableShimmer: true,
