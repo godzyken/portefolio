@@ -3,10 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
 import 'package:portefolio/core/ui/widgets/seo_wrapper.dart';
+import 'package:portefolio/resources/resources.dart';
 
 import '../../../../core/provider/app_providers.dart';
-import 'package:portefolio/resources/resources.dart';
-import '../../../about/views/screens/about_screens.dart';
 import '../../model/state/contact_form_state.dart';
 import '../../providers/contact_form_provider.dart';
 import '../widgets/contact_extention_widgets.dart';
@@ -340,9 +339,6 @@ class _ContactScreenState extends ConsumerState<ContactScreen>
                     ),
                   ),
 
-                  // ✨ SECTION ABOUT (complète en dessous)
-                  _buildAboutSection(info, theme),
-
                   // Footer avec informations complémentaires
                   ContactFooter(info: info, theme: theme),
                 ],
@@ -351,26 +347,6 @@ class _ContactScreenState extends ConsumerState<ContactScreen>
           ),
         ),
       ),
-    );
-  }
-
-  /// ✨ Section About avec effet glassmorphism
-  Widget _buildAboutSection(ResponsiveInfo info, ThemeData theme) {
-    return ResponsiveBox(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            theme.colorScheme.primary.withValues(alpha: 0.05),
-            theme.colorScheme.secondary.withValues(alpha: 0.03),
-            Colors.transparent,
-          ],
-          stops: const [0.0, 0.5, 1.0],
-        ),
-      ),
-      child: const AboutSection(),
     );
   }
 }
