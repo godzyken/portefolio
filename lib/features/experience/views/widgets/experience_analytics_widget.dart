@@ -98,23 +98,41 @@ class ExperienceAnalyticsWidget extends ConsumerWidget {
         height: 200,
         child: LineChart(
           LineChartData(
+            minX: 0,
+            maxX: 3,
+            minY: 0,
+            maxY: 12,
             gridData: const FlGridData(show: false),
             titlesData: FlTitlesData(
               bottomTitles: AxisTitles(
                 sideTitles: SideTitles(
                   showTitles: true,
+                  interval: 1, // ← clé : un label par année
+                  reservedSize: 28,
                   getTitlesWidget: (value, meta) {
-                    switch (value.toInt()) {
-                      case 0:
-                        return const Text('2023');
-                      case 1:
-                        return const Text('2024');
-                      case 2:
-                        return const Text('2025');
-                      case 3:
-                        return const Text('2026');
+                    // Ne garder que les valeurs entières exactes
+                    if (value != value.roundToDouble()) {
+                      return const SizedBox.shrink();
                     }
-                    return const Text('');
+                    const years = {
+                      0: '2023',
+                      1: '2024',
+                      2: '2025',
+                      3: '2026',
+                    };
+                    final year = years[value.toInt()];
+                    if (year == null) return const SizedBox.shrink();
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: Text(
+                        year,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.7),
+                        ),
+                      ),
+                    );
                   },
                 ),
               ),

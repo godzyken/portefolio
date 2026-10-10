@@ -73,16 +73,14 @@ class _AboutSectionState extends ConsumerState<AboutSection>
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Image à gauche
         Flexible(
           flex: 4,
           child: _buildProfileImage(context, theme, info),
         ),
-        const ResponsiveBox(
-            paddingSize: ResponsiveSpacing.xl), // Contenu à droite
+        const ResponsiveBox(paddingSize: ResponsiveSpacing.xl),
         Flexible(
           flex: 6,
-          child: _buildContent(context, theme, false),
+          child: _buildContent(context, theme, false, isDesktop: true),
         ),
       ],
     );
@@ -98,7 +96,7 @@ class _AboutSectionState extends ConsumerState<AboutSection>
       children: [
         _buildProfileImage(context, theme, info),
         const ResponsiveBox(height: 40),
-        _buildContent(context, theme, true),
+        _buildContent(context, theme, true, isDesktop: false),
       ],
     );
   }
@@ -169,79 +167,76 @@ class _AboutSectionState extends ConsumerState<AboutSection>
   Widget _buildContent(
     BuildContext context,
     ThemeData theme,
-    bool isCentered,
-  ) {
+    bool isCentered, {
+    required bool isDesktop,
+  }) {
     return Column(
       crossAxisAlignment:
           isCentered ? CrossAxisAlignment.center : CrossAxisAlignment.start,
       children: [
-        // Titre
-        _buildAnimatedText(
-          delay: 200,
-          child: ResponsiveText.titleLarge(
-            "Emryck Doré",
-            style: GoogleFonts.montserrat(
-              fontSize: 42,
-              fontWeight: FontWeight.bold,
-              foreground: Paint()
-                ..shader = LinearGradient(
-                  colors: [
-                    theme.colorScheme.primary,
-                    theme.colorScheme.secondary,
-                  ],
-                ).createShader(const Rect.fromLTWH(0, 0, 400, 70)),
+        // Nom + badge : visibles uniquement hors desktop
+        if (!isDesktop) ...[
+          _buildAnimatedText(
+            delay: 200,
+            child: ResponsiveText.titleLarge(
+              "Emryck Doré",
+              style: GoogleFonts.montserrat(
+                fontSize: 42,
+                fontWeight: FontWeight.bold,
+                foreground: Paint()
+                  ..shader = LinearGradient(
+                    colors: [
+                      theme.colorScheme.primary,
+                      theme.colorScheme.secondary,
+                    ],
+                  ).createShader(const Rect.fromLTWH(0, 0, 400, 70)),
+              ),
+              textAlign: isCentered ? TextAlign.center : TextAlign.left,
             ),
-            textAlign: isCentered ? TextAlign.center : TextAlign.left,
           ),
-        ),
-        const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
-        // Badge rôle
-        _buildAnimatedText(
-          delay: 400,
-          child: ResponsiveBox(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  theme.colorScheme.primary.withValues(alpha: 0.15),
-                  theme.colorScheme.secondary.withValues(alpha: 0.15),
+          const ResponsiveBox(paddingSize: ResponsiveSpacing.m),
+          _buildAnimatedText(
+            delay: 400,
+            child: ResponsiveBox(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    theme.colorScheme.primary.withValues(alpha: 0.15),
+                    theme.colorScheme.secondary.withValues(alpha: 0.15),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(30),
+                border: Border.all(
+                  color: theme.colorScheme.primary.withValues(alpha: 0.3),
+                  width: 2,
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.code, color: theme.colorScheme.primary, size: 20),
+                  const SizedBox(width: 8),
+                  ResponsiveText.titleMedium(
+                    "Développeur Flutter",
+                    style: GoogleFonts.openSans(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: theme.colorScheme.primary,
+                    ),
+                  ),
                 ],
               ),
-              borderRadius: BorderRadius.circular(30),
-              border: Border.all(
-                color: theme.colorScheme.primary.withValues(alpha: 0.3),
-                width: 2,
-              ),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.code,
-                  color: theme.colorScheme.primary,
-                  size: 20,
-                ),
-                const SizedBox(width: 8),
-                ResponsiveText.titleMedium(
-                  "Développeur Flutter",
-                  style: GoogleFonts.openSans(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: theme.colorScheme.primary,
-                  ),
-                ),
-              ],
             ),
           ),
-        ),
-        const ResponsiveBox(paddingSize: ResponsiveSpacing.xl),
-        // Statistiques
+          const ResponsiveBox(paddingSize: ResponsiveSpacing.xl),
+        ],
+        // Stats + analytics restent
         _buildAnimatedText(
           delay: 600,
           child: _buildStats(context, theme, isCentered),
         ),
         const ResponsiveBox(paddingSize: ResponsiveSpacing.xl),
-        // Analytics
         _buildAnimatedText(
           delay: 800,
           child: const ExperienceAnalyticsWidget(),
