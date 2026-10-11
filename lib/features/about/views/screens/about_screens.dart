@@ -4,7 +4,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
 import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
 import 'package:portefolio/features/experience/views/widgets/experience_widgets_extentions.dart';
-import 'package:portefolio/resources/resources.dart';
 
 class AboutSection extends ConsumerStatefulWidget {
   const AboutSection({super.key});
@@ -70,20 +69,7 @@ class _AboutSectionState extends ConsumerState<AboutSection>
     ThemeData theme,
     ResponsiveInfo info,
   ) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Flexible(
-          flex: 4,
-          child: _buildProfileImage(context, theme, info),
-        ),
-        const ResponsiveBox(paddingSize: ResponsiveSpacing.xl),
-        Flexible(
-          flex: 6,
-          child: _buildContent(context, theme, false, isDesktop: true),
-        ),
-      ],
-    );
+    return _buildContent(context, theme, false, isDesktop: true);
   }
 
   Widget _buildNarrowLayout(
@@ -91,77 +77,7 @@ class _AboutSectionState extends ConsumerState<AboutSection>
     ThemeData theme,
     ResponsiveInfo info,
   ) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        _buildProfileImage(context, theme, info),
-        const ResponsiveBox(height: 40),
-        _buildContent(context, theme, true, isDesktop: false),
-      ],
-    );
-  }
-
-  Widget _buildProfileImage(
-    BuildContext context,
-    ThemeData theme,
-    ResponsiveInfo info,
-  ) {
-    final imageWidth = info.isMobile
-        ? info.size.width * 0.65
-        : info.isTablet
-            ? info.size.width * 0.35
-            : 260.0;
-    final imageHeight = imageWidth * 1.3;
-
-    return TweenAnimationBuilder<double>(
-      tween: Tween(begin: 0.0, end: 1.0),
-      duration: const Duration(milliseconds: 1200),
-      curve: Curves.elasticOut,
-      builder: (context, value, child) {
-        return Transform.scale(
-          scale: value,
-          child: Hero(
-            tag: 'profile_image',
-            child: ResponsiveBox(
-              width: imageWidth,
-              height: imageHeight,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(32),
-                gradient: LinearGradient(
-                  colors: [
-                    theme.colorScheme.primary.withValues(alpha: 0.3),
-                    theme.colorScheme.secondary.withValues(alpha: 0.3),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: theme.colorScheme.primary.withValues(alpha: 0.3),
-                    blurRadius: 40,
-                    spreadRadius: 10,
-                  ),
-                ],
-              ),
-              padding: const EdgeInsets.all(8),
-              paddingSize: ResponsiveSpacing.s,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(24),
-                child: SmartImage(
-                  path: Images.mePortrait2,
-                  fit: BoxFit.cover,
-                  width: imageWidth,
-                  height: imageHeight,
-                  fallbackIcon: Icons.person,
-                  fallbackColor: theme.colorScheme.primary,
-                  enableShimmer: true,
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
+    return _buildContent(context, theme, true, isDesktop: false);
   }
 
   Widget _buildContent(
