@@ -245,55 +245,60 @@ class _ContactScreenState extends ConsumerState<ContactScreen>
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Avatar et carte d'identité à gauche (sans cadre externe redondant)
+                              // Côté gauche : Formulaire de contact & Calendrier
                               Expanded(
-                                flex: 4,
-                                child: Column(
-                                  children: [
-                                    _buildProfileImage(context, theme, info),
-                                    const SizedBox(height: 20),
-                                    ResponsiveText.titleLarge(
-                                      'Emryck Doré',
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.bold),
-                                      textAlign: TextAlign.center,
+                                flex: 6,
+                                child: Container(
+                                  padding: const EdgeInsets.all(24),
+                                  decoration: BoxDecoration(
+                                    color: theme
+                                        .colorScheme.surfaceContainerHighest
+                                        .withValues(alpha: 0.2),
+                                    borderRadius: BorderRadius.circular(24),
+                                    border: Border.all(
+                                      color: theme.colorScheme.primary
+                                          .withValues(alpha: 0.1),
                                     ),
-                                    const SizedBox(height: 8),
-                                    ResponsiveText.bodyMedium(
-                                      'Architecte Flutter & Consultant AMOA',
-                                      style: TextStyle(
-                                        color: theme.colorScheme.primary,
-                                        fontWeight: FontWeight.w600,
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      ContactForm(
+                                        formState: formState,
+                                        info: info,
+                                        formKey: _formKey,
                                       ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                    const SizedBox(height: 16),
-                                    ResponsiveText.bodySmall(
-                                      'Disponible pour vos projets d’applications mobiles, web, IoT et le pilotage de vos projets digitaux.',
-                                      style: TextStyle(
-                                        color: theme.colorScheme.onSurface
-                                            .withValues(alpha: 0.8),
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ],
+                                      const SizedBox(height: 24),
+                                      ContactConversionOption(
+                                          info: info, theme: theme),
+                                    ],
+                                  ),
                                 ),
                               ),
-                              const SizedBox(width: 32),
-                              // Formulaire + Calendrier à droite (accessibles immédiatement sans scroll)
+                              const SizedBox(width: 24),
+                              // Côté droit : Avatar Hero + About, Skills, Analytics
                               Expanded(
-                                flex: 8,
-                                child: Column(
-                                  children: [
-                                    ContactForm(
-                                      formState: formState,
-                                      info: info,
-                                      formKey: _formKey,
+                                flex: 6,
+                                child: Container(
+                                  padding: const EdgeInsets.all(24),
+                                  decoration: BoxDecoration(
+                                    color: theme
+                                        .colorScheme.surfaceContainerHighest
+                                        .withValues(alpha: 0.2),
+                                    borderRadius: BorderRadius.circular(24),
+                                    border: Border.all(
+                                      color: theme.colorScheme.primary
+                                          .withValues(alpha: 0.1),
                                     ),
-                                    const SizedBox(height: 24),
-                                    ContactConversionOption(
-                                        info: info, theme: theme),
-                                  ],
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      _buildProfileImage(context, theme, info),
+                                      const SizedBox(height: 20),
+                                      const AboutSection(),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ],
@@ -308,14 +313,14 @@ class _ContactScreenState extends ConsumerState<ContactScreen>
                               ),
                               const SizedBox(height: 24),
                               ContactConversionOption(info: info, theme: theme),
+                              const SizedBox(height: 32),
+                              // ✨ SECTION ABOUT (complète en dessous sur mobile)
+                              _buildAboutSection(info, theme),
                             ],
                           ),
                       ],
                     ),
                   ),
-
-                  // ✨ SECTION ABOUT (complète en dessous)
-                  _buildAboutSection(info, theme),
 
                   // Footer avec informations complémentaires
                   ContactFooter(info: info, theme: theme),
@@ -328,18 +333,18 @@ class _ContactScreenState extends ConsumerState<ContactScreen>
     );
   }
 
-  /// ✨ Image de profil avec cadre lumineux (identique à la section About)
+  /// ✨ Image de profil avec cadre lumineux hero
   Widget _buildProfileImage(
     BuildContext context,
     ThemeData theme,
     ResponsiveInfo info,
   ) {
-    const imageWidth = 180.0;
-    const imageHeight = 220.0;
+    const imageWidth = 140.0;
+    const imageHeight = 180.0;
 
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(32),
+        borderRadius: BorderRadius.circular(28),
         gradient: LinearGradient(
           colors: [
             theme.colorScheme.primary.withValues(alpha: 0.3),
@@ -351,12 +356,12 @@ class _ContactScreenState extends ConsumerState<ContactScreen>
         boxShadow: [
           BoxShadow(
             color: theme.colorScheme.primary.withValues(alpha: 0.3),
-            blurRadius: 30,
-            spreadRadius: 5,
+            blurRadius: 25,
+            spreadRadius: 4,
           ),
         ],
       ),
-      padding: const EdgeInsets.all(6),
+      padding: const EdgeInsets.all(4),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(24),
         child: SizedBox(
