@@ -339,8 +339,8 @@ class _ContactScreenState extends ConsumerState<ContactScreen>
     ThemeData theme,
     ResponsiveInfo info,
   ) {
-    const imageWidth = 140.0;
-    const imageHeight = 180.0;
+    const imageWidth = 240.0;
+    const imageHeight = 310.0;
 
     return Container(
       decoration: BoxDecoration(
