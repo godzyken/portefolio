@@ -340,7 +340,7 @@ class _ContactScreenState extends ConsumerState<ContactScreen>
     ResponsiveInfo info,
   ) {
     const imageWidth = 240.0;
-    const imageHeight = 310.0;
+    const imageHeight = 180.0;
 
     return Container(
       decoration: BoxDecoration(
@@ -369,6 +369,8 @@ class _ContactScreenState extends ConsumerState<ContactScreen>
           height: imageHeight,
           child: SmartImage(
             path: Images.mePortrait2,
+            width: imageWidth,
+            height: imageHeight,
             fit: BoxFit.cover,
             fallbackIcon: Icons.person,
             fallbackColor: theme.colorScheme.primary,
