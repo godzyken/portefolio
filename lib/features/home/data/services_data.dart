@@ -221,6 +221,8 @@ class Service {
         return ServiceCategory.design;
       case 'support':
         return ServiceCategory.support;
+      case 'amoa':
+        return ServiceCategory.amoa;
       default:
         return ServiceCategory.development;
     }
@@ -240,7 +242,7 @@ class Service {
 }
 
 /// Catégories de services
-enum ServiceCategory { mobile, web, cloud, design, support, development }
+enum ServiceCategory { mobile, web, cloud, design, support, development, amoa }
 
 extension ServiceCategoryExtension on ServiceCategory {
   String get displayName {
@@ -257,6 +259,8 @@ extension ServiceCategoryExtension on ServiceCategory {
         return 'Support';
       case ServiceCategory.development:
         return 'Développement';
+      case ServiceCategory.amoa:
+        return 'AMOA';
     }
   }
 
@@ -274,6 +278,8 @@ extension ServiceCategoryExtension on ServiceCategory {
         return Icons.build;
       case ServiceCategory.development:
         return Icons.code;
+      case ServiceCategory.amoa:
+        return Icons.assignment_outlined;
     }
   }
 
@@ -291,6 +297,8 @@ extension ServiceCategoryExtension on ServiceCategory {
         return Colors.orange;
       case ServiceCategory.development:
         return Colors.green;
+      case ServiceCategory.amoa:
+        return Colors.indigo;
     }
   }
 }
