@@ -62,6 +62,11 @@ class _EnhancedWakaTimeSectionState
 
         final projectStat = _findProjectStat(stats);
 
+        // Projet non présent dans WakaTime → on n'affiche pas le dashboard
+        if (projectStat == null) {
+          return _buildEmptyState(matched: true);
+        }
+
         return SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -803,11 +808,17 @@ class _EnhancedWakaTimeSectionState
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.info_outline, color: Colors.orange.shade300, size: 48),
+            Icon(
+              matched ? Icons.visibility_off_outlined : Icons.info_outline,
+              color: Colors.white38,
+              size: 40,
+            ),
             const SizedBox(height: 16),
-            const ResponsiveText.bodyLarge(
-              'Aucune donnée WakaTime disponible',
-              style: TextStyle(color: Colors.white),
+            ResponsiveText.bodyLarge(
+              matched
+                  ? 'Projet non tracké par WakaTime'
+                  : 'Aucune donnée WakaTime disponible',
+              style: const TextStyle(color: Colors.white70),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
@@ -815,7 +826,7 @@ class _EnhancedWakaTimeSectionState
               matched
                   ? 'Ce projet n\'est pas encore tracké par WakaTime'
                   : 'Les statistiques ne sont pas encore chargées pour cette période',
-              style: TextStyle(color: Colors.white.withValues(alpha: 0.7)),
+              style: TextStyle(color: Colors.white.withValues(alpha: 0.5)),
               textAlign: TextAlign.center,
             ),
           ],
