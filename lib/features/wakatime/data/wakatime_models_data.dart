@@ -3,32 +3,67 @@ class WakaTimeStats {
   final List<WakaTimeProjectStat> projects;
   final List<WakaTimeLanguage> languages;
   final List<WakaTimeEditor> editors;
+  final List<WakaTimeCategory> categories;
   final String range;
+  final String? humanReadableTotal;
+  final double? dailyAverage;
 
   WakaTimeStats({
     required this.totalSeconds,
     required this.projects,
     required this.languages,
     required this.editors,
+    required this.categories,
     required this.range,
+    this.humanReadableTotal,
+    this.dailyAverage,
   });
 
   factory WakaTimeStats.fromJson(Map<String, dynamic> json) {
     return WakaTimeStats(
       totalSeconds: (json['total_seconds'] ?? 0.0).toDouble(),
       projects: (json['projects'] as List?)
-              ?.map((p) => WakaTimeProjectStat.fromJson(p))
-              .toList() ??
+          ?.map((p) => WakaTimeProjectStat.fromJson(p))
+          .toList() ??
           [],
       languages: (json['languages'] as List?)
-              ?.map((l) => WakaTimeLanguage.fromJson(l))
-              .toList() ??
+          ?.map((l) => WakaTimeLanguage.fromJson(l))
+          .toList() ??
           [],
       editors: (json['editors'] as List?)
-              ?.map((e) => WakaTimeEditor.fromJson(e))
-              .toList() ??
+          ?.map((e) => WakaTimeEditor.fromJson(e))
+          .toList() ??
           [],
-      range: json['range'] ?? '',
+      categories: (json['categories'] as List?)
+          ?.map((c) => WakaTimeCategory.fromJson(c))
+          .toList() ??
+          [],
+      range: json['range'] ?? json['human_readable_range'] ?? '',
+      humanReadableTotal: json['human_readable_total'],
+      dailyAverage: (json['daily_average'] as num?)?.toDouble(),
+    );
+  }
+}
+
+class WakaTimeCategory {
+  final String name;
+  final double totalSeconds;
+  final double percent;
+  final String text;
+
+  WakaTimeCategory({
+    required this.name,
+    required this.totalSeconds,
+    required this.percent,
+    required this.text,
+  });
+
+  factory WakaTimeCategory.fromJson(Map<String, dynamic> json) {
+    return WakaTimeCategory(
+      name: json['name'] ?? '',
+      totalSeconds: (json['total_seconds'] ?? 0.0).toDouble(),
+      percent: (json['percent'] ?? 0).toDouble(),
+      text: json['text'] ?? '',
     );
   }
 }
