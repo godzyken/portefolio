@@ -1,17 +1,14 @@
-import 'dart:math';
-
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portefolio/core/affichage/colors_spec.dart';
 import 'package:portefolio/core/affichage/screen_size_detector.dart';
-import 'package:portefolio/core/provider/image_providers.dart';
 import 'package:portefolio/core/ui/ui_widgets_extentions.dart';
 
 import '../../../../wakatime/data/wakatime_models_data.dart';
 import '../../../../wakatime/providers/projects_wakatime_service_provider.dart';
 
-/// Section WakaTime complète et immersive
+/// Section WakaTime complète : dashboard multi-graphiques + radar métier.
 class EnhancedWakaTimeSection extends ConsumerStatefulWidget {
   final String projectName;
   final ResponsiveInfo info;
@@ -31,7 +28,14 @@ class _EnhancedWakaTimeSectionState
     extends ConsumerState<EnhancedWakaTimeSection>
     with SingleTickerProviderStateMixin {
   late AnimationController _pulseController;
-  String _selectedRange = 'last_7_days';
+  String _selectedRange = 'all_time';
+
+  static const _ranges = {
+    'last_7_days': '7J',
+    'last_30_days': '30J',
+    'last_year': '1A',
+    'all_time': 'All',
+  };
 
   @override
   void initState() {
@@ -51,23 +55,21 @@ class _EnhancedWakaTimeSectionState
   @override
   Widget build(BuildContext context) {
     final statsAsync = ref.watch(wakaTimeStatsProvider(_selectedRange));
-    final projectStat = _findProjectStat(statsAsync);
 
     return statsAsync.when(
       data: (stats) {
-        if (stats == null || projectStat == null) {
-          return _buildEmptyState();
-        }
+        if (stats == null) return _buildEmptyState(matched: false);
+
+        final projectStat = _findProjectStat(stats);
 
         return SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header avec range selector
               _buildHeader(),
-              const SizedBox(height: 14),
-
-              // Graphiques en 2 colonnes
+              const SizedBox(height: 16),
+              _buildKpiRow(stats, projectStat),
+              const SizedBox(height: 16),
               if (widget.info.isLandscape)
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -77,7 +79,7 @@ class _EnhancedWakaTimeSectionState
                         children: [
                           _buildLanguagesCard(stats),
                           const SizedBox(height: 16),
-                          _buildEditorsCard(stats),
+                          _buildCategoriesCard(stats),
                         ],
                       ),
                     ),
@@ -85,9 +87,9 @@ class _EnhancedWakaTimeSectionState
                     Expanded(
                       child: Column(
                         children: [
-                          _buildActivityTimeline(stats, projectStat),
+                          _buildRadarCard(stats, projectStat),
                           const SizedBox(height: 16),
-                          _buildProjectComparison(stats),
+                          _buildEditorsCard(stats),
                         ],
                       ),
                     ),
@@ -98,89 +100,93 @@ class _EnhancedWakaTimeSectionState
                   children: [
                     _buildLanguagesCard(stats),
                     const SizedBox(height: 16),
-                    _buildActivityTimeline(stats, projectStat),
+                    _buildRadarCard(stats, projectStat),
+                    const SizedBox(height: 16),
+                    _buildCategoriesCard(stats),
                     const SizedBox(height: 16),
                     _buildEditorsCard(stats),
-                    const SizedBox(height: 16),
-                    _buildProjectComparison(stats),
                   ],
                 ),
-
-              const SizedBox(height: 14),
-
-              // Section bonus : Badges et liens
-              _buildBonusSection(stats, projectStat),
-              const SizedBox(height: 54),
+              const SizedBox(height: 16),
+              _buildProjectComparison(stats, projectStat),
+              const SizedBox(height: 16),
+              if (projectStat != null) _buildBonusSection(stats, projectStat),
+              const SizedBox(height: 40),
             ],
           ),
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => const Center(
+        child: Padding(
+          padding: EdgeInsets.all(40),
+          child: CircularProgressIndicator(),
+        ),
+      ),
       error: (_, __) => _buildErrorState(),
     );
   }
 
-  WakaTimeProjectStat? _findProjectStat(AsyncValue<WakaTimeStats?> statsAsync) {
-    return statsAsync.maybeWhen(
-      data: (stats) {
-        if (stats == null) return null;
-        try {
-          return stats.projects.firstWhere(
-            (p) {
-              final cleanApiName =
-                  p.name.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '');
-              final cleanLocalName = widget.projectName
-                  .toLowerCase()
-                  .replaceAll(RegExp(r'[^a-z0-9]'), '');
-              return cleanApiName.contains(cleanLocalName) ||
-                  cleanLocalName.contains(cleanApiName);
-            },
-          );
-        } catch (_) {
-          return null;
-        }
-      },
-      orElse: () => null,
-    );
+  // ---------------------------------------------------------------------------
+  // Helpers
+  // ---------------------------------------------------------------------------
+
+  WakaTimeProjectStat? _findProjectStat(WakaTimeStats stats) {
+    try {
+      return stats.projects.firstWhere((p) {
+        final cleanApi =
+            p.name.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '');
+        final cleanLocal = widget.projectName
+            .toLowerCase()
+            .replaceAll(RegExp(r'[^a-z0-9]'), '');
+        return cleanApi.contains(cleanLocal) || cleanLocal.contains(cleanApi);
+      });
+    } catch (_) {
+      return null;
+    }
   }
+
+  String _formatDuration(double totalSeconds) {
+    final h = (totalSeconds / 3600).floor();
+    final m = ((totalSeconds % 3600) / 60).floor();
+    if (h > 0) return '${h}h ${m}m';
+    return '${m}m';
+  }
+
+  // ---------------------------------------------------------------------------
+  // Header
+  // ---------------------------------------------------------------------------
 
   Widget _buildHeader() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Row(
-          children: [
-            AnimatedBuilder(
-              animation: _pulseController,
-              builder: (context, child) {
-                return Container(
-                  width: 12,
-                  height: 12,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.green,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.green.withValues(
-                          alpha: 0.5 + 0.5 * _pulseController.value,
-                        ),
-                        blurRadius: 8,
-                        spreadRadius: 2,
-                      ),
-                    ],
+        AnimatedBuilder(
+          animation: _pulseController,
+          builder: (context, _) {
+            return Container(
+              width: 12,
+              height: 12,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.green,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.green.withValues(
+                      alpha: 0.4 + 0.4 * _pulseController.value,
+                    ),
+                    blurRadius: 8,
+                    spreadRadius: 2,
                   ),
-                );
-              },
-            ),
-            const SizedBox(width: 12),
-            const ResponsiveText.titleMedium(
-              '⏱️ Statistiques de développement',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
+                ],
               ),
-            ),
-          ],
+            );
+          },
+        ),
+        const SizedBox(width: 12),
+        const Expanded(
+          child: ResponsiveText.titleMedium(
+            'Statistiques de développement',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          ),
         ),
         _buildRangeSelector(),
       ],
@@ -188,38 +194,32 @@ class _EnhancedWakaTimeSectionState
   }
 
   Widget _buildRangeSelector() {
-    final ranges = {
-      'last_7_days': '7J',
-      'last_30_days': '30J',
-      'last_6_months': '6M',
-      'last_year': '1A',
-    };
-
     return Container(
-      padding: const EdgeInsets.all(4),
+      padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.1),
+        color: Colors.white.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
-        children: ranges.entries.map((entry) {
-          final isSelected = _selectedRange == entry.key;
+        children: _ranges.entries.map((e) {
+          final selected = _selectedRange == e.key;
           return GestureDetector(
-            onTap: () => setState(() => _selectedRange = entry.key),
+            onTap: () => setState(() => _selectedRange = e.key),
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               decoration: BoxDecoration(
-                color: isSelected
-                    ? Colors.blue.withValues(alpha: 0.3)
+                color: selected
+                    ? Colors.blue.withValues(alpha: 0.35)
                     : Colors.transparent,
                 borderRadius: BorderRadius.circular(6),
               ),
-              child: ResponsiveText.bodySmall(
-                entry.value,
+              child: Text(
+                e.value,
                 style: TextStyle(
-                  color: isSelected ? Colors.white : Colors.white60,
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                  color: selected ? Colors.white : Colors.white60,
+                  fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+                  fontSize: 12,
                 ),
               ),
             ),
@@ -229,470 +229,497 @@ class _EnhancedWakaTimeSectionState
     );
   }
 
+  // ---------------------------------------------------------------------------
+  // KPI
+  // ---------------------------------------------------------------------------
+
+  Widget _buildKpiRow(WakaTimeStats stats, WakaTimeProjectStat? projectStat) {
+    final totalH = stats.totalSeconds / 3600;
+    final projectH = (projectStat?.totalSeconds ?? 0) / 3600;
+    final projectPct = projectStat?.percent ?? 0;
+    final topLang =
+        stats.languages.isNotEmpty ? stats.languages.first.name : '—';
+
+    return Row(
+      children: [
+        Expanded(
+            child: _kpiCard('Temps total', '${totalH.toStringAsFixed(1)}h',
+                Icons.timer_outlined, Colors.blue)),
+        const SizedBox(width: 10),
+        Expanded(
+            child: _kpiCard(
+                'Sur ce projet',
+                projectStat != null ? '${projectH.toStringAsFixed(1)}h' : '—',
+                Icons.folder_special_outlined,
+                Colors.green)),
+        const SizedBox(width: 10),
+        Expanded(
+            child: _kpiCard(
+                'Focus projet',
+                projectStat != null ? '${projectPct.toStringAsFixed(0)}%' : '—',
+                Icons.center_focus_strong,
+                Colors.orange)),
+        const SizedBox(width: 10),
+        Expanded(
+            child: _kpiCard('Langage #1', topLang, Icons.code, Colors.purple)),
+      ],
+    );
+  }
+
+  Widget _kpiCard(String label, String value, IconData icon, Color color) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: 18, color: color),
+          const SizedBox(height: 8),
+          Text(
+            value,
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: widget.info.isMobile ? 14 : 16,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 2),
+          Text(label,
+              style: const TextStyle(color: Colors.white54, fontSize: 11)),
+        ],
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Languages
+  // ---------------------------------------------------------------------------
+
   Widget _buildLanguagesCard(WakaTimeStats stats) {
-    const colors = ColorHelpers.chartColors;
-    final languages = stats.languages.take(6).toList();
+    final colors = ColorHelpers.chartColors;
+    final languages = stats.languages.take(7).toList();
 
-    return ResponsiveBox(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.code, color: Colors.blue.shade300, size: 12),
-              const SizedBox(width: 12),
-              const ResponsiveText.titleMedium(
-                'Langages utilisés',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
+    return _card(
+      title: 'Langages',
+      icon: Icons.code,
+      iconColor: Colors.blue.shade300,
+      child: SizedBox(
+        height: 220,
+        child: Row(
+          children: [
+            Expanded(
+              flex: 3,
+              child: PieChart(
+                PieChartData(
+                  sectionsSpace: 2,
+                  centerSpaceRadius: 48,
+                  sections: languages.asMap().entries.map((e) {
+                    return PieChartSectionData(
+                      value: e.value.percent,
+                      color: colors[e.key % colors.length],
+                      radius: 42,
+                      showTitle: false,
+                    );
+                  }).toList(),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          SizedBox(
-            height: 200,
-            child: Row(
-              children: [
-                Expanded(
-                  flex: 3,
-                  child: PieChart(
-                    PieChartData(
-                      sectionsSpace: 2,
-                      centerSpaceRadius: 50,
-                      sections: languages.asMap().entries.map((entry) {
-                        final color = colors[entry.key % colors.length];
-                        return PieChartSectionData(
-                          value: entry.value.percent,
-                          color: color,
-                          radius: 45,
-                          showTitle: false,
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 20),
-                Expanded(
-                  flex: 2,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: languages.asMap().entries.map((entry) {
-                      return _buildLanguageLegendItem(
-                        entry.value,
-                        colors[entry.key % colors.length],
-                      );
-                    }).toList(),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildLanguageLegendItem(WakaTimeLanguage lang, Color color) {
-    return Consumer(
-      builder: (context, ref, child) {
-        final logoPath =
-            ref.watch(skillLogoPathProvider(lang.name.toLowerCase()));
-
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 8),
-          child: Row(
-            children: [
-              if (logoPath != null)
-                SmartImage(
-                  path: logoPath,
-                  width: 20,
-                  height: 20,
-                  fit: BoxFit.contain,
-                  enableShimmer: false,
-                  autoPreload: true,
-                  fallbackIcon: Icons.code,
-                  fallbackColor: color,
-                )
-              else
-                Icon(Icons.code, size: 20, color: color),
-              const SizedBox(width: 8),
-              Expanded(
-                child: ResponsiveText.bodySmall(
-                  lang.name,
-                  style: const TextStyle(color: Colors.white70, fontSize: 11),
-                ),
-              ),
-              ResponsiveText.bodySmall(
-                '${lang.percent.toStringAsFixed(1)}%',
-                style: TextStyle(
-                  color: color,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 11,
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildActivityTimeline(
-      WakaTimeStats stats, WakaTimeProjectStat projectStat) {
-    // Simuler une timeline sur 7 jours
-    final random = Random(42);
-    final spots = List.generate(
-      7,
-      (i) => FlSpot(
-        i.toDouble(),
-        (projectStat.totalSeconds / 7) *
-            (0.8 + random.nextDouble() * 0.4) /
-            3600,
-      ),
-    );
-
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.show_chart, color: Colors.green.shade300, size: 24),
-              const SizedBox(width: 12),
-              const ResponsiveText.titleMedium(
-                'Activité quotidienne',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          SizedBox(
-            height: 200,
-            child: LineChart(
-              LineChartData(
-                gridData: FlGridData(
-                  show: true,
-                  drawVerticalLine: false,
-                  getDrawingHorizontalLine: (value) => FlLine(
-                    color: Colors.white.withValues(alpha: 0.1),
-                    strokeWidth: 1,
-                  ),
-                ),
-                titlesData: FlTitlesData(
-                  leftTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      reservedSize: 35,
-                      getTitlesWidget: (value, meta) {
-                        return ResponsiveText.bodySmall(
-                          '${value.toInt()}h',
-                          style: const TextStyle(
-                            color: Colors.white60,
-                            fontSize: 10,
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  bottomTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      getTitlesWidget: (value, meta) {
-                        final days = [
-                          'Lun',
-                          'Mar',
-                          'Mer',
-                          'Jeu',
-                          'Ven',
-                          'Sam',
-                          'Dim'
-                        ];
-                        final index = value.toInt();
-                        if (index < 0 || index >= days.length) {
-                          return const SizedBox();
-                        }
-                        return ResponsiveText.bodySmall(
-                          days[index],
-                          style: const TextStyle(
-                            color: Colors.white60,
-                            fontSize: 10,
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  rightTitles: const AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
-                  ),
-                  topTitles: const AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
-                  ),
-                ),
-                borderData: FlBorderData(show: false),
-                lineBarsData: [
-                  LineChartBarData(
-                    spots: spots,
-                    isCurved: true,
-                    color: Colors.green,
-                    barWidth: 3,
-                    dotData: FlDotData(
-                      show: true,
-                      getDotPainter: (spot, percent, bar, index) {
-                        return FlDotCirclePainter(
-                          radius: 4,
-                          color: Colors.white,
-                          strokeWidth: 2,
-                          strokeColor: Colors.green,
-                        );
-                      },
-                    ),
-                    belowBarData: BarAreaData(
-                      show: true,
-                      color: Colors.green.withValues(alpha: 0.2),
-                    ),
-                  ),
-                ],
               ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildEditorsCard(WakaTimeStats stats) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.laptop, color: Colors.orange.shade300, size: 24),
-              const SizedBox(width: 12),
-              const ResponsiveText.titleMedium(
-                'Éditeurs utilisés',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          ...stats.editors.map((editor) => _buildEditorBar(editor)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildEditorBar(WakaTimeEditor editor) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              ResponsiveText.bodySmall(
-                editor.name,
-                style: const TextStyle(
-                  color: Colors.white70,
-                  fontSize: 12,
-                ),
-              ),
-              ResponsiveText.bodySmall(
-                '${editor.percent.toStringAsFixed(1)}%',
-                style: const TextStyle(
-                  color: Colors.orange,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 4),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(4),
-            child: LinearProgressIndicator(
-              value: editor.percent / 100,
-              backgroundColor: Colors.white.withValues(alpha: 0.1),
-              valueColor: const AlwaysStoppedAnimation<Color>(Colors.orange),
-              minHeight: 8,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildProjectComparison(WakaTimeStats stats) {
-    final topProjects = stats.projects.take(5).toList();
-
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.bar_chart, color: Colors.purple.shade300, size: 24),
-              const SizedBox(width: 12),
-              const ResponsiveText.titleMedium(
-                'Top projets',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          SizedBox(
-            height: 200,
-            child: BarChart(
-              BarChartData(
-                alignment: BarChartAlignment.spaceAround,
-                titlesData: FlTitlesData(
-                  leftTitles: const AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
-                  ),
-                  bottomTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      getTitlesWidget: (value, meta) {
-                        final index = value.toInt();
-                        if (index < 0 || index >= topProjects.length) {
-                          return const SizedBox();
-                        }
-                        return Padding(
-                          padding: const EdgeInsets.only(top: 8),
-                          child: ResponsiveText.bodySmall(
-                            topProjects[index].name.length > 10
-                                ? '${topProjects[index].name.substring(0, 10)}...'
-                                : topProjects[index].name,
-                            style: const TextStyle(
-                              color: Colors.white60,
-                              fontSize: 9,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  rightTitles: const AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
-                  ),
-                  topTitles: const AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
-                  ),
-                ),
-                gridData: const FlGridData(
-                  show: true,
-                  drawVerticalLine: false,
-                ),
-                borderData: FlBorderData(show: false),
-                barGroups: topProjects.asMap().entries.map((entry) {
-                  final isCurrentProject = entry.value.name
-                      .toLowerCase()
-                      .contains(widget.projectName.toLowerCase());
-                  return BarChartGroupData(
-                    x: entry.key,
-                    barRods: [
-                      BarChartRodData(
-                        toY: entry.value.percent,
-                        color: isCurrentProject
-                            ? Colors.blue
-                            : ColorHelpers.getColorForIndex(entry.key),
-                        width: 20,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ],
+            const SizedBox(width: 12),
+            Expanded(
+              flex: 2,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: languages.asMap().entries.map((e) {
+                  return _legendItem(
+                    e.value.name,
+                    '${e.value.percent.toStringAsFixed(1)}%',
+                    _formatDuration(e.value.totalSeconds),
+                    colors[e.key % colors.length],
                   );
                 }).toList(),
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _legendItem(
+      String name, String percent, String duration, Color color) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 7),
+      child: Row(
+        children: [
+          Container(
+            width: 10,
+            height: 10,
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(3),
+            ),
           ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              name,
+              style: const TextStyle(color: Colors.white70, fontSize: 11),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          Text(percent,
+              style: TextStyle(
+                  color: color, fontWeight: FontWeight.bold, fontSize: 11)),
+          const SizedBox(width: 6),
+          Text(duration,
+              style: const TextStyle(color: Colors.white38, fontSize: 10)),
         ],
       ),
     );
   }
 
+  // ---------------------------------------------------------------------------
+  // Categories (vraies données)
+  // ---------------------------------------------------------------------------
+
+  Widget _buildCategoriesCard(WakaTimeStats stats) {
+    final categories = stats.categories;
+    if (categories.isEmpty) {
+      return _card(
+        title: 'Catégories d\'activité',
+        icon: Icons.category_outlined,
+        iconColor: Colors.teal.shade300,
+        child: const Text(
+          'Aucune catégorie disponible pour cette période.',
+          style: TextStyle(color: Colors.white54, fontSize: 13),
+        ),
+      );
+    }
+
+    final colors = [
+      Colors.blue,
+      Colors.teal,
+      Colors.purple,
+      Colors.orange,
+      Colors.pink,
+      Colors.cyan,
+    ];
+
+    return _card(
+      title: 'Catégories d\'activité',
+      icon: Icons.category_outlined,
+      iconColor: Colors.teal.shade300,
+      child: Column(
+        children: categories.asMap().entries.map((e) {
+          final c = e.value;
+          final color = colors[e.key % colors.length];
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(c.name,
+                        style: const TextStyle(
+                            color: Colors.white70, fontSize: 12)),
+                    const Spacer(),
+                    Text(
+                      '${c.percent.toStringAsFixed(1)}% · ${_formatDuration(c.totalSeconds)}',
+                      style: TextStyle(
+                        color: color,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: LinearProgressIndicator(
+                    value: (c.percent / 100).clamp(0.0, 1.0),
+                    backgroundColor: Colors.white.withValues(alpha: 0.08),
+                    valueColor: AlwaysStoppedAnimation(color),
+                    minHeight: 7,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Radar WakaTime
+  // ---------------------------------------------------------------------------
+
+  Widget _buildRadarCard(
+      WakaTimeStats stats, WakaTimeProjectStat? projectStat) {
+    final projectFocus = (projectStat?.percent ?? 0).clamp(0.0, 100.0);
+
+    final topLangPct =
+        stats.languages.isNotEmpty ? stats.languages.first.percent : 100.0;
+    final langDiversity = (100 - topLangPct).clamp(0.0, 100.0);
+
+    final topEditorPct =
+        stats.editors.isNotEmpty ? stats.editors.first.percent : 50.0;
+    final editorFocus = topEditorPct.clamp(0.0, 100.0);
+
+    final volumeScore =
+        ((stats.totalSeconds / 3600) / 40 * 100).clamp(0.0, 100.0);
+
+    final codingCat =
+        stats.categories.where((c) => c.name.toLowerCase().contains('coding'));
+    final codingIntensity =
+        codingCat.isNotEmpty ? codingCat.first.percent.clamp(0.0, 100.0) : 70.0;
+
+    final values = [
+      projectFocus,
+      langDiversity,
+      codingIntensity,
+      editorFocus,
+      volumeScore,
+    ];
+
+    const labels = [
+      'Focus projet',
+      'Diversité lang.',
+      'Intensité code',
+      'Focus éditeur',
+      'Volume',
+    ];
+
+    return _card(
+      title: 'Radar compétences projet',
+      icon: Icons.radar,
+      iconColor: Colors.purple.shade300,
+      child: SizedBox(
+        height: 240,
+        child: RadarChart(
+          RadarChartData(
+            radarShape: RadarShape.polygon,
+            radarBorderData:
+                BorderSide(color: Colors.white.withValues(alpha: 0.15)),
+            gridBorderData:
+                BorderSide(color: Colors.white.withValues(alpha: 0.08)),
+            tickBorderData:
+                BorderSide(color: Colors.white.withValues(alpha: 0.05)),
+            tickCount: 4,
+            ticksTextStyle: const TextStyle(color: Colors.transparent),
+            radarBackgroundColor: Colors.transparent,
+            dataSets: [
+              RadarDataSet(
+                fillColor: Colors.purple.withValues(alpha: 0.25),
+                borderColor: Colors.purpleAccent,
+                borderWidth: 2,
+                entryRadius: 3,
+                dataEntries: values.map((v) => RadarEntry(value: v)).toList(),
+              ),
+            ],
+            getTitle: (index, angle) =>
+                RadarChartTitle(text: labels[index], angle: 0),
+            titleTextStyle: TextStyle(
+              color: Colors.white70,
+              fontSize: widget.info.isMobile ? 10 : 11,
+            ),
+            titlePositionPercentageOffset: 0.18,
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Editors
+  // ---------------------------------------------------------------------------
+
+  Widget _buildEditorsCard(WakaTimeStats stats) {
+    final editors = stats.editors.take(5).toList();
+
+    return _card(
+      title: 'Éditeurs',
+      icon: Icons.laptop_mac,
+      iconColor: Colors.orange.shade300,
+      child: Column(
+        children: editors.map((e) {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(e.name,
+                          style: const TextStyle(
+                              color: Colors.white70, fontSize: 12)),
+                    ),
+                    Text(
+                      '${e.percent.toStringAsFixed(1)}% · ${_formatDuration(e.totalSeconds)}',
+                      style: const TextStyle(
+                        color: Colors.orange,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: LinearProgressIndicator(
+                    value: (e.percent / 100).clamp(0.0, 1.0),
+                    backgroundColor: Colors.white.withValues(alpha: 0.08),
+                    valueColor: const AlwaysStoppedAnimation(Colors.orange),
+                    minHeight: 7,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Top projets
+  // ---------------------------------------------------------------------------
+
+  Widget _buildProjectComparison(
+      WakaTimeStats stats, WakaTimeProjectStat? current) {
+    final top = stats.projects.take(6).toList();
+
+    return _card(
+      title: 'Top projets (temps)',
+      icon: Icons.bar_chart,
+      iconColor: Colors.cyan.shade300,
+      child: SizedBox(
+        height: 220,
+        child: BarChart(
+          BarChartData(
+            alignment: BarChartAlignment.spaceAround,
+            maxY: top.isEmpty
+                ? 100
+                : top.map((p) => p.percent).reduce((a, b) => a > b ? a : b) *
+                    1.15,
+            barTouchData: BarTouchData(
+              enabled: true,
+              touchTooltipData: BarTouchTooltipData(
+                getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                  final p = top[group.x.toInt()];
+                  return BarTooltipItem(
+                    '${p.name}\n${_formatDuration(p.totalSeconds)} (${p.percent.toStringAsFixed(1)}%)',
+                    const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                  );
+                },
+              ),
+            ),
+            titlesData: FlTitlesData(
+              leftTitles:
+                  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              rightTitles:
+                  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              topTitles:
+                  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              bottomTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true,
+                  getTitlesWidget: (value, meta) {
+                    final i = value.toInt();
+                    if (i < 0 || i >= top.length) return const SizedBox();
+                    final name = top[i].name;
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 6),
+                      child: Text(
+                        name.length > 9 ? '${name.substring(0, 9)}…' : name,
+                        style:
+                            const TextStyle(color: Colors.white54, fontSize: 9),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+            gridData: FlGridData(
+              show: true,
+              drawVerticalLine: false,
+              getDrawingHorizontalLine: (_) =>
+                  FlLine(color: Colors.white.withValues(alpha: 0.06)),
+            ),
+            borderData: FlBorderData(show: false),
+            barGroups: top.asMap().entries.map((e) {
+              final isCurrent = current != null &&
+                  e.value.name.toLowerCase() == current.name.toLowerCase();
+              return BarChartGroupData(
+                x: e.key,
+                barRods: [
+                  BarChartRodData(
+                    toY: e.value.percent,
+                    width: 18,
+                    borderRadius: BorderRadius.circular(5),
+                    color: isCurrent
+                        ? Colors.blueAccent
+                        : ColorHelpers.getColorForIndex(e.key),
+                  ),
+                ],
+              );
+            }).toList(),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Bonus
+  // ---------------------------------------------------------------------------
+
   Widget _buildBonusSection(
       WakaTimeStats stats, WakaTimeProjectStat projectStat) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Colors.blue.withValues(alpha: 0.1),
-            Colors.purple.withValues(alpha: 0.1),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+        gradient: LinearGradient(colors: [
+          Colors.blue.withValues(alpha: 0.12),
+          Colors.purple.withValues(alpha: 0.12),
+        ]),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const ResponsiveText.titleMedium(
-            '🏆 Achievements',
+          const Text(
+            'Indicateurs clés',
             style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
+                color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           Wrap(
-            spacing: 12,
-            runSpacing: 12,
+            spacing: 10,
+            runSpacing: 10,
             children: [
-              _buildAchievementBadge(
-                '💯 Productif',
-                'Plus de ${(projectStat.totalSeconds / 3600).toStringAsFixed(0)}h sur ce projet',
-                Colors.green,
-              ),
-              _buildAchievementBadge(
-                '🔥 Streak',
-                'Actif ${_selectedRange == 'last_7_days' ? '7 jours' : _getRangeLabel()}',
-                Colors.orange,
-              ),
-              _buildAchievementBadge(
-                '🎯 Focus',
-                '${projectStat.percent.toStringAsFixed(0)}% du temps total',
-                Colors.blue,
-              ),
+              _badge('Temps projet', _formatDuration(projectStat.totalSeconds),
+                  Colors.green),
+              _badge('Part du total',
+                  '${projectStat.percent.toStringAsFixed(1)}%', Colors.blue),
+              _badge('Période', _ranges[_selectedRange] ?? _selectedRange,
+                  Colors.orange),
             ],
           ),
         ],
@@ -700,40 +727,71 @@ class _EnhancedWakaTimeSectionState
     );
   }
 
-  Widget _buildAchievementBadge(String title, String subtitle, Color color) {
+  Widget _badge(String title, String value, Color color) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withValues(alpha: 0.5)),
+        color: color.withValues(alpha: 0.18),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: color.withValues(alpha: 0.45)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
         children: [
-          ResponsiveText.bodySmall(
-            title,
-            style: TextStyle(
-              color: color,
-              fontWeight: FontWeight.bold,
-              fontSize: 12,
-            ),
-          ),
-          const SizedBox(height: 2),
-          ResponsiveText.bodySmall(
-            subtitle,
-            style: const TextStyle(
-              color: Colors.white70,
-              fontSize: 10,
-            ),
-          ),
+          Text(title,
+              style:
+                  TextStyle(color: color.withValues(alpha: 0.9), fontSize: 11)),
+          Text(value,
+              style: const TextStyle(
+                  color: Colors.white, fontWeight: FontWeight.bold)),
         ],
       ),
     );
   }
 
-  Widget _buildEmptyState() {
+  // ---------------------------------------------------------------------------
+  // UI helpers
+  // ---------------------------------------------------------------------------
+
+  Widget _card({
+    required String title,
+    required IconData icon,
+    required Color iconColor,
+    required Widget child,
+  }) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, color: iconColor, size: 20),
+              const SizedBox(width: 10),
+              Text(
+                title,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          child,
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyState({required bool matched}) {
     return Center(
       child: Container(
         padding: const EdgeInsets.all(32),
@@ -754,7 +812,9 @@ class _EnhancedWakaTimeSectionState
             ),
             const SizedBox(height: 8),
             ResponsiveText.bodyMedium(
-              'Ce projet n\'est pas encore tracké par WakaTime',
+              matched
+                  ? 'Ce projet n\'est pas encore tracké par WakaTime'
+                  : 'Les statistiques ne sont pas encore chargées pour cette période',
               style: TextStyle(color: Colors.white.withValues(alpha: 0.7)),
               textAlign: TextAlign.center,
             ),
@@ -792,20 +852,5 @@ class _EnhancedWakaTimeSectionState
         ),
       ),
     );
-  }
-
-  String _getRangeLabel() {
-    switch (_selectedRange) {
-      case 'last_7_days':
-        return '7 derniers jours';
-      case 'last_30_days':
-        return '30 derniers jours';
-      case 'last_6_months':
-        return '6 derniers mois';
-      case 'last_year':
-        return 'Dernière année';
-      default:
-        return '';
-    }
   }
 }
