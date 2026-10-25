@@ -115,7 +115,8 @@ class _EnhancedWakaTimeSectionState
               const SizedBox(height: 16),
               _buildProjectComparison(stats, projectStat),
               const SizedBox(height: 16),
-              if (projectStat != null) _buildBonusSection(stats, projectStat),
+              if (projectStat.totalSeconds > 0)
+                _buildBonusSection(stats, projectStat),
               const SizedBox(height: 40),
             ],
           ),
