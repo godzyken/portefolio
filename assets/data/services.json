@@ -30,6 +30,36 @@
     "priority": 2
   },
   {
+    "id": "desktop-dev",
+    "title": "Applications Desktop",
+    "description": "Applications de bureau Windows, macOS et Linux avec Flutter — une seule base de code",
+    "features": [
+      "💻 Multi-OS (Windows, macOS, Linux)",
+      "⚡ Performances natives",
+      "🎨 UI adaptée au desktop",
+      "🔗 Intégration système (fichiers, notifications…)"
+    ],
+    "icon": "desktop",
+    "imageUrl": "assets/images/services/flutter_image.webp",
+    "category": "desktop",
+    "priority": 3
+  },
+  {
+    "id": "amoa-conseil",
+    "title": "Conseil AMOA",
+    "description": "Accompagnement AMOA pour cadrer, piloter et sécuriser vos projets digitaux de bout en bout",
+    "features": [
+      "📋 Cadrage & expression de besoins",
+      "🎯 Pilotage & gouvernance",
+      "✅ Recette & critères d'acceptation",
+      "🚀 Mise en production & conduite du changement"
+    ],
+    "icon": "assignment",
+    "imageUrl": "assets/images/services/ui_ux_design_service.webp",
+    "category": "amoa",
+    "priority": 0
+  },
+  {
     "id": "cloud-solutions",
     "title": "Solutions Cloud",
     "description": "Déploiement et hébergement d'applications dans le cloud",
@@ -42,7 +72,7 @@
     "icon": "cloud",
     "imageUrl": "assets/images/services/api_img.webp",
     "category": "cloud",
-    "priority": 3
+    "priority": 4
   },
   {
     "id": "support-maintenance",
@@ -57,6 +87,6 @@
     "icon": "design",
     "imageUrl": "assets/images/services/technical_support_maintenance.webp",
     "category": "support",
-    "priority": 4
+    "priority": 5
   }
 ]

@@ -52,9 +52,15 @@ class LandingAmoaContent extends StatelessWidget {
           ),
           actions: [
             if (isWide) ...[
-              _NavLink(label: 'Services', onTap: () => context.go('/contact')),
-              _NavLink(label: 'Approche', onTap: () => context.go('/contact')),
-              _NavLink(label: 'Avantages', onTap: () => context.go('/contact')),
+              _NavLink(
+                  label: 'Services',
+                  onTap: () => context.go('/tarifs/amoa-conseil')),
+              _NavLink(
+                  label: 'Approche',
+                  onTap: () => context.go('/tarifs/amoa-conseil')),
+              _NavLink(
+                  label: 'Avantages',
+                  onTap: () => context.go('/tarifs/amoa-conseil')),
               const SizedBox(width: 12),
             ],
             Padding(
@@ -114,7 +120,7 @@ class LandingAmoaContent extends StatelessWidget {
                       child: const Text('Discutons de votre projet'),
                     ),
                     OutlinedButton(
-                      onPressed: () => context.go('/contact'),
+                      onPressed: () => context.go('/tarifs/amoa-conseil'),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Colors.white,
                         side: const BorderSide(color: Colors.white, width: 2),

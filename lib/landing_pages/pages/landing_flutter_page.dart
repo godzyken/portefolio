@@ -52,9 +52,14 @@ class LandingFlutterContent extends StatelessWidget {
           ),
           actions: [
             if (isWide) ...[
-              _NavLink(label: 'Services', onTap: () => context.go('/contact')),
-              _NavLink(label: 'Stack', onTap: () => context.go('/contact')),
-              _NavLink(label: 'Approche', onTap: () => context.go('/contact')),
+              _NavLink(
+                  label: 'Services',
+                  onTap: () => context.go('/tarifs/mobile-dev')),
+              _NavLink(
+                  label: 'Stack', onTap: () => context.go('/tarifs/web-dev')),
+              _NavLink(
+                  label: 'Approche',
+                  onTap: () => context.go('/tarifs/desktop-dev')),
               const SizedBox(width: 12),
             ],
             Padding(
@@ -110,16 +115,27 @@ class LandingFlutterContent extends StatelessWidget {
                 ),
                 const SizedBox(height: 36),
                 Wrap(
-                  spacing: 16,
+                  spacing: 12,
                   runSpacing: 12,
                   alignment: WrapAlignment.center,
                   children: [
-                    ElevatedButton(
-                      onPressed: () => context.go('/contact'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: _accent,
-                      ),
-                      child: const Text('Parler de votre app'),
+                    ElevatedButton.icon(
+                      onPressed: () => context.go('/tarifs/mobile-dev'),
+                      icon: const Icon(Icons.phone_android, size: 18),
+                      style: ElevatedButton.styleFrom(backgroundColor: _accent),
+                      label: const Text('Mobile (iOS / Android)'),
+                    ),
+                    ElevatedButton.icon(
+                      onPressed: () => context.go('/tarifs/web-dev'),
+                      icon: const Icon(Icons.language, size: 18),
+                      style: ElevatedButton.styleFrom(backgroundColor: _accent),
+                      label: const Text('Web'),
+                    ),
+                    ElevatedButton.icon(
+                      onPressed: () => context.go('/tarifs/desktop-dev'),
+                      icon: const Icon(Icons.desktop_windows, size: 18),
+                      style: ElevatedButton.styleFrom(backgroundColor: _accent),
+                      label: const Text('Desktop'),
                     ),
                     OutlinedButton(
                       onPressed: () => context.go('/contact'),
@@ -127,7 +143,7 @@ class LandingFlutterContent extends StatelessWidget {
                         foregroundColor: Colors.white,
                         side: const BorderSide(color: Colors.white, width: 2),
                       ),
-                      child: const Text('Voir mes expertises'),
+                      child: const Text('Parler de mon projet'),
                     ),
                   ],
                 ),
