@@ -1,5 +1,38 @@
 [
   {
+    "service_id": "amoa-conseil",
+    "intro_text": "Le conseil AMOA (assistance à maîtrise d'ouvrage) se facture en mission ou au forfait selon la durée, le niveau d’implication (cadrage, pilotage, recette) et la complexité du SI. Voici les ordres de grandeur constatés sur le marché français et la façon dont se construit ma rémunération en portage.",
+    "market_comparison": [
+      {
+        "label": "Cadrage court (ateliers + cahier des charges)",
+        "freelance_range": "2 500 à 5 000 €",
+        "agency_range": "5 000 à 10 000 €"
+      },
+      {
+        "label": "Pilotage projet (2–4 mois, partiel)",
+        "freelance_range": "6 000 à 15 000 €",
+        "agency_range": "12 000 à 30 000 €"
+      },
+      {
+        "label": "AMOA complète (cadrage → recette → MEP)",
+        "freelance_range": "15 000 € et +",
+        "agency_range": "30 000 € et +"
+      }
+    ],
+    "portage_breakdown": {
+      "frais_gestion_pct": 7,
+      "coefficient_transformation": 0.65627563,
+      "note": "Même mécanique que pour le développement : frais de gestion + coefficient de transformation entre le montant facturé HT et la rémunération brute indicative."
+    },
+    "anonymized_example": {
+      "title": "Exemple : cadrage + pilotage d’un projet digital (3 mois)",
+      "invoice_ht": 9000,
+      "base_calcul": 8370,
+      "remuneration_brute": 5493,
+      "note": "Chiffres arrondis à titre d’illustration. Un devis précis est établi après un échange sur le contexte, les parties prenantes et les livrables attendus."
+    }
+  },
+  {
     "serviceId": "mobile-dev",
     "totalProjects": 15,
     "totalYearsExperience": 6,
@@ -134,6 +167,39 @@
         "icon": "karma"
       }
     ]
+  },
+  {
+    "service_id": "desktop-dev",
+    "intro_text": "Les applications de bureau (Windows, macOS, Linux) avec Flutter sont facturées sur devis : le prix dépend du nombre de modules, des intégrations système (fichiers, imprimantes, notifications, authentification SSO…) et du niveau de finition UI. Voici les repères de marché et la mécanique de rémunération en portage salarial.",
+    "market_comparison": [
+      {
+        "label": "Outil métier simple (quelques écrans)",
+        "freelance_range": "3 000 à 6 000 €",
+        "agency_range": "7 000 à 12 000 €"
+      },
+      {
+        "label": "Application desktop avec backend / sync",
+        "freelance_range": "6 000 à 12 000 €",
+        "agency_range": "12 000 à 22 000 €"
+      },
+      {
+        "label": "Suite desktop complète (multi-modules, offline)",
+        "freelance_range": "12 000 € et +",
+        "agency_range": "22 000 € et +"
+      }
+    ],
+    "portage_breakdown": {
+      "frais_gestion_pct": 7,
+      "coefficient_transformation": 0.65627563,
+      "note": "En portage salarial, une partie du montant facturé couvre les frais de gestion et les charges. Le coefficient transforme la facturation HT en base de rémunération brute approximative."
+    },
+    "anonymized_example": {
+      "title": "Exemple : outil de gestion interne desktop (Windows + macOS)",
+      "invoice_ht": 11000,
+      "base_calcul": 10230,
+      "remuneration_brute": 6714,
+      "note": "Montants indicatifs après frais de gestion et application du coefficient de transformation. Le devis final dépend du périmètre réel."
+    }
   },
   {
     "serviceId": "cloud-solutions",
