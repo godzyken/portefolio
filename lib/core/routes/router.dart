@@ -126,6 +126,13 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           ],
         ),
 
+        // Alias court catalogue
+        GoRoute(
+          path: '/o',
+          name: 'offers_short',
+          redirect: (_, __) => '/offres',
+        ),
+
         // Compat: anciennes URLs /tarifs/:id → fiche offre
         GoRoute(
           path: '/tarifs/:serviceId',
@@ -135,6 +142,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           ),
         ),
 
+        // Landings (long)
         GoRoute(
           path: '/landing/flutter',
           name: 'landing_flutter',
@@ -143,6 +151,28 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         GoRoute(
           path: '/landing/amoa',
           name: 'landing_amoa',
+          builder: (_, __) => const LandingAmoaPage(),
+        ),
+
+        // Alias courts — idéaux réseaux sociaux
+        GoRoute(
+          path: '/f',
+          name: 'landing_flutter_short',
+          builder: (_, __) => const LandingFlutterPage(),
+        ),
+        GoRoute(
+          path: '/flutter',
+          name: 'landing_flutter_alias',
+          builder: (_, __) => const LandingFlutterPage(),
+        ),
+        GoRoute(
+          path: '/a',
+          name: 'landing_amoa_short',
+          builder: (_, __) => const LandingAmoaPage(),
+        ),
+        GoRoute(
+          path: '/amoa',
+          name: 'landing_amoa_alias',
           builder: (_, __) => const LandingAmoaPage(),
         ),
 
