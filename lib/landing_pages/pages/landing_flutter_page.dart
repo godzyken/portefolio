@@ -29,7 +29,6 @@ class LandingFlutterContent extends StatelessWidget {
 
     return CustomScrollView(
       slivers: [
-        // AppBar
         SliverAppBar(
           pinned: true,
           backgroundColor: AppTheme.white,
@@ -53,13 +52,12 @@ class LandingFlutterContent extends StatelessWidget {
           actions: [
             if (isWide) ...[
               _NavLink(
-                  label: 'Services',
-                  onTap: () => context.go('/tarifs/mobile-dev')),
+                  label: 'Offres', onTap: () => context.go('/offres')),
               _NavLink(
-                  label: 'Stack', onTap: () => context.go('/tarifs/web-dev')),
+                  label: 'Mobile',
+                  onTap: () => context.go('/offres/mobile-dev')),
               _NavLink(
-                  label: 'Approche',
-                  onTap: () => context.go('/tarifs/desktop-dev')),
+                  label: 'Web', onTap: () => context.go('/offres/web-dev')),
               const SizedBox(width: 12),
             ],
             Padding(
@@ -73,7 +71,6 @@ class LandingFlutterContent extends StatelessWidget {
           ],
         ),
 
-        // Hero
         SliverToBoxAdapter(
           child: Container(
             width: double.infinity,
@@ -95,7 +92,7 @@ class LandingFlutterContent extends StatelessWidget {
             child: Column(
               children: [
                 Text(
-                  'Architecture Flutter\nApplications mobiles performantes',
+                  'Architecture Flutter\nApplications performantes',
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.displayLarge?.copyWith(
                         fontSize: isWide ? 42 : 28,
@@ -105,7 +102,7 @@ class LandingFlutterContent extends StatelessWidget {
                 ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 620),
                   child: Text(
-                    'Je conçois et industrialise des architectures Flutter robustes, maintenables et scalables pour vos applications iOS, Android et Web.',
+                    'Je conçois et industrialise des architectures Flutter robustes pour iOS, Android, Web et Desktop.',
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                           color: Colors.white.withValues(alpha: 0.9),
@@ -120,19 +117,19 @@ class LandingFlutterContent extends StatelessWidget {
                   alignment: WrapAlignment.center,
                   children: [
                     ElevatedButton.icon(
-                      onPressed: () => context.go('/tarifs/mobile-dev'),
+                      onPressed: () => context.go('/offres/mobile-dev'),
                       icon: const Icon(Icons.phone_android, size: 18),
                       style: ElevatedButton.styleFrom(backgroundColor: _accent),
                       label: const Text('Mobile (iOS / Android)'),
                     ),
                     ElevatedButton.icon(
-                      onPressed: () => context.go('/tarifs/web-dev'),
+                      onPressed: () => context.go('/offres/web-dev'),
                       icon: const Icon(Icons.language, size: 18),
                       style: ElevatedButton.styleFrom(backgroundColor: _accent),
                       label: const Text('Web'),
                     ),
                     ElevatedButton.icon(
-                      onPressed: () => context.go('/tarifs/desktop-dev'),
+                      onPressed: () => context.go('/offres/desktop-dev'),
                       icon: const Icon(Icons.desktop_windows, size: 18),
                       style: ElevatedButton.styleFrom(backgroundColor: _accent),
                       label: const Text('Desktop'),
@@ -152,7 +149,6 @@ class LandingFlutterContent extends StatelessWidget {
           ),
         ),
 
-        // Services
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 72, horizontal: 24),
@@ -181,42 +177,42 @@ class LandingFlutterContent extends StatelessWidget {
                           icon: Icons.architecture,
                           title: 'Architecture applicative',
                           description:
-                              'Clean Architecture, Feature-first, Modularisation, séparation claire des couches (presentation / domain / data).',
+                              'Clean Architecture, Feature-first, Modularisation, séparation claire des couches.',
                           accentColor: _accent,
                         ),
                         ServiceCard(
                           icon: Icons.bolt,
                           title: 'State Management',
                           description:
-                              'Riverpod, Bloc, Provider… Choix et mise en place de la solution la plus adaptée à votre contexte.',
+                              'Riverpod, Bloc, Provider… Choix adapté à votre contexte.',
                           accentColor: _accent,
                         ),
                         ServiceCard(
                           icon: Icons.api,
                           title: 'Intégration Backend & APIs',
                           description:
-                              'REST, GraphQL, Firebase, authentification sécurisée, offline-first et synchronisation.',
+                              'REST, GraphQL, Firebase, auth sécurisée, offline-first.',
                           accentColor: _accent,
                         ),
                         ServiceCard(
                           icon: Icons.phone_android,
                           title: 'UI / UX & Design System',
                           description:
-                              'Composants réutilisables, theming, responsive, accessibilité et animations fluides.',
+                              'Composants réutilisables, theming, responsive, accessibilité.',
                           accentColor: _accent,
                         ),
                         ServiceCard(
                           icon: Icons.speed,
                           title: 'Performance & Qualité',
                           description:
-                              'Optimisation, profiling, tests unitaires / widget / intégration, CI/CD et monitoring.',
+                              'Profiling, tests, CI/CD et monitoring.',
                           accentColor: _accent,
                         ),
                         ServiceCard(
                           icon: Icons.inventory_2_outlined,
                           title: 'Industrialisation & Scale',
                           description:
-                              'Structure multi-packages, monorepo, code generation, conventions et documentation technique.',
+                              'Multi-packages, monorepo, code generation, conventions.',
                           accentColor: _accent,
                         ),
                       ],
@@ -228,7 +224,6 @@ class LandingFlutterContent extends StatelessWidget {
           ),
         ),
 
-        // Stack technique
         SliverToBoxAdapter(
           child: Container(
             color: AppTheme.white,
@@ -263,7 +258,6 @@ class LandingFlutterContent extends StatelessWidget {
           ),
         ),
 
-        // Approche
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 72, horizontal: 24),
@@ -292,28 +286,28 @@ class LandingFlutterContent extends StatelessWidget {
                           number: 1,
                           title: 'Analyse',
                           description:
-                              'Comprendre les besoins fonctionnels, techniques et les contraintes de scale.',
+                              'Comprendre les besoins fonctionnels, techniques et de scale.',
                           accentColor: _accent,
                         ),
                         ProcessStep(
                           number: 2,
                           title: 'Conception',
                           description:
-                              'Définir l’architecture, les packages, les patterns et les conventions.',
+                              'Architecture, packages, patterns et conventions.',
                           accentColor: _accent,
                         ),
                         ProcessStep(
                           number: 3,
                           title: 'Implémentation',
                           description:
-                              'Développer les fondations et accompagner l’équipe sur les bonnes pratiques.',
+                              'Fondations et bonnes pratiques d’équipe.',
                           accentColor: _accent,
                         ),
                         ProcessStep(
                           number: 4,
                           title: 'Industrialisation',
                           description:
-                              'CI/CD, tests, monitoring et documentation pour un long terme serein.',
+                              'CI/CD, tests, monitoring et documentation.',
                           accentColor: _accent,
                         ),
                       ],
@@ -325,19 +319,17 @@ class LandingFlutterContent extends StatelessWidget {
           ),
         ),
 
-        // CTA
         SliverToBoxAdapter(
           child: CtaSection(
             title: 'Vous avez un projet Flutter ?',
             subtitle:
-                'Que ce soit un audit d’architecture, un démarrage de projet ou un renfort senior, parlons-en.',
-            buttonLabel: 'Prendre contact',
-            onPressed: () => context.go('/contact'),
+                'Audit d’architecture, démarrage de projet ou renfort senior — voyez les offres ou parlons-en.',
+            buttonLabel: 'Voir les offres',
+            onPressed: () => context.go('/offres'),
             accentColor: _accent,
           ),
         ),
 
-        // Footer
         SliverToBoxAdapter(
           child: Container(
             color: AppTheme.flutterPrimary,
