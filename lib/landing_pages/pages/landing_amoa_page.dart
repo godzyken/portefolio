@@ -29,7 +29,6 @@ class LandingAmoaContent extends StatelessWidget {
 
     return CustomScrollView(
       slivers: [
-        // AppBar sticky
         SliverAppBar(
           pinned: true,
           backgroundColor: AppTheme.white,
@@ -53,14 +52,13 @@ class LandingAmoaContent extends StatelessWidget {
           actions: [
             if (isWide) ...[
               _NavLink(
-                  label: 'Services',
-                  onTap: () => context.go('/tarifs/amoa-conseil')),
+                  label: 'Offres',
+                  onTap: () => context.go('/offres?category=amoa')),
               _NavLink(
-                  label: 'Approche',
-                  onTap: () => context.go('/tarifs/amoa-conseil')),
+                  label: 'AMOA',
+                  onTap: () => context.go('/offres/amoa-conseil')),
               _NavLink(
-                  label: 'Avantages',
-                  onTap: () => context.go('/tarifs/amoa-conseil')),
+                  label: 'Catalogue', onTap: () => context.go('/offres')),
               const SizedBox(width: 12),
             ],
             Padding(
@@ -73,7 +71,6 @@ class LandingAmoaContent extends StatelessWidget {
           ],
         ),
 
-        // Hero
         SliverToBoxAdapter(
           child: Container(
             width: double.infinity,
@@ -101,7 +98,7 @@ class LandingAmoaContent extends StatelessWidget {
                 ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 620),
                   child: Text(
-                    'J’accompagne les directions métiers et les DSI dans la réussite de leurs projets : cadrage, gouvernance, Agile, recette et mise en production.',
+                    'J’accompagne les directions métiers et les DSI : cadrage, gouvernance, Agile, recette et mise en production.',
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                           color: Colors.white.withValues(alpha: 0.9),
@@ -120,12 +117,12 @@ class LandingAmoaContent extends StatelessWidget {
                       child: const Text('Discutons de votre projet'),
                     ),
                     OutlinedButton(
-                      onPressed: () => context.go('/tarifs/amoa-conseil'),
+                      onPressed: () => context.go('/offres/amoa-conseil'),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Colors.white,
                         side: const BorderSide(color: Colors.white, width: 2),
                       ),
-                      child: const Text('Découvrir mes services'),
+                      child: const Text('Voir l’offre AMOA'),
                     ),
                   ],
                 ),
@@ -134,7 +131,6 @@ class LandingAmoaContent extends StatelessWidget {
           ),
         ),
 
-        // Services
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 72, horizontal: 24),
@@ -164,42 +160,42 @@ class LandingAmoaContent extends StatelessWidget {
                           icon: Icons.assignment_outlined,
                           title: 'Cadrage & Expression de besoins',
                           description:
-                              'Analyse des besoins métiers, rédaction de cahiers des charges, ateliers de cadrage et priorisation des fonctionnalités.',
+                              'Analyse des besoins, ateliers, priorisation.',
                           accentColor: _accent,
                         ),
                         ServiceCard(
                           icon: Icons.track_changes,
                           title: 'Pilotage & Gouvernance',
                           description:
-                              'Suivi des jalons, reporting, animation des comités de pilotage, gestion des risques et des écarts.',
+                              'Jalons, reporting, risques et comités.',
                           accentColor: _accent,
                         ),
                         ServiceCard(
                           icon: Icons.sync,
                           title: 'Méthodes Agile & Scrum',
                           description:
-                              'Mise en place ou renforcement des pratiques Agile, coaching d’équipes, facilitation des cérémonies.',
+                              'Pratiques Agile, coaching, cérémonies.',
                           accentColor: _accent,
                         ),
                         ServiceCard(
                           icon: Icons.verified_outlined,
                           title: 'Recette & Qualité',
                           description:
-                              'Stratégie de tests, plans de recette, coordination UAT, critères d’acceptation et validation métier.',
+                              'Plans de recette, UAT, critères d’acceptation.',
                           accentColor: _accent,
                         ),
                         ServiceCard(
                           icon: Icons.link,
                           title: 'Interface Métiers / Technique',
                           description:
-                              'Traduction des besoins métiers en spécifications claires pour les équipes techniques et les prestataires.',
+                              'Traduction besoins → specs claires.',
                           accentColor: _accent,
                         ),
                         ServiceCard(
                           icon: Icons.rocket_launch_outlined,
-                          title: 'Mise en production & Conduite du changement',
+                          title: 'MEP & Conduite du changement',
                           description:
-                              'Préparation du go-live, formation des utilisateurs, accompagnement post-déploiement.',
+                              'Go-live, formation, adoption.',
                           accentColor: _accent,
                         ),
                       ],
@@ -211,7 +207,6 @@ class LandingAmoaContent extends StatelessWidget {
           ),
         ),
 
-        // Avantages
         SliverToBoxAdapter(
           child: Container(
             color: AppTheme.white,
@@ -219,7 +214,7 @@ class LandingAmoaContent extends StatelessWidget {
             child: Column(
               children: [
                 const SectionTitle(
-                  title: 'Pourquoi faire appel à un AMOA expérimenté ?',
+                  title: 'Pourquoi un AMOA expérimenté ?',
                   subtitle:
                       'Des projets mieux cadrés, mieux livrés et mieux adoptés',
                 ),
@@ -237,22 +232,22 @@ class LandingAmoaContent extends StatelessWidget {
                         _BenefitItem(
                           title: 'Réduction des risques',
                           description:
-                              'Identification précoce des écarts et des points de blocage.',
+                              'Identification précoce des écarts et blocages.',
                         ),
                         _BenefitItem(
                           title: 'Alignement métiers / IT',
                           description:
-                              'Un langage commun entre les parties prenantes.',
+                              'Un langage commun entre parties prenantes.',
                         ),
                         _BenefitItem(
-                          title: 'Respect des délais & budgets',
+                          title: 'Respect délais & budgets',
                           description:
                               'Pilotage rigoureux et reporting transparent.',
                         ),
                         _BenefitItem(
                           title: 'Qualité de livraison',
                           description:
-                              'Recette structurée et critères d’acceptation clairs.',
+                              'Recette structurée et critères clairs.',
                         ),
                       ],
                     );
@@ -263,7 +258,6 @@ class LandingAmoaContent extends StatelessWidget {
           ),
         ),
 
-        // Approche
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 72, horizontal: 24),
@@ -292,27 +286,27 @@ class LandingAmoaContent extends StatelessWidget {
                           number: 1,
                           title: 'Diagnostic',
                           description:
-                              'Comprendre le contexte, les enjeux et les contraintes.',
+                              'Contexte, enjeux et contraintes.',
                           accentColor: _accent,
                         ),
                         ProcessStep(
                           number: 2,
                           title: 'Cadrage',
                           description:
-                              'Définir le périmètre, les objectifs et le plan de charge.',
+                              'Périmètre, objectifs, plan de charge.',
                           accentColor: _accent,
                         ),
                         ProcessStep(
                           number: 3,
                           title: 'Pilotage',
-                          description: 'Animer, suivre, anticiper et arbitrer.',
+                          description: 'Animer, suivre, anticiper, arbitrer.',
                           accentColor: _accent,
                         ),
                         ProcessStep(
                           number: 4,
                           title: 'Livraison',
                           description:
-                              'Valider, déployer et accompagner l’adoption.',
+                              'Valider, déployer, accompagner l’adoption.',
                           accentColor: _accent,
                         ),
                       ],
@@ -324,19 +318,17 @@ class LandingAmoaContent extends StatelessWidget {
           ),
         ),
 
-        // CTA
         SliverToBoxAdapter(
           child: CtaSection(
             title: 'Un projet digital à sécuriser ?',
             subtitle:
-                'Parlons de vos enjeux. Je vous propose un échange gratuit de 30 minutes pour évaluer ensemble les besoins.',
-            buttonLabel: 'Prendre contact',
-            onPressed: () => context.go('/contact'),
+                'Échange gratuit de 30 minutes, ou consultez l’offre AMOA.',
+            buttonLabel: 'Voir l’offre AMOA',
+            onPressed: () => context.go('/offres/amoa-conseil'),
             accentColor: _accent,
           ),
         ),
 
-        // Footer
         SliverToBoxAdapter(
           child: Container(
             color: AppTheme.amoaPrimary,

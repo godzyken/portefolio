@@ -16,8 +16,9 @@ import '../../features/diagnostic/views/screens/diagnostic_screen.dart';
 import '../../features/experience/views/screens/experiences_screen.dart';
 import '../../features/generator/views/screens/generator_extentions_screens.dart';
 import '../../features/home/views/screens/home_screen.dart';
-import '../../features/home/views/screens/pricing_rationale_screen.dart';
 import '../../features/home/views/screens/splash_screen.dart';
+import '../../features/offers/views/screens/offer_detail_screen.dart';
+import '../../features/offers/views/screens/offers_catalog_screen.dart';
 import '../../features/parametres/themes/views/screens/theme_settings_page.dart';
 import '../../features/project_wizard/views/screens/project_wizard_screen.dart';
 import '../../features/projets/views/screens/projects_screen.dart';
@@ -26,10 +27,7 @@ import '../provider/providers.dart';
 
 /// Capture la route réellement demandée par l'utilisateur (deep link web
 /// via HashUrlStrategy, ex: recharger sur /#/avatar) AVANT que
-/// `initialLocation: '/splash'` ne l'écrase. Sans ça, le splash renvoyait
-/// systématiquement vers '/' quelle que soit l'URL demandée, ce qui faisait
-/// passer brièvement par HomeScreen (et son CharacterViewer 3D) à chaque
-/// chargement, même en arrivant directement sur /avatar.
+/// `initialLocation: '/splash'` ne l'écrase.
 String _resolveDeepLinkTargetRoute() {
   if (!kIsWeb) return '/';
   final fragment = Uri.base.fragment;
@@ -47,8 +45,6 @@ String _resolveDeepLinkTargetRoute() {
 final goRouterProvider = Provider<GoRouter>((ref) {
   final notifier = ref.read(routerNotifierProvider.notifier);
   final deepLinkTarget = _resolveDeepLinkTargetRoute();
-  // On crée les clés DIRECTEMENT ici
-  // Elles seront recréées si le provider est invalidé (ex: logout)
   final rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
   final shellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'shell');
 
@@ -73,14 +69,12 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       ),
       initialLocation: '/splash',
       routes: [
-        // ── Splash (hors ShellRoute pour éviter la navbar) ─────────────
         GoRoute(
           path: '/splash',
           name: 'splash',
           builder: (_, __) => SplashScreen(targetRoute: deepLinkTarget),
         ),
 
-        // ── Admin (formulaire de gestion des tarifs, hors navbar publique) ─
         GoRoute(
           path: '/admin/login',
           name: 'admin_login',
@@ -97,30 +91,50 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           builder: (_, __) => const AdminDashboardScreen(),
         ),
 
-        // ── Assistant de Projet IA ────────────────────────────────────
         GoRoute(
           path: '/project-wizard',
           name: 'project_wizard',
           builder: (_, __) => const ProjectWizardScreen(),
         ),
 
-        // ── Conversion Prompt Engine (Nouveau) ────────────────────────
         GoRoute(
           path: '/start-project',
           name: 'start_project',
           builder: (_, __) => const QualificationWizardScreen(),
         ),
 
-        // ── Page publique "pourquoi ce tarif" (clic sur le prix) ─────────
+        // Catalogue d'offres (conversion)
+        GoRoute(
+          path: '/offres',
+          name: 'offers_catalog',
+          builder: (_, state) {
+            final cat = state.uri.queryParameters['category'];
+            final sid = state.uri.queryParameters['service'];
+            return OffersCatalogScreen(
+              highlightCategory: cat,
+              highlightServiceId: sid,
+            );
+          },
+          routes: [
+            GoRoute(
+              path: ':serviceId',
+              name: 'offer_detail',
+              builder: (_, state) => OfferDetailScreen(
+                serviceId: state.pathParameters['serviceId']!,
+              ),
+            ),
+          ],
+        ),
+
+        // Compat: anciennes URLs /tarifs/:id → fiche offre
         GoRoute(
           path: '/tarifs/:serviceId',
           name: 'pricing_rationale',
-          builder: (_, state) => PricingRationaleScreen(
+          builder: (_, state) => OfferDetailScreen(
             serviceId: state.pathParameters['serviceId']!,
           ),
         ),
 
-        // ── Landing Pages dédiées (Flutter & AMOA) ────────────────────
         GoRoute(
           path: '/landing/flutter',
           name: 'landing_flutter',
@@ -132,7 +146,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           builder: (_, __) => const LandingAmoaPage(),
         ),
 
-        // ── Shell principal (navbar, scaffold partagé) ──────────────────
         ShellRoute(
           navigatorKey: shellNavigatorKey,
           builder: (context, state, child) => MainScaffold(child: child),
