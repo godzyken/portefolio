@@ -24,7 +24,11 @@ class OffersCatalogScreen extends ConsumerWidget {
     final servicesAsync = ref.watch(portfolioServicesProvider);
     final theme = Theme.of(context);
     final width = MediaQuery.sizeOf(context).width;
-    final crossAxisCount = width > 1100 ? 3 : width > 700 ? 2 : 1;
+    final crossAxisCount = width > 1100
+        ? 3
+        : width > 700
+            ? 2
+            : 1;
 
     return Scaffold(
       appBar: AppBar(

@@ -130,7 +130,8 @@ class OfferDetailScreen extends ConsumerWidget {
                                     );
                                     context.push('/project-wizard');
                                   },
-                                  icon: const Icon(Icons.rocket_launch_outlined),
+                                  icon:
+                                      const Icon(Icons.rocket_launch_outlined),
                                   label: const Text('Démarrer mon projet'),
                                 ),
                                 OutlinedButton.icon(
@@ -283,8 +284,8 @@ class OfferDetailScreen extends ConsumerWidget {
                                       overflow: TextOverflow.ellipsis),
                                   Text(
                                     service.priceLabel,
-                                    style: theme.textTheme.titleMedium
-                                        ?.copyWith(
+                                    style:
+                                        theme.textTheme.titleMedium?.copyWith(
                                       color: theme.colorScheme.primary,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -421,8 +422,8 @@ class _MarketTable extends StatelessWidget {
         ),
         children: [
           TableRow(
-            decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceContainerHighest),
+            decoration:
+                BoxDecoration(color: theme.colorScheme.surfaceContainerHighest),
             children: [
               _cell('Prestation', context, bold: true),
               _cell('Freelance', context, bold: true),

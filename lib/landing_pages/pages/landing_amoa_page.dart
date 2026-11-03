@@ -57,8 +57,7 @@ class LandingAmoaContent extends StatelessWidget {
               _NavLink(
                   label: 'AMOA',
                   onTap: () => context.go('/offres/amoa-conseil')),
-              _NavLink(
-                  label: 'Catalogue', onTap: () => context.go('/offres')),
+              _NavLink(label: 'Catalogue', onTap: () => context.go('/offres')),
               const SizedBox(width: 12),
             ],
             Padding(
@@ -70,7 +69,6 @@ class LandingAmoaContent extends StatelessWidget {
             ),
           ],
         ),
-
         SliverToBoxAdapter(
           child: Container(
             width: double.infinity,
@@ -130,7 +128,6 @@ class LandingAmoaContent extends StatelessWidget {
             ),
           ),
         ),
-
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 72, horizontal: 24),
@@ -166,15 +163,13 @@ class LandingAmoaContent extends StatelessWidget {
                         ServiceCard(
                           icon: Icons.track_changes,
                           title: 'Pilotage & Gouvernance',
-                          description:
-                              'Jalons, reporting, risques et comités.',
+                          description: 'Jalons, reporting, risques et comités.',
                           accentColor: _accent,
                         ),
                         ServiceCard(
                           icon: Icons.sync,
                           title: 'Méthodes Agile & Scrum',
-                          description:
-                              'Pratiques Agile, coaching, cérémonies.',
+                          description: 'Pratiques Agile, coaching, cérémonies.',
                           accentColor: _accent,
                         ),
                         ServiceCard(
@@ -187,15 +182,13 @@ class LandingAmoaContent extends StatelessWidget {
                         ServiceCard(
                           icon: Icons.link,
                           title: 'Interface Métiers / Technique',
-                          description:
-                              'Traduction besoins → specs claires.',
+                          description: 'Traduction besoins → specs claires.',
                           accentColor: _accent,
                         ),
                         ServiceCard(
                           icon: Icons.rocket_launch_outlined,
                           title: 'MEP & Conduite du changement',
-                          description:
-                              'Go-live, formation, adoption.',
+                          description: 'Go-live, formation, adoption.',
                           accentColor: _accent,
                         ),
                       ],
@@ -206,7 +199,6 @@ class LandingAmoaContent extends StatelessWidget {
             ),
           ),
         ),
-
         SliverToBoxAdapter(
           child: Container(
             color: AppTheme.white,
@@ -246,8 +238,7 @@ class LandingAmoaContent extends StatelessWidget {
                         ),
                         _BenefitItem(
                           title: 'Qualité de livraison',
-                          description:
-                              'Recette structurée et critères clairs.',
+                          description: 'Recette structurée et critères clairs.',
                         ),
                       ],
                     );
@@ -257,7 +248,6 @@ class LandingAmoaContent extends StatelessWidget {
             ),
           ),
         ),
-
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 72, horizontal: 24),
@@ -285,15 +275,13 @@ class LandingAmoaContent extends StatelessWidget {
                         ProcessStep(
                           number: 1,
                           title: 'Diagnostic',
-                          description:
-                              'Contexte, enjeux et contraintes.',
+                          description: 'Contexte, enjeux et contraintes.',
                           accentColor: _accent,
                         ),
                         ProcessStep(
                           number: 2,
                           title: 'Cadrage',
-                          description:
-                              'Périmètre, objectifs, plan de charge.',
+                          description: 'Périmètre, objectifs, plan de charge.',
                           accentColor: _accent,
                         ),
                         ProcessStep(
@@ -317,7 +305,6 @@ class LandingAmoaContent extends StatelessWidget {
             ),
           ),
         ),
-
         SliverToBoxAdapter(
           child: CtaSection(
             title: 'Un projet digital à sécuriser ?',
@@ -328,7 +315,6 @@ class LandingAmoaContent extends StatelessWidget {
             accentColor: _accent,
           ),
         ),
-
         SliverToBoxAdapter(
           child: Container(
             color: AppTheme.amoaPrimary,

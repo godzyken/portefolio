@@ -10,9 +10,8 @@ OUTPUT_FILE = 'assets/data/wakatime_stats.json'
 API_URL = "https://wakatime.com/api/v1/users/current/stats/last_7_days"
 
 if not WAKATIME_API_KEY:
-    # Cette erreur ne devrait plus se produire si le secret est défini dans GitHub
-    print("Erreur: La variable d'environnement WAKATIME_API_KEY n'est pas définie.")
-    exit(1)
+    print("⚠️ Avertissement : La variable d'environnement WAKATIME_API_KEY n'est pas définie. Utilisation du cache local.")
+    exit(0)
 
 # --- Authentification WakaTime ---
 # L'API WakaTime utilise l'Authentification Basique (Basic Authentication)
@@ -45,10 +44,8 @@ try:
     print(f"✅ Succès : Statistiques WakaTime enregistrées dans {OUTPUT_FILE}")
 
 except requests.exceptions.HTTPError as err:
-    # Capture le code 401 UNAUTHORIZED
-    print(f"Erreur lors de l'appel à l'API WakaTime: {err}")
-    # Relance l'erreur pour que GitHub Actions échoue
-    exit(1)
+    print(f"⚠️ Avertissement : Appel à l'API WakaTime en erreur ({err}). Utilisation du cache local (fallback).")
+    exit(0)
 except requests.exceptions.RequestException as e:
-    print(f"Erreur de connexion à l'API WakaTime: {e}")
-    exit(1)
+    print(f"⚠️ Avertissement : Connexion à l'API WakaTime impossible ({e}). Utilisation du cache local (fallback).")
+    exit(0)

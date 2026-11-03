@@ -23,20 +23,20 @@ class WakaTimeStats {
     return WakaTimeStats(
       totalSeconds: (json['total_seconds'] ?? 0.0).toDouble(),
       projects: (json['projects'] as List?)
-          ?.map((p) => WakaTimeProjectStat.fromJson(p))
-          .toList() ??
+              ?.map((p) => WakaTimeProjectStat.fromJson(p))
+              .toList() ??
           [],
       languages: (json['languages'] as List?)
-          ?.map((l) => WakaTimeLanguage.fromJson(l))
-          .toList() ??
+              ?.map((l) => WakaTimeLanguage.fromJson(l))
+              .toList() ??
           [],
       editors: (json['editors'] as List?)
-          ?.map((e) => WakaTimeEditor.fromJson(e))
-          .toList() ??
+              ?.map((e) => WakaTimeEditor.fromJson(e))
+              .toList() ??
           [],
       categories: (json['categories'] as List?)
-          ?.map((c) => WakaTimeCategory.fromJson(c))
-          .toList() ??
+              ?.map((c) => WakaTimeCategory.fromJson(c))
+              .toList() ??
           [],
       range: json['range'] ?? json['human_readable_range'] ?? '',
       humanReadableTotal: json['human_readable_total'],

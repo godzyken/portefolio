@@ -51,8 +51,7 @@ class LandingFlutterContent extends StatelessWidget {
           ),
           actions: [
             if (isWide) ...[
-              _NavLink(
-                  label: 'Offres', onTap: () => context.go('/offres')),
+              _NavLink(label: 'Offres', onTap: () => context.go('/offres')),
               _NavLink(
                   label: 'Mobile',
                   onTap: () => context.go('/offres/mobile-dev')),
@@ -70,7 +69,6 @@ class LandingFlutterContent extends StatelessWidget {
             ),
           ],
         ),
-
         SliverToBoxAdapter(
           child: Container(
             width: double.infinity,
@@ -148,7 +146,6 @@ class LandingFlutterContent extends StatelessWidget {
             ),
           ),
         ),
-
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 72, horizontal: 24),
@@ -204,8 +201,7 @@ class LandingFlutterContent extends StatelessWidget {
                         ServiceCard(
                           icon: Icons.speed,
                           title: 'Performance & Qualité',
-                          description:
-                              'Profiling, tests, CI/CD et monitoring.',
+                          description: 'Profiling, tests, CI/CD et monitoring.',
                           accentColor: _accent,
                         ),
                         ServiceCard(
@@ -223,7 +219,6 @@ class LandingFlutterContent extends StatelessWidget {
             ),
           ),
         ),
-
         SliverToBoxAdapter(
           child: Container(
             color: AppTheme.white,
@@ -257,7 +252,6 @@ class LandingFlutterContent extends StatelessWidget {
             ),
           ),
         ),
-
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 72, horizontal: 24),
@@ -318,7 +312,6 @@ class LandingFlutterContent extends StatelessWidget {
             ),
           ),
         ),
-
         SliverToBoxAdapter(
           child: CtaSection(
             title: 'Vous avez un projet Flutter ?',
@@ -329,7 +322,6 @@ class LandingFlutterContent extends StatelessWidget {
             accentColor: _accent,
           ),
         ),
-
         SliverToBoxAdapter(
           child: Container(
             color: AppTheme.flutterPrimary,
