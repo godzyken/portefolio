@@ -13,6 +13,8 @@ import '../../../projets/providers/projects_extentions_providers.dart';
 import '../../../wakatime/views/widgets/wakatime_badge.dart';
 import '../../data/extention_models.dart';
 import '../generator_widgets_extentions.dart';
+import 'command_center/project_scan_overlay.dart';
+import 'command_center/reactive_rive_avatar.dart';
 
 class ImmersiveDetailScreen extends ConsumerStatefulWidget {
   final ProjectInfo project;
@@ -56,85 +58,87 @@ class _ImmersiveDetailScreenState extends ConsumerState<ImmersiveDetailScreen>
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: Stack(
-        children: [
-          // Fond
-          _buildBackground(info),
+      body: ProjectScanOverlay(
+        child: Stack(
+          children: [
+            // Fond
+            _buildBackground(info),
 
-          // Layout principal
-          Positioned.fill(
-            child: Row(
-              children: [
-                // Sidebar de navigation
-                if (showSidebar)
-                  ProjectNavigationSidebar(
-                    projectTitle: widget.project.title,
-                    sections: sections,
-                    activeSection: activeSection,
-                    onSectionTap: _navigateToSection,
-                    headerExtra: _sectionManager.hasProgrammingTag()
-                        ? WakaTimeBadgeWidget(
-                            projectName: widget.project.title,
-                            variant: WakaTimeBadgeVariant.compact,
-                          )
-                        : null,
+            // Layout principal
+            Positioned.fill(
+              child: Row(
+                children: [
+                  // Sidebar de navigation
+                  if (showSidebar)
+                    ProjectNavigationSidebar(
+                      projectTitle: widget.project.title,
+                      sections: sections,
+                      activeSection: activeSection,
+                      onSectionTap: _navigateToSection,
+                      headerExtra: _sectionManager.hasProgrammingTag()
+                          ? WakaTimeBadgeWidget(
+                              projectName: widget.project.title,
+                              variant: WakaTimeBadgeVariant.compact,
+                            )
+                          : null,
+                    ),
+
+                  // Contenu principal
+                  Expanded(
+                    child: _buildMainContent(sections, activeSection, info),
                   ),
-
-                // Contenu principal
-                Expanded(
-                  child: _buildMainContent(sections, activeSection, info),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
 
-          // PERSONNAGE 3D ET BULLE NARRATIVE (DESKTOP SEULEMENT)
-          if (!info.isMobile)
-            Positioned(
-              left: showSidebar ? 280 : 20,
-              bottom: 20,
-              child: SizedBox(
-                width: 250,
-                height: 350,
-                child: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    const CharacterViewer(),
-                    Positioned(
-                      top: -40,
-                      left: 100,
-                      child: SizedBox(
-                        width: 200,
-                        child: NarrativeBubble(
-                          text: _getNarrativeText(activeSection),
+            // PERSONNAGE 3D ET BULLE NARRATIVE (DESKTOP SEULEMENT)
+            if (!info.isMobile)
+              Positioned(
+                left: showSidebar ? 280 : 20,
+                bottom: 20,
+                child: SizedBox(
+                  width: 250,
+                  height: 350,
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      const ReactiveRiveAvatar(),
+                      Positioned(
+                        top: -40,
+                        left: 100,
+                        child: SizedBox(
+                          width: 200,
+                          child: NarrativeBubble(
+                            text: _getNarrativeText(activeSection),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
 
-          // Bouton fermer
-          Positioned(
-            top: 24,
-            right: 24,
-            child: _buildCloseButton(),
-          ),
-
-          // Navigation mobile
-          if (!showSidebar && sections.length > 1)
+            // Bouton fermer
             Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: ProjectBottomNavigation(
-                sections: sections,
-                activeSection: activeSection,
-                onSectionTap: _navigateToSection,
-              ),
+              top: 24,
+              right: 24,
+              child: _buildCloseButton(),
             ),
-        ],
+
+            // Navigation mobile
+            if (!showSidebar && sections.length > 1)
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: ProjectBottomNavigation(
+                  sections: sections,
+                  activeSection: activeSection,
+                  onSectionTap: _navigateToSection,
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }

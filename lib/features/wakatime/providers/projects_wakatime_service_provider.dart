@@ -240,7 +240,7 @@ final enrichedProjectsProvider = FutureProvider<List<ProjectInfo>>((ref) async {
       name: 'WakaTime');
 
   // 2. Récupérer les données WakaTime
-  final wakaProjects = await ref.watch(wakaTimeProjectsProvider.future);
+  await ref.watch(wakaTimeProjectsProvider.future);
   final wakaDurations = await ref.watch(
     wakaTimeProjectDurationsProvider('last_7_days').future,
   );

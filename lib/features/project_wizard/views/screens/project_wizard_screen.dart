@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/affichage/screen_size_detector.dart';
 import '../../../generator/views/widgets/animations/diagnostic_progress_bar.dart';
 import '../../notifiers/project_wizard_notifier.dart';
 import '../../providers/project_wizard_providers.dart';
@@ -15,7 +14,6 @@ class ProjectWizardScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final info = ref.watch(responsiveInfoProvider);
     final state = ref.watch(projectWizardProvider);
     final notifier = ref.read(projectWizardProvider.notifier);
     final aiService = ref.watch(projectWizardAiServiceProvider);
